@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Francisco M. Gallardo | Sistemas Pyme</title>
+  
+  <style>
+    :root {
+      --primary: #0B2545;
+      --accent: #0d7d74;
+      --accent-gradient: linear-gradient(135deg, #0B2545 0%, #0d7d74 100%);
+      --bg: #eef2f6;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Reducción de padding del body para ganar espacio vertical */
+    body {
+      background-color: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 4px;
+    }
+
+    /* Contenedor Ultra Compacto */
+    .card {
+      width: 100%;
+      max-width: 380px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(11, 37, 69, 0.12);
+      border: 1px solid var(--border);
+    }
+
+    /* Cabecera / Banner más bajo */
+    .header-banner {
+      background: var(--accent-gradient);
+      height: 60px;
+      width: 100%;
+    }
+
+    /* Perfil comprimido */
+    .profile-section {
+      text-align: center;
+      margin-top: -38px;
+      padding: 0 12px;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      width: 76px;
+      height: 76px;
+      margin: 0 auto;
+      border-radius: 50%;
+      padding: 2.5px;
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+    }
+
+    .avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-top: 4px;
+      letter-spacing: -0.3px;
+    }
+
+    .role {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 1px;
+    }
+
+    /* Logo más pequeño y pegado */
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 6px auto 2px;
+      width: 100%;
+    }
+
+    .logo-img {
+      max-height: 48px;
+      width: auto;
+      max-width: 70%;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* Botón Guardar Contacto comprimido */
+    .save-action {
+      padding: 4px 14px;
+    }
+
+    .btn-save {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--accent-gradient);
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(13, 125, 116, 0.25);
+      transition: transform 0.1s ease;
+    }
+
+    .btn-save:active {
+      transform: scale(0.97);
+    }
+
+    /* Accesos Rápidos más estrechos */
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      padding: 6px 14px;
+    }
+
+    .action-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 4px;
+      text-decoration: none;
+      color: var(--primary);
+      font-size: 0.65rem;
+      font-weight: 600;
+      gap: 4px;
+      transition: background 0.15s;
+    }
+
+    .action-item:active {
+      background: #e2e8f0;
+    }
+
+    .action-item svg {
+      width: 18px;
+      height: 18px;
+      fill: var(--accent);
+    }
+
+    /* Títulos de sección con menor margen */
+    .section-title {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.8px;
+      margin: 2px 14px 2px;
+    }
+
+    /* Producto Estrella: Atril */
+    .hero-product {
+      margin: 0 14px 4px;
+      background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
+      border: 1px solid #99f6e4;
+      border-radius: 8px;
+      padding: 6px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .hero-icon {
+      width: 30px;
+      height: 30px;
+      background: var(--accent);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .hero-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .hero-body h3 {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1.1;
+    }
+
+    .hero-body p {
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      line-height: 1.2;
+      margin-top: 1px;
+    }
+    
+    /* Estrellas integradas para ahorrar espacio */
+    .hero-stars {
+      display: flex;
+      gap: 1.5px;
+      margin-top: 2px;
+    }
+    .hero-stars svg {
+      width: 9px;
+      height: 9px;
+      fill: #f59e0b;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      background: var(--accent);
+      color: #ffffff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 5px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    /* Módulo Satélite Instagram */
+    .insta-module {
+      margin: 0 14px 4px;
+      border: 1px solid #f9a8d4;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #ffffff 0%, #fdf2f8 100%);
+      padding: 5px 8px;
+    }
+
+    .insta-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .insta-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .insta-title {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #9d174d;
+      letter-spacing: -0.2px;
+    }
+
+    .insta-tag {
+      font-size: 0.5rem;
+      color: #be185d;
+      font-weight: 700;
+      background: #fce7f3;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    .insta-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      background: #be185d;
+      color: #ffffff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 5px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .insta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+    }
+
+    .insta-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.5px;
+      background: #ffffff;
+      border: 1px solid #fce7f3;
+      border-radius: 4px;
+      padding: 4px;
+      font-size: 0.55rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.15;
+    }
+
+    .insta-dot {
+      color: #be185d;
+      font-weight: 800;
+      font-size: 0.65rem;
+    }
+
+    /* Lista de Servicios ultra-compacta */
+    .services-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin: 0 14px 6px;
+    }
+
+    .service-card {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+    }
+
+    .service-card svg {
+      width: 15px;
+      height: 15px;
+      fill: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .service-card span {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.2;
+    }
+
+    /* Pie de página */
+    .footer {
+      text-align: center;
+      padding: 6px;
+      background: #f1f5f9;
+      border-top: 1px solid var(--border);
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+    .footer strong {
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="header-banner"></div>
+
+    <!-- Perfil e identidad cargando imágenes locales -->
+    <div class="profile-section">
+      <div class="avatar-wrapper">
+        <img src="perfil.jpg" alt="Francisco M. Gallardo" class="avatar" />
+      </div>
+      <div class="name">Francisco M. Gallardo</div>
+      <div class="role">Consultor Tecnológico</div>
+      <div class="logo-container">
+        <img src="logo.png" alt="Sistemas Pyme" class="logo-img" />
+      </div>
+    </div>
+
+    <!-- Botón Descargar Contacto -->
+    <div class="save-action">
+      <button class="btn-save" onclick="downloadVCard()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        Guardar en Contactos
+      </button>
+    </div>
+
+    <!-- Accesos rápidos -->
+    <div class="action-grid">
+      <a href="tel:+34711547561" class="action-item">
+        <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        <span>Llamar</span>
+      </a>
+      <a href="https://wa.me/34711547561?text=Hola%20Francisco,%20me%20interesa%20la%20automatizaci%C3%B3n" class="action-item" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 012.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 01-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.66c-.19-.09-1.1-.54-1.27-.6-.17-.06-.29-.1-.41.09-.12.19-.47.6-.58.72-.11.12-.22.14-.4.05-.19-.09-.79-.29-1.51-.93-.56-.5-.94-1.11-1.05-1.3-.11-.19-.01-.29.08-.38.08-.09.19-.22.28-.33.09-.11.12-.19.19-.31.06-.12.03-.23-.02-.33-.04-.09-.41-1-.57-1.37-.15-.36-.31-.31-.41-.31h-.35c-.12 0-.32.05-.49.23-.17.19-.65.64-.65 1.56 0 .93.67 1.82.77 1.95.09.12 1.33 2.03 3.22 2.85.45.19.8.31 1.08.4.46.15.87.13 1.2.08.37-.05 1.1-.45 1.25-.89.16-.44.16-.81.11-.89-.04-.09-.17-.14-.36-.24z"/></svg>
+        <span>WhatsApp</span>
+      </a>
+      <a href="mailto:francisco@sistemaspyme.es" class="action-item">
+        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        <span>Email</span>
+      </a>
+    </div>
+
+    <!-- Producto Estrella -->
+    <div class="section-title">Implantación Inmediata</div>
+    <div class="hero-product">
+      <div class="hero-icon">
+        <!-- SVG del Atril Vectorizado Adaptado a la Web -->
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 22h10" stroke-width="2"/>
+          <path d="M12 17v5" stroke-width="2"/>
+          <rect x="5" y="2" width="14" height="15" rx="2" fill="rgba(255,255,255,0.2)" stroke="#ffffff"/>
+          <path d="M9 7.5a5 5 0 0 1 6 0"/>
+          <path d="M10.5 10.5a2.5 2.5 0 0 1 3 0"/>
+          <circle cx="12" cy="13.5" r="1.5" fill="#ffffff" stroke="none"/>
+        </svg>
+      </div>
+      <div class="hero-body">
+        <h3>Atril Inteligente NFC / QR</h3>
+        <p>Gana reseñas apoyando el móvil.</p>
+        <div class="hero-stars">
+          <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+        </div>
+      </div>
+      <a href="https://wa.me/34711547561?text=Hola%20Francisco,%20me%20interesa%20el%20Atril%20Inteligente" class="hero-cta" target="_blank">
+        ⚡ Pedir
+      </a>
+    </div>
+
+    <!-- Módulo Satélite Instagram -->
+    <div class="insta-module">
+      <div class="insta-head">
+        <div class="insta-title-wrap">
+          <!-- Icono Oficial Instagram -->
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#be185d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+          <span class="insta-title">Instagram Inteligente</span>
+          <span class="insta-tag">Meta Pro</span>
+        </div>
+        <a href="https://wa.me/34711547561?text=Hola%20Francisco,%20me%20interesa%20el%20M%C3%B3dulo%20Instagram" class="insta-cta" target="_blank">
+          ⚡ Demo
+        </a>
+      </div>
+      <div class="insta-grid">
+        <div class="insta-item">
+          <span class="insta-dot">1</span>
+          <span>Auto-envío al comentar</span>
+        </div>
+        <div class="insta-item">
+          <span class="insta-dot">2</span>
+          <span>Recepcionista DM 24/7</span>
+        </div>
+        <div class="insta-item">
+          <span class="insta-dot">3</span>
+          <span>Regalo en historias</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Catálogo de las 3 soluciones de automatización -->
+    <div class="section-title">Soluciones de Automatización</div>
+    <div class="services-list">
+      
+      <div class="service-card">
+        <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+        <span>Respuesta a solicitudes web en 10s</span>
+      </div>
+
+      <div class="service-card">
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"/></svg>
+        <span>Gestión y filtro de reseñas con IA</span>
+      </div>
+
+      <div class="service-card">
+        <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+        <span>Sistema Anti-plantón y Citas</span>
+      </div>
+
+    </div>
+
+    <!-- Pie -->
+    <div class="footer">
+      <strong>Sistemas Pyme</strong> &copy; 2026<br>
+      Soluciones y Automatización para Negocios Locales<br>
+      Galicia
+    </div>
+  </div>
+
+  <script>
+    function downloadVCard() {
+      const contact = {
+        name: "Francisco M. Gallardo",
+        org: "Sistemas Pyme",
+        title: "Consultor Tecnológico",
+        phone: "+34711547561",
+        email: "francisco@sistemaspyme.es",
+        url: "https://sistemaspyme.es"
+      };
+
+      const vcard = `BEGIN:VCARD
+VERSION:3.0
+N:Gallardo;Francisco M.;;;
+FN:${contact.name}
+ORG:${contact.org}
+TITLE:${contact.title}
+TEL;TYPE=CELL:${contact.phone}
+EMAIL;TYPE=WORK:${contact.email}
+URL:${contact.url}
+NOTE:Sistemas Pyme - Automatización y Digitalización para Negocios Locales (Especialistas en IA, Reseñas, Instagram y WhatsApp)
+END:VCARD`;
+
+      const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Francisco_M_Gallardo_SistemasPyme.vcf";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  </script>
+</body>
+</html>

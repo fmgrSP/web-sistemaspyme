@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tarifas de Puesta en Marcha - Sistemas Pyme</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    @page {
+      size: A5 portrait;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #475569;
+      color: #0f172a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 0;
+    }
+
+    .sheet {
+      width: 148mm;
+      height: 210mm;
+      min-height: 210mm;
+      max-height: 210mm;
+      background: #ffffff;
+      padding: 7mm 9mm 7mm 9mm;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+      page-break-after: always;
+      page-break-inside: avoid;
+    }
+    @media print {
+      body {
+        background: none;
+        padding: 0;
+        gap: 0;
+      }
+      .sheet {
+        box-shadow: none;
+        page-break-after: always;
+        height: 210mm !important;
+        max-height: 210mm !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    .print-bar {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    }
+    .print-btn {
+      background: #0d7d74;
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      transition: background 0.2s;
+    }
+    .print-btn:hover {
+      background: #095852;
+    }
+
+    :root {
+      --primary: #0b2545;
+      --primary-dark: #071930;
+      --teal: #0d7d74;
+      --teal-light: #f0fdfa;
+      --purple: #4338ca;
+      --amber: #d97706;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-600: #475569;
+      --slate-800: #1e293b;
+      
+      /* Colores de planes corporativos web */
+      --plan-base: #475569;
+      --plan-duo: #2563eb;
+      --plan-trinity: #16a34a;
+      --plan-avanzado: #4338ca;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2.5px solid var(--primary);
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+    }
+    .brand-logo-img {
+      max-height: 85px;
+      width: auto;
+      max-width: 95mm;
+      object-fit: contain;
+      display: block;
+    }
+    .contact-block {
+      text-align: right;
+      font-size: 8.5px;
+      line-height: 1.3;
+      color: var(--slate-800);
+      font-weight: 500;
+    }
+    .contact-name {
+      color: var(--primary);
+      font-size: 10.5px;
+      font-weight: 800;
+      display: block;
+      line-height: 1.2;
+    }
+    .contact-role {
+      color: var(--teal);
+      font-size: 7px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .section-banner {
+      background: var(--primary);
+      color: white;
+      padding: 8px 10px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    
+    .info-box {
+      background: #fef3c7 !important;
+      border: 1px solid #fde68a !important;
+      border-left: 4px solid #d97706 !important;
+      padding: 10px 12px;
+      border-radius: 4px;
+      font-size: 9.5px;
+      color: #92400e;
+      line-height: 1.4;
+      margin-top: 14px;
+      box-shadow: 0 1px 3px rgba(217, 119, 6, 0.1);
+    }
+    .info-box strong {
+      color: #b45309;
+      font-weight: 800;
+    }
+
+    .logic-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 9px;
+      color: #1e3a8a;
+      margin-bottom: 14px;
+      text-align: center;
+      line-height: 1.4;
+    }
+    .logic-box strong {
+      color: #1d4ed8;
+      font-weight: 800;
+    }
+
+    .master-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+    .master-table th {
+      color: white;
+      font-size: 9px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      padding: 12px 8px;
+      border: 1px solid #1e293b;
+      text-align: center;
+      line-height: 1.35;
+    }
+    
+    .th-col1 { background: #64748b !important; border-color: #475569 !important; }
+    .th-via1 { background: #374151 !important; border-color: #1f2937 !important; }
+    .th-via2 { background: #0f766e !important; border-color: #0d5e57 !important; }
+    .th-via3 { background: #4338ca !important; border-color: #3730a3 !important; }
+    
+    .master-table th .th-sub {
+      display: block;
+      font-size: 7.5px;
+      font-weight: 600;
+      margin-top: 3px;
+      letter-spacing: 0.5px;
+      text-transform: none;
+    }
+    .th-via1 .th-sub { color: #cbd5e1; }
+    .th-via2 .th-sub { color: #ccfbf1; }
+    .th-via3 .th-sub { color: #e0e7ff; }
+
+    .master-table td {
+      padding: 14px 8px;
+      border: 1px solid var(--slate-200);
+      text-align: center;
+      vertical-align: middle;
+      line-height: 1.25;
+      background: #ffffff;
+    }
+    
+    .master-table td.left {
+      text-align: left;
+      font-weight: 800;
+      padding-left: 12px;
+    }
+    .master-table td.sub-left {
+      display: block;
+      font-size: 7.5px;
+      color: var(--slate-600);
+      font-weight: 600;
+      margin-top: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .col-via1 { 
+      font-weight: 800; 
+      color: var(--slate-800); 
+      font-size: 12px; 
+    }
+    .col-via2 { 
+      background: #f0fdfa !important; 
+      font-weight: 900; 
+      color: var(--teal); 
+      font-size: 12px; 
+      border-left: 2px solid #5eead4 !important; 
+      border-right: 2px solid #5eead4 !important; 
+    }
+    .col-via3 { 
+      font-weight: 900; 
+      color: var(--purple); 
+      font-size: 12px; 
+    }
+
+    .footer-bar {
+      margin-top: auto;
+      border-top: 1px solid var(--slate-200);
+      padding-top: 8px;
+      font-size: 8.5px;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="print-bar no-print" aria-label="Controles de impresión">
+    <span>Tarjetón Cuartilla A5: Tarifas Puesta en Marcha (Setup)</span>
+    <button class="print-btn" onclick="window.print()">
+      <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+      Imprimir / Guardar
+    </button>
+  </aside>
+
+  <main class="sheet">
+    <header class="header">
+      <div>
+        <img 
+          src="Sistemas Pyme Logo.png" 
+          alt="Sistemas Pyme" 
+          class="brand-logo-img"
+          onerror="this.onerror=null; this.src='logo.png';"
+        >
+      </div>
+      <div class="contact-block">
+        <strong class="contact-name">Francisco M. Gallardo</strong>
+        <span class="contact-role">Consultor Tecnológico</span>
+        francisco@sistemaspyme.es<br>
+        sistemaspyme.es<br>
+        <strong>711 54 75 61</strong><br>
+        <span style="color:var(--slate-600); font-weight:600;">Galicia</span>
+      </div>
+    </header>
+
+    <div style="display: flex; flex-direction: column; flex: 1;">
+
+      <section>
+        <div class="section-banner">
+          <span>Costes de Alta y Puesta en Marcha Técnica (Setup)</span>
+        </div>
+
+        <div class="logic-box">
+          Nuestra política de alta es transparente y escalable:<br>
+          El trabajo técnico base es de <strong>90 €</strong> (1ª operativa).<br>
+          Cada operativa adicional integrada simultáneamente suma únicamente <strong>+30 €</strong>.
+        </div>
+
+        <table class="master-table">
+          <thead>
+            <tr>
+              <th class="th-col1" style="width: 28%; vertical-align: middle;">
+                Plan Elegido
+              </th>
+              <th class="th-via1" style="width: 24%; vertical-align: top;">
+                Vía 1: Mes a Mes
+                <span class="th-sub">Pagas el 100% del Alta.<br>Sin permanencia.</span>
+              </th>
+              <th class="th-via2" style="width: 24%; vertical-align: top;">
+                Vía 2: 6 Meses
+                <span class="th-sub">Pagas solo el 50%<br>del Alta técnica.</span>
+              </th>
+              <th class="th-via3" style="width: 24%; vertical-align: top;">
+                Vía 3: Anual
+                <span class="th-sub">Máximo Ahorro.<br>Alta 100% bonificada.</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="left" style="color: var(--primary);">
+                Pyme <span style="color: var(--plan-base);">BASE</span><br>
+                <span class="sub-left">1 Servicio</span>
+              </td>
+              <td class="col-via1">90 €</td>
+              <td class="col-via2">45 €</td>
+              <td class="col-via3">0 € (Gratis)</td>
+            </tr>
+            <tr>
+              <td class="left" style="color: var(--primary);">
+                Pyme <span style="color: var(--plan-duo);">DÚO</span><br>
+                <span class="sub-left">2 Servicios</span>
+              </td>
+              <td class="col-via1">120 €</td>
+              <td class="col-via2">60 €</td>
+              <td class="col-via3">0 € (Gratis)</td>
+            </tr>
+            <tr>
+              <td class="left" style="color: var(--primary);">
+                Pyme <span style="color: var(--plan-trinity);">TRINITY</span><br>
+                <span class="sub-left">3 Servicios</span>
+              </td>
+              <td class="col-via1">150 €</td>
+              <td class="col-via2">75 €</td>
+              <td class="col-via3">0 € (Gratis)</td>
+            </tr>
+            <tr>
+              <td class="left" style="color: var(--primary);">
+                Pyme <span style="color: var(--plan-avanzado);">AVANZADO</span><br>
+                <span class="sub-left">4 Servicios</span>
+              </td>
+              <td class="col-via1">180 €</td>
+              <td class="col-via2">90 €</td>
+              <td class="col-via3">0 € (Gratis)</td>
+            </tr>
+            <tr style="background: #fdf2f8;">
+              <td class="left" style="color: #9d174d;">
+                Satélite Instagram<br>
+                <span class="sub-left" style="color: #db2777;">Módulo Independiente</span>
+              </td>
+              <td class="col-via1" style="color: #be185d;">120 €</td>
+              <td class="col-via2" style="color: #be185d; background: #fce7f3 !important; border-left-color: #fbcfe8 !important; border-right-color: #fbcfe8 !important;">60 €</td>
+              <td class="col-via3" style="color: #be185d;">0 € (Gratis)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="info-box">
+          <strong>Aviso Importante:</strong> La "Puesta en Marcha Técnica" es un <strong>pago único</strong> por la configuración inicial, conexión de sistemas y pruebas en tu local. Este importe es <strong>completamente independiente a la cuota mensual</strong> de mantenimiento y soporte de tus operativas.
+        </div>
+
+      </section>
+
+    </div>
+
+    <footer class="footer-bar">
+      <span><strong>Sistemas Pyme</strong> — Documento Anexo de Tarifas Técnicas de Inicio</span>
+      <span>Sin costes ocultos</span>
+      <span><strong>Anexo I</strong></span>
+    </footer>
+  </main>
+
+</body>
+</html>

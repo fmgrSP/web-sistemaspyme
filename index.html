@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistemas Pyme — Digitalización y Automatización para Negocios Locales</title>
+  <meta name="description" content="Sistemas de Inteligencia Artificial para Automatizar y Escalar tu Negocio.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0b2545',
+              dark: '#071629',
+              teal: '#0d7d74',
+              tealDark: '#095852',
+              tealLight: '#f0fdfa',
+              amber: '#d97706',
+              amberLight: '#fffbeb',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    .hero-glow {
+      background: radial-gradient(circle at 50% 20%, rgba(13, 125, 116, 0.15) 0%, rgba(11, 37, 69, 0) 70%);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+    }
+    /* Tintes de fondo de servicios AL 20% DE INTENSIDAD Y COLORES CATEGORÍA TARJETÓN */
+    .glow-reputacion {
+      background: linear-gradient(145deg, rgba(13, 125, 116, 0.20) 0%, rgba(13, 125, 116, 0.03) 100%);
+    }
+    .glow-captacion {
+      background: linear-gradient(145deg, rgba(30, 58, 138, 0.20) 0%, rgba(30, 58, 138, 0.03) 100%);
+    }
+    .glow-eficiencia {
+      background: linear-gradient(145deg, rgba(67, 56, 202, 0.20) 0%, rgba(67, 56, 202, 0.03) 100%);
+    }
+  </style>
+</head>
+<body class="bg-brand-dark text-slate-100 font-sans antialiased selection:bg-brand-teal selection:text-white">
+
+  <header class="sticky top-0 z-50 bg-brand-dark/90 backdrop-blur-md border-b border-white/10 transform-gpu">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-24 flex items-center justify-between">
+      
+      <a href="#" class="flex items-center group">
+        <div class="bg-white rounded-full px-5 py-2 shadow-[0_0_5px_rgba(255,255,255,0.01)] border border-white/5 group-hover:scale-105 transition-all overflow-hidden flex items-center justify-center">
+          <img src="logo.png" alt="Sistemas Pyme" class="h-12 sm:h-14 w-auto object-contain" onerror="this.onerror=null; this.src='https://placehold.co/200x60/ffffff/0d7d74?text=Sistemas+Pyme';">
+        </div>
+      </a>
+
+      <!-- ENLACES DEL MENÚ AUMENTADOS DE TAMAÑO -->
+      <nav class="hidden md:flex items-center gap-8 text-base font-semibold text-slate-200">
+        <a href="#soluciones" class="hover:text-teal-400 transition-colors">Soluciones</a>
+        <a href="#tarifas" class="hover:text-teal-400 transition-colors">Tarifas Lanzamiento</a>
+        <a href="#contacto" class="hover:text-teal-400 transition-colors">Contacto</a>
+      </nav>
+
+      <div>
+        <a href="https://wa.me/34711547561?text=Hola%20Francisco,%20estoy%20interesado%20en%20tener%20más%20información%20sobre%20tus%20servicios." target="_blank" class="inline-flex items-center gap-2 bg-brand-teal hover:bg-brand-tealDark text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-lg shadow-md shadow-teal-950/50 hover:shadow-teal-800/50 transition-all">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+          <span class="hidden sm:inline">Hablar con Francisco</span>
+          <span class="sm:hidden">WhatsApp</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <section class="relative pt-12 pb-20 md:pt-16 md:pb-24 overflow-hidden hero-glow">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <div class="lg:col-span-7 text-center lg:text-left">
+          
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-300 text-xs font-semibold mb-6">
+            <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+            Lanzamiento Oficial • Comercios y Profesionales de Galicia
+          </div>
+
+          <!-- TÍTULO HERO -->
+          <h1 class="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-tight leading-[1.15] mb-6">
+            <span class="text-white">Sistemas de Inteligencia Artificial para</span><br />
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-emerald-400">Automatizar y Escalar</span> 
+            <span class="text-white">tu Negocio</span>
+          </h1>
+
+          <!-- TEXTO DESCRIPTIVO CON MÁS TAMAÑO E IMPORTANCIA -->
+          <p class="text-lg sm:text-xl text-slate-200 font-medium leading-relaxed mb-8 max-w-2xl mx-auto lg:mx-0">
+            Multiplica tus reseñas en Google Maps, responde al instante a tus clientes aunque estés ocupado y recupera el control de tu tiempo eliminando tareas repetitivas.
+          </p>
+
+          <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco,%20quiero%20ver%20una%20demostración%20para%20mi%20negocio" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-brand-teal hover:bg-brand-tealDark text-white font-bold text-base px-7 py-3.5 rounded-xl shadow-lg shadow-teal-900/40 transition-all hover:scale-[1.02]">
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+              <span>Pedir Demostración en Vivo</span>
+            </a>
+            <a href="#soluciones" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-slate-200 font-semibold text-base px-6 py-3.5 rounded-xl border border-white/10 transition-colors">
+              Ver Soluciones
+            </a>
+          </div>
+
+          <!-- ENLACES A TARJETA DIGITAL CLICABLES -->
+          <div class="mt-8 pt-6 border-t border-white/10 flex items-center justify-center lg:justify-start gap-5 text-left group/profile">
+            <a href="tarjeta.html" target="_blank" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-[3px] border-teal-500/40 shadow-xl shadow-teal-900/30 flex-shrink-0 group-hover/profile:scale-105 group-hover/profile:border-teal-400 transition-all cursor-pointer block relative">
+              <img src="perfil.jpg" alt="Francisco M. Gallardo" class="w-full h-full object-cover relative z-0" onerror="this.onerror=null; this.src='https://placehold.co/100x100/0d7d74/ffffff?text=FG';">
+            </a>
+            <div>
+              <a href="tarjeta.html" target="_blank" class="text-base sm:text-lg font-bold text-white group-hover/profile:text-teal-300 transition-colors cursor-pointer block">Francisco M. Gallardo</a>
+              <p class="text-xs sm:text-sm text-slate-400 mt-0.5">Consultor Tecnológico Local • Galicia<br class="sm:hidden"><span class="hidden sm:inline"> • </span><a href="tel:+34711547561" class="hover:text-teal-300 transition-colors">711 54 75 61</a></p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="lg:col-span-5">
+          <div id="atril-nfc" class="relative rounded-2xl bg-gradient-to-b from-amber-500/10 via-slate-900 to-slate-950 p-6 sm:p-8 border-2 border-amber-500/30 shadow-2xl shadow-amber-950/20">
+            
+            <div class="flex items-center justify-between gap-2 mb-4">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-amber-500/20 text-amber-300 text-xs font-bold uppercase tracking-wider border border-amber-500/30">
+                Hardware de Mostrador
+              </span>
+              <div class="text-amber-400 text-sm tracking-widest font-black">★★★★★</div>
+            </div>
+
+            <h3 class="text-xl sm:text-2xl font-black text-white leading-tight mb-3">
+              Atril Inteligente de Mostrador (NFC + QR)
+            </h3>
+
+            <p class="text-sm text-slate-300 leading-relaxed mb-6">
+              El cliente solo tiene que acercar su móvil al momento de pagar y se le abre tu ficha oficial de Google Maps con las <strong class="text-amber-300">5 estrellas marcadas</strong> para que en cuestión de segundos te deje la reseña antes de salir por la puerta. Multiplica valoraciones reales al instante.
+            </p>
+
+            <div class="bg-black/40 rounded-xl p-4 border border-white/5 mb-6 flex items-center justify-between">
+              <div>
+                <span class="text-xs text-slate-400 block font-medium">Pago único sin cuotas:</span>
+                <span class="text-2xl font-black text-amber-400">39 €</span>
+                <span class="text-[11px] text-slate-400 block">Es tuyo para siempre</span>
+              </div>
+              <div class="text-right">
+                <span class="inline-block text-[11px] font-semibold text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded border border-emerald-800/40">
+                  Listo en 24h
+                </span>
+              </div>
+            </div>
+
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco,%20quiero%20encargar%20un%20Atril%20Inteligente%20NFC%20para%20mi%20mostrador" target="_blank" class="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white font-bold text-sm py-3 px-4 rounded-xl shadow-lg transition-all">
+              ⚡ Encargar Atril para mi Mostrador
+            </a>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <section id="soluciones" class="py-16 md:py-24 bg-slate-950/80 border-t border-white/5">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs uppercase font-extrabold tracking-widest text-teal-400 block mb-2">Catálogo Troncal</span>
+        <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          Soluciones Rápidas, Probadas y de Alto Impacto
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base mt-4">
+          Sistemas «llave en mano» que trabajan por ti 24/7. Elimina tareas repetitivas, responde al instante a tus clientes aunque estés ocupado y recupera el control de tu tiempo.
+        </p>
+      </div>
+
+      <!-- CUADRÍCULA CON ALTURAS IDÉNTICAS -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:auto-rows-fr">
+
+        <!-- SERVICIO 1: RESEÑAS (Categoría Reputación -> Teal) -->
+        <div class="glow-reputacion backdrop-blur-md border border-white/10 hover:border-teal-400/50 rounded-2xl p-5 transition-all flex flex-col justify-between group h-full">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-400 font-black text-sm flex items-center justify-center border border-teal-500/30">1</span>
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/40">Blindaje de Reputación</span>
+            </div>
+            
+            <!-- Título degradado Teal/Cyan (Reputación) -->
+            <h3 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-300">Gestión y Filtro de Reseñas en Google con IA</h3>
+            <p class="text-sm text-slate-300 leading-relaxed mb-4">
+              A las valoraciones de 4 y 5 estrellas la Inteligencia Artificial les responde al instante premiando tu posicionamiento local (SEO). Si entra una reseña negativa, se pausa el flujo y recibes un aviso con un borrador conciliador para aprobar o editar.
+            </p>
+
+            <!-- AVISO ATRIL CLICABLE MÁS INTENSO E ILUMINADO (1 LÍNEA) -->
+            <a href="#" class="mb-4 flex items-center gap-2 text-xs font-semibold text-amber-300 bg-amber-600/20 hover:bg-amber-600/30 px-4 py-2.5 rounded-lg border border-amber-500/40 transition-colors cursor-pointer group/atril shadow-[0_0_15px_rgba(245,158,11,0.15)]">
+              <span class="opacity-100 text-base drop-shadow-[0_0_8px_rgba(251,191,36,1)]">💡</span>
+              <p>Combínalo con el Atril Inteligente y maximiza tus reseñas</p>
+            </a>
+          </div>
+          
+          <div class="pt-4 border-t border-teal-500/40 flex items-center justify-between mt-auto">
+            <span class="text-xs font-medium text-blue-300">Mejora tu posicionamiento local</span>
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco,%20estoy%20interesado%20en%20el%20servicio%20de%20reseñas" target="_blank" class="text-xs font-bold text-teal-400 hover:text-teal-300 flex items-center gap-1">
+              Consultar por WhatsApp &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- SERVICIO 2: RESPUESTA LEADS (Categoría Captación -> Azul) -->
+        <div class="glow-captacion backdrop-blur-md border border-white/10 hover:border-blue-400/50 rounded-2xl p-5 transition-all flex flex-col justify-between group h-full">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 font-black text-sm flex items-center justify-center border border-blue-500/30">2</span>
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/40">Cierre en Caliente</span>
+            </div>
+            
+            <!-- Título degradado Azul Oscuro/Claro (Captación) -->
+            <h3 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Respuesta a Solicitudes Web y Anuncios en 10s</h3>
+            <p class="text-sm text-slate-300 leading-relaxed mb-4">
+              Quien pide presupuesto por web, anuncio o red social, recibe un WhatsApp personalizado al instante. A la vez, <strong>te notificamos discretamente al móvil</strong> para llamarle mientras su interés está al 100%.
+            </p>
+          </div>
+          
+          <div class="pt-4 border-t border-blue-500/40 flex items-center justify-between mt-auto">
+            <span class="text-xs font-medium text-blue-300">Sin perder solicitudes</span>
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco,%20estoy%20interesado%20en%20el%20servicio%20de%20leads" target="_blank" class="text-xs font-bold text-teal-400 hover:text-teal-300 flex items-center gap-1">
+              Consultar por WhatsApp &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- SERVICIO 3: CITAS ANTI-PLANTÓN (Categoría Eficiencia -> Índigo/Púrpura) -->
+        <div class="glow-eficiencia backdrop-blur-md border border-white/10 hover:border-indigo-400/50 rounded-2xl p-5 transition-all flex flex-col justify-between group h-full">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 font-black text-sm flex items-center justify-center border border-indigo-500/30">3</span>
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/40">-85% de Ausencias</span>
+            </div>
+            
+            <!-- Título degradado Índigo/Púrpura (Eficiencia) -->
+            <h3 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Sistema Anti-Plantón y Confirmación de Citas</h3>
+            <p class="text-sm text-slate-300 leading-relaxed mb-4">
+              Recordatorio automático al cliente 24 horas antes con botones interactivos de <strong>[Confirmar] o [Reubicar]</strong>. Si alguien cancela con tiempo, el sistema te avisa al segundo para reasignar la hora vacía evitando perder tiempo y dinero.
+            </p>
+          </div>
+          
+          <div class="pt-4 border-t border-indigo-500/40 flex items-center justify-between mt-auto">
+            <span class="text-xs font-medium text-blue-300">Sincronizado con tu calendario</span>
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco,%20estoy%20interesado%20en%20el%20sistema%20de%20citas" target="_blank" class="text-xs font-bold text-teal-400 hover:text-teal-300 flex items-center gap-1">
+              Consultar por WhatsApp &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- SERVICIO 4: FACTURAS Y GASTOS (Categoría Eficiencia -> Índigo/Púrpura) -->
+        <div class="glow-eficiencia backdrop-blur-md border border-white/10 hover:border-indigo-400/50 rounded-2xl p-5 transition-all flex flex-col justify-between group h-full">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 font-black text-sm flex items-center justify-center border border-indigo-500/30">4</span>
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/40">Cero Papeles</span>
+            </div>
+            
+            <!-- Título degradado Índigo/Púrpura (Eficiencia) -->
+            <h3 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Facturas y Gastos al Gestor con IA</h3>
+            <p class="text-sm text-slate-300 leading-relaxed mb-4">
+              Haces una foto al ticket o factura desde tu móvil: la IA extrae fecha, proveedor, base imponible e IVA en segundos y lo archiva clasificado en la nube para tu gestor. <strong>Fin a la pereza y al extravío de tickets.</strong>
+            </p>
+          </div>
+          
+          <div class="pt-4 border-t border-indigo-500/40 flex items-center justify-between mt-auto">
+            <span class="text-xs font-medium text-blue-300">Paz trimestral garantizada</span>
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco,%20estoy%20interesado%20en%20la%20automatización%20de%20facturas" target="_blank" class="text-xs font-bold text-teal-400 hover:text-teal-300 flex items-center gap-1">
+              Consultar por WhatsApp &rarr;
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- MÓDULO INSTAGRAM INDEPENDIENTE -->
+      <div class="max-w-5xl mx-auto mt-12">
+        <div class="rounded-2xl p-[2px] bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 shadow-2xl shadow-fuchsia-900/30">
+          <div class="rounded-2xl p-8 bg-slate-950 h-full w-full relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-fuchsia-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+            
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 relative z-10">
+              
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-violet-600 to-fuchsia-600 p-[2px]">
+                    <div class="bg-slate-950 w-full h-full rounded-full flex items-center justify-center">
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    </div>
+                  </div>
+                  <span class="text-sm font-black text-fuchsia-400 tracking-widest uppercase">Módulo Satélite Prémium</span>
+                </div>
+                
+                <h3 class="text-3xl font-black text-white mb-3 tracking-tight">
+                  INSTAGRAM <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">INTELIGENTE</span>
+                </h3>
+                
+                <!-- Textos perfectamente armonizados en longitud -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 mb-6">
+                  <div class="bg-white/5 border border-white/10 rounded-xl p-5 text-left hover:bg-white/10 transition-colors h-full flex flex-col">
+                    <div class="text-fuchsia-400 font-bold text-xs mb-2 uppercase tracking-wider">1. Envío al Comentar</div>
+                    <div class="text-slate-300 text-xs leading-relaxed flex-1">Dices: Escribe «CITA» o «CARTA». El robot responde al segundo entregando el enlace y multiplicando enormemente el alcance de tu post.</div>
+                  </div>
+                  <div class="bg-white/5 border border-white/10 rounded-xl p-5 text-left hover:bg-white/10 transition-colors h-full flex flex-col">
+                    <div class="text-fuchsia-400 font-bold text-xs mb-2 uppercase tracking-wider">2. Recepcionista DMs 24/7</div>
+                    <div class="text-slate-300 text-xs leading-relaxed flex-1">Asistente interactivo que responde cualquier duda (precios, carta, ubicación) y facilita las reservas de tus clientes en cualquier momento.</div>
+                  </div>
+                  <div class="bg-white/5 border border-white/10 rounded-xl p-5 text-left hover:bg-white/10 transition-colors h-full flex flex-col">
+                    <div class="text-fuchsia-400 font-bold text-xs mb-2 uppercase tracking-wider">3. Regalo por Historias</div>
+                    <div class="text-slate-300 text-xs leading-relaxed flex-1">Si un cliente te etiqueta en sus historias, el sistema lo detecta al instante y le envía un mensaje privado con un regalo para incentivar su regreso.</div>
+                  </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center gap-4 mt-2">
+                  <span class="text-sm font-black text-white bg-white/10 px-5 py-2.5 rounded-xl border border-white/20">
+                    49 € / mes <span class="text-xs font-normal text-slate-400 ml-1">(Suelto)</span>
+                  </span>
+                  <span class="text-sm font-bold text-fuchsia-300 bg-fuchsia-950/50 px-5 py-2.5 rounded-xl border border-fuchsia-500/30">
+                    +40 € / mes <span class="text-xs font-normal opacity-80 ml-1">(Añadido a pack)</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="w-full md:w-auto flex-shrink-0 flex justify-center md:justify-end mt-4 md:mt-0">
+                <a href="https://wa.me/34711547561?text=Hola%20Francisco,%20estoy%20interesado%20en%20tener%20más%20información%20sobre%20el%20módulo%20de%20Instagram." target="_blank" class="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold text-sm px-7 py-4 rounded-xl shadow-lg transition-all hover:scale-105">
+                  Consultar Automatización IG &rarr;
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="tarifas" class="py-16 md:py-24 bg-brand-dark relative border-t border-white/5">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs uppercase font-extrabold tracking-widest text-teal-400 block mb-2">Tarifas Lanzamiento</span>
+        <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          Tarifas Claras y Sin Sorpresas
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base mt-4">
+          Precios cerrados, soporte técnico directo incluido y total transparencia.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <!-- PYME Base -->
+        <div class="glass-card rounded-2xl p-6 flex flex-col justify-between border border-transparent transition-colors">
+          <div>
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Entrada</span>
+            <h3 class="text-xl font-bold text-white mb-2">PYME Base</h3>
+            <div class="text-3xl font-black text-white mb-1">29 € <span class="text-xs font-normal text-slate-400">/ mes</span></div>
+            <p class="text-xs text-slate-400 mb-6">Para resolver un cuello de botella puntual en tu día a día.</p>
+            <ul class="text-xs text-slate-300 space-y-2.5 mb-6">
+              <li class="flex items-center gap-2">
+                <span class="text-teal-400 font-bold">✓</span> 1 operativa digital a tu elección
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-teal-400 font-bold">✓</span> Soporte técnico y mantenimiento
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-teal-400 font-bold">✓</span> Copias de seguridad en la nube
+              </li>
+            </ul>
+          </div>
+          <a href="https://wa.me/34711547561?text=Hola%20Francisco,%20quiero%20contratar%20el%20Plan%20PYME%20Base" target="_blank" class="w-full py-2.5 text-center rounded-lg bg-white/10 hover:bg-slate-700 text-white font-bold text-xs transition-colors">
+            Elegir PYME Base
+          </a>
+        </div>
+
+        <!-- PYME Dúo -->
+        <div class="glass-card rounded-2xl p-6 flex flex-col justify-between border border-blue-500/30 hover:border-blue-400/50 transition-colors group/btn">
+          <div>
+            <span class="text-xs font-bold text-blue-300 uppercase tracking-wider block mb-1">Doble Acción</span>
+            <h3 class="text-xl font-bold text-white mb-2">PYME Dúo</h3>
+            <div class="text-3xl font-black text-white mb-1">49 € <span class="text-xs font-normal text-slate-400">/ mes</span></div>
+            <p class="text-xs text-slate-400 mb-6">Dos soluciones coordinadas para tu mostrador o agenda.</p>
+            <ul class="text-xs text-slate-300 space-y-2.5 mb-6">
+              <li class="flex items-center gap-2">
+                <span class="text-teal-400 font-bold">✓</span> 2 operativas coordinadas
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-teal-400 font-bold">✓</span> Soporte técnico y mantenimiento
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-teal-400 font-bold">✓</span> Copias de seguridad en la nube
+              </li>
+            </ul>
+          </div>
+          <a href="https://wa.me/34711547561?text=Hola%20Francisco,%20quiero%20contratar%20el%20Plan%20PYME%20Dúo" target="_blank" class="w-full py-2.5 text-center rounded-lg bg-white/10 group-hover/btn:bg-blue-500/40 text-white font-bold text-xs transition-colors duration-300">
+            Elegir PYME Dúo
+          </a>
+        </div>
+
+        <!-- PYME Trinity -->
+        <div class="rounded-2xl p-6 bg-gradient-to-b from-teal-900/40 via-slate-900 to-slate-950 border-2 border-teal-400/50 shadow-xl shadow-teal-950/40 flex flex-col justify-between relative group/trinity">
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-teal-500 text-white text-[10px] font-black uppercase px-3 py-0.5 rounded-full tracking-wider shadow">
+            ★ Más Recomendado
+          </div>
+          <div>
+            <span class="text-xs font-bold text-teal-300 uppercase tracking-wider block mb-1">Equilibrio Perfecto</span>
+            <h3 class="text-xl font-black text-white mb-2">PYME Trinity</h3>
+            <div class="text-3xl font-black text-teal-400 mb-1">69 € <span class="text-xs font-normal text-slate-400">/ mes</span></div>
+            <p class="text-xs text-slate-300 mb-4">Captación, agenda y atención con cobertura completa.</p>
+            <ul class="text-xs text-slate-200 space-y-2.5 mb-6">
+              <li class="flex items-center gap-2">
+                <span class="text-teal-400 font-bold">✓</span> <strong>3 operativas a libre elección</strong>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-teal-400 font-bold">✓</span> Soporte técnico y mantenimiento
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-teal-400 font-bold">✓</span> Copias de seguridad en la nube
+              </li>
+              <li class="flex items-start gap-2 text-amber-300 font-semibold mt-2">
+                <span class="mt-0.5">🎁</span> <span>Bono Regalo: Bóveda Segura de Contraseñas</span>
+              </li>
+            </ul>
+          </div>
+          <!-- EFECTO GLOW AÑADIDO AL HOVER -->
+          <a href="https://wa.me/34711547561?text=Hola%20Francisco,%20quiero%20contratar%20el%20Plan%20PYME%20Trinity" target="_blank" class="w-full py-2.5 text-center rounded-lg bg-brand-teal group-hover/trinity:bg-emerald-400 group-hover/trinity:text-emerald-950 group-hover/trinity:shadow-[0_0_20px_rgba(52,211,153,0.8)] text-white font-bold text-xs transition-all duration-300">
+            Elegir Pack Trinity
+          </a>
+        </div>
+
+        <!-- PYME Avanzado -->
+        <div class="glass-card rounded-2xl p-6 flex flex-col justify-between border border-indigo-500/30 hover:border-indigo-400/50 transition-colors group/btn2">
+          <div>
+            <span class="text-xs font-bold text-indigo-300 uppercase tracking-wider block mb-1">Cobertura 100%</span>
+            <h3 class="text-xl font-bold text-white mb-2">PYME Avanzado</h3>
+            <div class="text-3xl font-black text-white mb-1">89 € <span class="text-xs font-normal text-slate-400">/ mes</span></div>
+            <p class="text-xs text-slate-400 mb-6">Todas las 4 operativas troncales en marcha.</p>
+            <ul class="text-xs text-slate-300 space-y-2.5 mb-6">
+              <li class="flex items-center gap-2">
+                <span class="text-teal-400 font-bold">✓</span> 4 operativas (Catálogo completo)
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-teal-400 font-bold">✓</span> Soporte técnico y mantenimiento
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-teal-400 font-bold">✓</span> Copias de seguridad en la nube
+              </li>
+              <li class="flex items-start gap-2 text-amber-300 font-semibold mt-2">
+                <span class="mt-0.5">🎁</span> <span>Bono Regalo: Bóveda Segura de Contraseñas</span>
+              </li>
+            </ul>
+          </div>
+          <a href="https://wa.me/34711547561?text=Hola%20Francisco,%20quiero%20contratar%20el%20Plan%20PYME%20Avanzado" target="_blank" class="w-full py-2.5 text-center rounded-lg bg-white/10 group-hover/btn2:bg-indigo-500/40 text-white font-bold text-xs transition-colors duration-300">
+            Elegir Avanzado
+          </a>
+        </div>
+
+      </div>
+
+      <!-- SECCIÓN INFO DE PUESTA EN MARCHA (SETUP) -->
+      <div class="mt-12 pt-10 border-t border-white/10 max-w-5xl mx-auto">
+        <h3 class="text-center text-xl font-bold text-white mb-8">Modalidades de Puesta en Marcha Técnica (Setup)</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <div class="bg-white/5 rounded-xl p-6 border border-white/10 text-center hover:bg-white/10 transition-colors">
+            <span class="inline-block bg-slate-800 text-slate-300 text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3">Vía 1: Flexible</span>
+            <h4 class="text-base font-bold text-white mb-2">Mes a Mes Libre</h4>
+            <p class="text-xs text-slate-400 leading-relaxed mb-4">Libertad total para pausar el servicio cuando lo desees.</p>
+            <div class="text-sm font-semibold text-white">Setup Nominal: 100%</div>
+          </div>
+          
+          <div class="bg-teal-900/20 rounded-xl p-6 border border-teal-500/30 text-center relative hover:bg-teal-900/30 transition-colors">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-teal-500 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-full shadow">⭐ Más Elegida</div>
+            <span class="inline-block bg-teal-950 text-teal-300 text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3 mt-1 border border-teal-800">Vía 2: Semestral</span>
+            <h4 class="text-base font-bold text-white mb-2">Compromiso 6 Meses</h4>
+            <p class="text-xs text-slate-300 leading-relaxed mb-4">El equilibrio óptimo para amortizar la puesta a punto con clientes.</p>
+            <div class="text-sm font-semibold text-teal-400">50% DTO. en el Setup inicial</div>
+          </div>
+
+          <div class="bg-indigo-900/20 rounded-xl p-6 border border-indigo-500/30 text-center hover:bg-indigo-900/30 transition-colors">
+            <span class="inline-block bg-indigo-950 text-indigo-300 text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3 border border-indigo-800">Vía 3: Anual</span>
+            <h4 class="text-base font-bold text-white mb-2">Máximo Ahorro</h4>
+            <p class="text-xs text-slate-300 leading-relaxed mb-4">Pagas 10 meses y disfrutas 12 (2 meses gratis). Factura anual deducible.</p>
+            <div class="text-sm font-semibold text-indigo-400">SETUP 100% GRATIS (0 €)</div>
+          </div>
+
+        </div>
+
+        <div class="mt-8 text-center">
+          <a href="setup.html" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white transition-colors border-b border-slate-600 hover:border-white pb-0.5">
+            Consultar precios de la puesta en marcha técnica &rarr;
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECCIÓN DESCARGA DE PDFs -->
+  <section class="py-16 bg-slate-950 border-t border-white/5 relative overflow-hidden">
+    <div class="absolute inset-0 hero-glow opacity-30"></div>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 relative z-10 text-center">
+      <h3 class="text-2xl font-bold text-white mb-4">¿Quieres ver la información en detalle?</h3>
+      <p class="text-slate-400 text-sm mb-8">Descarga nuestros folletos oficiales en formato digital con la descripción completa de las operativas y la tabla maestra de desembolso inicial.</p>
+      
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <!-- BOTÓN DESCARGA CATÁLOGO SERVICIOS -->
+        <a href="catalogo.html" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-800 text-white font-medium text-sm px-6 py-3 rounded-lg border border-slate-600 hover:bg-teal-900/80 hover:border-teal-400 transition-all duration-300 group">
+          <svg class="w-4 h-4 text-teal-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          Ver Catálogo de Servicios
+        </a>
+        <!-- BOTÓN DESCARGA TARIFAS -->
+        <a href="tarifas.html" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-800 text-white font-medium text-sm px-6 py-3 rounded-lg border border-slate-600 hover:bg-amber-900/80 hover:border-amber-400 transition-all duration-300 group">
+          <svg class="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          Ver Tabla de Tarifas
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 PILARES TÉCNICOS -->
+  <section class="py-16 bg-black/50 border-t border-white/5">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <h2 class="text-3xl font-black text-white tracking-tight">
+          Garantías y Ventajas
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center sm:text-left">
+        
+        <div class="p-6 rounded-xl bg-white/[0.02] border-2 border-slate-400 hover:border-slate-300 transition-colors">
+          <div class="text-3xl mb-3">📲</div>
+          <h4 class="text-base font-bold text-white mb-2">100% WhatsApp Habitual</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Ni tú ni tus clientes tenéis que instalar aplicaciones raras ni aprender programas complejos. Todo fluye a través de la aplicación que ya usas todos los días.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-white/[0.02] border-2 border-slate-400 hover:border-slate-300 transition-colors">
+          <div class="text-3xl mb-3">⚡</div>
+          <h4 class="text-base font-bold text-white mb-2">Puesta en Marcha en 24-48h</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Configuramos, conectamos y probamos todo en tu propio móvil sin parar la actividad comercial de tu negocio ni generar molestias a tus clientes.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-white/[0.02] border-2 border-slate-400 hover:border-slate-300 transition-colors">
+          <div class="text-3xl mb-3">🛡️</div>
+          <h4 class="text-base font-bold text-white mb-2">Soporte Técnico Directo</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Mantenimiento continuo, copias de seguridad de tus flujos y línea directa con Francisco para cualquier duda o ajuste que necesite tu negocio.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto" class="py-20 bg-gradient-to-b from-brand-dark to-black text-center relative overflow-hidden">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
+      
+      <div class="w-16 h-16 rounded-2xl bg-brand-teal/20 border border-brand-teal/40 flex items-center justify-center mx-auto mb-6 text-3xl shadow-xl shadow-teal-950/50">
+        💬
+      </div>
+
+      <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
+        ¿Hablamos 10 Minutos por WhatsApp?
+      </h2>
+
+      <!-- TEXTO DE CONTACTO ACTUALIZADO -->
+      <p class="text-base text-slate-300 max-w-xl mx-auto mb-8 font-normal">
+        Cuéntame cómo funciona tu local y miramos qué servicio automatizado te ahorra más horas y dinero desde el primer día. Sin compromiso.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="https://wa.me/34711547561?text=Hola%20Francisco,%20quiero%20hablar%20contigo%20sobre%20mi%20negocio" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-brand-teal hover:bg-brand-tealDark text-white font-bold text-base px-8 py-4 rounded-xl shadow-xl shadow-teal-900/50 transition-all hover:scale-105">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+          Abrir Chat de WhatsApp Directo
+        </a>
+        <a href="tel:+34711547561" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-slate-300 font-semibold text-base px-6 py-4 rounded-xl border border-white/10 transition-colors">
+          Llamar: 711 54 75 61
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="border-t border-white/10 bg-black py-10 text-xs text-slate-500">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        <p class="font-bold text-slate-300 text-sm">Sistemas Pyme</p>
+        <p class="mt-0.5">Francisco M. Gallardo • Consultor Tecnológico Local • Galicia</p>
+      </div>
+      <div class="text-center sm:text-right">
+        <p>Contacto: <a href="mailto:francisco@sistemaspyme.es" class="text-teal-400 hover:underline">francisco@sistemaspyme.es</a> | Tel: <a href="tel:+34711547561" class="text-slate-300 hover:text-white transition-colors">711 54 75 61</a></p>
+        <p class="mt-1">© 2026 Sistemas Pyme. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
