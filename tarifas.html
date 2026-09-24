@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tarjetón Tarifas Fase 1 - Sistemas Pyme</title>
+  <!-- ESTA LÍNEA ES LA MAGIA REAL: Le dice al móvil que encaje el A5 perfectamente -->
+  <meta name="viewport" content="width=580">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    @page {
+      size: A5 portrait;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #475569;
+      color: #0f172a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 0;
+    }
+
+    .sheet {
+      width: 148mm;
+      height: 210mm;
+      min-height: 210mm;
+      max-height: 210mm;
+      background: #ffffff;
+      padding: 7mm 9mm 7mm 9mm;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+      page-break-after: always;
+      page-break-inside: avoid;
+    }
+
+    @media print {
+      body {
+        background: none;
+        padding: 0;
+        gap: 0;
+      }
+      .sheet {
+        box-shadow: none;
+        page-break-after: always;
+        height: 210mm !important;
+        max-height: 210mm !important;
+        margin-bottom: 0 !important;
+      }
+      .atril-card {
+        box-shadow: none !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    .print-bar {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    }
+    .print-btn {
+      background: #0d7d74;
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      transition: background 0.2s;
+    }
+
+    :root {
+      --primary: #0b2545;
+      --primary-dark: #071930;
+      --logo-blue: #104070;
+      --blue-soft: #f0f7ff;
+      --teal: #0d7d74;
+      --teal-dark: #095852;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-600: #475569;
+      --slate-800: #1e293b;
+      
+      --plan-base: #475569; 
+      --plan-duo: #2563eb;  
+      --plan-trinity: #16a34a; 
+      --plan-avanzado: #4338ca; 
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2.5px solid var(--primary);
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+    }
+    .brand-logo-img {
+      max-height: 85px;
+      width: auto;
+      max-width: 95mm;
+      object-fit: contain;
+      display: block;
+    }
+    .contact-block {
+      text-align: right;
+      font-size: 8.5px;
+      line-height: 1.3;
+      color: var(--slate-800);
+      font-weight: 500;
+    }
+    .contact-name {
+      color: var(--primary);
+      font-size: 10.5px;
+      font-weight: 800;
+      display: block;
+      line-height: 1.2;
+    }
+    .contact-role {
+      color: var(--teal-dark);
+      font-size: 7px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .section-banner {
+      background: var(--primary);
+      color: white;
+      padding: 7px 10px;
+      border-radius: 5px;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .section-banner.green { background: linear-gradient(90deg, #095852 0%, #0d7d74 100%); }
+    .section-banner.insta { background: linear-gradient(90deg, #831843 0%, #db2777 100%); }
+    .section-banner .rule {
+      font-size: 8.5px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-align: right;
+    }
+
+    .price-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 12px;
+      font-size: 10.5px;
+    }
+    .price-table th {
+      background: #e2e8f0;
+      color: var(--primary);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 9px;
+      padding: 8px 10px;
+      border-top: 1px solid #cbd5e1;
+      border-bottom: 2px solid #cbd5e1;
+      text-align: left;
+    }
+    .price-table td {
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--slate-200);
+      color: var(--slate-800);
+      vertical-align: middle;
+      line-height: 1.35;
+    }
+    .price-table tr.row-star { background: #f0fdf4; }
+    .price-table tr.row-star td {
+      border-top: 2px solid #86efac !important;
+      border-bottom: 2px solid #86efac !important;
+      font-weight: 600;
+    }
+    .pack-name {
+      font-weight: 800;
+      font-size: 11.5px;
+      line-height: 1.15;
+    }
+    .price-badge {
+      font-size: 13.5px;
+      font-weight: 900;
+      color: var(--teal-dark);
+      white-space: nowrap;
+    }
+    .price-badge.insta { color: #be185d; }
+    .price-badge.atril { color: var(--logo-blue); }
+
+    .atril-card {
+      background-color: var(--blue-soft) !important;
+      border: 2px solid var(--logo-blue);
+      border-left: 5px solid var(--logo-blue);
+      border-radius: 7px;
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 9px;
+    }
+
+    .gift-box {
+      background: #fffbeb;
+      border: 2px dashed #d97706;
+      border-radius: 6px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .instagram-card {
+      border: 2px solid #db2777;
+      background: linear-gradient(135deg, #ffffff 0%, #fdf2f8 100%);
+      border-radius: 6px;
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .insta-title {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #9d174d;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .insta-features {
+      font-size: 9px;
+      color: #475569;
+      margin-top: 5px;
+      line-height: 1.35;
+    }
+    .insta-badge-add {
+      font-size: 8.5px;
+      color: #9d174d;
+      font-weight: 800;
+      background: #fce7f3;
+      border: 1px solid #fbcfe8;
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 5px;
+    }
+
+    .modalities-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .modality-col {
+      border: 1.5px solid #94a3b8;
+      border-radius: 6px;
+      padding: 9px 8px;
+      background: var(--slate-50);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .modality-col.popular { border: 1.5px solid var(--teal); background: #f0fdfa; }
+    .modality-col.best { border: 1.5px solid var(--plan-avanzado); background: #faf5ff; }
+    
+    .modality-tag {
+      font-size: 7px; 
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 2.5px 6px;
+      border-radius: 3px;
+      margin: 0 auto 5px auto; 
+      display: block;
+      width: fit-content;
+      white-space: nowrap; 
+    }
+    .tag-free { background: #cbd5e1; color: #1e293b; border: 1px solid #94a3b8; }
+    .tag-popular { background: #99f6e4; color: #0d5e57; border: 1px solid #14b8a6; }
+    .tag-best { background: #ddd6fe; color: #3730a3; border: 1px solid #8b5cf6; }
+    
+    .modality-title {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 2px;
+      text-align: center;
+    }
+    .modality-sub {
+      font-size: 9.5px;
+      color: var(--slate-600);
+      font-style: italic;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    
+    .modality-bullets {
+      list-style: none;
+      font-size: 9px;
+      color: var(--slate-800);
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .modality-bullets li {
+      display: flex;
+      align-items: flex-start;
+      gap: 5px;
+      line-height: 1.25;
+      min-height: 22px; 
+    }
+    .modality-bullets li strong { color: var(--primary); }
+    .modality-bullets li svg {
+      width: 11px;
+      height: 11px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .master-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 9.5px;
+      margin-bottom: 10px;
+    }
+    .master-table th {
+      background: var(--primary-dark);
+      color: white;
+      font-size: 8.5px;
+      font-weight: 900;
+      text-transform: uppercase;
+      padding: 8px 6px;
+      border: 1px solid #1e293b;
+      text-align: center; 
+      line-height: 1.35;
+    }
+    .master-table th .th-sub {
+      display: block;
+      font-size: 7px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-top: 2px;
+      text-transform: uppercase;
+    }
+    
+    .th-col1 { background: #64748b !important; border-color: #475569 !important; }
+    .th-via1 { background: #374151 !important; border-color: #1f2937 !important; }
+    .th-via2 { background: #0f766e !important; border-color: #0d5e57 !important; }
+    .th-via3 { background: #4338ca !important; border-color: #3730a3 !important; }
+
+    .master-table td {
+      padding: 8px 6px;
+      border: 1px solid var(--slate-200);
+      text-align: center;
+      color: var(--slate-800);
+      vertical-align: middle;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+    .master-table td.left {
+      text-align: left;
+      font-weight: 700;
+      color: var(--primary); 
+      padding-left: 8px;
+    }
+    .master-table tr.star-row { background: #f0fdf4; }
+    .master-table tr.star-row td {
+      border: 1px solid #86efac;
+      border-top: 2px solid #86efac !important;
+      border-bottom: 2px solid #86efac !important;
+      font-weight: 700;
+    }
+    .master-table tr.insta-row { background: #fdf2f8; }
+    .master-table tr.insta-row td {
+      border: 1px solid #f9a8d4;
+      border-top: 2px solid #f9a8d4 !important;
+      border-bottom: 2px solid #f9a8d4 !important;
+      font-weight: 600;
+    }
+
+    .tag-day1 { font-weight: 800; color: var(--teal-dark); font-size: 10px; display: inline-block; }
+    .tag-annual { font-weight: 800; color: #4338ca; font-size: 10px; display: inline-block; }
+
+    .footer-bar {
+      margin-top: auto;
+      border-top: 1px solid var(--slate-200);
+      padding-top: 6px;
+      font-size: 9px;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="sheet">
+    <header class="header">
+      <div>
+        <img src="Sistemas Pyme Logo.png" alt="Sistemas Pyme" class="brand-logo-img" onerror="this.onerror=null; this.src='logo.png';">
+      </div>
+      <div class="contact-block">
+        <strong class="contact-name">Francisco M. Gallardo</strong>
+        <span class="contact-role">Consultor Tecnológico</span>
+        francisco@sistemaspyme.es<br>
+        sistemaspyme.es<br>
+        <strong>711 54 75 61</strong><br>
+        <span style="color:var(--slate-600); font-weight:600;">Galicia</span>
+      </div>
+    </header>
+
+    <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
+      <section>
+        <div class="section-banner green">
+          <span class="section-banner-title">Planes de Digitalización Pyme</span>
+          <span class="rule">Precios de lanzamiento</span>
+        </div>
+        <table class="price-table">
+          <thead>
+            <tr>
+              <th style="width: 32%;">Plan Elegido</th>
+              <th style="width: 23%; padding-left: 5px;">Cuota Mensual</th>
+              <th style="width: 45%;">Cobertura Operativa</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="pack-name" style="color: var(--primary);">Pyme <span style="color: var(--plan-base);">BASE</span></span></td>
+              <td style="padding-left: 10px;"><span class="price-badge">29 € / mes</span></td>
+              <td><strong>1 operativa digital a tu elección</strong> de nuestro catálogo de software.</td>
+            </tr>
+            <tr>
+              <td><span class="pack-name" style="color: var(--primary);">Pyme <span style="color: var(--plan-duo);">DÚO</span></span></td>
+              <td style="padding-left: 10px;"><span class="price-badge">49 € / mes</span></td>
+              <td><strong>2 operativas a tu libre elección</strong> según las prioridades de tu negocio.</td>
+            </tr>
+            <tr class="row-star">
+              <td>
+                <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px;">
+                  <span class="pack-name" style="color: var(--primary);">Pyme <span style="color: var(--plan-trinity);">TRINITY</span></span>
+                  <span style="font-size: 8px; font-weight: 800; text-transform: uppercase; color: var(--plan-trinity);">Recomendado <span style="position: relative; top: -1px; font-size: 9px;">★</span></span>
+                </div>
+              </td>
+              <td style="padding-left: 10px;"><span class="price-badge" style="color:#16a34a;">69 € / mes</span></td>
+              <td><strong>3 operativas a libre elección:</strong> el paquete idóneo para captación, agenda y atención.</td>
+            </tr>
+            <tr>
+              <td><span class="pack-name" style="color: var(--primary);">Pyme <span style="color: var(--plan-avanzado);">AVANZADO</span></span></td>
+              <td style="padding-left: 10px;"><span class="price-badge">89 € / mes</span></td>
+              <td><strong>4 operativas incluidas:</strong> la suite digital completa para la máxima eficiencia.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="atril-card">
+          <div style="flex: 1;">
+            <div style="font-size: 11.5px; font-weight: 900; color: var(--logo-blue);">Adquisición Hardware: Atril Inteligente NFC + QR</div>
+            <div style="font-size: 8.5px; color: var(--slate-600); margin-top: 3px; line-height: 1.35;">
+              Compra del equipo físico, grabación del chip, diseño y puesta en marcha en el local.<br>
+              <strong style="color: var(--primary);">Sin cuotas. Sin mantenimiento. Es tuyo para siempre.</strong>
+            </div>
+          </div>
+          <div style="text-align: right; flex-shrink: 0; padding-left: 12px; border-left: 1.5px solid #93c5fd; margin-left: 8px;">
+            <div style="font-size: 8px; font-weight: 700; color: var(--slate-500); text-transform: uppercase; margin-bottom: 1px;">Pago Único</div>
+            <span class="price-badge atril" style="font-size: 16px;">39 €</span>
+          </div>
+        </div>
+
+        <div class="gift-box">
+          <div style="font-size: 20px; line-height: 1;">🎁</div>
+          <div style="font-size: 9.5px; color: #92400e; line-height: 1.4;">
+            <strong style="font-weight: 800; color: #b45309;">Bono regalo a partir de 3 servicios (Pack Trinity):</strong> Incluye la implantación gratuita de la <strong style="color: var(--primary);">Bóveda Segura de Contraseñas de Equipos</strong> (valorada en 150 €).
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-banner insta">
+          <span class="section-banner-title">Módulo Satélite Prémium: Instagram Inteligente</span>
+        </div>
+        <div class="instagram-card">
+          <div style="flex: 1;">
+            <div class="insta-title">Máquina de Conversión y Ventas 3 en 1</div>
+            <div class="insta-features">
+              <div>1. Envío al interesado al comentar.</div>
+              <div>2. Recepcionista DMs 24/7.</div>
+              <div>3. Regalo por historia etiquetada.</div>
+            </div>
+            <div class="insta-badge-add">★ Contratado junto a cualquier pack troncal: solo +40 € / mes</div>
+          </div>
+          <div style="text-align: right; flex-shrink: 0; padding-left: 10px;">
+            <span class="price-badge insta" style="font-size: 15px;">49 € / mes</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="footer-bar">
+      <span><strong>Sistemas Pyme</strong> — Soluciones Tácticas para Comercios</span>
+      <span>Cualquier combinación de servicios es válida</span>
+      <span><strong>CARA A</strong></span>
+    </footer>
+  </main>
+
+  <main class="sheet">
+    <header class="header">
+      <div>
+        <img src="Sistemas Pyme Logo.png" alt="Sistemas Pyme" class="brand-logo-img" onerror="this.onerror=null; this.src='logo.png';">
+      </div>
+      <div class="contact-block">
+        <strong class="contact-name">Francisco M. Gallardo</strong>
+        <span class="contact-role">Consultor Tecnológico</span>
+        francisco@sistemaspyme.es<br>
+        sistemaspyme.es<br>
+        <strong>711 54 75 61</strong><br>
+        <span style="color:var(--slate-600); font-weight:600;">Galicia</span>
+      </div>
+    </header>
+
+    <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
+
+      <div class="section-banner" style="background: #0f172a; margin-bottom: 2px;">
+        <span class="section-banner-title">Modalidades de Pago</span>
+        <span class="rule">Escoge tu plan de liquidación preferido</span>
+      </div>
+
+      <section>
+        <div class="modalities-grid">
+          
+          <div class="modality-col">
+            <div>
+              <span class="modality-tag tag-free">🔄 Vía 1: Flexible</span>
+              <div class="modality-title">Mes a Mes Libre</div>
+              <div class="modality-sub">«Sin permanencia»</div>
+              <ul class="modality-bullets">
+                <li>
+                  <svg viewBox="0 0 20 20" fill="#64748b"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
+                  <span>Cuota mensual mes a mes.</span>
+                </li>
+                <li>
+                  <svg viewBox="0 0 20 20" fill="#64748b"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
+                  <span>Pagas Setup Nominal 100%.</span>
+                </li>
+                <li>
+                  <svg viewBox="0 0 20 20" fill="#64748b"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
+                  <span>Pausa cuando quieras.</span>
+                </li>
+              </ul>
+            </div>
+            <div style="font-size: 8.5px; color:#64748b; margin-top: 8px; border-top: 1px solid #e2e8f0; padding-top: 6px;">Cuota + Setup íntegro Día 1.</div>
+          </div>
+
+          <div class="modality-col popular">
+            <div>
+              <span class="modality-tag tag-popular">⭐ Vía 2: Más Elegida</span>
+              <div class="modality-title">Compromiso 6 Meses</div>
+              <div class="modality-sub">«Setup bonificado al 50%»</div>
+              <ul class="modality-bullets">
+                <li>
+                  <svg viewBox="0 0 20 20" fill="#0d7d74"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
+                  <span>Cuota mensual mes a mes.</span>
+                </li>
+                <li>
+                  <svg viewBox="0 0 20 20" fill="#0d7d74"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
+                  <span><strong>50% DTO. en el Setup.</strong></span>
+                </li>
+                <li>
+                  <svg viewBox="0 0 20 20" fill="#0d7d74"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
+                  <span>Amortiza el alta con clientes.</span>
+                </li>
+              </ul>
+            </div>
+            <div style="font-size: 8.5px; color:#0f766e; font-weight: 700; margin-top: 8px; border-top: 1px solid #ccfbf1; padding-top: 6px;">Equilibrio óptimo Día 1.</div>
+          </div>
+
+          <div class="modality-col best">
+            <div>
+              <span class="modality-tag tag-best">🎁 Vía 3: Máximo Ahorro</span>
+              <div class="modality-title">Plan Anual Íntegro</div>
+              <div class="modality-sub">«Setup 0 € + 2 meses gratis»</div>
+              <ul class="modality-bullets">
+                <li>
+                  <svg viewBox="0 0 20 20" fill="#4338ca"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
+                  <span><strong>Pagas 10 meses</strong> (2 gratis).</span>
+                </li>
+                <li>
+                  <svg viewBox="0 0 20 20" fill="#4338ca"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
+                  <span><strong>SETUP 100% GRATIS (0 €).</strong></span>
+                </li>
+                <li>
+                  <svg viewBox="0 0 20 20" fill="#4338ca"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
+                  <span>Factura anual deducible.</span>
+                </li>
+              </ul>
+            </div>
+            <div style="font-size: 8.5px; color:#5b21b6; font-weight: 700; margin-top: 8px; border-top: 1px solid #ede9fe; padding-top: 6px;">Ahorro máximo garantizado.</div>
+          </div>
+
+        </div>
+      </section>
+
+      <section>
+        <div class="section-banner" style="background:#0f172a;">
+          <span class="section-banner-title">Tabla Maestra de Liquidación y Desembolso Día 1</span>
+        </div>
+        <table class="master-table">
+          <thead>
+            <tr>
+              <th class="th-col1" style="width: 22%;">Plan Elegido</th>
+              <th style="width: 14%;">Cuota Mensual</th>
+              <th style="width: 12%;">Setup Nom.</th>
+              <th class="th-via1" style="width: 17%;">Vía 1: Pago Libre<br><span class="th-sub">Pagas Cuota + 100% Alta</span></th>
+              <th class="th-via2" style="width: 17%;">⭐ Vía 2: 6 Meses<br><span class="th-sub">Pagas Cuota + 50% Alta</span></th>
+              <th class="th-via3" style="width: 18%;">Vía 3: Plan Anual<br><span class="th-sub">Pago único de 10 meses</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="left"><span style="color: var(--primary);">Pyme</span> <span style="color: var(--plan-base);">BASE</span></td>
+              <td>29 € / m</td>
+              <td>90 €</td>
+              <td>119 €</td>
+              <td><span class="tag-day1">74 €</span></td>
+              <td><span class="tag-annual">290 € / año</span></td>
+            </tr>
+            <tr>
+              <td class="left"><span style="color: var(--primary);">Pyme</span> <span style="color: var(--plan-duo);">DÚO</span></td>
+              <td>49 € / m</td>
+              <td>120 €</td>
+              <td>169 €</td>
+              <td><span class="tag-day1">109 €</span></td>
+              <td><span class="tag-annual">490 € / año</span></td>
+            </tr>
+            <tr class="star-row">
+              <td class="left"><span style="display: inline-flex; align-items: center; gap: 3px;"><span style="color: var(--primary);">Pyme</span> <span style="color: var(--plan-trinity);">TRINITY</span> <span style="color: #16a34a; font-size: 9px;">★</span></span></td>
+              <td><strong style="color:#16a34a;">69 € / m</strong></td>
+              <td>150 €</td>
+              <td>219 €</td>
+              <td><span class="tag-day1" style="color:#16a34a;">144 €</span></td>
+              <td><span class="tag-annual" style="color:#16a34a;">690 € / año</span></td>
+            </tr>
+            <tr>
+              <td class="left"><span style="color: var(--primary);">Pyme</span> <span style="color: var(--plan-avanzado);">AVANZADO</span></td>
+              <td>89 € / m</td>
+              <td>180 €</td>
+              <td>269 €</td>
+              <td><span class="tag-day1">179 €</span></td>
+              <td><span class="tag-annual">890 € / año</span></td>
+            </tr>
+            <tr class="insta-row">
+              <td class="left">
+                <span style="color:#9d174d; font-weight:800;">Satélite Instagram</span>
+              </td>
+              <td>49 € / m</td>
+              <td>120 €</td>
+              <td>169 €</td>
+              <td><span class="tag-day1" style="color:#be185d;">109 €</span></td>
+              <td><span class="tag-annual" style="color:#be185d;">490 € / año</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="background: #fdf2f8; border-left: 3px solid #db2777; padding: 6px 10px; font-size: 8.5px; color: #9d174d; line-height: 1.35; margin-bottom: 8px;">
+          <strong>★ Promo Satélite Instagram:</strong> Se puede contratar solo o sumado a un pack. Su precio se sumaría al pack elegido. Si lo contratas de forma combinada junto a cualquier Pack Troncal, su cuota baja a <strong>+40 € / mes</strong> de forma permanente (Ej: <em>Pyme BASE 29€ + Insta 40€ = 69€ / mes</em>).
+        </div>
+      </section>
+
+    </div>
+
+    <footer class="footer-bar">
+      <span><strong>Sistemas Pyme</strong> — Facturación oficial mensual mediante domiciliación SEPA o tarjeta</span>
+      <span>Sin costes ocultos</span>
+      <span><strong>CARA B</strong></span>
+    </footer>
+
+  </main>
+
+</body>
+</html>

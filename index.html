@@ -94,14 +94,12 @@
             Lanzamiento Oficial • Comercios y Profesionales de Galicia
           </div>
 
-          <!-- TÍTULO HERO -->
           <h1 class="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-tight leading-[1.15] mb-6">
             <span class="text-white">Sistemas de Inteligencia Artificial para</span><br />
             <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-emerald-400">Automatizar y Escalar</span> 
             <span class="text-white">tu Negocio</span>
           </h1>
 
-          <!-- TEXTO DESCRIPTIVO CON MÁS TAMAÑO E IMPORTANCIA -->
           <p class="text-lg sm:text-xl text-slate-200 font-medium leading-relaxed mb-8 max-w-2xl mx-auto lg:mx-0">
             Multiplica tus reseñas en Google Maps, responde al instante a tus clientes aunque estés ocupado y recupera el control de tu tiempo eliminando tareas repetitivas.
           </p>
@@ -116,7 +114,6 @@
             </a>
           </div>
 
-          <!-- ENLACES A TARJETA DIGITAL CLICABLES -->
           <div class="mt-8 pt-6 border-t border-white/10 flex items-center justify-center lg:justify-start gap-5 text-left group/profile">
             <a href="tarjeta.html" target="_blank" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-[3px] border-teal-500/40 shadow-xl shadow-teal-900/30 flex-shrink-0 group-hover/profile:scale-105 group-hover/profile:border-teal-400 transition-all cursor-pointer block relative">
               <img src="perfil.jpg" alt="Francisco M. Gallardo" class="w-full h-full object-cover relative z-0" onerror="this.onerror=null; this.src='https://placehold.co/100x100/0d7d74/ffffff?text=FG';">
@@ -130,7 +127,8 @@
         </div>
 
         <div class="lg:col-span-5">
-          <div id="atril-nfc" class="relative rounded-2xl bg-gradient-to-b from-amber-500/10 via-slate-900 to-slate-950 p-6 sm:p-8 border-2 border-amber-500/30 shadow-2xl shadow-amber-950/20">
+          <!-- AÑADIDO: scroll-mt-32 para frenar el salto debajo del menú -->
+          <div id="atril-nfc" class="scroll-mt-32 relative rounded-2xl bg-gradient-to-b from-amber-500/10 via-slate-900 to-slate-950 p-6 sm:p-8 border-2 border-amber-500/30 shadow-2xl shadow-amber-950/20">
             
             <div class="flex items-center justify-between gap-2 mb-4">
               <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-amber-500/20 text-amber-300 text-xs font-bold uppercase tracking-wider border border-amber-500/30">
@@ -172,7 +170,8 @@
     </div>
   </section>
 
-  <section id="soluciones" class="py-16 md:py-24 bg-slate-950/80 border-t border-white/5">
+  <!-- AÑADIDO: scroll-mt-24 a la sección Soluciones -->
+  <section id="soluciones" class="scroll-mt-24 py-16 md:py-24 bg-slate-950/80 border-t border-white/5">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       
       <div class="text-center max-w-3xl mx-auto mb-16">
@@ -185,10 +184,9 @@
         </p>
       </div>
 
-      <!-- CUADRÍCULA CON ALTURAS IDÉNTICAS -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:auto-rows-fr">
 
-        <!-- SERVICIO 1: RESEÑAS (Categoría Reputación -> Teal) -->
+        <!-- SERVICIO 1: RESEÑAS -->
         <div class="glow-reputacion backdrop-blur-md border border-white/10 hover:border-teal-400/50 rounded-2xl p-5 transition-all flex flex-col justify-between group h-full">
           <div>
             <div class="flex items-center justify-between mb-3">
@@ -196,14 +194,12 @@
               <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/40">Blindaje de Reputación</span>
             </div>
             
-            <!-- Título degradado Teal/Cyan (Reputación) -->
             <h3 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-300">Gestión y Filtro de Reseñas en Google con IA</h3>
             <p class="text-sm text-slate-300 leading-relaxed mb-4">
-              A las valoraciones de 4 y 5 estrellas la Inteligencia Artificial les responde al instante premiando tu posicionamiento local (SEO). Si entra una reseña negativa, se pausa el flujo y recibes un aviso con un borrador conciliador para aprobar o editar.
+              A las valoraciones de 4 y 5 estrellas la Inteligencia Artificial les responde al instante premiando tu posicionamiento local (SEO). Si entra una reseña negativa no te preocupes, se genera una respuesta conciliadora para que la supervises y edites, si lo consideras necesario antes de enviarla.
             </p>
 
-            <!-- AVISO ATRIL CLICABLE MÁS INTENSO E ILUMINADO (1 LÍNEA) -->
-            <a href="#" class="mb-4 flex items-center gap-2 text-xs font-semibold text-amber-300 bg-amber-600/20 hover:bg-amber-600/30 px-4 py-2.5 rounded-lg border border-amber-500/40 transition-colors cursor-pointer group/atril shadow-[0_0_15px_rgba(245,158,11,0.15)]">
+            <a href="#atril-nfc" class="mb-4 flex items-center gap-2 text-xs font-semibold text-amber-300 bg-amber-600/20 hover:bg-amber-600/30 px-4 py-2.5 rounded-lg border border-amber-500/40 transition-colors cursor-pointer group/atril shadow-[0_0_15px_rgba(245,158,11,0.15)]">
               <span class="opacity-100 text-base drop-shadow-[0_0_8px_rgba(251,191,36,1)]">💡</span>
               <p>Combínalo con el Atril Inteligente y maximiza tus reseñas</p>
             </a>
@@ -217,7 +213,7 @@
           </div>
         </div>
 
-        <!-- SERVICIO 2: RESPUESTA LEADS (Categoría Captación -> Azul) -->
+        <!-- SERVICIO 2: RESPUESTA LEADS -->
         <div class="glow-captacion backdrop-blur-md border border-white/10 hover:border-blue-400/50 rounded-2xl p-5 transition-all flex flex-col justify-between group h-full">
           <div>
             <div class="flex items-center justify-between mb-3">
@@ -225,7 +221,6 @@
               <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/40">Cierre en Caliente</span>
             </div>
             
-            <!-- Título degradado Azul Oscuro/Claro (Captación) -->
             <h3 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Respuesta a Solicitudes Web y Anuncios en 10s</h3>
             <p class="text-sm text-slate-300 leading-relaxed mb-4">
               Quien pide presupuesto por web, anuncio o red social, recibe un WhatsApp personalizado al instante. A la vez, <strong>te notificamos discretamente al móvil</strong> para llamarle mientras su interés está al 100%.
@@ -240,7 +235,7 @@
           </div>
         </div>
 
-        <!-- SERVICIO 3: CITAS ANTI-PLANTÓN (Categoría Eficiencia -> Índigo/Púrpura) -->
+        <!-- SERVICIO 3: CITAS ANTI-PLANTÓN -->
         <div class="glow-eficiencia backdrop-blur-md border border-white/10 hover:border-indigo-400/50 rounded-2xl p-5 transition-all flex flex-col justify-between group h-full">
           <div>
             <div class="flex items-center justify-between mb-3">
@@ -248,7 +243,6 @@
               <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/40">-85% de Ausencias</span>
             </div>
             
-            <!-- Título degradado Índigo/Púrpura (Eficiencia) -->
             <h3 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Sistema Anti-Plantón y Confirmación de Citas</h3>
             <p class="text-sm text-slate-300 leading-relaxed mb-4">
               Recordatorio automático al cliente 24 horas antes con botones interactivos de <strong>[Confirmar] o [Reubicar]</strong>. Si alguien cancela con tiempo, el sistema te avisa al segundo para reasignar la hora vacía evitando perder tiempo y dinero.
@@ -263,7 +257,7 @@
           </div>
         </div>
 
-        <!-- SERVICIO 4: FACTURAS Y GASTOS (Categoría Eficiencia -> Índigo/Púrpura) -->
+        <!-- SERVICIO 4: FACTURAS Y GASTOS -->
         <div class="glow-eficiencia backdrop-blur-md border border-white/10 hover:border-indigo-400/50 rounded-2xl p-5 transition-all flex flex-col justify-between group h-full">
           <div>
             <div class="flex items-center justify-between mb-3">
@@ -271,7 +265,6 @@
               <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/40">Cero Papeles</span>
             </div>
             
-            <!-- Título degradado Índigo/Púrpura (Eficiencia) -->
             <h3 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Facturas y Gastos al Gestor con IA</h3>
             <p class="text-sm text-slate-300 leading-relaxed mb-4">
               Haces una foto al ticket o factura desde tu móvil: la IA extrae fecha, proveedor, base imponible e IVA en segundos y lo archiva clasificado en la nube para tu gestor. <strong>Fin a la pereza y al extravío de tickets.</strong>
@@ -288,7 +281,6 @@
 
       </div>
 
-      <!-- MÓDULO INSTAGRAM INDEPENDIENTE -->
       <div class="max-w-5xl mx-auto mt-12">
         <div class="rounded-2xl p-[2px] bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 shadow-2xl shadow-fuchsia-900/30">
           <div class="rounded-2xl p-8 bg-slate-950 h-full w-full relative overflow-hidden">
@@ -310,7 +302,6 @@
                   INSTAGRAM <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">INTELIGENTE</span>
                 </h3>
                 
-                <!-- Textos perfectamente armonizados en longitud -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 mb-6">
                   <div class="bg-white/5 border border-white/10 rounded-xl p-5 text-left hover:bg-white/10 transition-colors h-full flex flex-col">
                     <div class="text-fuchsia-400 font-bold text-xs mb-2 uppercase tracking-wider">1. Envío al Comentar</div>
@@ -350,7 +341,8 @@
     </div>
   </section>
 
-  <section id="tarifas" class="py-16 md:py-24 bg-brand-dark relative border-t border-white/5">
+  <!-- AÑADIDO: scroll-mt-24 a la sección Tarifas -->
+  <section id="tarifas" class="scroll-mt-24 py-16 md:py-24 bg-brand-dark relative border-t border-white/5">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       
       <div class="text-center max-w-3xl mx-auto mb-16">
@@ -365,7 +357,6 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-        <!-- PYME Base -->
         <div class="glass-card rounded-2xl p-6 flex flex-col justify-between border border-transparent transition-colors">
           <div>
             <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Entrada</span>
@@ -389,7 +380,6 @@
           </a>
         </div>
 
-        <!-- PYME Dúo -->
         <div class="glass-card rounded-2xl p-6 flex flex-col justify-between border border-blue-500/30 hover:border-blue-400/50 transition-colors group/btn">
           <div>
             <span class="text-xs font-bold text-blue-300 uppercase tracking-wider block mb-1">Doble Acción</span>
@@ -413,7 +403,6 @@
           </a>
         </div>
 
-        <!-- PYME Trinity -->
         <div class="rounded-2xl p-6 bg-gradient-to-b from-teal-900/40 via-slate-900 to-slate-950 border-2 border-teal-400/50 shadow-xl shadow-teal-950/40 flex flex-col justify-between relative group/trinity">
           <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-teal-500 text-white text-[10px] font-black uppercase px-3 py-0.5 rounded-full tracking-wider shadow">
             ★ Más Recomendado
@@ -438,13 +427,11 @@
               </li>
             </ul>
           </div>
-          <!-- EFECTO GLOW AÑADIDO AL HOVER -->
           <a href="https://wa.me/34711547561?text=Hola%20Francisco,%20quiero%20contratar%20el%20Plan%20PYME%20Trinity" target="_blank" class="w-full py-2.5 text-center rounded-lg bg-brand-teal group-hover/trinity:bg-emerald-400 group-hover/trinity:text-emerald-950 group-hover/trinity:shadow-[0_0_20px_rgba(52,211,153,0.8)] text-white font-bold text-xs transition-all duration-300">
             Elegir Pack Trinity
           </a>
         </div>
 
-        <!-- PYME Avanzado -->
         <div class="glass-card rounded-2xl p-6 flex flex-col justify-between border border-indigo-500/30 hover:border-indigo-400/50 transition-colors group/btn2">
           <div>
             <span class="text-xs font-bold text-indigo-300 uppercase tracking-wider block mb-1">Cobertura 100%</span>
@@ -473,9 +460,8 @@
 
       </div>
 
-      <!-- SECCIÓN INFO DE PUESTA EN MARCHA (SETUP) -->
       <div class="mt-12 pt-10 border-t border-white/10 max-w-5xl mx-auto">
-        <h3 class="text-center text-xl font-bold text-white mb-8">Modalidades de Puesta en Marcha Técnica (Setup)</h3>
+        <h3 class="text-center text-3xl sm:text-4xl font-black text-white mb-10 tracking-tight">Modalidades de puesta en Marcha</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           
           <div class="bg-white/5 rounded-xl p-6 border border-white/10 text-center hover:bg-white/10 transition-colors">
@@ -512,7 +498,6 @@
     </div>
   </section>
 
-  <!-- SECCIÓN DESCARGA DE PDFs -->
   <section class="py-16 bg-slate-950 border-t border-white/5 relative overflow-hidden">
     <div class="absolute inset-0 hero-glow opacity-30"></div>
     <div class="max-w-4xl mx-auto px-4 sm:px-6 relative z-10 text-center">
@@ -534,7 +519,6 @@
     </div>
   </section>
 
-  <!-- 3 PILARES TÉCNICOS -->
   <section class="py-16 bg-black/50 border-t border-white/5">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       
@@ -575,8 +559,8 @@
     </div>
   </section>
 
-  <!-- CONTACTO -->
-  <section id="contacto" class="py-20 bg-gradient-to-b from-brand-dark to-black text-center relative overflow-hidden">
+  <!-- AÑADIDO: scroll-mt-24 a la sección Contacto -->
+  <section id="contacto" class="scroll-mt-24 py-20 bg-gradient-to-b from-brand-dark to-black text-center relative overflow-hidden">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
       
       <div class="w-16 h-16 rounded-2xl bg-brand-teal/20 border border-brand-teal/40 flex items-center justify-center mx-auto mb-6 text-3xl shadow-xl shadow-teal-950/50">
@@ -587,7 +571,6 @@
         ¿Hablamos 10 Minutos por WhatsApp?
       </h2>
 
-      <!-- TEXTO DE CONTACTO ACTUALIZADO -->
       <p class="text-base text-slate-300 max-w-xl mx-auto mb-8 font-normal">
         Cuéntame cómo funciona tu local y miramos qué servicio automatizado te ahorra más horas y dinero desde el primer día. Sin compromiso.
       </p>
