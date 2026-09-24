@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
   <style>
     @page {
       size: A5 portrait;
@@ -71,6 +72,7 @@
       }
     }
 
+    /* BARRA FLOTANTE DE CONTROL EN PANTALLA */
     .print-bar {
       background: #0f172a;
       color: #ffffff;
@@ -96,6 +98,7 @@
       font-size: 11.5px;
       transition: background 0.2s;
     }
+    .print-btn:hover { background: #095852; }
 
     :root {
       --primary: #0b2545;
@@ -216,6 +219,7 @@
       font-size: 11.5px;
       line-height: 1.15;
     }
+    
     .price-badge {
       font-size: 13.5px;
       font-weight: 900;
@@ -247,6 +251,7 @@
       gap: 12px;
       margin-bottom: 12px;
     }
+    
     .instagram-card {
       border: 2px solid #db2777;
       background: linear-gradient(135deg, #ffffff 0%, #fdf2f8 100%);
@@ -380,7 +385,9 @@
       text-transform: uppercase;
     }
     
-    .th-col1 { background: #64748b !important; border-color: #475569 !important; }
+    /* ¡NUEVO COLOR STONE DISCRETO PARA LA PRIMERA COLUMNA! */
+    .th-col1 { background: #57534e !important; border-color: #44403c !important; }
+    
     .th-via1 { background: #374151 !important; border-color: #1f2937 !important; }
     .th-via2 { background: #0f766e !important; border-color: #0d5e57 !important; }
     .th-via3 { background: #4338ca !important; border-color: #3730a3 !important; }
@@ -432,6 +439,15 @@
 </head>
 <body>
 
+  <!-- BARRA DE UTILIDADES PARA IMPRIMIR -->
+  <aside class="print-bar no-print">
+    <span>Tarjetón de Tarifas A5 (2 Caras)</span>
+    <button class="print-btn" onclick="window.print()">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+      Imprimir / Guardar PDF
+    </button>
+  </aside>
+
   <main class="sheet">
     <header class="header">
       <div>
@@ -453,6 +469,7 @@
           <span class="section-banner-title">Planes de Digitalización Pyme</span>
           <span class="rule">Precios de lanzamiento</span>
         </div>
+        
         <table class="price-table">
           <thead>
             <tr>
