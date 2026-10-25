@@ -183,6 +183,9 @@
       pointer-events: none;
       z-index: 1;
     }
+    
+    /* Control de visibilidad del SVG de fondo (Escritorio vs Móvil) */
+    .circuit-mobile { display: none; }
 
     /* FILA SUPERIOR DENTRO DEL HEADER: LOGO OFICIAL EN CÁPSULA + ETIQUETA REVISTA */
     .cover-top-bar {
@@ -776,6 +779,10 @@
         background-color: #0f172a;
       }
 
+      /* Intercambio de SVG en móvil para mostrar el lado izquierdo limpio */
+      .circuit-desktop { display: none !important; }
+      .circuit-mobile { display: block !important; }
+
       .print-bar {
         width: 100%;
         max-width: 100%;
@@ -985,8 +992,8 @@
   <div class="page">
     <header class="cover-header-folder">
       
-      <!-- ESTE SVG CONTIENE LA MALLA Y LOS PUNTOS EXACTOS PROTEGIDOS (NO TOCAR) -->
-      <svg class="cover-circuit-bg" viewBox="0 0 900 320" preserveAspectRatio="xMaxYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <!-- ESTE SVG CONTIENE LA MALLA (VERSIÓN ESCRITORIO - ALINEADO A LA DERECHA) -->
+      <svg class="cover-circuit-bg circuit-desktop" viewBox="0 0 900 320" preserveAspectRatio="xMaxYMid slice" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="circuitLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stop-color="#19b5fe" stop-opacity="0"/>
@@ -1015,20 +1022,16 @@
           </pattern>
         </defs>
 
-        <!-- Malla tecnológica de fondo y ondas digitales suaves -->
         <rect x="260" y="0" width="640" height="320" fill="url(#techGrid)"/>
         <path d="M 340,320 C 470,220 620,270 900,110 L 900,320 Z" fill="#00d896" fill-opacity="0.06"/>
         <path d="M 480,0 C 610,95 740,45 900,165 L 900,0 Z" fill="#19b5fe" fill-opacity="0.06"/>
 
-        <!-- Anillos tecnológicos concéntricos en la esquina superior derecha -->
         <circle cx="775" cy="84" r="68" fill="none" stroke="#00d896" stroke-width="1" stroke-dasharray="6 5" stroke-opacity="0.22"/>
         <circle cx="775" cy="84" r="46" fill="none" stroke="#19b5fe" stroke-width="1.2" stroke-opacity="0.2"/>
         <circle cx="775" cy="84" r="24" fill="url(#nodeGlow)"/>
 
-        <!-- Trazados principales de circuitería -->
         <g stroke="url(#circuitLineGrad)" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="260,34 420,34 452,66 575,66 600,92 645,92 675,36 805,36"/>
-          <!-- Línea elevada que conecta con el nodo blanco -->
           <polyline points="330,92 485,92 518,142 636,142 694,84 775,84"/>
           <polyline points="210,152 385,152 415,122 545,122"/>
           <polyline points="390,192 555,192 590,157 745,157 778,190 816,190"/>
@@ -1036,7 +1039,6 @@
           <polyline points="450,286 620,286 650,256 790,256 815,281 895,281"/>
         </g>
 
-        <!-- Trazados secundarios cian entrelazados -->
         <g stroke="url(#circuitCyanGrad)" stroke-width="1.25" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="380,14 495,14 522,41 620,41 655,76 886,76"/>
           <polyline points="435,66 465,96 595,96 625,66"/>
@@ -1046,18 +1048,15 @@
           <polyline points="555,192 582,219 730,219 762,251"/>
         </g>
 
-        <!-- Micro-chips / módulos integrados decorativos -->
         <g stroke="#00d896" stroke-opacity="0.38" stroke-width="1.2" fill="#071a36" fill-opacity="0.65">
           <rect x="642" y="198" width="28" height="28" rx="5"/>
           <rect x="761" y="70" width="28" height="28" rx="6" stroke="#19b5fe" stroke-opacity="0.55"/>
         </g>
-        <!-- Pines del chip central -->
         <g stroke="#00d896" stroke-opacity="0.4" stroke-width="1.2">
           <line x1="648" y1="193" x2="648" y2="198"/><line x1="656" y1="193" x2="656" y2="198"/><line x1="664" y1="193" x2="664" y2="198"/>
           <line x1="648" y1="226" x2="648" y2="231"/><line x1="656" y1="226" x2="656" y2="231"/><line x1="664" y1="226" x2="664" y2="231"/>
         </g>
 
-        <!-- Halos de luz en nodos clave -->
         <circle cx="805" cy="36" r="12" fill="url(#nodeGlow)"/>
         <circle cx="775" cy="84" r="14" fill="url(#cyanGlow)"/>
         <circle cx="886" cy="76" r="11" fill="url(#cyanGlow)"/>
@@ -1065,7 +1064,94 @@
         <circle cx="845" cy="246" r="12" fill="url(#nodeGlow)"/>
         <circle cx="518" cy="142" r="10" fill="url(#cyanGlow)"/>
 
-        <!-- Nodos brillantes de conexión -->
+        <circle cx="805" cy="36" r="4" fill="#00d896"/>
+        <circle cx="775" cy="84" r="4.5" fill="#ffffff" stroke="#00d896" stroke-width="2"/>
+        <circle cx="886" cy="76" r="3.8" fill="#19b5fe"/>
+        <circle cx="855" cy="120" r="3.5" fill="#7dd3fc"/>
+        <circle cx="745" cy="157" r="4" fill="#00d896"/>
+        <circle cx="816" cy="190" r="3.8" fill="#00d896"/>
+        <circle cx="845" cy="246" r="4" fill="#00d896"/>
+        <circle cx="790" cy="256" r="3.5" fill="#19b5fe"/>
+        <circle cx="518" cy="142" r="3.5" fill="#0a2246" stroke="#19b5fe" stroke-width="2"/>
+        <circle cx="545" cy="122" r="3.5" fill="#00d896" fill-opacity="0.8"/>
+        <circle cx="590" cy="157" r="3.2" fill="#0a2246" stroke="#00d896" stroke-width="1.8"/>
+        <circle cx="502" cy="212" r="3.2" fill="#19b5fe" fill-opacity="0.8"/>
+        <circle cx="452" cy="66" r="3" fill="#19b5fe" fill-opacity="0.65"/>
+        <circle cx="620" cy="41" r="3" fill="#00d896" fill-opacity="0.75"/>
+      </svg>
+
+      <!-- ESTE SVG CONTIENE LA MALLA (VERSIÓN MÓVIL - ALINEADO A LA IZQUIERDA PARA MENOS RUIDO) -->
+      <svg class="cover-circuit-bg circuit-mobile" viewBox="0 0 900 320" preserveAspectRatio="xMinYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="circuitLineGradMob" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#19b5fe" stop-opacity="0"/>
+            <stop offset="28%" stop-color="#19b5fe" stop-opacity="0.22"/>
+            <stop offset="68%" stop-color="#00d896" stop-opacity="0.42"/>
+            <stop offset="100%" stop-color="#00d896" stop-opacity="0.62"/>
+          </linearGradient>
+          <linearGradient id="circuitCyanGradMob" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#00d896" stop-opacity="0"/>
+            <stop offset="40%" stop-color="#19b5fe" stop-opacity="0.24"/>
+            <stop offset="100%" stop-color="#7dd3fc" stop-opacity="0.52"/>
+          </linearGradient>
+          <radialGradient id="nodeGlowMob" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#00d896" stop-opacity="0.75"/>
+            <stop offset="45%" stop-color="#00d896" stop-opacity="0.22"/>
+            <stop offset="100%" stop-color="#00d896" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="cyanGlowMob" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#19b5fe" stop-opacity="0.75"/>
+            <stop offset="45%" stop-color="#19b5fe" stop-opacity="0.2"/>
+            <stop offset="100%" stop-color="#19b5fe" stop-opacity="0"/>
+          </radialGradient>
+          <pattern id="techGridMob" width="36" height="36" patternUnits="userSpaceOnUse">
+            <circle cx="18" cy="18" r="0.9" fill="#7dd3fc" fill-opacity="0.14"/>
+            <path d="M 36 0 L 0 0 0 36" fill="none" stroke="#19b5fe" stroke-width="0.4" stroke-opacity="0.07"/>
+          </pattern>
+        </defs>
+
+        <rect x="260" y="0" width="640" height="320" fill="url(#techGridMob)"/>
+        <path d="M 340,320 C 470,220 620,270 900,110 L 900,320 Z" fill="#00d896" fill-opacity="0.06"/>
+        <path d="M 480,0 C 610,95 740,45 900,165 L 900,0 Z" fill="#19b5fe" fill-opacity="0.06"/>
+
+        <circle cx="775" cy="84" r="68" fill="none" stroke="#00d896" stroke-width="1" stroke-dasharray="6 5" stroke-opacity="0.22"/>
+        <circle cx="775" cy="84" r="46" fill="none" stroke="#19b5fe" stroke-width="1.2" stroke-opacity="0.2"/>
+        <circle cx="775" cy="84" r="24" fill="url(#nodeGlowMob)"/>
+
+        <g stroke="url(#circuitLineGradMob)" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="260,34 420,34 452,66 575,66 600,92 645,92 675,36 805,36"/>
+          <polyline points="330,92 485,92 518,142 636,142 694,84 775,84"/>
+          <polyline points="210,152 385,152 415,122 545,122"/>
+          <polyline points="390,192 555,192 590,157 745,157 778,190 816,190"/>
+          <polyline points="295,244 470,244 502,212 658,212 692,246 845,246"/>
+          <polyline points="450,286 620,286 650,256 790,256 815,281 895,281"/>
+        </g>
+
+        <g stroke="url(#circuitCyanGradMob)" stroke-width="1.25" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="380,14 495,14 522,41 620,41 655,76 886,76"/>
+          <polyline points="435,66 465,96 595,96 625,66"/>
+          <polyline points="518,142 548,155 660,155 695,120 855,120"/>
+          <polyline points="470,244 498,272 590,272 618,244"/>
+          <polyline points="658,212 688,182 815,182 848,149 900,149"/>
+          <polyline points="555,192 582,219 730,219 762,251"/>
+        </g>
+
+        <g stroke="#00d896" stroke-opacity="0.38" stroke-width="1.2" fill="#071a36" fill-opacity="0.65">
+          <rect x="642" y="198" width="28" height="28" rx="5"/>
+          <rect x="761" y="70" width="28" height="28" rx="6" stroke="#19b5fe" stroke-opacity="0.55"/>
+        </g>
+        <g stroke="#00d896" stroke-opacity="0.4" stroke-width="1.2">
+          <line x1="648" y1="193" x2="648" y2="198"/><line x1="656" y1="193" x2="656" y2="198"/><line x1="664" y1="193" x2="664" y2="198"/>
+          <line x1="648" y1="226" x2="648" y2="231"/><line x1="656" y1="226" x2="656" y2="231"/><line x1="664" y1="226" x2="664" y2="231"/>
+        </g>
+
+        <circle cx="805" cy="36" r="12" fill="url(#nodeGlowMob)"/>
+        <circle cx="775" cy="84" r="14" fill="url(#cyanGlowMob)"/>
+        <circle cx="886" cy="76" r="11" fill="url(#cyanGlowMob)"/>
+        <circle cx="745" cy="157" r="12" fill="url(#nodeGlowMob)"/>
+        <circle cx="845" cy="246" r="12" fill="url(#nodeGlowMob)"/>
+        <circle cx="518" cy="142" r="10" fill="url(#cyanGlowMob)"/>
+
         <circle cx="805" cy="36" r="4" fill="#00d896"/>
         <circle cx="775" cy="84" r="4.5" fill="#ffffff" stroke="#00d896" stroke-width="2"/>
         <circle cx="886" cy="76" r="3.8" fill="#19b5fe"/>
@@ -1456,18 +1542,14 @@
       window.location.href = '../index.html#play-podcast';
     }
 
-    /* Función inteligente para volver atrás en iPhone/Android/Web sin error de ruta */
+    /* Función inteligente para volver atrás directamente a #magazine anulando history.back() */
     async function volverALaWeb(e) {
       if (e) e.preventDefault();
-      if (window.history.length > 1 && document.referrer && document.referrer.indexOf(window.location.host) !== -1) {
-        window.history.back();
-        return;
-      }
       const rutasCandidatas = [
         '../index.html#magazine',
         'index.html#magazine',
         '/#magazine',
-        '/'
+        'https://sistemaspyme.es/#magazine'
       ];
       if (window.location.protocol !== 'file:') {
         for (const ruta of rutasCandidatas) {
