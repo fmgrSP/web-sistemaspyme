@@ -67,33 +67,50 @@
 
     /* Animación LED progresiva para el reproductor flotante */
     @keyframes ledRGB {
-      0% { border-color: #14b8a6; box-shadow: 0 0 15px rgba(20, 184, 166, 0.5); }
-      33% { border-color: #d946ef; box-shadow: 0 0 15px rgba(217, 70, 239, 0.5); }
-      66% { border-color: #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
-      100% { border-color: #14b8a6; box-shadow: 0 0 15px rgba(20, 184, 166, 0.5); }
+      0% { border-color: #14b8a6; box-shadow: 0 0 25px rgba(20, 184, 166, 0.6); }
+      33% { border-color: #d946ef; box-shadow: 0 0 25px rgba(217, 70, 239, 0.6); }
+      66% { border-color: #3b82f6; box-shadow: 0 0 25px rgba(59, 130, 246, 0.6); }
+      100% { border-color: #14b8a6; box-shadow: 0 0 25px rgba(20, 184, 166, 0.6); }
     }
     .led-player {
       animation: ledRGB 8s linear infinite;
+    }
+
+    /* Estilos para ocultar el scrollbar en el modal del menú móvil */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   </style>
 </head>
 <body class="bg-brand-dark text-slate-100 font-sans antialiased selection:bg-brand-teal selection:text-white relative">
 
-  <!-- MENÚ MÓVIL PANTALLA COMPLETA -->
-  <div id="mobileMenu" class="fixed inset-0 z-[100] bg-brand-dark/95 backdrop-blur-xl translate-x-full transition-transform duration-300 md:hidden flex flex-col">
-    <div class="flex items-center justify-between p-6 border-b border-white/10">
+  <!-- MENÚ MÓVIL PANTALLA COMPLETA (HAMBURGUESA) -->
+  <div id="mobileMenu" class="fixed inset-0 z-[100] bg-brand-dark/95 backdrop-blur-xl translate-x-full transition-transform duration-300 md:hidden flex flex-col no-scrollbar overflow-y-auto">
+    <div class="flex items-center justify-between p-6 border-b border-white/10 sticky top-0 bg-brand-dark/95 backdrop-blur-md">
       <img src="logo.png" alt="Sistemas Pyme" class="h-10" onerror="cargarSiguienteExtension(this)">
-      <button type="button" onclick="toggleMobileMenu()" class="text-white p-2">
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      <button type="button" onclick="toggleMobileMenu()" class="text-white p-2 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
       </button>
     </div>
-    <nav class="flex flex-col gap-6 p-8 text-lg font-bold text-slate-200">
-      <a href="#disponibles" onclick="toggleMobileMenu()">Activación Inmediata</a>
-      <a href="#despliegue" onclick="toggleMobileMenu()">Próximo Despliegue</a>
-      <a href="#tarifas" onclick="toggleMobileMenu()">Tarifas Oficiales</a>
-      <a href="#magazine" onclick="toggleMobileMenu()" class="text-amber-400 flex items-center gap-2"><span>📖</span> Pyme Magazine</a>
-      <a href="#contacto" onclick="toggleMobileMenu()">Contacto</a>
+    <nav class="flex flex-col gap-6 p-8 text-xl font-bold text-slate-200">
+      <a href="#disponibles" onclick="toggleMobileMenu()" class="hover:text-teal-400 transition-colors">Activación Inmediata</a>
+      <a href="#despliegue" onclick="toggleMobileMenu()" class="hover:text-teal-400 transition-colors">Próximo Despliegue</a>
+      <a href="#tarifas" onclick="toggleMobileMenu()" class="hover:text-teal-400 transition-colors">Tarifas Oficiales</a>
+      <a href="#magazine" onclick="toggleMobileMenu()" class="text-amber-400 flex items-center gap-3 bg-amber-500/10 p-4 rounded-xl border border-amber-500/20">
+        <span class="text-2xl">📖</span> 
+        <span>Pyme Magazine</span>
+      </a>
+      <a href="#contacto" onclick="toggleMobileMenu()" class="hover:text-teal-400 transition-colors">Contacto</a>
     </nav>
+    <div class="mt-auto p-8 border-t border-white/10">
+      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quisiera%20solicitar%20una%20demostraci%C3%B3n" target="_blank" class="w-full flex items-center justify-center gap-2 bg-brand-teal text-white font-black px-6 py-4 rounded-xl shadow-lg shadow-teal-900/50">
+        Hablar con Francisco por WhatsApp
+      </a>
+    </div>
   </div>
 
   <!-- CABECERA PRINCIPAL NAVEGACIÓN -->
@@ -120,7 +137,7 @@
         <a href="#contacto" class="hover:text-teal-400 transition-colors px-1.5 py-1 rounded-md hover:bg-white/5">Contacto</a>
       </nav>
 
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
         <div class="flex-shrink-0">
           <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quisiera%20solicitar%20una%20demostraci%C3%B3n%20personalizada%20sin%20compromiso%20de%20los%20servicios%20del%20cat%C3%A1logo" target="_blank" class="inline-flex items-center gap-2 bg-brand-teal hover:bg-brand-tealDark text-white text-xs sm:text-sm font-bold px-3.5 py-2.5 rounded-lg shadow-md shadow-teal-950/50 hover:shadow-teal-800/50 transition-all whitespace-nowrap">
             <svg class="w-4 h-4 fill-current flex-shrink-0" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
@@ -130,7 +147,7 @@
         </div>
         
         <!-- Botón menú hamburguesa (solo móvil) -->
-        <button type="button" onclick="toggleMobileMenu()" class="md:hidden text-slate-300 hover:text-white p-2 border border-white/10 rounded-lg">
+        <button type="button" onclick="toggleMobileMenu()" class="md:hidden text-slate-300 hover:text-white p-2 bg-white/5 border border-white/10 rounded-lg transition-colors">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
         </button>
       </div>
@@ -917,7 +934,7 @@
               </div>
             </div>
 
-            <!-- REPRODUCTOR MULTIMEDIA HÍBRIDO (AUDIO + VÍDEO YOUTUBE) -->
+            <!-- REPRODUCTOR MULTIMEDIA HÍBRIDO (AUDIO CUSTOM + VÍDEO YOUTUBE) -->
             <div id="centroMultimediaMagazine" class="scroll-mt-32 bg-slate-950/90 border border-teal-500/40 rounded-2xl p-4 sm:p-5 shadow-inner transition-all">
               
               <!-- Selector de Pestaña Multimedia -->
@@ -939,15 +956,55 @@
                 <span class="text-[10px] font-bold uppercase tracking-wider text-teal-300 bg-teal-950 px-2 py-0.5 rounded border border-teal-700/50 hidden md:inline">Multimedia Oficial</span>
               </div>
 
-              <!-- Contenedor Audio con soporte MP3 y M4A nativo -->
+              <!-- Contenedor Audio con REPRODUCTOR PERSONALIZADO -->
               <div id="mediaBoxAudio" class="block">
-                <audio id="audioEpisodio1" controls preload="auto" class="w-full h-10 mt-1 rounded-lg">
+                
+                <div class="w-full bg-slate-900 border border-teal-500/40 rounded-xl p-3 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-1 shadow-lg shadow-teal-950/30">
+                  
+                  <!-- Controles Play/Pause y Ecualizador -->
+                  <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <button type="button" onclick="toggleAudioMain()" id="btnPlayMain" class="w-10 h-10 rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 flex items-center justify-center shadow-lg transition-all flex-shrink-0">
+                      <svg id="iconPlayMain" class="w-4 h-4 ml-0.5 fill-current" viewBox="0 0 24 24"><path d="M3 22v-20l18 10-18 10z"/></svg>
+                      <svg id="iconPauseMain" class="w-4 h-4 hidden fill-current" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                    </button>
+                    
+                    <div id="eqMain" class="hidden flex gap-1 items-end h-5 w-5 flex-shrink-0">
+                       <div class="w-1 bg-teal-400 rounded-t h-full animate-[bounce_1s_infinite_0s]"></div>
+                       <div class="w-1 bg-teal-400 rounded-t h-full animate-[bounce_1s_infinite_0.2s]"></div>
+                       <div class="w-1 bg-teal-400 rounded-t h-full animate-[bounce_1s_infinite_0.4s]"></div>
+                    </div>
+                    <div id="eqMainIdle" class="flex gap-1 items-end h-5 w-5 flex-shrink-0 opacity-30">
+                       <div class="w-1 bg-teal-400 rounded-t h-1"></div>
+                       <div class="w-1 bg-teal-400 rounded-t h-2"></div>
+                       <div class="w-1 bg-teal-400 rounded-t h-1.5"></div>
+                    </div>
+                  </div>
+
+                  <!-- Progreso de tiempo -->
+                  <div class="flex-1 flex items-center gap-2 text-xs text-slate-300 w-full font-medium">
+                    <span id="timeCurrent" class="min-w-[35px] text-right">0:00</span>
+                    <input type="range" id="progressMain" class="flex-1 h-1.5 rounded-full appearance-none bg-slate-700 accent-teal-400 cursor-pointer" value="0" min="0" max="100" step="0.1" oninput="seekAudio(this.value)">
+                    <span id="timeTotal" class="min-w-[35px]">0:00</span>
+                  </div>
+
+                  <!-- Control de Volumen -->
+                  <div class="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto justify-end sm:justify-start">
+                    <button type="button" onclick="document.getElementById('volMain').classList.toggle('hidden'); document.getElementById('volMain').classList.toggle('sm:block');" class="text-slate-400 hover:text-white transition-colors" title="Ajustar Volumen">
+                      <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M5 17h-5v-10h5v10zm2-10v10l9 5v-20l-9 5zm11.008 2.093c.742.743 1.2 1.77 1.198 2.903-.002 1.133-.462 2.158-1.205 2.9l1.219 1.223c1.057-1.053 1.712-2.511 1.715-4.121.002-1.611-.648-3.068-1.702-4.125l-1.225 1.22zm2.142-2.135c1.288 1.292 2.082 3.073 2.079 5.041s-.804 3.75-2.096 5.039l1.25 1.254c1.612-1.608 2.613-3.834 2.616-6.291.005-2.457-.986-4.681-2.595-6.293l-1.254 1.25z"/></svg>
+                    </button>
+                    <input type="range" id="volMain" class="w-16 sm:w-20 h-1.5 rounded-full appearance-none bg-slate-700 accent-teal-400 cursor-pointer hidden sm:block" min="0" max="1" step="0.05" value="1" oninput="changeVolume(this.value)">
+                  </div>
+
+                </div>
+
+                <!-- Archivo nativo oculto -->
+                <audio id="audioEpisodio1" preload="metadata" class="hidden">
                   <source src="podcasts/episodio-1.m4a" type="audio/mp4">
                   <source src="podcasts/episodio-1.mp3" type="audio/mpeg">
                   <source src="podcast/episodio-1.m4a" type="audio/mp4">
                   <source src="podcast/episodio-1.mp3" type="audio/mpeg">
-                  Tu navegador no soporta la reproducción directa de audio.
                 </audio>
+
                 <div class="text-[11px] text-slate-400 mt-2 flex items-center justify-between">
                   <span>🎙️ Podcast conversacional grabado en español</span>
                   <a id="enlaceDescargaPodcast" href="podcasts/episodio-1.m4a" download class="text-teal-400 hover:underline font-semibold">Descargar Audio &darr;</a>
@@ -1179,31 +1236,45 @@
     </div>
   </footer>
 
-  <!-- MINI REPRODUCTOR FLOTANTE INTELIGENTE -->
-  <div id="miniPlayerFlotante" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] translate-y-[150%] opacity-0 transition-all duration-500 w-[90%] max-w-sm rounded-2xl bg-slate-900/95 backdrop-blur-xl border-2 cursor-pointer shadow-2xl flex items-center p-3 gap-3 led-player" onclick="scrollToPlayer()">
-    <!-- Efecto Ecualizador (Barritas) -->
-    <div class="flex gap-1 items-end h-6 w-6">
-       <div class="w-1.5 bg-teal-400 rounded-t animate-[bounce_1s_infinite_0s]"></div>
-       <div class="w-1.5 bg-teal-400 rounded-t animate-[bounce_1s_infinite_0.2s]"></div>
-       <div class="w-1.5 bg-teal-400 rounded-t animate-[bounce_1s_infinite_0.4s]"></div>
+  <!-- ======================================================================= -->
+  <!-- MINI REPRODUCTOR FLOTANTE INTELIGENTE (Mejorado con Ecualizador y Volumen) -->
+  <!-- ======================================================================= -->
+  <div id="miniPlayerFlotante" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] translate-y-[150%] opacity-0 transition-all duration-500 w-[94%] max-w-md rounded-2xl bg-slate-900/95 backdrop-blur-xl border-[2.5px] cursor-pointer shadow-[0_0_25px_rgba(20,184,166,0.25)] flex items-center p-3 gap-3 led-player" onclick="scrollToPlayer()">
+    
+    <!-- Ecualizador Dinámico -->
+    <div id="eqFlotante" class="flex gap-1 items-end h-5 w-5 ml-1 flex-shrink-0">
+       <div class="w-1 bg-teal-400 rounded-t h-full animate-[bounce_1s_infinite_0s]"></div>
+       <div class="w-1 bg-teal-400 rounded-t h-full animate-[bounce_1s_infinite_0.2s]"></div>
+       <div class="w-1 bg-teal-400 rounded-t h-full animate-[bounce_1s_infinite_0.4s]"></div>
     </div>
     
     <!-- Textos -->
-    <div class="flex-1">
-      <div class="flex items-center gap-2">
-         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-         <span class="text-xs font-black text-white uppercase tracking-wider">Reproduciendo</span>
+    <div class="flex-1 ml-1 overflow-hidden">
+      <div class="flex items-center gap-1.5">
+         <span class="text-[11px] sm:text-xs font-black text-white uppercase tracking-wider">Reproduciendo</span>
       </div>
-      <span class="text-[10px] text-slate-300 line-clamp-1">Nº 1: La Nueva Regla del Boca a Boca</span>
+      <span class="text-[10px] sm:text-[11px] text-slate-300 font-medium line-clamp-1">Nº 1: La Nueva Regla del Boca a Boca</span>
     </div>
 
-    <!-- Botón Pausa Grande -->
-    <button type="button" onclick="pausarAudioFlotante(event)" class="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white flex-shrink-0 transition-colors">
-      <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+    <!-- Altavoz y Control de Volumen Flotante (no dispara el clic del contenedor padre) -->
+    <div class="flex items-center gap-1.5 mr-1" onclick="event.stopPropagation()">
+      <button type="button" class="text-slate-400 hover:text-white cursor-default" title="Volumen">
+        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M5 17h-5v-10h5v10zm2-10v10l9 5v-20l-9 5zm11.008 2.093c.742.743 1.2 1.77 1.198 2.903-.002 1.133-.462 2.158-1.205 2.9l1.219 1.223c1.057-1.053 1.712-2.511 1.715-4.121.002-1.611-.648-3.068-1.702-4.125l-1.225 1.22zm2.142-2.135c1.288 1.292 2.082 3.073 2.079 5.041s-.804 3.75-2.096 5.039l1.25 1.254c1.612-1.608 2.613-3.834 2.616-6.291.005-2.457-.986-4.681-2.595-6.293l-1.254 1.25z"/></svg>
+      </button>
+      <input type="range" id="volFlotante" class="w-12 h-1 rounded-full appearance-none bg-slate-700 accent-teal-400 cursor-pointer" min="0" max="1" step="0.05" value="1" oninput="changeVolume(this.value)">
+    </div>
+
+    <!-- Botón Play/Pausa -->
+    <button type="button" onclick="toggleAudioFlotante(event)" class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white flex-shrink-0 transition-colors shadow-md">
+      <svg id="iconPlayFlotante" class="w-4 h-4 ml-0.5 hidden fill-current" viewBox="0 0 24 24"><path d="M3 22v-20l18 10-18 10z"/></svg>
+      <svg id="iconPauseFlotante" class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
     </button>
+    
+    <!-- Botón Cerrar (X) para que el usuario decida cuándo desaparecerlo -->
+    <button type="button" onclick="cerrarFlotante(event)" class="absolute -top-2 -right-2 w-6 h-6 bg-slate-800 text-slate-300 hover:text-white rounded-full border border-slate-600 flex items-center justify-center text-xs font-bold shadow-lg transition-colors">✕</button>
   </div>
 
-  <!-- MODAL DE AVISO LEGAL, PRIVACIDAD Y CUMPLIMIENTO META BUSINESS -->
+  <!-- MODAL DE AVISO LEGAL -->
   <div id="modalLegal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-slate-900 border border-white/15 rounded-2xl max-w-3xl w-full max-h-[88vh] flex flex-col shadow-2xl overflow-hidden my-auto">
       
@@ -1232,7 +1303,7 @@
             <p><strong class="text-white">Denominación Comercial:</strong> Sistemas Pyme</p>
             <p><strong class="text-white">Titular / Responsable Legal:</strong> Francisco M. Gallardo</p>
             <p><strong class="text-white">NIF / DNI:</strong> <span class="text-teal-300 font-bold">52938419D</span></p>
-            <p><strong class="text-white">Actividad:</strong> Consultoría tecnológica, desarrollo de soluciones de automatización e integración de sistemas de Inteligencia Artificial y mensajería empresarial (WhatsApp Business Platform / Meta Cloud API) para pymes y negocios locales.</p>
+            <p><strong class="text-white">Actividad:</strong> Consultoría tecnológica, desarrollo de soluciones de automatización e integración de sistemas de Inteligencia Artificial y mensajería empresarial para pymes y negocios locales.</p>
             <p><strong class="text-white">Domicilio de Actividad:</strong> Galicia, España</p>
             <p><strong class="text-white">Teléfono de Contacto:</strong> +34 711 54 75 61</p>
             <p><strong class="text-white">Correo Electrónico Oficial:</strong> francisco@sistemaspyme.es</p>
@@ -1245,21 +1316,21 @@
           <h4 class="text-base font-black text-white border-b border-white/10 pb-1.5 text-teal-300">2. Política de Privacidad y Protección de Datos (RGPD / LOPDGDD)</h4>
           <p>De conformidad con el Reglamento (UE) 2016/679 (RGPD) y la Ley Orgánica 3/2018 (LOPDGDD), le informamos sobre el tratamiento de los datos personales recabados a través de este sitio web y de nuestros canales oficiales de comunicación:</p>
           <ul class="list-disc pl-5 space-y-1.5">
-            <li><strong class="text-white">Responsable del Tratamiento:</strong> Francisco M. Gallardo (Sistemas Pyme), con NIF 52938419D y correo de contacto <a href="mailto:francisco@sistemaspyme.es" class="text-teal-400 underline">francisco@sistemaspyme.es</a>.</li>
-            <li><strong class="text-white">Finalidad del Tratamiento:</strong> Atender las solicitudes de información, demostraciones comerciales, prestación de servicios contratados de digitalización y automatización, facturación y envío de notificaciones operativas o encuestas de satisfacción post-servicio vía WhatsApp Business API cuando exista relación comercial o consentimiento previo.</li>
-            <li><strong class="text-white">Legitimación:</strong> Consentimiento expreso del interesado al contactar, ejecución de un contrato de prestación de servicios o interés legítimo en la evaluación de la calidad del servicio prestado.</li>
-            <li><strong class="text-white">Destinatarios y Encargados de Tratamiento:</strong> No se cederán datos a terceros salvo obligación legal o cuando sea estrictamente necesario para la prestación técnica del servicio a través de proveedores oficiales que cumplen con el RGPD (Meta Platforms Ireland Ltd. para WhatsApp Cloud API y Google Ireland Ltd. para infraestructura Cloud/Workspace).</li>
-            <li><strong class="text-white">Derechos del Usuario:</strong> Puede ejercer en cualquier momento sus derechos de acceso, rectificación, supresión, limitación, portabilidad y oposición enviando un correo electrónico a <strong class="text-white">francisco@sistemaspyme.es</strong> o respondiendo con la palabra «BAJA» en cualquiera de nuestras comunicaciones automatizadas por WhatsApp.</li>
+            <li><strong class="text-white">Responsable del Tratamiento:</strong> Francisco M. Gallardo (Sistemas Pyme).</li>
+            <li><strong class="text-white">Finalidad del Tratamiento:</strong> Atender las solicitudes de información, demostraciones comerciales, prestación de servicios contratados de digitalización y envío de notificaciones vía WhatsApp Business API cuando exista relación comercial.</li>
+            <li><strong class="text-white">Legitimación:</strong> Consentimiento expreso del interesado al contactar, o ejecución de un contrato.</li>
+            <li><strong class="text-white">Destinatarios:</strong> No se cederán datos a terceros salvo obligación legal o necesidad técnica a través de proveedores oficiales (Meta, Google Cloud).</li>
+            <li><strong class="text-white">Derechos del Usuario:</strong> Puede ejercer sus derechos enviando un correo a <strong class="text-white">francisco@sistemaspyme.es</strong> o respondiendo «BAJA» en nuestras comunicaciones por WhatsApp.</li>
           </ul>
         </section>
 
         <section id="sec-meta" class="space-y-2.5 pt-2">
           <h4 class="text-base font-black text-white border-b border-white/10 pb-1.5 text-teal-300">3. Condiciones del Servicio y Cumplimiento de WhatsApp Business Platform (Meta)</h4>
-          <p><strong>Sistemas Pyme</strong> (titularidad de Francisco M. Gallardo, NIF <strong>52938419D</strong>) opera como proveedor tecnológico e integrador de soluciones basadas en las APIs oficiales de Meta (WhatsApp Business Cloud API e Instagram Messaging API) y Google Business Profile API.</p>
+          <p><strong>Sistemas Pyme</strong> opera como proveedor tecnológico e integrador de soluciones basadas en las APIs oficiales de Meta (WhatsApp Business Cloud API e Instagram Messaging API).</p>
           <ul class="list-disc pl-5 space-y-1.5">
-            <li><strong class="text-white">Comunicaciones Transaccionales y de Calidad:</strong> Todos los mensajes enviados a través de nuestras integraciones de WhatsApp Business corresponden exclusivamente a notificaciones solicitadas por los clientes de los comercios adheridos (recordatorios de cita previa, confirmaciones de reserva, encuestas breves de control de calidad post-visita o avisos administrativos).</li>
-            <li><strong class="text-white">Política Anti-Spam y Baja Inmediata (Opt-Out):</strong> Queda prohibido el envío de comunicaciones masivas no solicitadas (spam). Todo usuario final dispone de un mecanismo automático e inmediato de baja respondiendo «BAJA» o «STOP» en el propio chat de WhatsApp, lo que bloquea cualquier envío futuro a dicho número.</li>
-            <li><strong class="text-white">Propiedad Intelectual:</strong> Todos los contenidos, diseños, logotipos, textos y desarrollos de software de Sistemas Pyme están protegidos por la normativa de propiedad intelectual e industrial vigente en España.</li>
+            <li><strong class="text-white">Comunicaciones Transaccionales y de Calidad:</strong> Todos los mensajes enviados corresponden exclusivamente a notificaciones solicitadas por los clientes de los comercios adheridos.</li>
+            <li><strong class="text-white">Política Anti-Spam:</strong> Queda prohibido el envío de comunicaciones masivas no solicitadas. Todo usuario dispone de un mecanismo de baja respondiendo «BAJA» o «STOP» en el chat.</li>
+            <li><strong class="text-white">Propiedad Intelectual:</strong> Todos los contenidos y desarrollos de software de Sistemas Pyme están protegidos por la normativa vigente.</li>
           </ul>
         </section>
 
@@ -1276,7 +1347,7 @@
   </div>
 
   <script>
-    // CONTROL DEL MENÚ MÓVIL
+    // CONTROL DEL MENÚ MÓVIL (Hamburguesa)
     function toggleMobileMenu() {
       const menu = document.getElementById('mobileMenu');
       if (menu.classList.contains('translate-x-full')) {
@@ -1289,12 +1360,10 @@
     }
 
     const SVG_LOGO_SP_OSCURO = "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 140"><defs><mask id="m"><rect width="210" height="140" fill="white"/><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="black" stroke-width="6.5"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 134" fill="none" stroke="black" stroke-width="6.5" stroke-linecap="round"/><line x1="126.5" y1="38" x2="126.5" y2="128" stroke="black" stroke-width="6.5"/><circle cx="92" cy="19" r="13.5" fill="black"/></mask></defs><g mask="url(#m)"><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="#0b5551" stroke-width="21" stroke-linejoin="round"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 130" fill="none" stroke="#0b5551" stroke-width="21" stroke-linecap="round" stroke-linejoin="round"/><rect x="116" y="32" width="10.5" height="90" fill="#0b5551"/><rect x="129.5" y="48" width="9.5" height="72" fill="#0b5551"/><rect x="130" y="73.5" width="24" height="21" fill="#0b5551"/></g><circle cx="92" cy="19" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/><circle cx="18" cy="121.5" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/><circle cx="134.5" cy="48" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/><circle cx="134.5" cy="121.5" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/></svg>`);
-
     const SVG_LOGO_SP_BLANCO = "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 140"><defs><mask id="mb"><rect width="210" height="140" fill="white"/><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="black" stroke-width="6.5"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 134" fill="none" stroke="black" stroke-width="6.5" stroke-linecap="round"/><line x1="126.5" y1="38" x2="126.5" y2="128" stroke="black" stroke-width="6.5"/><circle cx="92" cy="19" r="13.5" fill="black"/></mask></defs><g mask="url(#mb)"><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="#ffffff" stroke-width="21" stroke-linejoin="round"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 130" fill="none" stroke="#ffffff" stroke-width="21" stroke-linecap="round" stroke-linejoin="round"/><rect x="116" y="32" width="10.5" height="90" fill="#ffffff"/><rect x="129.5" y="48" width="9.5" height="72" fill="#ffffff"/><rect x="130" y="73.5" width="24" height="21" fill="#ffffff"/></g><circle cx="92" cy="19" r="9" fill="#081c3a" stroke="#ffffff" stroke-width="5.5"/><circle cx="18" cy="121.5" r="9" fill="#081c3a" stroke="#ffffff" stroke-width="5.5"/><circle cx="134.5" cy="48" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/><circle cx="134.5" cy="121.5" r="9" fill="#081c3a" stroke="#ffffff" stroke-width="5.5"/></svg>`);
-
     const SVG_LOGO_SP_NEON = "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 140"><defs><mask id="mNeon"><rect width="210" height="140" fill="white"/><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="black" stroke-width="6.5"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 134" fill="none" stroke="black" stroke-width="6.5" stroke-linecap="round"/><line x1="126.5" y1="38" x2="126.5" y2="128" stroke="black" stroke-width="6.5"/><circle cx="92" cy="19" r="13.5" fill="black"/></mask></defs><g mask="url(#mNeon)"><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="#00e699" stroke-width="21" stroke-linejoin="round"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 130" fill="none" stroke="#00e699" stroke-width="21" stroke-linecap="round" stroke-linejoin="round"/><rect x="116" y="32" width="10.5" height="90" fill="#00e699"/><rect x="129.5" y="48" width="9.5" height="72" fill="#00e699"/><rect x="130" y="73.5" width="24" height="21" fill="#00e699"/></g><circle cx="92" cy="19" r="9" fill="#000000" stroke="#00e699" stroke-width="5.5"/><circle cx="18" cy="121.5" r="9" fill="#000000" stroke="#00e699" stroke-width="5.5"/><circle cx="134.5" cy="48" r="9" fill="#000000" stroke="#00e699" stroke-width="5.5"/><circle cx="134.5" cy="121.5" r="9" fill="#000000" stroke="#00e699" stroke-width="5.5"/></svg>`);
 
-    /* APERTURA INTELIGENTE DEL ARTÍCULO (CON FIX IPHONE BFCACHE) */
+    /* APERTURA INTELIGENTE DEL ARTÍCULO */
     async function abrirArticuloMagazine(e, defaultHref) {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
       if (window.location.protocol === 'file:') return;
@@ -1378,15 +1447,159 @@
       });
     }
 
+    /* ========================================================================= */
+    /* LOGICA DEL REPRODUCTOR DE AUDIO PERSONALIZADO Y MINI-PLAYER FLOTANTE      */
+    /* ========================================================================= */
+    let flotanteOcultoUsuario = false;
+
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return "0:00";
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return m + ":" + (s < 10 ? "0" : "") + s;
+    }
+
+    function syncAudioUI() {
+      const audio = document.getElementById('audioEpisodio1');
+      const timeCurrent = document.getElementById('timeCurrent');
+      const progressMain = document.getElementById('progressMain');
+      if (!audio || !timeCurrent || !progressMain) return;
+      
+      if (audio.duration && !isNaN(audio.duration)) {
+         document.getElementById('timeTotal').textContent = formatTime(audio.duration);
+         progressMain.value = (audio.currentTime / audio.duration) * 100;
+      }
+      timeCurrent.textContent = formatTime(audio.currentTime);
+    }
+
+    function seekAudio(val) {
+      const audio = document.getElementById('audioEpisodio1');
+      if(audio && audio.duration) {
+         audio.currentTime = (val / 100) * audio.duration;
+      }
+    }
+
+    function changeVolume(val) {
+      const audio = document.getElementById('audioEpisodio1');
+      if(audio) audio.volume = val;
+      if(document.getElementById('volMain')) document.getElementById('volMain').value = val;
+      if(document.getElementById('volFlotante')) document.getElementById('volFlotante').value = val;
+    }
+
+    function toggleAudioMain() {
+       const audio = document.getElementById('audioEpisodio1');
+       if(!audio) return;
+       if(audio.paused) {
+           audio.play();
+           flotanteOcultoUsuario = false; // Se reinicia el permiso para mostrar el flotante al hacer scroll
+       } else {
+           audio.pause();
+       }
+    }
+
+    function toggleAudioFlotante(e) {
+       e.stopPropagation();
+       const audio = document.getElementById('audioEpisodio1');
+       if(!audio) return;
+       if(audio.paused) {
+           audio.play();
+       } else {
+           audio.pause();
+           scrollToPlayer(); // Petición de usuario: si pausa desde el flotante, hace scroll hacia el reproductor
+       }
+    }
+
+    function cerrarFlotante(e) {
+       e.stopPropagation();
+       flotanteOcultoUsuario = true;
+       const miniPlayer = document.getElementById('miniPlayerFlotante');
+       if(miniPlayer) {
+          miniPlayer.classList.add('translate-y-[150%]', 'opacity-0');
+          miniPlayer.classList.remove('translate-y-0', 'opacity-100');
+       }
+    }
+
+    function scrollToPlayer() {
+      const p = document.getElementById('centroMultimediaMagazine');
+      if (p) p.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function checkMiniPlayer() {
+      const audioEl = document.getElementById('audioEpisodio1');
+      const miniPlayer = document.getElementById('miniPlayerFlotante');
+      const mainPlayerCont = document.getElementById('centroMultimediaMagazine');
+
+      if (!audioEl || !miniPlayer || !mainPlayerCont) return;
+
+      // Detectar si el reproductor principal está fuera de la vista
+      const rect = mainPlayerCont.getBoundingClientRect();
+      const isMainOutOfView = rect.bottom < 0 || rect.top > window.innerHeight;
+
+      // Elementos del UI
+      const iconPlayMain = document.getElementById('iconPlayMain');
+      const iconPauseMain = document.getElementById('iconPauseMain');
+      const eqMain = document.getElementById('eqMain');
+      const eqMainIdle = document.getElementById('eqMainIdle');
+      
+      const iconPlayFlotante = document.getElementById('iconPlayFlotante');
+      const iconPauseFlotante = document.getElementById('iconPauseFlotante');
+      const eqFlotante = document.getElementById('eqFlotante');
+
+      if (audioEl.paused) {
+         if(iconPlayMain) iconPlayMain.classList.remove('hidden');
+         if(iconPauseMain) iconPauseMain.classList.add('hidden');
+         if(eqMain) eqMain.classList.add('hidden');
+         if(eqMainIdle) eqMainIdle.classList.remove('hidden');
+         
+         if(iconPlayFlotante) iconPlayFlotante.classList.remove('hidden');
+         if(iconPauseFlotante) iconPauseFlotante.classList.add('hidden');
+         if(eqFlotante) {
+            eqFlotante.classList.add('opacity-40');
+            Array.from(eqFlotante.children).forEach(child => child.style.animationPlayState = 'paused');
+         }
+      } else {
+         if(iconPlayMain) iconPlayMain.classList.add('hidden');
+         if(iconPauseMain) iconPauseMain.classList.remove('hidden');
+         if(eqMain) eqMain.classList.remove('hidden');
+         if(eqMainIdle) eqMainIdle.classList.add('hidden');
+         
+         if(iconPlayFlotante) iconPlayFlotante.classList.add('hidden');
+         if(iconPauseFlotante) iconPauseFlotante.classList.remove('hidden');
+         if(eqFlotante) {
+            eqFlotante.classList.remove('opacity-40');
+            Array.from(eqFlotante.children).forEach(child => child.style.animationPlayState = 'running');
+         }
+      }
+
+      // Mostrar la Píldora Flotante solo si: el principal NO se ve, el usuario no le dio a la X, y la pista ha empezado (>0)
+      if (isMainOutOfView && !flotanteOcultoUsuario && (audioEl.currentTime > 0)) {
+         miniPlayer.classList.remove('translate-y-[150%]', 'opacity-0');
+         miniPlayer.classList.add('translate-y-0', 'opacity-100');
+      } else {
+         miniPlayer.classList.add('translate-y-[150%]', 'opacity-0');
+         miniPlayer.classList.remove('translate-y-0', 'opacity-100');
+      }
+    }
+
+    function inicializarAudioEventos() {
+      const audio = document.getElementById('audioEpisodio1');
+      if(!audio) return;
+      audio.addEventListener('play', checkMiniPlayer);
+      audio.addEventListener('pause', checkMiniPlayer);
+      audio.addEventListener('timeupdate', syncAudioUI);
+      audio.addEventListener('loadedmetadata', syncAudioUI);
+      window.addEventListener('scroll', checkMiniPlayer);
+    }
+
     window.addEventListener("DOMContentLoaded", () => {
       document.querySelectorAll("img[data-qr-url]").forEach((img) => {
         if (img.getAttribute("data-qr-theme") === "dark" || (img.complete && img.naturalWidth === 0)) {
           renderizarQrCorporativoSP(img);
         }
       });
-      inicializarDuracionAudio();
+      inicializarAudioEventos();
 
-      // AUTO-SCROLL AL REPRODUCTOR Y PLAY
+      // AUTO-SCROLL AL REPRODUCTOR Y PLAY DESDE LA REVISTA
       if (window.location.hash === '#play-podcast') {
         setTimeout(() => {
           const contenedor = document.getElementById('centroMultimediaMagazine');
@@ -1398,105 +1611,9 @@
               audio.play().catch(() => {});
             }
           }
-        }, 300); // Pequeño retardo para asegurar que la página ha renderizado
-      }
-
-      // LÓGICA DEL MINI-REPRODUCTOR FLOTANTE
-      const audioEl = document.getElementById('audioEpisodio1');
-      const miniPlayer = document.getElementById('miniPlayerFlotante');
-      const mainPlayerCont = document.getElementById('centroMultimediaMagazine');
-
-      if (audioEl && miniPlayer && mainPlayerCont) {
-        const checkMiniPlayer = () => {
-          // Si el audio está sonando...
-          if (!audioEl.paused) {
-            const rect = mainPlayerCont.getBoundingClientRect();
-            // Comprobamos si el reproductor principal está fuera de la pantalla (arriba o abajo)
-            if (rect.bottom < 0 || rect.top > window.innerHeight) {
-              miniPlayer.classList.remove('translate-y-[150%]', 'opacity-0');
-              miniPlayer.classList.add('translate-y-0', 'opacity-100');
-            } else {
-              // Si el reproductor grande sí se ve en pantalla, ocultamos el flotante
-              miniPlayer.classList.add('translate-y-[150%]', 'opacity-0');
-              miniPlayer.classList.remove('translate-y-0', 'opacity-100');
-            }
-          } else {
-            // Si el audio está pausado, ocultamos el flotante siempre
-            miniPlayer.classList.add('translate-y-[150%]', 'opacity-0');
-            miniPlayer.classList.remove('translate-y-0', 'opacity-100');
-          }
-        };
-
-        // Escuchamos el scroll de la página y los eventos del audio
-        window.addEventListener('scroll', checkMiniPlayer);
-        audioEl.addEventListener('play', checkMiniPlayer);
-        audioEl.addEventListener('pause', checkMiniPlayer);
+        }, 300);
       }
     });
-
-    // CONTROLES DEL MINI-REPRODUCTOR
-    function scrollToPlayer() {
-      const p = document.getElementById('centroMultimediaMagazine');
-      if (p) p.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-    
-    function pausarAudioFlotante(e) {
-      e.stopPropagation(); // Evita que se haga scroll al pulsar pausa
-      const a = document.getElementById('audioEpisodio1');
-      if (a) a.pause();
-    }
-
-    function inicializarDuracionAudio() {
-      const audio = document.getElementById('audioEpisodio1');
-      const spanDuracion = document.getElementById('duracionPodcastBtn');
-      const enlaceDescarga = document.getElementById('enlaceDescargaPodcast');
-      const avisoDiagnostico = document.getElementById('avisoDiagnosticoAudio');
-      if (!audio) return;
-
-      function actualizar() {
-        if (enlaceDescarga && audio.currentSrc) {
-          enlaceDescarga.href = audio.currentSrc;
-        }
-        if (avisoDiagnostico) {
-          avisoDiagnostico.classList.add('hidden');
-        }
-        if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration) && audio.duration > 0) {
-          const totalSegundos = Math.round(audio.duration);
-          const mins = Math.floor(totalSegundos / 60);
-          const segs = totalSegundos % 60;
-          let texto = '';
-          if (mins > 0 && segs > 0) {
-            texto = `(${mins}:${segs.toString().padStart(2, '0')} min)`;
-          } else if (mins > 0) {
-            texto = `(${mins} min)`;
-          } else {
-            texto = `(${segs} seg)`;
-          }
-          if (spanDuracion) spanDuracion.textContent = texto;
-        }
-      }
-
-      function mostrarFallo() {
-        if (avisoDiagnostico && (!audio.currentSrc || audio.networkState === HTMLMediaElement.NETWORK_NO_SOURCE)) {
-          avisoDiagnostico.classList.remove('hidden');
-        }
-      }
-
-      if (audio.readyState >= 1) {
-        actualizar();
-      }
-
-      audio.addEventListener('loadedmetadata', actualizar);
-      audio.addEventListener('durationchange', actualizar);
-      audio.addEventListener('canplay', actualizar);
-      audio.addEventListener('error', mostrarFallo);
-
-      setTimeout(() => {
-        if (!audio.currentSrc || audio.readyState === 0 || isNaN(audio.duration)) {
-          mostrarFallo();
-        }
-      }, 1500);
-    }
 
     function cargarSiguienteExtension(img) {
       if (!img) return;
@@ -1614,9 +1731,8 @@
       if (e.key === 'Escape') cerrarModalLegal();
     });
 
-    // FIX PARA iPHONE/SAFARI: Forzar el reencuadre al volver atrás con la flecha nativa o el gesto de deslizar (BFCache)
+    // FIX PARA iPHONE/SAFARI BFCache: Forzar el reencuadre al volver atrás con la flecha nativa
     window.addEventListener('pageshow', (event) => {
-      // event.persisted detecta si la página se está restaurando desde la caché nativa de iOS
       if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
         if (window.location.hash === '#magazine' || window.location.hash === '#play-podcast') {
           setTimeout(() => {
@@ -1625,7 +1741,7 @@
             if (seccion) {
               seccion.scrollIntoView({ behavior: 'auto', block: 'start' });
             }
-          }, 50); // Le damos 50ms de margen a Safari para que estabilice el renderizado
+          }, 50);
         }
       }
     });
