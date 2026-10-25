@@ -82,11 +82,11 @@
         border-radius: 0 !important;
         overflow: hidden !important; 
       }
-      .no-print { display: none !important; }
+      .no-print, .mobile-back-pill { display: none !important; }
       .dark-page { background-color: var(--folder-dark) !important; color: white !important; }
     }
 
-    /* BARRA DE IMPRESIÓN Y CONTROL */
+    /* BARRA DE IMPRESIÓN Y CONTROL (SOLO ESCRITORIO) */
     .print-bar {
       background: #0f172a;
       color: white;
@@ -133,6 +133,17 @@
     }
     .back-btn:hover {
       background: #334155;
+    }
+
+    /* PÍLDORA DISCRETA DE VOLVER A LA WEB INTEGRADA EN CABECERA (OCULTA EN PC, VISIBLE EN MÓVIL) */
+    .mobile-back-pill {
+      display: none;
+    }
+    .masthead-badge-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
     }
 
     /* TIPOGRAFÍAS Y ESTILOS EDITORIALES CALIBRADOS PARA LECTURA AMPLIA EN PANTALLA E IMPRESIÓN A4 */
@@ -770,11 +781,11 @@
     }
 
     /* ========================================================================= */
-    /* MODO AUTOENCUADRANTE MÓVIL Y TABLET (LECTURA FLUIDA SIN HACER ZOOM)       */
+    /* MODO AUTOENCUADRANTE MÓVIL Y TABLET (OPCIÓN A: ENTRADA DIRECTA SIN BARRA) */
     /* ========================================================================= */
     @media screen and (max-width: 840px) {
       body {
-        padding: 10px 8px 28px 8px;
+        padding: 6px 8px 28px 8px;
         gap: 16px;
         background-color: #0f172a;
       }
@@ -783,38 +794,42 @@
       .circuit-desktop { display: none !important; }
       .circuit-mobile { display: block !important; }
 
+      /* OPCIÓN A: OCULTAMOS POR COMPLETO LA BARRA SUPERIOR APARATOSA EN MÓVIL */
+      .print-bar {
+        display: none !important;
+      }
+
       /* OCULTAMOS EL LOGO EN LA CABECERA MÓVIL PARA AHORRAR ALTURA */
       .folder-brand-lockup { 
         display: none !important; 
       }
 
-      .print-bar {
+      /* MOSTRAMOS EL BOTÓN INTEGRADO DISCRETO DE "← VOLVER A LA WEB" EN LA FILA SUPERIOR */
+      .masthead-badge-row {
         width: 100%;
-        max-width: 100%;
-        border-radius: 14px;
-        padding: 10px 12px;
-        flex-wrap: wrap;
         justify-content: space-between;
-        gap: 8px;
-        top: 6px;
-      }
-      .print-bar > span {
-        font-size: 11.5px;
-        width: 100%;
-        text-align: center;
-        color: #cbd5e1;
-      }
-      .print-bar-actions {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
+        align-items: center;
         gap: 8px;
       }
-      .print-btn {
-        flex: 1;
-        justify-content: center;
-        padding: 9px 10px;
-        font-size: 12px;
+      .mobile-back-pill {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 4px;
+        background: rgba(15, 23, 42, 0.85);
+        border: 1.5px solid rgba(45, 212, 191, 0.55);
+        color: #7dd3fc;
+        text-decoration: none;
+        padding: 3.5px 11px;
+        border-radius: 999px;
+        font-size: 7.5pt;
+        font-weight: 800;
+        letter-spacing: 0.4px;
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+      }
+      .mobile-back-pill:active {
+        background: rgba(15, 118, 110, 0.65);
+        color: #ffffff;
       }
 
       .page {
@@ -830,21 +845,23 @@
       /* CABECERA MÁS CORTA EN MÓVIL (Sin Logo) */
       .cover-header-folder {
         height: auto !important;
-        padding: 12px 18px 20px 18px !important;
+        padding: 14px 18px 20px 18px !important;
         gap: 12px !important;
       }
 
       .cover-top-bar {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
         border-bottom: none;
         padding-bottom: 0;
-        margin-bottom: -6px;
+        margin-bottom: -4px;
         gap: 10px;
       }
       .magazine-issue-meta {
+        width: 100%;
         align-items: flex-start;
         text-align: left;
+        gap: 5px;
       }
 
       .cover-bottom-row {
@@ -984,6 +1001,7 @@
 </head>
 <body>
 
+  <!-- BARRA FLOTANTE: Visible en Ordenador, oculta automáticamente en Móvil e Impresión -->
   <aside class="print-bar no-print">
     <span><strong>Pyme Magazine • Nº 1</strong> (Edición Optimizada con Estadísticas e Ingeniería IA — 4 Págs. A4)</span>
     <div class="print-bar-actions">
@@ -1185,7 +1203,10 @@
         </a>
 
         <div class="magazine-issue-meta">
-          <span class="masthead-badge">PYME MAGAZINE • Nº 1</span>
+          <div class="masthead-badge-row">
+            <span class="masthead-badge">PYME MAGAZINE • Nº 1</span>
+            <a href="../index.html#magazine" onclick="volverALaWeb(event)" class="mobile-back-pill no-print">← Volver a la Web</a>
+          </div>
           <span class="masthead-sub">Cuadernos de Estrategia y Automatización Local • Galicia</span>
         </div>
       </div>
