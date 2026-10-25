@@ -82,7 +82,7 @@
         border-radius: 0 !important;
         overflow: hidden !important; 
       }
-      .no-print, .mobile-back-pill { display: none !important; }
+      .no-print, .mobile-end-back-wrap { display: none !important; }
       .dark-page { background-color: var(--folder-dark) !important; color: white !important; }
     }
 
@@ -135,15 +135,9 @@
       background: #334155;
     }
 
-    /* PÍLDORA DISCRETA DE VOLVER A LA WEB INTEGRADA EN CABECERA (OCULTA EN PC, VISIBLE EN MÓVIL) */
-    .mobile-back-pill {
+    /* BOTÓN DE RETORNO AL FINAL DEL ARTÍCULO (OCULTO EN PC, VISIBLE EN MÓVIL AL TERMINAR DE LEER) */
+    .mobile-end-back-wrap {
       display: none;
-    }
-    .masthead-badge-row {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 8px;
     }
 
     /* TIPOGRAFÍAS Y ESTILOS EDITORIALES CALIBRADOS PARA LECTURA AMPLIA EN PANTALLA E IMPRESIÓN A4 */
@@ -781,7 +775,7 @@
     }
 
     /* ========================================================================= */
-    /* MODO AUTOENCUADRANTE MÓVIL Y TABLET (OPCIÓN A: ENTRADA DIRECTA SIN BARRA) */
+    /* MODO AUTOENCUADRANTE MÓVIL: PORTADA LIMPIA + VOLVER SOLO AL FINAL DEL TODO */
     /* ========================================================================= */
     @media screen and (max-width: 840px) {
       body {
@@ -794,7 +788,7 @@
       .circuit-desktop { display: none !important; }
       .circuit-mobile { display: block !important; }
 
-      /* OPCIÓN A: OCULTAMOS POR COMPLETO LA BARRA SUPERIOR APARATOSA EN MÓVIL */
+      /* OCULTAMOS POR COMPLETO LA BARRA SUPERIOR APARATOSA EN MÓVIL */
       .print-bar {
         display: none !important;
       }
@@ -804,32 +798,32 @@
         display: none !important; 
       }
 
-      /* MOSTRAMOS EL BOTÓN INTEGRADO DISCRETO DE "← VOLVER A LA WEB" EN LA FILA SUPERIOR */
-      .masthead-badge-row {
-        width: 100%;
-        justify-content: space-between;
-        align-items: center;
-        gap: 8px;
+      /* MOSTRAMOS EL BOTÓN DE VOLVER A LA WEB ÚNICAMENTE AL FINAL DEL ARTÍCULO */
+      .mobile-end-back-wrap {
+        display: flex !important;
+        justify-content: center;
+        padding: 14px 18px 6px 18px;
       }
-      .mobile-back-pill {
-        display: inline-flex !important;
+      .mobile-end-back-pill {
+        display: inline-flex;
         align-items: center;
-        gap: 4px;
-        background: rgba(15, 23, 42, 0.85);
-        border: 1.5px solid rgba(45, 212, 191, 0.55);
-        color: #7dd3fc;
+        justify-content: center;
+        gap: 6px;
+        background: var(--folder-navy);
+        border: 1.5px solid var(--neon-green);
+        color: #ffffff;
         text-decoration: none;
-        padding: 3.5px 11px;
+        padding: 9px 20px;
         border-radius: 999px;
-        font-size: 7.5pt;
+        font-size: 9.5pt;
         font-weight: 800;
         letter-spacing: 0.4px;
-        white-space: nowrap;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+        box-shadow: 0 4px 14px rgba(10, 34, 70, 0.25);
+        width: 100%;
+        text-align: center;
       }
-      .mobile-back-pill:active {
-        background: rgba(15, 118, 110, 0.65);
-        color: #ffffff;
+      .mobile-end-back-pill:active {
+        background: var(--accent);
       }
 
       .page {
@@ -842,7 +836,7 @@
         overflow: hidden;
       }
 
-      /* CABECERA MÁS CORTA EN MÓVIL (Sin Logo) */
+      /* CABECERA LIMPIA Y COMPACTA EN MÓVIL */
       .cover-header-folder {
         height: auto !important;
         padding: 14px 18px 20px 18px !important;
@@ -851,7 +845,7 @@
 
       .cover-top-bar {
         flex-direction: column;
-        align-items: stretch;
+        align-items: flex-start;
         border-bottom: none;
         padding-bottom: 0;
         margin-bottom: -4px;
@@ -861,7 +855,7 @@
         width: 100%;
         align-items: flex-start;
         text-align: left;
-        gap: 5px;
+        gap: 4px;
       }
 
       .cover-bottom-row {
@@ -1203,10 +1197,7 @@
         </a>
 
         <div class="magazine-issue-meta">
-          <div class="masthead-badge-row">
-            <span class="masthead-badge">PYME MAGAZINE • Nº 1</span>
-            <a href="../index.html#magazine" onclick="volverALaWeb(event)" class="mobile-back-pill no-print">← Volver a la Web</a>
-          </div>
+          <span class="masthead-badge">PYME MAGAZINE • Nº 1</span>
           <span class="masthead-sub">Cuadernos de Estrategia y Automatización Local • Galicia</span>
         </div>
       </div>
@@ -1479,6 +1470,11 @@
           <img id="qrContactoRevistaImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-qr-url="https://wa.me/34711547561?text=Hola%20Francisco%2C%20he%20le%C3%ADdo%20el%20N%C3%BAmero%201%20de%20Pyme%20Magazine%20y%20me%20gustar%C3%ADa%20ver%20una%20demostraci%C3%B3n%20en%20vivo%20aplicada%20a%20mi%20negocio." data-qr-theme="dark" alt="Código QR Contacto WhatsApp">
           <span class="qr-folder-bottom">Descubre cómo aquí</span>
         </a>
+      </div>
+
+      <!-- BOTÓN DE VOLVER A LA WEB AL FINAL DEL TODO DEL ARTÍCULO (SOLO VISIBLE EN MÓVIL) -->
+      <div class="mobile-end-back-wrap no-print">
+        <a href="../index.html#magazine" onclick="volverALaWeb(event)" class="mobile-end-back-pill">← Volver a la Web Principal</a>
       </div>
 
     </div>
