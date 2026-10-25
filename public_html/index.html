@@ -76,6 +76,20 @@
       animation: ledRGB 8s linear infinite;
     }
 
+    /* Ecualizador Dinámico Realista */
+    @keyframes eqReal {
+      0% { height: 25%; }
+      25% { height: 95%; }
+      50% { height: 40%; }
+      75% { height: 100%; }
+      100% { height: 30%; }
+    }
+    .eq-bar { animation: eqReal 0s infinite alternate ease-in-out; }
+    .eq-b1 { animation-duration: 0.6s; animation-delay: 0s; }
+    .eq-b2 { animation-duration: 0.4s; animation-delay: 0.1s; }
+    .eq-b3 { animation-duration: 0.7s; animation-delay: 0.2s; }
+    .eq-b4 { animation-duration: 0.5s; animation-delay: 0.3s; }
+
     /* Estilos para ocultar el scrollbar en el modal del menú móvil */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
@@ -956,45 +970,66 @@
                 <span class="text-[10px] font-bold uppercase tracking-wider text-teal-300 bg-teal-950 px-2 py-0.5 rounded border border-teal-700/50 hidden md:inline">Multimedia Oficial</span>
               </div>
 
-              <!-- Contenedor Audio con REPRODUCTOR PERSONALIZADO -->
+              <!-- Contenedor Audio con REPRODUCTOR PRINCIPAL REDISEÑADO -->
               <div id="mediaBoxAudio" class="block">
                 
-                <div class="w-full bg-slate-900 border border-teal-500/40 rounded-xl p-3 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-1 shadow-lg shadow-teal-950/30">
+                <div class="w-full bg-slate-900 border border-teal-500/40 rounded-xl p-3 sm:p-4 flex flex-col gap-3 mt-1 shadow-lg shadow-teal-950/30">
                   
-                  <!-- Controles Play/Pause y Ecualizador -->
-                  <div class="flex items-center gap-3 w-full sm:w-auto">
-                    <button type="button" onclick="toggleAudioMain()" id="btnPlayMain" class="w-10 h-10 rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 flex items-center justify-center shadow-lg transition-all flex-shrink-0">
-                      <svg id="iconPlayMain" class="w-4 h-4 ml-0.5 fill-current" viewBox="0 0 24 24"><path d="M3 22v-20l18 10-18 10z"/></svg>
-                      <svg id="iconPauseMain" class="w-4 h-4 hidden fill-current" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-                    </button>
+                  <!-- Fila Superior: Info del Podcast -->
+                  <div class="flex items-center gap-3 w-full border-b border-slate-700/50 pb-2.5">
+                    <div id="eqMain" class="hidden flex gap-[2px] items-end h-5 w-6 flex-shrink-0">
+                       <div class="w-1 bg-teal-400 rounded-t eq-bar eq-b1"></div>
+                       <div class="w-1 bg-teal-400 rounded-t eq-bar eq-b2"></div>
+                       <div class="w-1 bg-teal-400 rounded-t eq-bar eq-b3"></div>
+                       <div class="w-1 bg-teal-400 rounded-t eq-bar eq-b4"></div>
+                    </div>
+                    <div id="eqMainIdle" class="flex gap-[2px] items-end h-5 w-6 flex-shrink-0 opacity-30">
+                       <div class="w-1 bg-teal-400 rounded-t h-[30%]"></div>
+                       <div class="w-1 bg-teal-400 rounded-t h-[50%]"></div>
+                       <div class="w-1 bg-teal-400 rounded-t h-[20%]"></div>
+                       <div class="w-1 bg-teal-400 rounded-t h-[40%]"></div>
+                    </div>
+                    <div class="flex flex-col overflow-hidden">
+                       <span class="text-[10px] text-teal-400 font-bold uppercase tracking-wider">Podcast Actual</span>
+                       <span class="text-xs sm:text-sm font-semibold text-white truncate">Nº 1: La Nueva Regla del Boca a Boca</span>
+                    </div>
+                  </div>
+
+                  <!-- Fila Inferior: Controles de Reproducción y Volumen -->
+                  <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full">
                     
-                    <div id="eqMain" class="hidden flex gap-1 items-end h-5 w-5 flex-shrink-0">
-                       <div class="w-1 bg-teal-400 rounded-t h-full animate-[bounce_1s_infinite_0s]"></div>
-                       <div class="w-1 bg-teal-400 rounded-t h-full animate-[bounce_1s_infinite_0.2s]"></div>
-                       <div class="w-1 bg-teal-400 rounded-t h-full animate-[bounce_1s_infinite_0.4s]"></div>
+                    <!-- Botones: Prev, Play/Pause, Next -->
+                    <div class="flex items-center gap-1 sm:gap-2 w-full sm:w-auto justify-center sm:justify-start flex-shrink-0">
+                      <button type="button" class="p-2 text-slate-400 hover:text-teal-300 transition-colors" title="Episodio Anterior">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                      </button>
+                      
+                      <button type="button" onclick="toggleAudioMain()" id="btnPlayMain" class="w-10 h-10 rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 flex items-center justify-center shadow-lg transition-all flex-shrink-0">
+                        <svg id="iconPlayMain" class="w-4 h-4 ml-0.5 fill-current" viewBox="0 0 24 24"><path d="M3 22v-20l18 10-18 10z"/></svg>
+                        <svg id="iconPauseMain" class="w-4 h-4 hidden fill-current" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                      </button>
+                      
+                      <button type="button" class="p-2 text-slate-400 hover:text-teal-300 transition-colors" title="Episodio Siguiente">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                      </button>
                     </div>
-                    <div id="eqMainIdle" class="flex gap-1 items-end h-5 w-5 flex-shrink-0 opacity-30">
-                       <div class="w-1 bg-teal-400 rounded-t h-1"></div>
-                       <div class="w-1 bg-teal-400 rounded-t h-2"></div>
-                       <div class="w-1 bg-teal-400 rounded-t h-1.5"></div>
+
+                    <!-- Progreso de tiempo -->
+                    <div class="flex-1 flex items-center gap-2 text-xs text-slate-300 w-full font-medium">
+                      <span id="timeCurrent" class="min-w-[35px] text-right">0:00</span>
+                      <input type="range" id="progressMain" class="flex-1 h-1.5 rounded-full appearance-none bg-slate-700 accent-teal-400 cursor-pointer" value="0" min="0" max="100" step="0.1" oninput="seekAudio(this.value)">
+                      <span id="timeTotal" class="min-w-[35px]">0:00</span>
                     </div>
-                  </div>
 
-                  <!-- Progreso de tiempo -->
-                  <div class="flex-1 flex items-center gap-2 text-xs text-slate-300 w-full font-medium">
-                    <span id="timeCurrent" class="min-w-[35px] text-right">0:00</span>
-                    <input type="range" id="progressMain" class="flex-1 h-1.5 rounded-full appearance-none bg-slate-700 accent-teal-400 cursor-pointer" value="0" min="0" max="100" step="0.1" oninput="seekAudio(this.value)">
-                    <span id="timeTotal" class="min-w-[35px]">0:00</span>
-                  </div>
+                    <!-- Control de Volumen -->
+                    <div class="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto justify-end sm:justify-start">
+                      <button type="button" onclick="document.getElementById('volMain').classList.toggle('hidden'); document.getElementById('volMain').classList.toggle('sm:block');" class="text-slate-400 hover:text-white transition-colors p-1" title="Ajustar Volumen">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M5 17h-5v-10h5v10zm2-10v10l9 5v-20l-9 5zm11.008 2.093c.742.743 1.2 1.77 1.198 2.903-.002 1.133-.462 2.158-1.205 2.9l1.219 1.223c1.057-1.053 1.712-2.511 1.715-4.121.002-1.611-.648-3.068-1.702-4.125l-1.225 1.22zm2.142-2.135c1.288 1.292 2.082 3.073 2.079 5.041s-.804 3.75-2.096 5.039l1.25 1.254c1.612-1.608 2.613-3.834 2.616-6.291.005-2.457-.986-4.681-2.595-6.293l-1.254 1.25z"/></svg>
+                      </button>
+                      <input type="range" id="volMain" class="w-16 sm:w-20 h-1.5 rounded-full appearance-none bg-slate-700 accent-teal-400 cursor-pointer hidden sm:block" min="0" max="1" step="0.05" value="1" oninput="changeVolume(this.value)">
+                    </div>
 
-                  <!-- Control de Volumen -->
-                  <div class="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto justify-end sm:justify-start">
-                    <button type="button" onclick="document.getElementById('volMain').classList.toggle('hidden'); document.getElementById('volMain').classList.toggle('sm:block');" class="text-slate-400 hover:text-white transition-colors" title="Ajustar Volumen">
-                      <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M5 17h-5v-10h5v10zm2-10v10l9 5v-20l-9 5zm11.008 2.093c.742.743 1.2 1.77 1.198 2.903-.002 1.133-.462 2.158-1.205 2.9l1.219 1.223c1.057-1.053 1.712-2.511 1.715-4.121.002-1.611-.648-3.068-1.702-4.125l-1.225 1.22zm2.142-2.135c1.288 1.292 2.082 3.073 2.079 5.041s-.804 3.75-2.096 5.039l1.25 1.254c1.612-1.608 2.613-3.834 2.616-6.291.005-2.457-.986-4.681-2.595-6.293l-1.254 1.25z"/></svg>
-                    </button>
-                    <input type="range" id="volMain" class="w-16 sm:w-20 h-1.5 rounded-full appearance-none bg-slate-700 accent-teal-400 cursor-pointer hidden sm:block" min="0" max="1" step="0.05" value="1" oninput="changeVolume(this.value)">
                   </div>
-
                 </div>
 
                 <!-- Archivo nativo oculto -->
@@ -1237,38 +1272,50 @@
   </footer>
 
   <!-- ======================================================================= -->
-  <!-- MINI REPRODUCTOR FLOTANTE INTELIGENTE (Mejorado con Ecualizador y Volumen) -->
+  <!-- MINI REPRODUCTOR FLOTANTE INTELIGENTE (Mejorado con Ecualizador Realista y Controles Completos) -->
   <!-- ======================================================================= -->
-  <div id="miniPlayerFlotante" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] translate-y-[150%] opacity-0 transition-all duration-500 w-[94%] max-w-md rounded-2xl bg-slate-900/95 backdrop-blur-xl border-[2.5px] cursor-pointer shadow-[0_0_25px_rgba(20,184,166,0.25)] flex items-center p-3 gap-3 led-player" onclick="scrollToPlayer()">
+  <div id="miniPlayerFlotante" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] translate-y-[150%] opacity-0 transition-all duration-500 w-[94%] max-w-[420px] sm:max-w-[480px] rounded-2xl bg-slate-900/95 backdrop-blur-xl border-[2.5px] cursor-pointer shadow-[0_0_25px_rgba(20,184,166,0.25)] flex items-center p-3 gap-2 sm:gap-3 led-player" onclick="scrollToPlayer()">
     
-    <!-- Ecualizador Dinámico -->
-    <div id="eqFlotante" class="flex gap-1 items-end h-5 w-5 ml-1 flex-shrink-0">
-       <div class="w-1 bg-teal-400 rounded-t h-full animate-[bounce_1s_infinite_0s]"></div>
-       <div class="w-1 bg-teal-400 rounded-t h-full animate-[bounce_1s_infinite_0.2s]"></div>
-       <div class="w-1 bg-teal-400 rounded-t h-full animate-[bounce_1s_infinite_0.4s]"></div>
+    <!-- Ecualizador Dinámico Realista Flotante -->
+    <div id="eqFlotante" class="flex gap-[2px] items-end h-5 w-6 ml-1 flex-shrink-0">
+       <div class="w-1 bg-teal-400 rounded-t eq-bar eq-b1"></div>
+       <div class="w-1 bg-teal-400 rounded-t eq-bar eq-b2"></div>
+       <div class="w-1 bg-teal-400 rounded-t eq-bar eq-b3"></div>
+       <div class="w-1 bg-teal-400 rounded-t eq-bar eq-b4"></div>
     </div>
     
-    <!-- Textos -->
+    <!-- Textos del Flotante -->
     <div class="flex-1 ml-1 overflow-hidden">
       <div class="flex items-center gap-1.5">
          <span class="text-[11px] sm:text-xs font-black text-white uppercase tracking-wider">Reproduciendo</span>
+         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
       </div>
       <span class="text-[10px] sm:text-[11px] text-slate-300 font-medium line-clamp-1">Nº 1: La Nueva Regla del Boca a Boca</span>
     </div>
 
-    <!-- Altavoz y Control de Volumen Flotante (no dispara el clic del contenedor padre) -->
-    <div class="flex items-center gap-1.5 mr-1" onclick="event.stopPropagation()">
-      <button type="button" class="text-slate-400 hover:text-white cursor-default" title="Volumen">
-        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M5 17h-5v-10h5v10zm2-10v10l9 5v-20l-9 5zm11.008 2.093c.742.743 1.2 1.77 1.198 2.903-.002 1.133-.462 2.158-1.205 2.9l1.219 1.223c1.057-1.053 1.712-2.511 1.715-4.121.002-1.611-.648-3.068-1.702-4.125l-1.225 1.22zm2.142-2.135c1.288 1.292 2.082 3.073 2.079 5.041s-.804 3.75-2.096 5.039l1.25 1.254c1.612-1.608 2.613-3.834 2.616-6.291.005-2.457-.986-4.681-2.595-6.293l-1.254 1.25z"/></svg>
+    <!-- Altavoz y Control de Volumen Flotante (Oculto en móviles muy pequeños para dar espacio a botones prev/next) -->
+    <div class="hidden sm:flex items-center gap-1.5" onclick="event.stopPropagation()">
+      <button type="button" onclick="document.getElementById('volFlotante').classList.toggle('hidden');" class="text-slate-400 hover:text-white transition-colors p-1" title="Ajustar Volumen">
+        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M5 17h-5v-10h5v10zm2-10v10l9 5v-20l-9 5zm11.008 2.093c.742.743 1.2 1.77 1.198 2.903-.002 1.133-.462 2.158-1.205 2.9l1.219 1.223c1.057-1.053 1.712-2.511 1.715-4.121.002-1.611-.648-3.068-1.702-4.125l-1.225 1.22zm2.142-2.135c1.288 1.292 2.082 3.073 2.079 5.041s-.804 3.75-2.096 5.039l1.25 1.254c1.612-1.608 2.613-3.834 2.616-6.291.005-2.457-.986-4.681-2.595-6.293l-1.254 1.25z"/></svg>
       </button>
-      <input type="range" id="volFlotante" class="w-12 h-1 rounded-full appearance-none bg-slate-700 accent-teal-400 cursor-pointer" min="0" max="1" step="0.05" value="1" oninput="changeVolume(this.value)">
+      <input type="range" id="volFlotante" class="w-14 h-1.5 rounded-full appearance-none bg-slate-700 accent-teal-400 cursor-pointer hidden sm:block" min="0" max="1" step="0.05" value="1" oninput="changeVolume(this.value)">
     </div>
 
-    <!-- Botón Play/Pausa -->
-    <button type="button" onclick="toggleAudioFlotante(event)" class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white flex-shrink-0 transition-colors shadow-md">
-      <svg id="iconPlayFlotante" class="w-4 h-4 ml-0.5 hidden fill-current" viewBox="0 0 24 24"><path d="M3 22v-20l18 10-18 10z"/></svg>
-      <svg id="iconPauseFlotante" class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-    </button>
+    <!-- Controles Flotantes: Prev, Play/Pausa, Next -->
+    <div class="flex items-center gap-1.5 sm:gap-2 mr-1" onclick="event.stopPropagation()">
+      <button type="button" class="text-slate-400 hover:text-white p-1 transition-colors" title="Anterior">
+        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+      </button>
+      
+      <button type="button" onclick="toggleAudioFlotante(event)" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white flex-shrink-0 transition-colors shadow-md">
+        <svg id="iconPlayFlotante" class="w-4 h-4 ml-0.5 hidden fill-current" viewBox="0 0 24 24"><path d="M3 22v-20l18 10-18 10z"/></svg>
+        <svg id="iconPauseFlotante" class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+      </button>
+
+      <button type="button" class="text-slate-400 hover:text-white p-1 transition-colors" title="Siguiente">
+        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+      </button>
+    </div>
     
     <!-- Botón Cerrar (X) para que el usuario decida cuándo desaparecerlo -->
     <button type="button" onclick="cerrarFlotante(event)" class="absolute -top-2 -right-2 w-6 h-6 bg-slate-800 text-slate-300 hover:text-white rounded-full border border-slate-600 flex items-center justify-center text-xs font-bold shadow-lg transition-colors">✕</button>
@@ -1303,7 +1350,7 @@
             <p><strong class="text-white">Denominación Comercial:</strong> Sistemas Pyme</p>
             <p><strong class="text-white">Titular / Responsable Legal:</strong> Francisco M. Gallardo</p>
             <p><strong class="text-white">NIF / DNI:</strong> <span class="text-teal-300 font-bold">52938419D</span></p>
-            <p><strong class="text-white">Actividad:</strong> Consultoría tecnológica, desarrollo de soluciones de automatización e integración de sistemas de Inteligencia Artificial y mensajería empresarial para pymes y negocios locales.</p>
+            <p><strong class="text-white">Actividad:</strong> Consultoría tecnológica, desarrollo de soluciones de automatización e integración de sistemas de Inteligencia Artificial y mensajería empresarial (WhatsApp Business Platform / Meta Cloud API) para pymes y negocios locales.</p>
             <p><strong class="text-white">Domicilio de Actividad:</strong> Galicia, España</p>
             <p><strong class="text-white">Teléfono de Contacto:</strong> +34 711 54 75 61</p>
             <p><strong class="text-white">Correo Electrónico Oficial:</strong> francisco@sistemaspyme.es</p>
@@ -1316,21 +1363,21 @@
           <h4 class="text-base font-black text-white border-b border-white/10 pb-1.5 text-teal-300">2. Política de Privacidad y Protección de Datos (RGPD / LOPDGDD)</h4>
           <p>De conformidad con el Reglamento (UE) 2016/679 (RGPD) y la Ley Orgánica 3/2018 (LOPDGDD), le informamos sobre el tratamiento de los datos personales recabados a través de este sitio web y de nuestros canales oficiales de comunicación:</p>
           <ul class="list-disc pl-5 space-y-1.5">
-            <li><strong class="text-white">Responsable del Tratamiento:</strong> Francisco M. Gallardo (Sistemas Pyme).</li>
-            <li><strong class="text-white">Finalidad del Tratamiento:</strong> Atender las solicitudes de información, demostraciones comerciales, prestación de servicios contratados de digitalización y envío de notificaciones vía WhatsApp Business API cuando exista relación comercial.</li>
-            <li><strong class="text-white">Legitimación:</strong> Consentimiento expreso del interesado al contactar, o ejecución de un contrato.</li>
-            <li><strong class="text-white">Destinatarios:</strong> No se cederán datos a terceros salvo obligación legal o necesidad técnica a través de proveedores oficiales (Meta, Google Cloud).</li>
-            <li><strong class="text-white">Derechos del Usuario:</strong> Puede ejercer sus derechos enviando un correo a <strong class="text-white">francisco@sistemaspyme.es</strong> o respondiendo «BAJA» en nuestras comunicaciones por WhatsApp.</li>
+            <li><strong class="text-white">Responsable del Tratamiento:</strong> Francisco M. Gallardo (Sistemas Pyme), con NIF 52938419D y correo de contacto <a href="mailto:francisco@sistemaspyme.es" class="text-teal-400 underline">francisco@sistemaspyme.es</a>.</li>
+            <li><strong class="text-white">Finalidad del Tratamiento:</strong> Atender las solicitudes de información, demostraciones comerciales, prestación de servicios contratados de digitalización y automatización, facturación y envío de notificaciones operativas o encuestas de satisfacción post-servicio vía WhatsApp Business API cuando exista relación comercial o consentimiento previo.</li>
+            <li><strong class="text-white">Legitimación:</strong> Consentimiento expreso del interesado al contactar, ejecución de un contrato de prestación de servicios o interés legítimo en la evaluación de la calidad del servicio prestado.</li>
+            <li><strong class="text-white">Destinatarios y Encargados de Tratamiento:</strong> No se cederán datos a terceros salvo obligación legal o cuando sea estrictamente necesario para la prestación técnica del servicio a través de proveedores oficiales que cumplen con el RGPD (Meta Platforms Ireland Ltd. para WhatsApp Cloud API y Google Ireland Ltd. para infraestructura Cloud/Workspace).</li>
+            <li><strong class="text-white">Derechos del Usuario:</strong> Puede ejercer en cualquier momento sus derechos de acceso, rectificación, supresión, limitación, portabilidad y oposición enviando un correo electrónico a <strong class="text-white">francisco@sistemaspyme.es</strong> o respondiendo con la palabra «BAJA» en cualquiera de nuestras comunicaciones automatizadas por WhatsApp.</li>
           </ul>
         </section>
 
         <section id="sec-meta" class="space-y-2.5 pt-2">
           <h4 class="text-base font-black text-white border-b border-white/10 pb-1.5 text-teal-300">3. Condiciones del Servicio y Cumplimiento de WhatsApp Business Platform (Meta)</h4>
-          <p><strong>Sistemas Pyme</strong> opera como proveedor tecnológico e integrador de soluciones basadas en las APIs oficiales de Meta (WhatsApp Business Cloud API e Instagram Messaging API).</p>
+          <p><strong>Sistemas Pyme</strong> (titularidad de Francisco M. Gallardo, NIF <strong>52938419D</strong>) opera como proveedor tecnológico e integrador de soluciones basadas en las APIs oficiales de Meta (WhatsApp Business Cloud API e Instagram Messaging API) y Google Business Profile API.</p>
           <ul class="list-disc pl-5 space-y-1.5">
-            <li><strong class="text-white">Comunicaciones Transaccionales y de Calidad:</strong> Todos los mensajes enviados corresponden exclusivamente a notificaciones solicitadas por los clientes de los comercios adheridos.</li>
-            <li><strong class="text-white">Política Anti-Spam:</strong> Queda prohibido el envío de comunicaciones masivas no solicitadas. Todo usuario dispone de un mecanismo de baja respondiendo «BAJA» o «STOP» en el chat.</li>
-            <li><strong class="text-white">Propiedad Intelectual:</strong> Todos los contenidos y desarrollos de software de Sistemas Pyme están protegidos por la normativa vigente.</li>
+            <li><strong class="text-white">Comunicaciones Transaccionales y de Calidad:</strong> Todos los mensajes enviados a través de nuestras integraciones de WhatsApp Business corresponden exclusivamente a notificaciones solicitadas por los clientes de los comercios adheridos (recordatorios de cita previa, confirmaciones de reserva, encuestas breves de control de calidad post-visita o avisos administrativos).</li>
+            <li><strong class="text-white">Política Anti-Spam y Baja Inmediata (Opt-Out):</strong> Queda prohibido el envío de comunicaciones masivas no solicitadas (spam). Todo usuario final dispone de un mecanismo automático e inmediato de baja respondiendo «BAJA» o «STOP» en el propio chat de WhatsApp, lo que bloquea cualquier envío futuro a dicho número.</li>
+            <li><strong class="text-white">Propiedad Intelectual:</strong> Todos los contenidos, diseños, logotipos, textos y desarrollos de software de Sistemas Pyme están protegidos por la normativa de propiedad intelectual e industrial vigente en España.</li>
           </ul>
         </section>
 
@@ -1369,7 +1416,7 @@
       if (window.location.protocol === 'file:') return;
       e.preventDefault();
 
-      // FIX PARA iPHONE/SAFARI: Aseguramos que el historial registre que estamos en la sección magazine antes de salir
+      // FIX PARA iPHONE/SAFARI BFCache: Anclamos el historial en la posición correcta antes de irnos
       if (window.history.replaceState) {
         window.history.replaceState(null, null, '#magazine');
       }
@@ -1491,7 +1538,7 @@
        if(!audio) return;
        if(audio.paused) {
            audio.play();
-           flotanteOcultoUsuario = false; // Se reinicia el permiso para mostrar el flotante al hacer scroll
+           flotanteOcultoUsuario = false; // Se reinicia el permiso para mostrar el flotante
        } else {
            audio.pause();
        }
@@ -1505,7 +1552,8 @@
            audio.play();
        } else {
            audio.pause();
-           scrollToPlayer(); // Petición de usuario: si pausa desde el flotante, hace scroll hacia el reproductor
+           // Comportamiento Intuitivo UX: Si pausa desde el flotante, hacemos scroll de vuelta al grande
+           scrollToPlayer(); 
        }
     }
 
@@ -1531,7 +1579,7 @@
 
       if (!audioEl || !miniPlayer || !mainPlayerCont) return;
 
-      // Detectar si el reproductor principal está fuera de la vista
+      // Calcular si el reproductor principal está fuera de la pantalla de forma matemática
       const rect = mainPlayerCont.getBoundingClientRect();
       const isMainOutOfView = rect.bottom < 0 || rect.top > window.innerHeight;
 
@@ -1588,7 +1636,10 @@
       audio.addEventListener('pause', checkMiniPlayer);
       audio.addEventListener('timeupdate', syncAudioUI);
       audio.addEventListener('loadedmetadata', syncAudioUI);
+      
+      // Controlar el scroll para disparar el cálculo matemático del reproductor flotante
       window.addEventListener('scroll', checkMiniPlayer);
+      window.addEventListener('resize', checkMiniPlayer);
     }
 
     window.addEventListener("DOMContentLoaded", () => {
@@ -1731,7 +1782,7 @@
       if (e.key === 'Escape') cerrarModalLegal();
     });
 
-    // FIX PARA iPHONE/SAFARI BFCache: Forzar el reencuadre al volver atrás con la flecha nativa
+    // FIX PARA iPHONE/SAFARI BFCache: Forzar el reencuadre de Pyme Magazine al volver atrás con la flecha nativa
     window.addEventListener('pageshow', (event) => {
       if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
         if (window.location.hash === '#magazine' || window.location.hash === '#play-podcast') {
