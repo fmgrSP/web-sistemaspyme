@@ -901,7 +901,6 @@
               <!-- Contenedor Audio con soporte MP3 y M4A nativo -->
               <div id="mediaBoxAudio" class="block">
                 <audio id="audioEpisodio1" controls preload="auto" class="w-full h-10 mt-1 rounded-lg">
-                  <!-- Soporte doble: M4A y MP3 en subcarpeta y variantes -->
                   <source src="podcasts/episodio-1.m4a" type="audio/mp4">
                   <source src="podcasts/episodio-1.mp3" type="audio/mpeg">
                   <source src="podcast/episodio-1.m4a" type="audio/mp4">
@@ -937,8 +936,6 @@
               <!-- Contenedor Vídeo (Incrustación Oficial de Lista de Reproducción de YouTube) -->
               <div id="mediaBoxVideo" class="hidden">
                 <div class="relative w-full rounded-xl overflow-hidden bg-black/80 border border-white/10 aspect-video flex items-center justify-center">
-                  <!-- REPRODUCTOR OFICIAL DE YOUTUBE (LISTA DE REPRODUCCIÓN / PLAYLIST) -->
-                  <!-- Solo tienes que sustituir 'ID_DE_TU_LISTA_DE_REPRODUCCION' por el código de tu lista de YouTube (ej. PL1234567890abcdef) -->
                   <iframe id="videoIframe" class="w-full h-full aspect-video rounded-xl"
                           src="https://www.youtube-nocookie.com/embed/videoseries?list=ID_DE_TU_LISTA_DE_REPRODUCCION"
                           title="Pyme Magazine Vídeos"
@@ -1082,11 +1079,11 @@
   <section id="contacto" class="scroll-mt-24 py-20 bg-gradient-to-b from-brand-dark to-black text-center relative overflow-hidden">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
       
-      <!-- Logotipo Isotipo SP + Sistemas Pyme con Resplandor -->
+      <!-- Logotipo Isotipo SP + Sistemas Pyme con Resplandor (Multicompatibilidad de formatos y variantes) -->
       <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl bg-black border-2 border-teal-400/60 flex items-center justify-center mx-auto mb-7 shadow-[0_0_35px_rgba(0,216,150,0.32)] p-2.5 overflow-hidden hover:scale-105 transition-all">
-        <img src="Logo Simple Verde Neón sin fondo.jpg" 
-             data-img-base="Logo Simple Verde Neón sin fondo, Logo Simple Verde Neon sin fondo, Logo Simple Verde Neón, Logo Simple Verde Neon" 
-             data-img-fallback="https://placehold.co/200x200/000000/00e699?text=SP" 
+        <img src="Logo Simple Verde Neón sin fondo_2.jpg" 
+             id="imgLogoFooter"
+             data-img-base="Logo Simple Verde Neón sin fondo_2, Logo Simple Verde Neon sin fondo_2, Logo Simple Verde Neón sin fondo, Logo Simple Verde Neon sin fondo, Logo Simple Verde Neón 2, Logo Simple Verde Neon 2, Logo Simple Verde Neón, Logo Simple Verde Neon, Logo Simple Verde, logo_sp_neon, logo" 
              alt="Sistemas Pyme" 
              class="w-full h-full object-contain" 
              onerror="cargarSiguienteExtension(this)">
@@ -1218,6 +1215,9 @@
 
     const SVG_LOGO_SP_BLANCO = "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 140"><defs><mask id="mb"><rect width="210" height="140" fill="white"/><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="black" stroke-width="6.5"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 134" fill="none" stroke="black" stroke-width="6.5" stroke-linecap="round"/><line x1="126.5" y1="38" x2="126.5" y2="128" stroke="black" stroke-width="6.5"/><circle cx="92" cy="19" r="13.5" fill="black"/></mask></defs><g mask="url(#mb)"><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="#ffffff" stroke-width="21" stroke-linejoin="round"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 130" fill="none" stroke="#ffffff" stroke-width="21" stroke-linecap="round" stroke-linejoin="round"/><rect x="116" y="32" width="10.5" height="90" fill="#ffffff"/><rect x="129.5" y="48" width="9.5" height="72" fill="#ffffff"/><rect x="130" y="73.5" width="24" height="21" fill="#ffffff"/></g><circle cx="92" cy="19" r="9" fill="#081c3a" stroke="#ffffff" stroke-width="5.5"/><circle cx="18" cy="121.5" r="9" fill="#081c3a" stroke="#ffffff" stroke-width="5.5"/><circle cx="134.5" cy="48" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/><circle cx="134.5" cy="121.5" r="9" fill="#081c3a" stroke="#ffffff" stroke-width="5.5"/></svg>`);
 
+    /* Isotipo Neón oficial vectorizado de respaldo ininterrumpido (100% autónomo y local) */
+    const SVG_LOGO_SP_NEON = "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 140"><defs><mask id="mNeon"><rect width="210" height="140" fill="white"/><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="black" stroke-width="6.5"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 134" fill="none" stroke="black" stroke-width="6.5" stroke-linecap="round"/><line x1="126.5" y1="38" x2="126.5" y2="128" stroke="black" stroke-width="6.5"/><circle cx="92" cy="19" r="13.5" fill="black"/></mask></defs><g mask="url(#mNeon)"><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="#00e699" stroke-width="21" stroke-linejoin="round"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 130" fill="none" stroke="#00e699" stroke-width="21" stroke-linecap="round" stroke-linejoin="round"/><rect x="116" y="32" width="10.5" height="90" fill="#00e699"/><rect x="129.5" y="48" width="9.5" height="72" fill="#00e699"/><rect x="130" y="73.5" width="24" height="21" fill="#00e699"/></g><circle cx="92" cy="19" r="9" fill="#000000" stroke="#00e699" stroke-width="5.5"/><circle cx="18" cy="121.5" r="9" fill="#000000" stroke="#00e699" stroke-width="5.5"/><circle cx="134.5" cy="48" r="9" fill="#000000" stroke="#00e699" stroke-width="5.5"/><circle cx="134.5" cy="121.5" r="9" fill="#000000" stroke="#00e699" stroke-width="5.5"/></svg>`);
+
     function renderizarQrCorporativoSP(imgEl) {
       if (!imgEl || imgEl.dataset.qrRendered === "1") return;
       imgEl.dataset.qrRendered = "1";
@@ -1335,17 +1335,37 @@
       }, 1500);
     }
 
+    /* SISTEMA DE CARGA DINÁMICA Y AUTODETECCIÓN DE IMÁGENES MULTI-FORMATO */
     function cargarSiguienteExtension(img) {
+      if (!img) return;
       const bases = (img.getAttribute('data-img-base') || 'imagen').split(',');
-      const extensiones = ['jpeg', 'jpg', 'png', 'webp', 'svg', 'JPG', 'JPEG', 'PNG'];
+      const extensiones = ['jpg', 'jpeg', 'png', 'webp', 'svg', 'JPG', 'JPEG', 'PNG', 'WEBP'];
       let candidatos = [];
+      
       bases.forEach(b => {
         const baseLimpia = b.trim();
-        extensiones.forEach(ext => candidatos.push(`${baseLimpia}.${ext}`));
+        if (!baseLimpia) return;
+        
+        // Soporte de compatibilidad Unicode NFC (precompuesto) y NFD (descompuesto de Apple macOS)
+        const nfc = baseLimpia.normalize ? baseLimpia.normalize('NFC') : baseLimpia;
+        const nfd = baseLimpia.normalize ? baseLimpia.normalize('NFD') : baseLimpia;
+        const formas = (nfc === nfd) ? [nfc] : [nfc, nfd];
+
+        formas.forEach(forma => {
+          extensiones.forEach(ext => {
+            const ruta = `${forma}.${ext}`;
+            if (!candidatos.includes(ruta)) candidatos.push(ruta);
+            const rutaCodificada = encodeURI(ruta);
+            if (!candidatos.includes(rutaCodificada)) candidatos.push(rutaCodificada);
+          });
+        });
       });
 
       let idx = parseInt(img.getAttribute('data-try-idx') || '0', 10);
-      while (idx < candidatos.length && img.getAttribute('src') === candidatos[idx]) {
+      const currentSrc = img.getAttribute('src') || '';
+      
+      // Salta candidatos que coincidan con la ruta actual para evitar bucles repetitivos
+      while (idx < candidatos.length && (candidatos[idx] === currentSrc || encodeURI(candidatos[idx]) === currentSrc)) {
         idx++;
       }
 
@@ -1354,7 +1374,11 @@
         img.src = candidatos[idx];
       } else {
         img.onerror = null;
-        img.src = img.getAttribute('data-img-fallback') || 'https://placehold.co/150x150/0b2545/ffffff?text=SP';
+        if (img.id === 'imgLogoFooter' && typeof SVG_LOGO_SP_NEON !== 'undefined') {
+          img.src = SVG_LOGO_SP_NEON;
+        } else {
+          img.src = img.getAttribute('data-img-fallback') || 'https://placehold.co/150x150/0b2545/ffffff?text=SP';
+        }
       }
     }
 
