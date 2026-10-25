@@ -76,15 +76,15 @@
       animation: ledRGB 8s linear infinite;
     }
 
-    /* Ecualizador Dinámico Realista */
+    /* Ecualizador Dinámico Fallback (Por si el navegador bloquea la API de audio) */
     @keyframes eqReal {
-      0% { height: 25%; }
+      0% { height: 15%; }
       25% { height: 95%; }
       50% { height: 40%; }
       75% { height: 100%; }
       100% { height: 30%; }
     }
-    .eq-bar { animation: eqReal 0s infinite alternate ease-in-out; }
+    .eq-bar { animation: eqReal 0s infinite alternate ease-in-out; transition: height 0.05s ease; }
     .eq-b1 { animation-duration: 0.6s; animation-delay: 0s; }
     .eq-b2 { animation-duration: 0.4s; animation-delay: 0.1s; }
     .eq-b3 { animation-duration: 0.7s; animation-delay: 0.2s; }
@@ -1032,8 +1032,8 @@
                   </div>
                 </div>
 
-                <!-- Archivo nativo oculto -->
-                <audio id="audioEpisodio1" preload="metadata" class="hidden">
+                <!-- Archivo nativo oculto (Importante: crossOrigin para la Web Audio API) -->
+                <audio id="audioEpisodio1" preload="metadata" class="hidden" crossorigin="anonymous">
                   <source src="podcasts/episodio-1.m4a" type="audio/mp4">
                   <source src="podcasts/episodio-1.mp3" type="audio/mpeg">
                   <source src="podcast/episodio-1.m4a" type="audio/mp4">
@@ -1272,11 +1272,11 @@
   </footer>
 
   <!-- ======================================================================= -->
-  <!-- MINI REPRODUCTOR FLOTANTE INTELIGENTE (Mejorado con Ecualizador Realista y Controles Completos) -->
+  <!-- MINI REPRODUCTOR FLOTANTE INTELIGENTE (Ecualizador dinámico Web Audio)  -->
   <!-- ======================================================================= -->
   <div id="miniPlayerFlotante" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] translate-y-[150%] opacity-0 transition-all duration-500 w-[94%] max-w-[420px] sm:max-w-[480px] rounded-2xl bg-slate-900/95 backdrop-blur-xl border-[2.5px] cursor-pointer shadow-[0_0_25px_rgba(20,184,166,0.25)] flex items-center p-3 gap-2 sm:gap-3 led-player" onclick="scrollToPlayer()">
     
-    <!-- Ecualizador Dinámico Realista Flotante -->
+    <!-- Ecualizador Dinámico Flotante -->
     <div id="eqFlotante" class="flex gap-[2px] items-end h-5 w-6 ml-1 flex-shrink-0">
        <div class="w-1 bg-teal-400 rounded-t eq-bar eq-b1"></div>
        <div class="w-1 bg-teal-400 rounded-t eq-bar eq-b2"></div>
@@ -1293,7 +1293,7 @@
       <span class="text-[10px] sm:text-[11px] text-slate-300 font-medium line-clamp-1">Nº 1: La Nueva Regla del Boca a Boca</span>
     </div>
 
-    <!-- Altavoz y Control de Volumen Flotante (Oculto en móviles muy pequeños para dar espacio a botones prev/next) -->
+    <!-- Altavoz y Control de Volumen Flotante -->
     <div class="hidden sm:flex items-center gap-1.5" onclick="event.stopPropagation()">
       <button type="button" onclick="document.getElementById('volFlotante').classList.toggle('hidden');" class="text-slate-400 hover:text-white transition-colors p-1" title="Ajustar Volumen">
         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M5 17h-5v-10h5v10zm2-10v10l9 5v-20l-9 5zm11.008 2.093c.742.743 1.2 1.77 1.198 2.903-.002 1.133-.462 2.158-1.205 2.9l1.219 1.223c1.057-1.053 1.712-2.511 1.715-4.121.002-1.611-.648-3.068-1.702-4.125l-1.225 1.22zm2.142-2.135c1.288 1.292 2.082 3.073 2.079 5.041s-.804 3.75-2.096 5.039l1.25 1.254c1.612-1.608 2.613-3.834 2.616-6.291.005-2.457-.986-4.681-2.595-6.293l-1.254 1.25z"/></svg>
@@ -1495,9 +1495,76 @@
     }
 
     /* ========================================================================= */
-    /* LOGICA DEL REPRODUCTOR DE AUDIO PERSONALIZADO Y MINI-PLAYER FLOTANTE      */
+    /* LOGICA DEL REPRODUCTOR DE AUDIO Y WEB AUDIO API (Ecualizador Dinámico)    */
     /* ========================================================================= */
     let flotanteOcultoUsuario = false;
+    let audioCtx = null;
+    let analyser = null;
+    let sourceNode = null;
+    let dataArray = null;
+    let eqAnimationId = null;
+
+    function initWebAudio() {
+      const audioEl = document.getElementById('audioEpisodio1');
+      if (!audioEl) return;
+      
+      try {
+        if (!audioCtx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          audioCtx = new AudioContext();
+          analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 64; 
+          sourceNode = audioCtx.createMediaElementSource(audioEl);
+          sourceNode.connect(analyser);
+          analyser.connect(audioCtx.destination);
+          dataArray = new Uint8Array(analyser.frequencyBinCount);
+          
+          // Desactivar animaciones CSS de fallback porque JS toma el control real
+          document.querySelectorAll('.eq-bar').forEach(bar => {
+             bar.style.animation = 'none';
+          });
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      } catch (e) {
+        console.log("Web Audio API no soportada o bloqueada por CORS. Se usará el ecualizador por defecto.", e);
+      }
+    }
+
+    function renderEQ() {
+      const audioEl = document.getElementById('audioEpisodio1');
+      if (!analyser || !audioEl || audioEl.paused) return;
+      
+      eqAnimationId = requestAnimationFrame(renderEQ);
+      analyser.getByteFrequencyData(dataArray);
+
+      // Calcular la media de frecuencias en 4 bandas (Graves a Agudos)
+      const getAvg = (start, end) => {
+        let sum = 0;
+        for(let i = start; i < end; i++) sum += dataArray[i];
+        return sum / (end - start);
+      };
+
+      const val1 = Math.max(15, (getAvg(0, 3) / 255) * 100);
+      const val2 = Math.max(15, (getAvg(3, 7) / 255) * 100);
+      const val3 = Math.max(15, (getAvg(7, 15) / 255) * 100);
+      const val4 = Math.max(15, (getAvg(15, 31) / 255) * 100);
+
+      const applyHeights = (parentId) => {
+        const parent = document.getElementById(parentId);
+        if(parent && !parent.classList.contains('hidden')) {
+           const bars = parent.querySelectorAll('.eq-bar');
+           if(bars[0]) bars[0].style.height = val1 + '%';
+           if(bars[1]) bars[1].style.height = val2 + '%';
+           if(bars[2]) bars[2].style.height = val3 + '%';
+           if(bars[3]) bars[3].style.height = val4 + '%';
+        }
+      };
+
+      applyHeights('eqMain');
+      applyHeights('eqFlotante');
+    }
 
     function formatTime(seconds) {
       if (isNaN(seconds)) return "0:00";
@@ -1537,6 +1604,7 @@
        const audio = document.getElementById('audioEpisodio1');
        if(!audio) return;
        if(audio.paused) {
+           initWebAudio();
            audio.play();
            flotanteOcultoUsuario = false; // Se reinicia el permiso para mostrar el flotante
        } else {
@@ -1549,6 +1617,7 @@
        const audio = document.getElementById('audioEpisodio1');
        if(!audio) return;
        if(audio.paused) {
+           initWebAudio();
            audio.play();
        } else {
            audio.pause();
@@ -1591,7 +1660,6 @@
       
       const iconPlayFlotante = document.getElementById('iconPlayFlotante');
       const iconPauseFlotante = document.getElementById('iconPauseFlotante');
-      const eqFlotante = document.getElementById('eqFlotante');
 
       if (audioEl.paused) {
          if(iconPlayMain) iconPlayMain.classList.remove('hidden');
@@ -1601,10 +1669,6 @@
          
          if(iconPlayFlotante) iconPlayFlotante.classList.remove('hidden');
          if(iconPauseFlotante) iconPauseFlotante.classList.add('hidden');
-         if(eqFlotante) {
-            eqFlotante.classList.add('opacity-40');
-            Array.from(eqFlotante.children).forEach(child => child.style.animationPlayState = 'paused');
-         }
       } else {
          if(iconPlayMain) iconPlayMain.classList.add('hidden');
          if(iconPauseMain) iconPauseMain.classList.remove('hidden');
@@ -1613,10 +1677,6 @@
          
          if(iconPlayFlotante) iconPlayFlotante.classList.add('hidden');
          if(iconPauseFlotante) iconPauseFlotante.classList.remove('hidden');
-         if(eqFlotante) {
-            eqFlotante.classList.remove('opacity-40');
-            Array.from(eqFlotante.children).forEach(child => child.style.animationPlayState = 'running');
-         }
       }
 
       // Mostrar la Píldora Flotante solo si: el principal NO se ve, el usuario no le dio a la X, y la pista ha empezado (>0)
@@ -1632,8 +1692,16 @@
     function inicializarAudioEventos() {
       const audio = document.getElementById('audioEpisodio1');
       if(!audio) return;
-      audio.addEventListener('play', checkMiniPlayer);
-      audio.addEventListener('pause', checkMiniPlayer);
+      audio.addEventListener('play', () => {
+         initWebAudio();
+         if(eqAnimationId) cancelAnimationFrame(eqAnimationId);
+         renderEQ();
+         checkMiniPlayer();
+      });
+      audio.addEventListener('pause', () => {
+         if(eqAnimationId) cancelAnimationFrame(eqAnimationId);
+         checkMiniPlayer();
+      });
       audio.addEventListener('timeupdate', syncAudioUI);
       audio.addEventListener('loadedmetadata', syncAudioUI);
       
@@ -1659,6 +1727,7 @@
             contenedor.scrollIntoView({ behavior: 'smooth', block: 'center' });
             const audio = document.getElementById('audioEpisodio1');
             if (audio) {
+              initWebAudio();
               audio.play().catch(() => {});
             }
           }
@@ -1744,6 +1813,7 @@
       }
       const audio = document.getElementById('audioEpisodio1');
       if (audio) {
+        initWebAudio();
         audio.play().catch(() => {});
       }
     }
