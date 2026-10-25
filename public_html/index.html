@@ -64,9 +64,22 @@
     .btn-glow-pulse {
       animation: spGlowPulse 3.2s infinite ease-in-out;
     }
+    /* Animación para el mini ecualizador del reproductor flotante */
+    @keyframes eqBar {
+      0%, 100% { height: 4px; }
+      50% { height: 16px; }
+    }
+    .eq-bar {
+      width: 4px;
+      background-color: #2dd4bf; /* teal-400 */
+      border-radius: 2px;
+      animation: eqBar 1s ease-in-out infinite;
+    }
+    .eq-bar:nth-child(2) { animation-delay: -0.3s; animation-duration: 0.8s; }
+    .eq-bar:nth-child(3) { animation-delay: -0.6s; animation-duration: 1.2s; }
   </style>
 </head>
-<body class="bg-brand-dark text-slate-100 font-sans antialiased selection:bg-brand-teal selection:text-white">
+<body class="bg-brand-dark text-slate-100 font-sans antialiased selection:bg-brand-teal selection:text-white relative">
 
   <!-- CABECERA PRINCIPAL NAVEGACIÓN -->
   <header class="sticky top-0 z-50 bg-brand-dark/90 backdrop-blur-md border-b border-white/10 transform-gpu">
@@ -1144,6 +1157,29 @@
     </div>
   </footer>
 
+  <!-- MINI REPRODUCTOR FLOTANTE (AUTO-OCULTO) -->
+  <div id="floating-audio-player" onclick="activarPodcastConScroll()" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 transform translate-y-32 opacity-0 pointer-events-none flex items-center gap-3 bg-slate-900/95 backdrop-blur-md border border-teal-500/50 shadow-2xl shadow-teal-900/30 px-4 py-2.5 rounded-full cursor-pointer hover:bg-slate-800/95 group w-[90%] max-w-sm sm:w-auto justify-between sm:justify-start">
+    <div class="flex items-center gap-3">
+      <!-- Ecualizador Animado -->
+      <div class="flex items-end gap-[3px] h-4">
+        <span class="eq-bar"></span>
+        <span class="eq-bar"></span>
+        <span class="eq-bar"></span>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-[10px] font-bold text-teal-400 leading-none uppercase tracking-wider mb-0.5">Sonando ahora</span>
+        <span class="text-xs font-bold text-white leading-none truncate max-w-[120px] sm:max-w-[200px]">Pyme Magazine Nº 1</span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 border-l border-white/10 pl-2">
+      <!-- Botón de Pausa Independiente -->
+      <button type="button" id="floating-pause-btn" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors shadow">
+        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+      </button>
+    </div>
+  </div>
+
   <!-- MODAL DE AVISO LEGAL, PRIVACIDAD Y CUMPLIMIENTO META BUSINESS -->
   <div id="modalLegal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-slate-900 border border-white/15 rounded-2xl max-w-3xl w-full max-h-[88vh] flex flex-col shadow-2xl overflow-hidden my-auto">
@@ -1301,7 +1337,7 @@
       });
     }
 
-    /* DETECCIÓN DE ENLACE DESDE ARTÍCULO: HACE SCROLL Y ACTIVA EL AUDIO */
+    /* DETECCIÓN DE ENLACE DESDE ARTÍCULO: HACE SCROLL Y ACTIVA EL AUDIO AUTOMÁTICAMENTE */
     function comprobarAutoPlayPodcast() {
       const hash = window.location.hash;
       if (hash === '#play-podcast' || hash === '#podcast' || hash.includes('podcast')) {
@@ -1319,6 +1355,56 @@
       });
       inicializarDuracionAudio();
       comprobarAutoPlayPodcast();
+      
+      // CONFIGURACIÓN DEL REPRODUCTOR FLOTANTE INTELIGENTE (MINI-PLAYER)
+      const audioEl = document.getElementById('audioEpisodio1');
+      const mainPlayerContainer = document.getElementById('centroMultimediaMagazine');
+      const floatingPlayer = document.getElementById('floating-audio-player');
+      const floatingPauseBtn = document.getElementById('floating-pause-btn');
+      let isMainPlayerVisible = true;
+
+      // Usar IntersectionObserver para ver si el reproductor principal está en pantalla
+      if ('IntersectionObserver' in window && mainPlayerContainer && floatingPlayer) {
+        const observer = new IntersectionObserver((entries) => {
+          isMainPlayerVisible = entries[0].isIntersecting;
+          updateFloatingPlayerState();
+        }, { threshold: 0.1 });
+        observer.observe(mainPlayerContainer);
+      }
+
+      function updateFloatingPlayerState() {
+        if (!audioEl || !floatingPlayer) return;
+        // Solo mostramos la píldora si está sonando y el reproductor principal NO se ve
+        const isPlaying = !audioEl.paused && !audioEl.ended && audioEl.readyState > 0;
+
+        if (isPlaying && !isMainPlayerVisible) {
+          // Mostrar píldora flotante deslizando desde abajo
+          floatingPlayer.classList.remove('translate-y-32', 'opacity-0', 'pointer-events-none');
+          floatingPlayer.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+        } else {
+          // Ocultar píldora flotante
+          floatingPlayer.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+          floatingPlayer.classList.add('translate-y-32', 'opacity-0', 'pointer-events-none');
+        }
+      }
+
+      if (audioEl) {
+        audioEl.addEventListener('play', updateFloatingPlayerState);
+        audioEl.addEventListener('pause', updateFloatingPlayerState);
+        audioEl.addEventListener('timeupdate', () => {
+           if(!audioEl.paused && floatingPlayer.classList.contains('opacity-0') && !isMainPlayerVisible) {
+               updateFloatingPlayerState();
+           }
+        });
+      }
+
+      // Evento de pausa directamente en el botón de la píldora
+      if (floatingPauseBtn) {
+        floatingPauseBtn.addEventListener('click', (e) => {
+          e.stopPropagation(); // Evita que se dispare el evento de scroll del contenedor padre
+          if (audioEl) audioEl.pause();
+        });
+      }
     });
 
     window.addEventListener('hashchange', () => {
@@ -1451,6 +1537,7 @@
       cambiarMedioMagazine('audio');
       const contenedor = document.getElementById('centroMultimediaMagazine');
       if (contenedor) {
+        // Hacemos scroll suave para centrar el bloque multimedia en la pantalla
         contenedor.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
       const audio = document.getElementById('audioEpisodio1');
