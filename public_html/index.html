@@ -1301,6 +1301,16 @@
       });
     }
 
+    /* DETECCIÓN DE ENLACE DESDE ARTÍCULO: HACE SCROLL Y ACTIVA EL AUDIO */
+    function comprobarAutoPlayPodcast() {
+      const hash = window.location.hash;
+      if (hash === '#play-podcast' || hash === '#podcast' || hash.includes('podcast')) {
+        setTimeout(() => {
+          activarPodcastConScroll();
+        }, 300);
+      }
+    }
+
     window.addEventListener("DOMContentLoaded", () => {
       document.querySelectorAll("img[data-qr-url]").forEach((img) => {
         if (img.getAttribute("data-qr-theme") === "dark" || (img.complete && img.naturalWidth === 0)) {
@@ -1308,6 +1318,11 @@
         }
       });
       inicializarDuracionAudio();
+      comprobarAutoPlayPodcast();
+    });
+
+    window.addEventListener('hashchange', () => {
+      comprobarAutoPlayPodcast();
     });
 
     function inicializarDuracionAudio() {
