@@ -135,7 +135,7 @@
       background: #334155;
     }
 
-    /* TIPOGRAFÍAS Y ESTILOS EDITORIALES CALIBRADOS PARA LECTURA AMPLIA EN PANTALLA E IMPRESIÓN A4 */
+    /* TIPOGRAFÍAS Y ESTILOS EDITORIALES CALIBRADOS */
     h1, h2, h3.serif { font-family: 'Playfair Display', serif; color: var(--primary); }
     p {
       font-size: 9.75pt;
@@ -174,7 +174,7 @@
       border-bottom: 3.5px solid var(--neon-green);
     }
 
-    /* FONDO VECTORIAL SUTIL DE CIRCUITERÍA CORPORATIVA (CERO RUIDO VISUAL) */
+    /* FONDO VECTORIAL SUTIL DE CIRCUITERÍA CORPORATIVA */
     .cover-circuit-bg {
       position: absolute;
       inset: 0;
@@ -184,7 +184,7 @@
       z-index: 1;
     }
 
-    /* FILA SUPERIOR DENTRO DEL HEADER: LOGO OFICIAL EN CÁPSULA + ETIQUETA REVISTA */
+    /* FILA SUPERIOR DENTRO DEL HEADER */
     .cover-top-bar {
       position: relative;
       z-index: 10;
@@ -274,7 +274,7 @@
       text-shadow: 0 2px 8px rgba(0,0,0,0.65);
     }
 
-    /* CÁPSULA DE PODCAST CON EL MARCO VERDE NEÓN / CIAN DE LA CARPETA */
+    /* CÁPSULA DE PODCAST */
     .podcast-cover-badge {
       background: rgba(7, 22, 46, 0.88);
       backdrop-filter: blur(8px);
@@ -320,7 +320,7 @@
       margin-top: 1px;
     }
 
-    /* CINTA CABECERA PARA PÁGINAS INTERIORES (2, 3 y 4) CON CIRCUITOS DE LA CARPETA */
+    /* CINTA CABECERA PARA PÁGINAS INTERIORES */
     .inner-page-strip {
       height: 14mm;
       background-color: var(--folder-navy);
@@ -414,7 +414,7 @@
       line-height: 1.38;
     }
 
-    /* PÁGINA 2: PÁGINA OSCURA CON LAS ONDAS DE CIRCUITO DE LA CARPETA */
+    /* PÁGINA 2: PÁGINA OSCURA */
     .dark-page {
       background-color: var(--folder-dark);
       color: white;
@@ -535,7 +535,7 @@
       line-height: 1.36;
     }
 
-    /* PÁGINA 4: INFOGRAFÍA DEL ECOSISTEMA + FOTO DEL ATRIL */
+    /* PÁGINA 4 */
     .visual-showcase {
       width: 100%;
       height: 168px;
@@ -575,7 +575,7 @@
       margin-bottom: 0;
     }
 
-    /* CAJA DE CIERRE PÁGINA 4 INSPIRADA EN LA CONTRAPORTADA DE TU CARPETA */
+    /* CAJA DE CIERRE PÁGINA 4 */
     .action-box {
       background: linear-gradient(135deg, #06101e 0%, #0b2545 60%, #0f766e 100%);
       color: white;
@@ -671,9 +671,6 @@
       display: inline-block;
     }
 
-    /* ========================================================================= */
-    /* TIPOGRAFÍA ESTILO PRENSA DIGITAL MODERNA EN PANTALLA (+1.5 A +2 PUNTOS)   */
-    /* ========================================================================= */
     @media screen {
       .page {
         height: auto;
@@ -765,9 +762,6 @@
       }
     }
 
-    /* ========================================================================= */
-    /* MODO AUTOENCUADRANTE MÓVIL Y TABLET (LECTURA FLUIDA SIN HACER ZOOM)       */
-    /* ========================================================================= */
     @media screen and (max-width: 840px) {
       body {
         padding: 10px 8px 28px 8px;
@@ -983,7 +977,7 @@
   <!-- ================================================================= -->
   <div class="page">
     <header class="cover-header-folder">
-      <!-- Red de circuitería corporativa con mayor vida, nodos luminosos, malla tecnológica y microchips sutiles -->
+      <!-- SVG con los nodos ajustados en altura y brillo para no colisionar con textos -->
       <svg class="cover-circuit-bg" viewBox="0 0 900 320" preserveAspectRatio="xMaxYMid slice" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="circuitLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -1007,6 +1001,13 @@
             <stop offset="45%" stop-color="#19b5fe" stop-opacity="0.2"/>
             <stop offset="100%" stop-color="#19b5fe" stop-opacity="0"/>
           </radialGradient>
+          <!-- Resplandor de alta luminosidad para el nodo sobre "Psicología" -->
+          <radialGradient id="highBrightGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+            <stop offset="22%" stop-color="#00d896" stop-opacity="0.85"/>
+            <stop offset="55%" stop-color="#00d896" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#00d896" stop-opacity="0"/>
+          </radialGradient>
           <pattern id="techGrid" width="36" height="36" patternUnits="userSpaceOnUse">
             <circle cx="18" cy="18" r="0.9" fill="#7dd3fc" fill-opacity="0.14"/>
             <path d="M 36 0 L 0 0 0 36" fill="none" stroke="#19b5fe" stroke-width="0.4" stroke-opacity="0.07"/>
@@ -1023,29 +1024,30 @@
         <circle cx="775" cy="96" r="46" fill="none" stroke="#19b5fe" stroke-width="1.2" stroke-opacity="0.2"/>
         <circle cx="775" cy="96" r="24" fill="url(#nodeGlow)"/>
 
-        <!-- Trazados principales de circuitería -->
+        <!-- Trazados principales de circuitería con líneas adaptadas a las nuevas alturas -->
         <g stroke="url(#circuitLineGrad)" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="260,34 420,34 452,66 575,66 600,92 645,92 675,36 785,36"/>
-          <polyline points="330,92 485,92 518,142 690,142 718,96 775,96"/>
+          <polyline points="330,92 485,92 518,110 690,110 718,96 775,96"/>
           <polyline points="210,152 385,152 415,122 545,122"/>
           <polyline points="390,192 555,192 590,157 745,157 778,190 882,190"/>
           <polyline points="295,244 470,244 502,212 658,212 692,246 845,246"/>
           <polyline points="450,286 620,286 650,256 790,256 815,281 895,281"/>
         </g>
 
-        <!-- Trazados secundarios cian entrelazados -->
+        <!-- Trazados secundarios cian entrelazados (ajustados) -->
         <g stroke="url(#circuitCyanGrad)" stroke-width="1.25" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="380,14 495,14 522,41 670,41 705,76 865,76"/>
           <polyline points="435,66 465,96 595,96 625,66"/>
-          <polyline points="518,142 548,155 660,155 695,120 855,120"/>
+          <polyline points="518,110 548,135 660,135 695,120 855,120"/>
           <polyline points="470,244 498,272 590,272 618,244"/>
           <polyline points="658,212 688,182 815,182 848,149 900,149"/>
           <polyline points="555,192 582,219 730,219 762,251"/>
         </g>
 
-        <!-- Micro-chips / módulos integrados decorativos (el superior bajado para no tocar el subtítulo de la cabecera) -->
+        <!-- Micro-chips / módulos integrados decorativos -->
         <g stroke="#00d896" stroke-opacity="0.38" stroke-width="1.2" fill="#071a36" fill-opacity="0.65">
-          <rect x="602" y="80" width="24" height="24" rx="4"/>
+          <!-- Cuadro técnico desplazado hacia arriba (y=56) para despejar "Psicología" y envolver el nodo luminoso -->
+          <rect x="506" y="56" width="24" height="24" rx="4"/>
           <rect x="642" y="198" width="28" height="28" rx="5"/>
           <rect x="761" y="82" width="28" height="28" rx="6" stroke="#19b5fe" stroke-opacity="0.55"/>
         </g>
@@ -1061,23 +1063,32 @@
         <circle cx="865" cy="76" r="11" fill="url(#cyanGlow)"/>
         <circle cx="745" cy="157" r="12" fill="url(#nodeGlow)"/>
         <circle cx="845" cy="246" r="12" fill="url(#nodeGlow)"/>
-        <circle cx="518" cy="142" r="10" fill="url(#cyanGlow)"/>
+        <!-- Halos ajustados: -->
+        <!-- 1. Nodo sobre "Psicología" elevado a y=68 con doble resplandor hiperluminoso -->
+        <circle cx="518" cy="68" r="22" fill="url(#highBrightGlow)"/>
+        <circle cx="518" cy="68" r="11" fill="url(#nodeGlow)"/>
+        <!-- 2. Nodo junto a "Galicia" bajado de y=96 a y=118 -->
+        <circle cx="775" cy="118" r="13" fill="url(#cyanGlow)"/>
 
-        <!-- Nodos brillantes de conexión (el 3º por la izquierda bajado para quedar libre de texto) -->
+        <!-- Nodos de conexión -->
         <circle cx="785" cy="36" r="4" fill="#00d896"/>
-        <circle cx="775" cy="96" r="4.5" fill="#ffffff" stroke="#00d896" stroke-width="2"/>
         <circle cx="865" cy="76" r="3.8" fill="#19b5fe"/>
         <circle cx="855" cy="120" r="3.5" fill="#7dd3fc"/>
         <circle cx="745" cy="157" r="4" fill="#00d896"/>
         <circle cx="882" cy="190" r="3.8" fill="#00d896"/>
         <circle cx="845" cy="246" r="4" fill="#00d896"/>
         <circle cx="790" cy="256" r="3.5" fill="#19b5fe"/>
-        <circle cx="518" cy="142" r="3.5" fill="#0a2246" stroke="#19b5fe" stroke-width="2"/>
         <circle cx="545" cy="122" r="3.5" fill="#00d896" fill-opacity="0.8"/>
         <circle cx="590" cy="157" r="3.2" fill="#0a2246" stroke="#00d896" stroke-width="1.8"/>
         <circle cx="502" cy="212" r="3.2" fill="#19b5fe" fill-opacity="0.8"/>
         <circle cx="452" cy="66" r="3" fill="#19b5fe" fill-opacity="0.65"/>
         <circle cx="670" cy="41" r="3" fill="#00d896" fill-opacity="0.75"/>
+        
+        <!-- NODO 1 (SOBRE PSICOLOGÍA): Elevado a y=68, núcleo blanco brillante y halo neón -->
+        <circle cx="518" cy="68" r="4.2" fill="#ffffff" stroke="#00d896" stroke-width="2.5"/>
+        
+        <!-- NODO 2 (JUNTO A GALICIA): Bajado a y=118 para dejar limpia la 'A' de Galicia -->
+        <circle cx="775" cy="118" r="4.2" fill="#19b5fe" stroke="#0a2246" stroke-width="2"/>
       </svg>
 
       <div class="cover-top-bar">
@@ -1357,7 +1368,7 @@
       
       <div class="visual-showcase">
         <img src="foto_atril.jpg" alt="Arquitectura de Reputación 360 Sistemas Pyme" 
-             onerror="this.onerror=null; this.outerHTML='<svg viewBox=\'0 0 900 210\' width=\'100%\' height=\'100%\' xmlns=\'http://www.w3.org/2000/svg\'><defs><linearGradient id=\'g4\' x1=\'0%\' y1=\'0%\' x2=\'100%\' y2=\'100%\'><stop offset=\'0%\' stop-color=\'#06101e\'/><stop offset=\'60%\' stop-color=\'#0b2545\'/><stop offset=\'100%\' stop-color=\'#0f766e\'/></linearGradient></defs><rect width=\'900\' height=\'210\' fill=\'url(#g4)\'/><path d=\'M 300,210 C 500,120 680,180 900,40 L 900,210 Z\' fill=\'#14b8a6\' fill-opacity=\'0.18\'/><g transform=\'translate(26,20)\'><rect width=\'258\' height=\'170\' rx=\'12\' fill=\'#071324\' fill-opacity=\'0.78\' stroke=\'#f59e0b\' stroke-width=\'1.5\'/><text x=\'18\' y=\'30\' fill=\'#fde047\' font-family=\'Inter,sans-serif\' font-size=\'10.2\' font-weight=\'800\'>NIVEL 1 • EN EL MOSTRADOR</text><text x=\'18\' y=\'54\' fill=\'#ffffff\' font-family=\'Inter,sans-serif\' font-size=\'14\' font-weight=\'900\'>Activación NFC + QR</text><text x=\'18\' y=\'78\' fill=\'#cbd5e1\' font-family=\'Inter,sans-serif\' font-size=\'10.6\'>Despierta a la «mayoría silenciosa»</text><text x=\'18\' y=\'95\' fill=\'#cbd5e1\' font-family=\'Inter,sans-serif\' font-size=\'10.6\'>en el pico de dopamina al despedirse.</text><rect x=\'18\' y=\'118\' width=\'210\' height=\'30\' rx=\'6\' fill=\'#f59e0b\' fill-opacity=\'0.2\' stroke=\'#fbbf24\'/><text x=\'26\' y=\'137\' fill=\'#fde047\' font-family=\'Inter,sans-serif\' font-size=\'10.2\' font-weight=\'800\'>★★★★★ Apertura en 1 Segundo</text></g><g transform=\'translate(321,20)\'><rect width=\'258\' height=\'170\' rx=\'12\' fill=\'#071324\' fill-opacity=\'0.78\' stroke=\'#2dd4bf\' stroke-width=\'1.5\'/><text x=\'18\' y=\'30\' fill=\'#5eead4\' font-family=\'Inter,sans-serif\' font-size=\'10.2\' font-weight=\'800\'>NIVEL 2 • WHATSAPP OFICIAL PROPIO</text><text x=\'18\' y=\'54\' fill=\'#ffffff\' font-family=\'Inter,sans-serif\' font-size=\'14.2\' font-weight=\'900\'>Cortafuegos Emocional</text><text x=\'18\' y=\'78\' fill=\'#cbd5e1\' font-family=\'Inter,sans-serif\' font-size=\'10.6\'>Con tu logo y número propio. Deriva</text><text x=\'18\' y=\'95\' fill=\'#cbd5e1\' font-family=\'Inter,sans-serif\' font-size=\'10.6\'>promotores y absorbe quejas en voz.</text><rect x=\'18\' y=\'118\' width=\'218\' height=\'30\' rx=\'6\' fill=\'#0f766e\' fill-opacity=\'0.4\' stroke=\'#2dd4bf\'/><text x=\'26\' y=\'137\' fill=\'#ccfbf1\' font-family=\'Inter,sans-serif\' font-size=\'10.2\' font-weight=\'800\'>🌟 Promotor | 😊 Neutro | 🛡️ Escudo</text></g><g transform=\'translate(616,20)\'><rect width=\'258\' height=\'170\' rx=\'12\' fill=\'#071324\' fill-opacity=\'0.78\' stroke=\'#38bdf8\' stroke-width=\'1.5\'/><text x=\'18\' y=\'30\' fill=\'#7dd3fc\' font-family=\'Inter,sans-serif\' font-size=\'10.2\' font-weight=\'800\'>NIVEL 3 • ESCAPARATE PÚBLICO</text><text x=\'18\' y=\'54\' fill=\'#ffffff\' font-family=\'Inter,sans-serif\' font-size=\'14.2\' font-weight=\'900\'>Mediación IA + Blindaje Legal</text><text x=\'18\' y=\'78\' fill=\'#cbd5e1\' font-family=\'Inter,sans-serif\' font-size=\'10.6\'>Indexación SEO en 4-5★ y contención</text><text x=\'18\' y=\'95\' fill=\'#cbd5e1\' font-family=\'Inter,sans-serif\' font-size=\'10.6\'>HEARD, Anti-Loro y RGPD en 1-3★.</text><rect x=\'18\' y=\'118\' width=\'212\' height=\'30\' rx=\'6\' fill=\'#0284c7\' fill-opacity=\'0.35\' stroke=\'#7dd3fc\'/><text x=\'26\' y=\'137\' fill=\'#e0f2fe\' font-family=\'Inter,sans-serif\' font-size=\'10.2\' font-weight=\'800\'>🛡️ Secreto RGPD + Políglota</text></g></svg>';">
+             onerror="this.onerror=null; this.outerHTML='<svg viewBox=\'0 0 900 210\' width=\'100%\' height=\'100%\' xmlns=\'http://www.000/svg\'><defs><linearGradient id=\'g4\' x1=\'0%\' y1=\'0%\' x2=\'100%\' y2=\'100%\'><stop offset=\'0%\' stop-color=\'#06101e\'/><stop offset=\'60%\' stop-color=\'#0b2545\'/><stop offset=\'100%\' stop-color=\'#0f766e\'/></linearGradient></defs><rect width=\'900\' height=\'210\' fill=\'url(#g4)\'/><path d=\'M 300,210 C 500,120 680,180 900,40 L 900,210 Z\' fill=\'#14b8a6\' fill-opacity=\'0.18\'/><g transform=\'translate(26,20)\'><rect width=\'258\' height=\'170\' rx=\'12\' fill=\'#071324\' fill-opacity=\'0.78\' stroke=\'#f59e0b\' stroke-width=\'1.5\'/><text x=\'18\' y=\'30\' fill=\'#fde047\' font-family=\'Inter,sans-serif\' font-size=\'10.2\' font-weight=\'800\'>NIVEL 1 • EN EL MOSTRADOR</text><text x=\'18\' y=\'54\' fill=\'#ffffff\' font-family=\'Inter,sans-serif\' font-size=\'14\' font-weight=\'900\'>Activación NFC + QR</text><text x=\'18\' y=\'78\' fill=\'#cbd5e1\' font-family=\'Inter,sans-serif\' font-size=\'10.6\'>Despierta a la «mayoría silenciosa»</text><text x=\'18\' y=\'95\' fill=\'#cbd5e1\' font-family=\'Inter,sans-serif\' font-size=\'10.6\'>en el pico de dopamina al despedirse.</text><rect x=\'18\' y=\'118\' width=\'210\' height=\'30\' rx=\'6\' fill=\'#f59e0b\' fill-opacity=\'0.2\' stroke=\'#fbbf24\'/><text x=\'26\' y=\'137\' fill=\'#fde047\' font-family=\'Inter,sans-serif\' font-size=\'10.2\' font-weight=\'800\'>★★★★★ Apertura en 1 Segundo</text></g><g transform=\'translate(321,20)\'><rect width=\'258\' height=\'170\' rx=\'12\' fill=\'#071324\' fill-opacity=\'0.78\' stroke=\'#2dd4bf\' stroke-width=\'1.5\'/><text x=\'18\' y=\'30\' fill=\'#5eead4\' font-family=\'Inter,sans-serif\' font-size=\'10.2\' font-weight=\'800\'>NIVEL 2 • WHATSAPP OFICIAL PROPIO</text><text x=\'18\' y=\'54\' fill=\'#ffffff\' font-family=\'Inter,sans-serif\' font-size=\'14.2\' font-weight=\'900\'>Cortafuegos Emocional</text><text x=\'18\' y=\'78\' fill=\'#cbd5e1\' font-family=\'Inter,sans-serif\' font-size=\'10.6\'>Con tu logo y número propio. Deriva</text><text x=\'18\' y=\'95\' fill=\'#cbd5e1\' font-family=\'Inter,sans-serif\' font-size=\'10.6\'>promotores y absorbe quejas en voz.</text><rect x=\'18\' y=\'118\' width=\'218\' height=\'30\' rx=\'6\' fill=\'#0f766e\' fill-opacity=\'0.4\' stroke=\'#2dd4bf\'/><text x=\'26\' y=\'137\' fill=\'#ccfbf1\' font-family=\'Inter,sans-serif\' font-size=\'10.2\' font-weight=\'800\'>🌟 Promotor | 😊 Neutro | 🛡️ Escudo</text></g><g transform=\'translate(616,20)\'><rect width=\'258\' height=\'170\' rx=\'12\' fill=\'#071324\' fill-opacity=\'0.78\' stroke=\'#38bdf8\' stroke-width=\'1.5\'/><text x=\'18\' y=\'30\' fill=\'#7dd3fc\' font-family=\'Inter,sans-serif\' font-size=\'10.2\' font-weight=\'800\'>NIVEL 3 • ESCAPARATE PÚBLICO</text><text x=\'18\' y=\'54\' fill=\'#ffffff\' font-family=\'Inter,sans-serif\' font-size=\'14.2\' font-weight=\'900\'>Mediación IA + Blindaje Legal</text><text x=\'18\' y=\'78\' fill=\'#cbd5e1\' font-family=\'Inter,sans-serif\' font-size=\'10.6\'>Indexación SEO en 4-5★ y contención</text><text x=\'18\' y=\'95\' fill=\'#cbd5e1\' font-family=\'Inter,sans-serif\' font-size=\'10.6\'>HEARD, Anti-Loro y RGPD en 1-3★.</text><rect x=\'18\' y=\'118\' width=\'212\' height=\'30\' rx=\'6\' fill=\'#0284c7\' fill-opacity=\'0.35\' stroke=\'#7dd3fc\'/><text x=\'26\' y=\'137\' fill=\'#e0f2fe\' font-family=\'Inter,sans-serif\' font-size=\'10.2\' font-weight=\'800\'>🛡️ Secreto RGPD + Políglota</text></g></svg>';">
       </div>
 
       <p style="margin-bottom: 7pt;">
@@ -1406,9 +1417,8 @@
     </div>
   </div>
 
-  <!-- MOTOR DE NAVEGACIÓN ANTI-404 EN IPHONE + GENERADOR DE QR DE SISTEMAS PYME -->
+  <!-- MOTOR DE NAVEGACIÓN Y QR -->
   <script>
-    /* Buscador automático de logo.png tanto en la carpeta actual como en la carpeta raíz */
     function cargarLogoRealSP(img) {
       if (!img) return;
       const rutasLogo = [
@@ -1430,7 +1440,6 @@
       }
     }
 
-    /* Función inteligente para volver atrás en iPhone/Android/Web sin error de ruta */
     async function volverALaWeb(e) {
       if (e) e.preventDefault();
       if (window.history.length > 1 && document.referrer && document.referrer.indexOf(window.location.host) !== -1) {
