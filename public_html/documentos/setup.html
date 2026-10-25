@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tarifas de Puesta en Marcha - Sistemas Pyme</title>
+  <meta name="viewport" content="width=580">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+  
+  <style>
+    @page {
+      size: A5 portrait;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #0f172a;
+      color: #0f172a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 0;
+    }
+
+    .sheet {
+      width: 148mm;
+      height: 210mm;
+      min-height: 210mm;
+      max-height: 210mm;
+      background: #ffffff;
+      padding: 5.5mm 8.5mm;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      page-break-after: always;
+      page-break-inside: avoid;
+    }
+
+    @media print {
+      body {
+        background: none;
+        padding: 0;
+        gap: 0;
+      }
+      .sheet {
+        box-shadow: none;
+        page-break-after: always;
+        height: 210mm !important;
+        max-height: 210mm !important;
+        margin-bottom: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    .print-bar {
+      background: #1e293b;
+      color: #ffffff;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+    }
+    .print-btn {
+      background: #0d7d74;
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      transition: background 0.2s;
+    }
+    .print-btn:hover {
+      background: #095852;
+    }
+
+    :root {
+      --primary: #0b2545;
+      --primary-dark: #071930;
+      --teal: #0d7d74;
+      --teal-dark: #095852;
+      --teal-light: #f0fdfa;
+      --purple: #4338ca;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+
+      --plan-base: #64748b; 
+      --plan-duo: #2563eb;  
+      --plan-trinity: #16a34a; 
+      --plan-avanzado: #4338ca;
+      --plan-pentium: #0f766e;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 3.5px;
+      margin-bottom: 5px;
+    }
+    .brand-logo-img {
+      max-height: 62px;
+      width: auto;
+      max-width: 90mm;
+      object-fit: contain;
+      display: block;
+    }
+    .header-tagline {
+      text-align: right;
+      font-size: 7.4px;
+      color: var(--slate-600);
+      font-weight: 600;
+      line-height: 1.25;
+    }
+    .header-tagline strong {
+      color: var(--teal-dark);
+      font-size: 8.2px;
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .section-banner {
+      background: linear-gradient(90deg, #095852 0%, #0d7d74 100%);
+      color: white;
+      padding: 4.5px 8.5px;
+      border-radius: 4px;
+      font-size: 8.8px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+    .section-banner .rule {
+      font-size: 7.2px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 1.5px 6px;
+      border-radius: 3px;
+      text-transform: none;
+    }
+
+    .logic-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 6px 10px;
+      border-radius: 5px;
+      font-size: 8px;
+      color: #1e3a8a;
+      margin-bottom: 5px;
+      text-align: center;
+      line-height: 1.35;
+    }
+    .logic-box strong {
+      color: #1d4ed8;
+      font-weight: 800;
+    }
+
+    .engineering-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4.5px;
+      margin-bottom: 5.5px;
+    }
+    .eng-card {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-left: 3px solid var(--teal);
+      border-radius: 4px;
+      padding: 4.5px 6.5px;
+    }
+    .eng-card strong {
+      display: block;
+      font-size: 7.6px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 1.5px;
+    }
+    .eng-card span {
+      display: block;
+      font-size: 6.8px;
+      color: var(--slate-600);
+      line-height: 1.22;
+    }
+
+    .master-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 8px;
+      margin-bottom: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .master-table th {
+      color: white;
+      font-size: 7.2px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
+      padding: 4.5px 5px;
+      border: 1px solid #1e293b;
+      text-align: center;
+      line-height: 1.2;
+    }
+    
+    .th-col1 { background: #57534e !important; border-color: #44403c !important; }
+    .th-suelto { background: #475569 !important; border-color: #334155 !important; }
+    .th-setup { background: #0b2545 !important; border-color: #071930 !important; }
+    .th-ahorro { background: #0f766e !important; border-color: #0d5e57 !important; }
+    
+    .master-table th .th-sub {
+      display: block;
+      font-size: 6px;
+      font-weight: 600;
+      margin-top: 1px;
+      letter-spacing: 0.2px;
+      text-transform: none;
+      color: #e2e8f0;
+    }
+
+    .master-table td {
+      padding: 4px 5.5px;
+      border: 1px solid var(--slate-200);
+      text-align: center;
+      vertical-align: middle;
+      line-height: 1.18;
+      background: #ffffff;
+    }
+    
+    .master-table td.left {
+      text-align: left;
+      font-weight: 800;
+      padding-left: 7px;
+    }
+    .master-table td .sub-left {
+      display: block;
+      font-size: 6.4px;
+      color: var(--slate-600);
+      font-weight: 600;
+      margin-top: 1px;
+      text-transform: uppercase;
+    }
+
+    .master-table tr.star-row td {
+      background: #f0fdf4 !important;
+      border-top: 1.5px solid #86efac !important;
+      border-bottom: 1.5px solid #86efac !important;
+    }
+
+    .col-calc {
+      font-size: 7.3px;
+      color: var(--slate-600);
+      font-weight: 600;
+    }
+    .col-setup { 
+      font-weight: 900; 
+      color: var(--primary); 
+      font-size: 9.8px; 
+      background: #f8fafc !important;
+    }
+    .col-ahorro { 
+      font-weight: 800; 
+      color: #15803d; 
+      font-size: 7.4px; 
+    }
+    .strike-val {
+      text-decoration: line-through;
+      color: #94a3b8;
+      font-size: 6.6px;
+      font-weight: 600;
+      display: block;
+    }
+
+    .info-box {
+      background: #fffbeb !important;
+      border: 1px solid #fde68a !important;
+      border-left: 3.5px solid #d97706 !important;
+      padding: 5.5px 8px;
+      border-radius: 4px;
+      font-size: 7.4px;
+      color: #92400e;
+      line-height: 1.28;
+      margin-bottom: 4px;
+    }
+    .info-box strong {
+      color: #b45309;
+      font-weight: 800;
+    }
+
+    .print-qr-banner {
+      background: #f0fdfa;
+      border: 1.5px dashed var(--teal);
+      border-radius: 5px;
+      padding: 4px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 9px;
+      margin-top: auto;
+      margin-bottom: 2px;
+      box-shadow: 0 2px 4px rgba(13, 125, 116, 0.04);
+    }
+    .print-qr-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+    .print-qr-img {
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+      border-radius: 4px;
+      mix-blend-mode: multiply;
+    }
+    .print-qr-text {
+      font-size: 7.3px;
+      color: var(--slate-700);
+      line-height: 1.22;
+    }
+    .print-qr-text strong {
+      color: var(--teal-dark);
+      font-size: 8.4px;
+      display: block;
+      margin-bottom: 1px;
+    }
+    .contact-details-box {
+      border-left: 1.2px solid #99f6e4;
+      padding-left: 8px;
+      font-size: 7px;
+      line-height: 1.26;
+      color: var(--slate-800);
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .contact-details-box .name {
+      font-size: 8.6px;
+      font-weight: 800;
+      color: var(--primary);
+      display: block;
+    }
+    .contact-details-box .role {
+      font-size: 6.2px;
+      font-weight: 700;
+      color: var(--teal-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      display: block;
+      margin-bottom: 1px;
+    }
+    .contact-details-box .phone {
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .footer-bar {
+      margin-top: auto;
+      border-top: 1px solid var(--slate-200);
+      padding-top: 3px;
+      font-size: 7.4px;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="print-bar no-print" aria-label="Controles de impresión">
+    <span>Tarjetón Cuartilla A5: Tarifas de Puesta en Marcha (Setup Nominal: 150 € el 1º | +75 € extra)</span>
+    <button class="print-btn" onclick="window.print()">
+      <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+      Imprimir / Guardar PDF
+    </button>
+  </aside>
+
+  <main class="sheet">
+    <header class="header">
+      <div>
+        <img src="Sistemas Pyme Logo.png" alt="Sistemas Pyme" class="brand-logo-img" onerror="this.onerror=null; this.src='logo.png';">
+      </div>
+      <div class="header-tagline">
+        <strong>Anexo Técnico de Implantación</strong>
+        Qué es el Setup, Ingeniería y Tarifas de Alta
+      </div>
+    </header>
+
+    <div style="display: flex; flex-direction: column; flex: 1;">
+
+      <section style="display: flex; flex-direction: column; flex: 1;">
+        <div class="section-banner">
+          <span>¿Qué es la Puesta en Marcha (Setup) y por qué se realiza?</span>
+          <span class="rule">Pago único de ingeniería inicial</span>
+        </div>
+
+        <div class="logic-box" style="text-align: left; margin-bottom: 4.5px; padding: 5px 8px;">
+          El <strong>Setup Técnico</strong> no es una cuota comercial, sino las horas de <strong>ingeniería llave en mano</strong> necesarias para construir, conectar y blindar el sistema a medida de tu negocio antes de encender el piloto automático. Se abona <strong>una sola vez al inicio</strong> y cubre 4 fases técnicas críticas:
+        </div>
+
+        <!-- 4 FASES DE INGENIERÍA QUE JUSTIFICAN EL SETUP -->
+        <div class="engineering-grid">
+          <div class="eng-card">
+            <strong>🔌 1. Conexión Oficial de APIs y Meta/Google</strong>
+            <span>Alta en Meta Cloud API (WhatsApp Oficial anti-bloqueos), vinculación segura con Google Business Profile, calendarios y carpetas de gestoría.</span>
+          </div>
+          <div class="eng-card">
+            <strong>🧠 2. Entrenamiento de IA a Medida y RGPD</strong>
+            <span>Personalización del motor de IA con el tono de tu local, reglas de secreto profesional (RGPD médico/legal) y aprobación de plantillas oficiales.</span>
+          </div>
+          <div class="eng-card">
+            <strong>⚙️ 3. Despliegue de Servidores y Cortafuegos</strong>
+            <span>Configuración de flujos automáticos 24/7, memoria anti-saturación de clientes recurrentes y alertas en vivo al móvil de gerencia.</span>
+          </div>
+          <div class="eng-card">
+            <strong>🧪 4. Auditoría, Testeo en Vivo y Entrega</strong>
+            <span>Simulaciones reales de extremo a extremo, configuración de la App móvil de control en el teléfono del dueño y puesta en marcha sin parar el local.</span>
+          </div>
+        </div>
+
+        <div class="section-banner" style="background: linear-gradient(90deg, #0b2545 0%, #1e293b 100%); margin-bottom: 4px; padding: 3.8px 8px;">
+          <span>Tabla Oficial de Tarifas de Setup por Nivel de Plan</span>
+          <span class="rule">1º a 150 € | Módulos extra al 50% (+75 €)</span>
+        </div>
+
+        <table class="master-table">
+          <thead>
+            <tr>
+              <th class="th-col1" style="width: 28%;">
+                Plan / Nivel de Servicios
+              </th>
+              <th class="th-suelto" style="width: 26%;">
+                Desglose de Ingeniería
+                <span class="th-sub">Regla: 150 € el 1º + 75 € extra</span>
+              </th>
+              <th class="th-setup" style="width: 22%;">
+                Setup Nominal Oficial
+                <span class="th-sub">Pago único de instalación</span>
+              </th>
+              <th class="th-ahorro" style="width: 24%;">
+                Bonificación en Setup
+                <span class="th-sub">Frente a instalar por separado</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="left">
+                <span style="color: var(--primary);">Pyme</span> <span style="color: var(--plan-base);">BASE</span>
+                <span class="sub-left">1 Servicio Troncal</span>
+              </td>
+              <td class="col-calc">1er módulo base (100%)</td>
+              <td class="col-setup">150 €</td>
+              <td class="col-ahorro" style="color: var(--slate-600); font-weight: 600;">Tarifa Estándar Base</td>
+            </tr>
+            <tr>
+              <td class="left">
+                <span style="color: var(--primary);">Pyme</span> <span style="color: var(--plan-duo);">DÚO</span>
+                <span class="sub-left">2 Servicios Combinados</span>
+              </td>
+              <td class="col-calc">150 € + 75 € <span style="font-size:6.3px; color:#0f766e;">(2º al 50%)</span></td>
+              <td class="col-setup">225 €</td>
+              <td class="col-ahorro">
+                <span class="strike-val">Por separado: 300 €</span>
+                Ahorras 75 € en Setup
+              </td>
+            </tr>
+            <tr class="star-row">
+              <td class="left">
+                <span style="color: var(--primary);">Pyme</span> <span style="color: var(--plan-trinity);">TRINITY ★</span>
+                <span class="sub-left" style="color: #15803d;">3 Servicios Combinados</span>
+              </td>
+              <td class="col-calc" style="color:#166534;">150 € + 75 € + 75 €</td>
+              <td class="col-setup" style="color: #15803d;">300 €</td>
+              <td class="col-ahorro">
+                <span class="strike-val">Por separado: 450 €</span>
+                Ahorras 150 € + Bóveda Gratis
+              </td>
+            </tr>
+            <tr>
+              <td class="left">
+                <span style="color: var(--primary);">Pyme</span> <span style="color: var(--plan-avanzado);">QUATRO</span>
+                <span class="sub-left">4 Servicios Combinados</span>
+              </td>
+              <td class="col-calc">150 € + (3 × 75 €)</td>
+              <td class="col-setup">375 €</td>
+              <td class="col-ahorro">
+                <span class="strike-val">Por separado: 600 €</span>
+                Ahorras 225 € en Setup
+              </td>
+            </tr>
+            <tr>
+              <td class="left">
+                <span style="color: var(--primary);">Pyme</span> <span style="color: var(--plan-pentium);">PENTIUM</span>
+                <span class="sub-left">5 Servicios Combinados</span>
+              </td>
+              <td class="col-calc">150 € + (4 × 75 €)</td>
+              <td class="col-setup">450 €</td>
+              <td class="col-ahorro">
+                <span class="strike-val">Por separado: 750 €</span>
+                Ahorras 300 € en Setup
+              </td>
+            </tr>
+            <tr style="background: #fdf2f8;">
+              <td class="left">
+                <span style="color: #9d174d;">Módulo Satélite (Instagram 3 en 1)</span>
+                <span class="sub-left" style="color: #be185d;">Alta en Combo vs. Alta Suelto</span>
+              </td>
+              <td class="col-calc" style="color: #9d174d; background: #fdf2f8 !important;">50% dto. al unirlo a un Pack</td>
+              <td class="col-setup" style="color: #be185d; background: #fdf2f8 !important;">+75 € <span style="font-size: 6.8px; font-weight: 700;">(En Combo)</span><br><span style="font-size: 7px; color: #64748b; font-weight: 600;">150 € (Suelto)</span></td>
+              <td class="col-ahorro" style="color: #be185d; background: #fdf2f8 !important;">Ahorras 75 € en Setup<br><span style="font-size: 6.2px; color:#831843;">vinculado a cualquier plan</span></td>
+            </tr>
+            <tr style="background: #f0f9ff;">
+              <td class="left">
+                <span style="color: #104070;">Atril Inteligente NFC + QR</span>
+                <span class="sub-left" style="color: #0284c7;">Hardware Físico de Mostrador</span>
+              </td>
+              <td class="col-calc" style="color: #104070; background: #f0f9ff !important;">Grabación chip + Enlace oficial</td>
+              <td class="col-setup" style="color: #104070; background: #f0f9ff !important;">39 €</td>
+              <td class="col-ahorro" style="color: #0369a1; background: #f0f9ff !important;">Pago único de por vida<br><span style="font-size: 6.2px;">(Sin cuotas mensuales)</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="info-box">
+          <strong>Política de Escalabilidad sin Penalización:</strong> Si hoy empiezas con 1 solo servicio (Setup 150 €) y más adelante decides ampliar tu plan sumando nuevos módulos, <strong>te respetamos el 50% de bonificación (+75 € de Setup por nuevo módulo)</strong> sin volver a pagar nunca la tarifa base inicial. <em>*(En la Fase 2, del 6º al 10º servicio se mantiene exactamente la misma regla bonificada de +75 € de Setup por módulo extra).*</em>
+        </div>
+
+        <div class="print-qr-banner">
+          <div class="print-qr-left">
+            <img src="qr-setup.png" data-qr-url="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20consultar%20la%20puesta%20en%20marcha%20t%C3%A9cnica%20%28Setup%29%20para%20activar%20los%20servicios%20en%20mi%20negocio" alt="QR Contacto WhatsApp" class="print-qr-img" onerror="renderizarQrCorporativoSP(this)">
+            <div class="print-qr-text">
+              <strong>¿Listo para programar la puesta en marcha en tu negocio?</strong>
+              Escanea este código con tu móvil para hablar por WhatsApp con Francisco y agendar la configuración técnica de tu plan.
+            </div>
+          </div>
+          <div class="contact-details-box">
+            <span class="name">Francisco M. Gallardo</span>
+            <span class="role">Consultor Tecnológico</span>
+            <span class="phone">711 54 75 61</span><br>
+            francisco@sistemaspyme.es<br>
+            <span style="color: #64748b;">sistemaspyme.es • Galicia</span>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+    <footer class="footer-bar">
+      <span><strong>Sistemas Pyme</strong> — Documento Anexo de Tarifas Técnicas de Inicio</span>
+      <span>Precios netos sin IVA (21%)</span>
+      <span><strong>Anexo I (Setup - Fase 1)</strong></span>
+    </footer>
+  </main>
+
+  <script>
+    const SVG_LOGO_SP_OSCURO = "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 140"><defs><mask id="m"><rect width="210" height="140" fill="white"/><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="black" stroke-width="6.5"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 134" fill="none" stroke="black" stroke-width="6.5" stroke-linecap="round"/><line x1="126.5" y1="38" x2="126.5" y2="128" stroke="black" stroke-width="6.5"/><circle cx="92" cy="19" r="13.5" fill="black"/></mask></defs><g mask="url(#m)"><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="#0b5551" stroke-width="21" stroke-linejoin="round"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 130" fill="none" stroke="#0b5551" stroke-width="21" stroke-linecap="round" stroke-linejoin="round"/><rect x="116" y="32" width="10.5" height="90" fill="#0b5551"/><rect x="129.5" y="48" width="9.5" height="72" fill="#0b5551"/><rect x="130" y="73.5" width="24" height="21" fill="#0b5551"/></g><circle cx="92" cy="19" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/><circle cx="18" cy="121.5" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/><circle cx="134.5" cy="48" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/><circle cx="134.5" cy="121.5" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/></svg>`);
+
+    function renderizarQrCorporativoSP(imgEl) {
+      if (!imgEl || imgEl.dataset.qrRendered === "1") return;
+      imgEl.dataset.qrRendered = "1";
+      const url = imgEl.getAttribute("data-qr-url") || "https://sistemaspyme.es";
+      if (typeof QRCodeStyling === "undefined") {
+        imgEl.src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=0d7d74&data=" + encodeURIComponent(url);
+        return;
+      }
+      const qr = new QRCodeStyling({
+        width: 300,
+        height: 300,
+        type: "canvas",
+        data: url,
+        margin: 4,
+        qrOptions: { errorCorrectionLevel: "H" },
+        image: SVG_LOGO_SP_OSCURO,
+        dotsOptions: {
+          type: "classy-rounded",
+          gradient: {
+            type: "linear",
+            rotation: Math.PI / 4,
+            colorStops: [{ offset: 0, color: "#00c48c" }, { offset: 1, color: "#0b6460" }]
+          }
+        },
+        cornersSquareOptions: { type: "extra-rounded", color: "#00b383" },
+        cornersDotOptions: { type: "dot", color: "#0b6460" },
+        backgroundOptions: { color: "#ffffff" },
+        imageOptions: { crossOrigin: "anonymous", margin: 4, imageSize: 0.36 }
+      });
+      qr.getRawData("png").then((blob) => {
+        if (blob) imgEl.src = URL.createObjectURL(blob);
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll("img[data-qr-url]").forEach((img) => {
+        if (img.complete && img.naturalWidth === 0) renderizarQrCorporativoSP(img);
+      });
+    });
+  </script>
+
+</body>
+</html>

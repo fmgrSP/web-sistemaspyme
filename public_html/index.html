@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistemas Pyme — Digitalización y Automatización para Negocios Locales</title>
+  <meta name="description" content="Sistemas tácticos de Inteligencia Artificial para blindar tu reputación en Google Maps, captar reseñas 5★ y automatizar la operativa de tu negocio local.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0b2545',
+              dark: '#071629',
+              teal: '#0d7d74',
+              tealDark: '#095852',
+              tealLight: '#f0fdfa',
+              amber: '#d97706',
+              amberLight: '#fffbeb',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    .hero-glow {
+      background: radial-gradient(circle at 50% 20%, rgba(13, 125, 116, 0.18) 0%, rgba(11, 37, 69, 0) 70%);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+    }
+    .glow-reputacion {
+      background: linear-gradient(145deg, rgba(13, 125, 116, 0.22) 0%, rgba(13, 125, 116, 0.04) 100%);
+    }
+    .glow-captacion {
+      background: linear-gradient(145deg, rgba(30, 58, 138, 0.22) 0%, rgba(30, 58, 138, 0.04) 100%);
+    }
+    .glow-eficiencia {
+      background: linear-gradient(145deg, rgba(67, 56, 202, 0.22) 0%, rgba(67, 56, 202, 0.04) 100%);
+    }
+    @keyframes spGlowPulse {
+      0%, 100% {
+        box-shadow: 0 0 20px rgba(0, 216, 150, 0.35), 0 0 45px rgba(13, 125, 116, 0.2), inset 0 0 12px rgba(0, 216, 150, 0.15);
+        transform: scale(1);
+      }
+      50% {
+        box-shadow: 0 0 32px rgba(0, 216, 150, 0.7), 0 0 70px rgba(25, 181, 254, 0.38), inset 0 0 18px rgba(0, 216, 150, 0.28);
+        transform: scale(1.02);
+      }
+    }
+    .btn-glow-pulse {
+      animation: spGlowPulse 3.2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-brand-dark text-slate-100 font-sans antialiased selection:bg-brand-teal selection:text-white">
+
+  <!-- CABECERA PRINCIPAL NAVEGACIÓN -->
+  <header class="sticky top-0 z-50 bg-brand-dark/90 backdrop-blur-md border-b border-white/10 transform-gpu">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-24 flex items-center justify-between gap-3">
+      
+      <a href="#" class="flex items-center group flex-shrink-0">
+        <div class="bg-white rounded-full px-4 py-1.5 shadow-[0_0_5px_rgba(255,255,255,0.01)] border border-white/5 group-hover:scale-105 transition-all overflow-hidden flex items-center justify-center">
+          <img src="logo.png" data-img-base="logo,Sistemas Pyme Logo" data-img-fallback="https://placehold.co/200x60/ffffff/0d7d74?text=Sistemas+Pyme" alt="Sistemas Pyme" class="h-11 sm:h-12 w-auto object-contain" onerror="cargarSiguienteExtension(this)">
+        </div>
+      </a>
+
+      <nav class="hidden md:flex items-center justify-center gap-3 lg:gap-4 text-xs lg:text-[13.5px] font-semibold text-slate-200 whitespace-nowrap">
+        <a href="#disponibles" class="hover:text-teal-400 transition-colors flex items-center gap-1.5 px-1.5 py-1 rounded-md hover:bg-white/5">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0"></span>
+          <span>Activación Inmediata</span>
+        </a>
+        <a href="#despliegue" class="hover:text-teal-400 transition-colors px-1.5 py-1 rounded-md hover:bg-white/5">Próximo Despliegue</a>
+        <a href="#tarifas" class="hover:text-teal-400 transition-colors px-1.5 py-1 rounded-md hover:bg-white/5">Tarifas Oficiales</a>
+        <a href="#magazine" class="hover:text-amber-300 text-amber-400 transition-colors flex items-center gap-1 px-1.5 py-1 rounded-md hover:bg-white/5">
+          <span>📖</span>
+          <span>Pyme Magazine</span>
+        </a>
+        <a href="#contacto" class="hover:text-teal-400 transition-colors px-1.5 py-1 rounded-md hover:bg-white/5">Contacto</a>
+      </nav>
+
+      <div class="flex-shrink-0">
+        <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quisiera%20solicitar%20una%20demostraci%C3%B3n%20personalizada%20sin%20compromiso%20de%20los%20servicios%20del%20cat%C3%A1logo" target="_blank" class="inline-flex items-center gap-2 bg-brand-teal hover:bg-brand-tealDark text-white text-xs sm:text-sm font-bold px-3.5 py-2.5 rounded-lg shadow-md shadow-teal-950/50 hover:shadow-teal-800/50 transition-all whitespace-nowrap">
+          <svg class="w-4 h-4 fill-current flex-shrink-0" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+          <span class="hidden sm:inline">Hablar con Francisco</span>
+          <span class="sm:hidden">WhatsApp</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="relative pt-12 pb-20 md:pt-16 md:pb-24 overflow-hidden hero-glow">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <div class="lg:col-span-7 text-center lg:text-left">
+          
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-300 text-xs font-semibold mb-6">
+            <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+            Automatización Práctica sin Aplicaciones Complejas • Galicia
+          </div>
+
+          <h1 style="line-height: 1.20;" class="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-tight leading-[1.20] sm:leading-[1.20] lg:leading-[1.20] mb-6">
+            <span class="text-white">Sistemas de Automatización e Inteligencia Artificial para</span><br />
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-emerald-400">Blindar, Agilizar y Escalar</span> 
+            <span class="text-white">tu Negocio Local</span>
+          </h1>
+
+          <p class="text-lg sm:text-xl text-slate-200 font-medium leading-relaxed mb-8 max-w-2xl mx-auto lg:mx-0">
+            Multiplica tus reseñas de 5★ en Google Maps, frena las quejas en privado antes de que se hagan públicas y automatiza las citas, ventas y facturas de tu negocio desde el WhatsApp que ya utilizas.
+          </p>
+
+          <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quisiera%20solicitar%20una%20demostraci%C3%B3n%20personalizada%20sin%20compromiso%20de%20los%20servicios%20de%20Reputaci%C3%B3n%20y%20Visibilidad" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-brand-teal hover:bg-brand-tealDark text-white font-bold text-base px-7 py-3.5 rounded-xl shadow-lg shadow-teal-900/40 transition-all hover:scale-[1.02]">
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+              <span>Pedir Demostración en Vivo</span>
+            </a>
+            <a href="#disponibles" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-slate-200 font-semibold text-base px-6 py-3.5 rounded-xl border border-white/10 transition-colors">
+              Ver Servicios Activos
+            </a>
+          </div>
+
+          <div class="mt-8 pt-6 border-t border-white/10 flex items-center justify-center lg:justify-start gap-5 text-left group/profile">
+            <a href="tarjeta.html" target="_blank" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-[3px] border-teal-500/40 shadow-xl shadow-teal-900/30 flex-shrink-0 group-hover/profile:scale-105 group-hover/profile:border-teal-400 transition-all cursor-pointer block relative">
+              <img src="perfil.jpeg" data-img-base="perfil,foto,avatar" data-img-fallback="https://placehold.co/100x100/0d7d74/ffffff?text=FG" alt="Francisco M. Gallardo" class="w-full h-full object-cover relative z-0" onerror="cargarSiguienteExtension(this)">
+            </a>
+            <div>
+              <a href="tarjeta.html" target="_blank" class="text-base sm:text-lg font-bold text-white group-hover/profile:text-teal-300 transition-colors cursor-pointer block">Francisco M. Gallardo</a>
+              <p class="text-xs sm:text-sm text-slate-400 mt-0.5">Consultor Tecnológico Local • Galicia<br class="sm:hidden"><span class="hidden sm:inline"> • </span><a href="tel:+34711547561" class="hover:text-teal-300 transition-colors">711 54 75 61</a></p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="lg:col-span-5">
+          <div id="atril-nfc" class="scroll-mt-32 relative rounded-2xl bg-gradient-to-b from-amber-500/10 via-slate-900 to-slate-950 p-6 sm:p-8 border-2 border-amber-500/30 shadow-2xl shadow-amber-950/20">
+            
+            <div class="flex items-center justify-between gap-2 mb-4">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-amber-500/20 text-amber-300 text-xs font-bold uppercase tracking-wider border border-amber-500/30">
+                ★ Hardware Disponible Hoy
+              </span>
+              <div class="text-amber-400 text-sm tracking-widest font-black">★★★★★</div>
+            </div>
+
+            <h3 class="text-xl sm:text-2xl font-black text-white leading-tight mb-3">
+              Atril Inteligente de Mostrador (NFC + QR)
+            </h3>
+
+            <p class="text-sm text-slate-300 leading-relaxed mb-6">
+              Elegante soporte físico de metacrilato con chip inalámbrico integrado y QR. El cliente solo tiene que acercar su móvil al pagar y se le abre tu pantalla oficial de valoración en Google Maps en <strong class="text-amber-300">1 segundo</strong>. Asegura que te deje su reseña en el acto antes de que salga por la puerta. Enlace 100% legal, directo y sin intermediarios.
+            </p>
+
+            <div class="bg-black/40 rounded-xl p-4 border border-white/5 mb-6 flex items-center justify-between">
+              <div>
+                <span class="text-xs text-slate-400 block font-medium">Pago único sin cuotas mensuales:</span>
+                <span class="text-2xl font-black text-amber-400">39 €</span>
+                <span class="text-[11px] text-slate-400 block">Equipo propio grabado de por vida</span>
+              </div>
+              <div class="text-right">
+                <span class="inline-block text-[11px] font-semibold text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded border border-emerald-800/40">
+                  Entrega 24-48h
+                </span>
+              </div>
+            </div>
+
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20encargar%20un%20Atril%20Inteligente%20NFC%20%2839%20%E2%82%AC%29%20para%20mi%20mostrador" target="_blank" class="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white font-bold text-sm py-3.5 px-4 rounded-xl shadow-lg transition-all">
+              ⚡ Encargar Atril para mi Mostrador
+            </a>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECCIÓN I: SERVICIOS ACTIVOS DE REPUTACIÓN -->
+  <section id="disponibles" class="scroll-mt-24 py-16 md:py-24 bg-slate-950/90 border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      
+      <div class="text-center max-w-3xl mx-auto mb-14">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-extrabold uppercase tracking-wider mb-3">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          Disponibles para Implantación Inmediata (24-48h)
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          I. Blindaje de Reputación y Captación en Google Maps
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base mt-3">
+          El 97% de los consumidores consulta Google Maps antes de elegir un negocio local. Activa hoy mismo nuestros dos motores de reputación —por separado o combinados en el Pack Escudo Total— y domina las búsquedas en tu zona.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        <!-- SERVICIO 1: GESTIÓN Y RESPUESTA DE RESEÑAS EN GOOGLE CON IA -->
+        <div class="glow-reputacion backdrop-blur-md border-2 border-teal-500/40 hover:border-teal-400 rounded-2xl p-6 sm:p-7 transition-all flex flex-col justify-between group h-full shadow-xl shadow-teal-950/20">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-4">
+              <div class="flex items-center gap-2.5">
+                <span class="w-9 h-9 rounded-xl bg-teal-500 text-slate-950 font-black text-base flex items-center justify-center shadow">1</span>
+                <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-300 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-500/40">● Activo • Instalación Hoy</span>
+              </div>
+              <span class="text-lg font-black text-teal-300">59 €<span class="text-xs font-normal text-slate-400">/mes</span></span>
+            </div>
+            
+            <h3 class="text-xl sm:text-2xl font-black mb-3 text-white">
+              Gestión y Respuesta de Reseñas en Google con IA
+            </h3>
+            <p class="text-sm text-slate-300 leading-relaxed mb-4">
+              Piloto automático 24/7 que monitoriza tu perfil de Google Business. A las valoraciones positivas (4 y 5★) les responde al instante en el <strong>mismo idioma del cliente</strong> potenciando tu SEO local y respetando un estricto <strong>blindaje de secreto profesional y RGPD</strong> (ideal para clínicas, despachos y comercios).
+            </p>
+            <p class="text-sm text-slate-300 leading-relaxed mb-5">
+              Si detecta una crítica (1 a 3★) o una queja oculta en 4★, <strong>frena la publicación automática</strong> y te envía una alerta al móvil con un borrador diplomático redactado bajo el método psicológico <em>HEARD</em> (con contención jurídica sin admisión de culpa).
+            </p>
+
+            <ul class="space-y-2 text-xs text-slate-200 mb-6 bg-black/30 p-4 rounded-xl border border-white/5">
+              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Auto-respuesta SEO multilingüe en valoraciones de 4 y 5★</li>
+              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Freno de emergencia y contención jurídica HEARD/RGPD (1 a 3★)</li>
+              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Bandeja móvil de aprobación en 1 toque + Informe mensual</li>
+            </ul>
+          </div>
+          
+          <div class="pt-4 border-t border-teal-500/30 flex flex-col sm:flex-row items-center justify-between gap-3 mt-auto">
+            <a href="#atril-nfc" class="text-xs font-semibold text-amber-300 hover:text-amber-200 flex items-center gap-1.5">
+              <span>💡</span> <span>Combínalo con el Atril NFC (39 €)</span>
+            </a>
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20activar%20el%20Servicio%201%3A%20Gesti%C3%B3n%20y%20Respuesta%20de%20Rese%C3%B1as%20en%20Google%20con%20IA%20%2859%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full sm:w-auto text-center bg-brand-teal hover:bg-brand-tealDark text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-md">
+              Solicitar Demo / Activar &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- SERVICIO 2: FILTRADO Y CAPTACIÓN DE RESEÑAS (ENCUESTA INTELIGENTE) -->
+        <div class="glow-reputacion backdrop-blur-md border-2 border-teal-500/40 hover:border-teal-400 rounded-2xl p-6 sm:p-7 transition-all flex flex-col justify-between group h-full shadow-xl shadow-teal-950/20">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-4">
+              <div class="flex items-center gap-2.5">
+                <span class="w-9 h-9 rounded-xl bg-teal-500 text-slate-950 font-black text-base flex items-center justify-center shadow">2</span>
+                <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-300 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-500/40">● Activo • Instalación Hoy</span>
+              </div>
+              <span class="text-lg font-black text-teal-300">59 €<span class="text-xs font-normal text-slate-400">/mes</span></span>
+            </div>
+            
+            <h3 class="text-xl sm:text-2xl font-black mb-3 text-white">
+              Filtrado y Captación de Reseñas (Encuesta Inteligente)
+            </h3>
+            <p class="text-sm text-slate-300 leading-relaxed mb-4">
+              Cortafuegos proactivo por <strong>WhatsApp Oficial (Meta API)</strong> diseñado para negocios con cita previa, reservas, reparaciones o entregas (clínicas, salones, talleres, instaladores). Dos horas después del servicio, el cliente recibe una breve encuesta con botones interactivos en castellano o gallego:
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-5 text-xs">
+              <div class="bg-black/40 border border-teal-500/30 rounded-xl p-3">
+                <strong class="text-emerald-400 block mb-1">🌟 «Excelente»</strong>
+                <span class="text-slate-300 text-[11px] leading-snug block">Le entrega el enlace directo para publicar su reseña 5★ en Google Maps en 1 toque.</span>
+              </div>
+              <div class="bg-black/40 border border-teal-500/30 rounded-xl p-3">
+                <strong class="text-teal-300 block mb-1">😊 «Bueno»</strong>
+                <span class="text-slate-300 text-[11px] leading-snug block">Agradece la visita y pregunta en privado qué detalle mejoraría para llegar al 10.</span>
+              </div>
+              <div class="bg-black/40 border border-amber-500/40 rounded-xl p-3">
+                <strong class="text-amber-400 block mb-1">🛡️ «Mejorable»</strong>
+                <span class="text-slate-300 text-[11px] leading-snug block">Frena el envío a Google, abre canal privado y te avisa al móvil al instante.</span>
+              </div>
+            </div>
+
+            <ul class="space-y-2 text-xs text-slate-200 mb-6 bg-black/30 p-4 rounded-xl border border-white/5">
+              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Detiene el descontento en privado antes de manchar tu nota pública</li>
+              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Memoria inteligente anti-saturación para clientes recurrentes</li>
+            </ul>
+          </div>
+          
+          <div class="pt-4 border-t border-teal-500/30 flex flex-col sm:flex-row items-center justify-between gap-3 mt-auto">
+            <span class="text-xs font-medium text-teal-300">Multiplica hasta x4 tus reseñas 5★</span>
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20activar%20el%20Servicio%202%3A%20Filtrado%20y%20Captaci%C3%B3n%20de%20Rese%C3%B1as%20%28Encuesta%20Inteligente%29%20%2859%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full sm:w-auto text-center bg-brand-teal hover:bg-brand-tealDark text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-md">
+              Solicitar Demo / Activar &rarr;
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BANNER COMBINADO PACK DÚO ESCUDO TOTAL (99 €/MES) -->
+      <div class="mt-8 rounded-2xl bg-gradient-to-r from-teal-950/90 via-slate-900 to-teal-950/90 border-2 border-teal-400/50 p-6 sm:p-7 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+        <div class="text-center md:text-left">
+          <span class="inline-block text-[11px] font-black uppercase tracking-wider bg-teal-400 text-slate-950 px-3 py-0.5 rounded-full mb-2">
+            ★ Pack Escudo Total de Reputación (Pyme DÚO)
+          </span>
+          <h4 class="text-xl sm:text-2xl font-black text-white">
+            Combina ambos sistemas (Gestión Reseñas IA + Encuesta Filtro WhatsApp)
+          </h4>
+          <p class="text-xs sm:text-sm text-slate-300 mt-1">
+            El segundo servicio suma solo <strong>+40 €/mes</strong>. Te llevas el blindaje completo por <strong>99 € / mes</strong> (por menos de 100 € al mes y ahorras 228 € al año frente a contratarlos sueltos).
+          </p>
+        </div>
+        <div class="flex-shrink-0">
+          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20el%20Pack%20D%C3%9AO%20Escudo%20Total%20%28Gesti%C3%B3n%20Rese%C3%B1as%20IA%20%2B%20Encuesta%20Inteligente%20WhatsApp%29%20por%2099%20%E2%82%AC%2Fmes" target="_blank" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm px-6 py-3.5 rounded-xl shadow-lg transition-all hover:scale-105">
+            Activar Pack Escudo Total (99 €/m) &rarr;
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECCIÓN II: PRÓXIMO DESPLIEGUE MODULAR (FASE 1) -->
+  <section id="despliegue" class="scroll-mt-24 py-16 md:py-24 bg-brand-dark/60 border-t border-white/5">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      
+      <div class="text-center max-w-3xl mx-auto mb-14">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-xs font-extrabold uppercase tracking-wider mb-3">
+          Calendario de Despliegue Modular • Reserva Prioritaria Abierta
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          II. Próximos Módulos de Ventas, Agenda y Finanzas
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base mt-3">
+          Amplía el ecosistema de tu negocio a medida que lo necesites. Cada nuevo módulo que sumes a tu plan se integra con tarifa modular transparente (<strong>+40 €/mes</strong> del 2º al 5º servicio, y solo <strong>+30 €/mes</strong> a partir del 6º).
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:auto-rows-fr">
+
+        <!-- SERVICIO 3: RESPUESTA LEADS + EXTRACTOR DE PORTALES -->
+        <div class="glow-captacion backdrop-blur-md border border-blue-500/30 hover:border-blue-400/60 rounded-2xl p-6 transition-all flex flex-col justify-between group h-full">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 font-black text-sm flex items-center justify-center border border-blue-500/30">3</span>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-blue-300 bg-blue-950/70 px-2.5 py-0.5 rounded-full border border-blue-700/50">Próximo Despliegue</span>
+              </div>
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/40">Cierre en Caliente</span>
+            </div>
+            
+            <h3 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Leads en 10s + Extractor de Portales</h3>
+            <p class="text-sm text-slate-300 leading-relaxed mb-4">
+              Responder en los primeros 5 minutos multiplica por 4 las ventas. Quien pide presupuesto por tu web, redes sociales, anuncios o correos de portales (Habitissimo, Bodas.net, etc.) recibe un WhatsApp inmediato. A la vez, <strong>te avisamos discretamente al móvil</strong> para llamarle en caliente con su interés al 100%.
+            </p>
+          </div>
+          
+          <div class="pt-4 border-t border-blue-500/30 flex items-center justify-between mt-auto">
+            <span class="text-xs font-medium text-blue-300">Adelántate a tu competencia</span>
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20acceso%20prioritario%20al%20Servicio%203%3A%20Leads%20en%2010s%20%2B%20Extractor%20de%20Portales" target="_blank" class="text-xs font-bold text-teal-400 hover:text-teal-300 flex items-center gap-1">
+              Solicitar Acceso Prioritario &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- SERVICIO 4: CITAS ANTI-PLANTÓN + CAMPAÑAS FLASH -->
+        <div class="glow-eficiencia backdrop-blur-md border border-indigo-500/30 hover:border-indigo-400/60 rounded-2xl p-6 transition-all flex flex-col justify-between group h-full">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 font-black text-sm flex items-center justify-center border border-indigo-500/30">4</span>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-300 bg-indigo-950/70 px-2.5 py-0.5 rounded-full border border-indigo-700/50">Próximo Despliegue</span>
+              </div>
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/40">-85% de Ausencias</span>
+            </div>
+            
+            <h3 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Sistema Anti-Plantón + Campañas Flash</h3>
+            <p class="text-sm text-slate-300 leading-relaxed mb-4">
+              Sincronizado con tu calendario: envía un recordatorio automático por WhatsApp 24 horas antes con botones interactivos de <strong>[Confirmar] o [Reubicar]</strong>. Si alguien cancela con antelación, libera el hueco y lanza avisos automáticos a clientes en lista de espera para reasignar la hora vacía al momento.
+            </p>
+          </div>
+          
+          <div class="pt-4 border-t border-indigo-500/30 flex items-center justify-between mt-auto">
+            <span class="text-xs font-medium text-indigo-300">Cero horas muertas en agenda</span>
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20acceso%20prioritario%20al%20Servicio%204%3A%20Sistema%20Anti-Plant%C3%B3n%20%2B%20Campa%C3%B1as%20Flash" target="_blank" class="text-xs font-bold text-teal-400 hover:text-teal-300 flex items-center gap-1">
+              Solicitar Acceso Prioritario &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- SERVICIO 5: FACTURAS Y GASTOS AL GESTOR CON IA -->
+        <div class="glow-eficiencia backdrop-blur-md border border-indigo-500/30 hover:border-indigo-400/60 rounded-2xl p-6 transition-all flex flex-col justify-between group h-full md:col-span-2 max-w-2xl mx-auto w-full">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 font-black text-sm flex items-center justify-center border border-indigo-500/30">5</span>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-300 bg-indigo-950/70 px-2.5 py-0.5 rounded-full border border-indigo-700/50">Próximo Despliegue</span>
+              </div>
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/40">Cero Papeles</span>
+            </div>
+            
+            <h3 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Facturas y Gastos al Gestor con IA</h3>
+            <p class="text-sm text-slate-300 leading-relaxed mb-4">
+              Foto al ticket o factura por WhatsApp: la visión artificial extrae fecha, NIF, proveedor, base e IVA en 5 segundos, archiva el documento en la nube de tu gestoría con desglose en Excel. Con el <strong>Add-on Correo opcional</strong>, la IA revisa tu buzón (Gmail/Outlook) y clasifica facturas de compras sola.
+            </p>
+          </div>
+          
+          <div class="pt-4 border-t border-indigo-500/30 flex items-center justify-between mt-auto">
+            <span class="text-xs font-medium text-indigo-300">No pierdas ni un euro de IVA deducible</span>
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20acceso%20prioritario%20al%20Servicio%205%3A%20Facturas%20y%20Gastos%20al%20Gestor%20con%20IA" target="_blank" class="text-xs font-bold text-teal-400 hover:text-teal-300 flex items-center gap-1">
+              Solicitar Acceso Prioritario &rarr;
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- MÓDULO SATÉLITE INSTAGRAM (69 € SUELTO / +49 € EN COMBO) -->
+      <div class="max-w-5xl mx-auto mt-12">
+        <div class="rounded-2xl p-[2px] bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 shadow-2xl shadow-fuchsia-900/30">
+          <div class="rounded-2xl p-6 sm:p-8 bg-slate-950 h-full w-full relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-fuchsia-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+            
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 relative z-10">
+              
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-3 mb-4">
+                  <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-violet-600 to-fuchsia-600 p-[2px]">
+                    <div class="bg-slate-950 w-full h-full rounded-full flex items-center justify-center">
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    </div>
+                  </div>
+                  <span class="text-xs sm:text-sm font-black text-fuchsia-400 tracking-widest uppercase">Módulo Satélite Prémium (Meta Graph API Oficial)</span>
+                </div>
+                
+                <h3 class="text-2xl sm:text-3xl font-black text-white mb-3 tracking-tight">
+                  INSTAGRAM <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">INTELIGENTE 3 EN 1</span>
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5 mb-6">
+                  <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-left hover:bg-white/10 transition-colors h-full flex flex-col">
+                    <div class="text-fuchsia-400 font-bold text-xs mb-1.5 uppercase tracking-wider">1. Envío al Comentar</div>
+                    <div class="text-slate-300 text-xs leading-relaxed flex-1">Dices: Escribe «CITA» o «CARTA». El sistema responde al segundo entregando el enlace por privado y disparando el alcance orgánico de tu Reel.</div>
+                  </div>
+                  <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-left hover:bg-white/10 transition-colors h-full flex flex-col">
+                    <div class="text-fuchsia-400 font-bold text-xs mb-1.5 uppercase tracking-wider">2. Recepcionista DMs 24/7</div>
+                    <div class="text-slate-300 text-xs leading-relaxed flex-1">Asistente interactivo que responde dudas frecuentes (precios, carta, ubicación, horarios) y guía hacia la reserva en cualquier momento.</div>
+                  </div>
+                  <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-left hover:bg-white/10 transition-colors h-full flex flex-col">
+                    <div class="text-fuchsia-400 font-bold text-xs mb-1.5 uppercase tracking-wider">3. Regalo por Historias</div>
+                    <div class="text-slate-300 text-xs leading-relaxed flex-1">Si un cliente te menciona en sus Stories, lo detecta al vuelo y le envía un mensaje privado con un detalle exclusivo para incentivar su regreso.</div>
+                  </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center gap-3 mt-2">
+                  <span class="w-full sm:w-auto text-center text-sm font-black text-fuchsia-300 bg-fuchsia-950/60 px-5 py-2.5 rounded-xl border border-fuchsia-500/40">
+                    +49 € / mes <span class="text-xs font-normal opacity-90 ml-1">(Vinculado a cualquier pack | Setup: 75 €)</span>
+                  </span>
+                  <span class="w-full sm:w-auto text-center text-sm font-bold text-white bg-white/10 px-5 py-2.5 rounded-xl border border-white/20">
+                    69 € / mes <span class="text-xs font-normal text-slate-400 ml-1">(Contratado suelto | Setup: 150 €)</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="w-full md:w-auto flex-shrink-0 flex justify-center md:justify-end mt-2 md:mt-0">
+                <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20estoy%20interesado%20en%20el%20M%C3%B3dulo%20Sat%C3%A9lite%20de%20Instagram%20Inteligente%203%20en%201" target="_blank" class="w-full md:w-auto text-center inline-flex items-center justify-center gap-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold text-sm px-7 py-4 rounded-xl shadow-lg transition-all hover:scale-105">
+                  Consultar Módulo IG &rarr;
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECCIÓN TARIFAS OFICIALES (5 PLANES FASE 1: 59€ A 219€) -->
+  <section id="tarifas" class="scroll-mt-24 py-16 md:py-24 bg-brand-dark relative border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      
+      <div class="text-center max-w-3xl mx-auto mb-14">
+        <span class="text-xs uppercase font-extrabold tracking-widest text-teal-400 block mb-2">Escalado Modular Transparente • Fase 1</span>
+        <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          Tarifas Oficiales Claras y Modulares
+        </h2>
+        <p class="text-slate-300 text-sm sm:text-base mt-3">
+          Combina libremente los servicios que necesites. El <strong>1er servicio son 59 €/mes</strong> y del <strong>2º al 5º suman +40 €/mes</strong> por módulo adicional. Soporte técnico directo y mantenimiento continuo incluidos.
+        </p>
+      </div>
+
+      <!-- PARRILLA DE 5 PLANES (FASE 1) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- 1. PYME BASE -->
+        <div class="glass-card rounded-2xl p-6 flex flex-col justify-between border border-white/10 hover:border-slate-500 transition-colors">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">1 Servicio</span>
+              <span class="text-[11px] font-semibold text-slate-400">Setup Nominal: 150 €</span>
+            </div>
+            <h3 class="text-xl font-black text-white mb-2">PYME <span class="text-slate-400">BASE</span></h3>
+            <div class="text-3xl font-black text-white mb-1">59 € <span class="text-xs font-normal text-slate-400">/ mes</span></div>
+            <p class="text-xs text-slate-400 mb-5 min-h-[32px]">Para automatizar un cuello de botella clave (ej. Gestión de Reseñas IA o Encuesta WhatsApp).</p>
+            <ul class="text-xs text-slate-300 space-y-3 mb-6">
+              <li class="flex items-start gap-2">
+                <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
+                <span class="leading-snug">
+                  <strong class="block text-white">1 servicio troncal activo</strong>
+                  <span class="block text-slate-400">(a libre elección del catálogo)</span>
+                </span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
+                <span class="leading-snug">
+                  <span class="block">Plan Anual <span class="whitespace-nowrap">(10 meses):</span> <strong class="whitespace-nowrap text-white">590 €/año</strong></span>
+                  <span class="block text-emerald-400 font-semibold whitespace-nowrap">(Ahorras 118 € — 2 meses gratis)</span>
+                </span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
+                <span>Soporte técnico directo y copias en la nube</span>
+              </li>
+            </ul>
+          </div>
+          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20contratar%20el%20Plan%20PYME%20BASE%20%2859%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-3 text-center rounded-xl bg-white/10 hover:bg-slate-700 text-white font-bold text-xs transition-colors">
+            Elegir PYME Base (59 €/m)
+          </a>
+        </div>
+
+        <!-- 2. PYME DÚO (99 €/MES) -->
+        <div class="glass-card rounded-2xl p-6 flex flex-col justify-between border border-blue-500/40 hover:border-blue-400 transition-colors group/btn">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-bold text-blue-300 uppercase tracking-wider">2 Servicios (59€ + 40€)</span>
+              <span class="text-[11px] font-semibold text-blue-300">Setup Nominal: 225 €</span>
+            </div>
+            <h3 class="text-xl font-black text-white mb-2">PYME <span class="text-blue-400">DÚO</span></h3>
+            <div class="flex items-baseline gap-2 mb-1">
+              <span class="text-3xl font-black text-white">99 €</span>
+              <span class="text-xs font-normal text-slate-400">/ mes</span>
+              <span class="ml-auto text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2 py-0.5 rounded whitespace-nowrap">Ahorras 19 €/m</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-5 min-h-[32px]">Ideal para el <strong>Pack Escudo Total</strong> (Gestión Reseñas IA + Encuesta Filtro WhatsApp).</p>
+            <ul class="text-xs text-slate-300 space-y-3 mb-6">
+              <li class="flex items-start gap-2">
+                <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
+                <span class="leading-snug">
+                  <strong class="block text-white">2 servicios combinados activos</strong>
+                  <span class="block text-slate-400 whitespace-nowrap">(2º módulo a libre elección: +40 €/mes)</span>
+                </span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
+                <span class="leading-snug">
+                  <span class="block">Plan Anual <span class="whitespace-nowrap">(10 meses):</span> <strong class="whitespace-nowrap text-white">990 €/año</strong></span>
+                  <span class="block text-emerald-400 font-semibold whitespace-nowrap">(Ahorras 198 € — 2 meses gratis)</span>
+                </span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
+                <span>50% de bonificación ya aplicada en el 2º setup</span>
+              </li>
+            </ul>
+          </div>
+          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20contratar%20el%20Plan%20PYME%20D%C3%9AO%20%2899%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-3 text-center rounded-xl bg-blue-600/30 border border-blue-500/40 group-hover/btn:bg-blue-600 text-white font-bold text-xs transition-all duration-300">
+            Elegir PYME Dúo (99 €/m)
+          </a>
+        </div>
+
+        <!-- 3. PYME TRINITY (139 €/MES - RECOMENDADO) -->
+        <div class="rounded-2xl p-6 bg-gradient-to-b from-teal-900/50 via-slate-900 to-slate-950 border-2 border-teal-400 shadow-2xl shadow-teal-950/50 flex flex-col justify-between relative group/trinity">
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-teal-500 text-slate-950 text-[10px] font-black uppercase px-3.5 py-0.5 rounded-full tracking-wider shadow whitespace-nowrap">
+            ★ Más Recomendado
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-bold text-teal-300 uppercase tracking-wider">3 Servicios</span>
+              <span class="text-[11px] font-semibold text-teal-300">Setup Nominal: 300 €</span>
+            </div>
+            <h3 class="text-xl font-black text-white mb-2">PYME <span class="text-emerald-400">TRINITY</span></h3>
+            <div class="flex items-baseline gap-2 mb-1">
+              <span class="text-3xl font-black text-teal-300">139 €</span>
+              <span class="text-xs font-normal text-slate-400">/ mes</span>
+              <span class="ml-auto text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-500/50 px-2 py-0.5 rounded whitespace-nowrap">Ahorras 38 €/m</span>
+            </div>
+            <p class="text-xs text-slate-300 mb-5 min-h-[32px]">Equilibrio total entre reputación, captación de clientes y ahorro de tiempo.</p>
+            <ul class="text-xs text-slate-200 space-y-3 mb-6">
+              <li class="flex items-start gap-2">
+                <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
+                <span class="leading-snug">
+                  <strong class="block text-white">3 servicios combinados activos</strong>
+                  <span class="block text-slate-300 whitespace-nowrap">(3er módulo a libre elección: +40 €/mes)</span>
+                </span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
+                <span class="leading-snug">
+                  <span class="block">Plan Anual <span class="whitespace-nowrap">(10 meses):</span> <strong class="whitespace-nowrap text-white">1.390 €/año</strong></span>
+                  <span class="block text-emerald-400 font-semibold whitespace-nowrap">(Ahorras 278 € — 2 meses gratis)</span>
+                </span>
+              </li>
+              <li class="flex items-start gap-2 text-amber-300 font-semibold bg-amber-950/40 p-2 rounded-lg border border-amber-500/30">
+                <span class="flex-shrink-0">🎁</span>
+                <span><strong>Bono Regalo Incluido:</strong> Bóveda Segura de Contraseñas de Equipo <span class="whitespace-nowrap">(valorada en 150 €)</span></span>
+              </li>
+            </ul>
+          </div>
+          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20contratar%20el%20Plan%20PYME%20TRINITY%20%28139%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-3 text-center rounded-xl bg-brand-teal group-hover/trinity:bg-emerald-400 group-hover/trinity:text-slate-950 text-white font-black text-xs transition-all duration-300 shadow-lg">
+            Elegir Pack Trinity (139 €/m)
+          </a>
+        </div>
+
+        <!-- 4. PYME QUATRO (179 €/MES) -->
+        <div class="glass-card rounded-2xl p-6 flex flex-col justify-between border border-indigo-500/30 hover:border-indigo-400 transition-colors">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-bold text-indigo-300 uppercase tracking-wider">4 Servicios</span>
+              <span class="text-[11px] font-semibold text-indigo-300">Setup Nominal: 375 €</span>
+            </div>
+            <h3 class="text-xl font-black text-white mb-2">PYME <span class="text-indigo-400">QUATRO</span></h3>
+            <div class="flex items-baseline gap-2 mb-1">
+              <span class="text-3xl font-black text-white">179 €</span>
+              <span class="text-xs font-normal text-slate-400">/ mes</span>
+              <span class="ml-auto text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2 py-0.5 rounded whitespace-nowrap">Ahorras 57 €/m</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-5 min-h-[32px]">Automatización avanzada combinando reputación, ventas, agenda y administración.</p>
+            <ul class="text-xs text-slate-300 space-y-3 mb-6">
+              <li class="flex items-start gap-2">
+                <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
+                <span class="leading-snug">
+                  <strong class="block text-white">4 servicios combinados activos</strong>
+                  <span class="block text-slate-400 whitespace-nowrap">(4º módulo a libre elección: +40 €/mes)</span>
+                </span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
+                <span class="leading-snug">
+                  <span class="block">Plan Anual <span class="whitespace-nowrap">(10 meses):</span> <strong class="whitespace-nowrap text-white">1.790 €/año</strong></span>
+                  <span class="block text-emerald-400 font-semibold whitespace-nowrap">(Ahorras 358 € — 2 meses gratis)</span>
+                </span>
+              </li>
+              <li class="flex items-start gap-2 text-amber-300 font-semibold">
+                <span class="flex-shrink-0">🎁</span>
+                <span>Incluye Bóveda Segura de Contraseñas gratis</span>
+              </li>
+            </ul>
+          </div>
+          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20contratar%20el%20Plan%20PYME%20QUATRO%20%28179%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-3 text-center rounded-xl bg-white/10 hover:bg-indigo-600 text-white font-bold text-xs transition-colors">
+            Elegir PYME Quatro (179 €/m)
+          </a>
+        </div>
+
+        <!-- 5. PYME PENTIUM (219 €/MES) -->
+        <div class="glass-card rounded-2xl p-6 flex flex-col justify-between border border-teal-500/30 hover:border-teal-400 transition-colors">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-bold text-teal-300 uppercase tracking-wider">5 Servicios</span>
+              <span class="text-[11px] font-semibold text-teal-300">Setup Nominal: 450 €</span>
+            </div>
+            <h3 class="text-xl font-black text-white mb-2">PYME <span class="text-teal-400">PENTIUM</span></h3>
+            <div class="flex items-baseline gap-2 mb-1">
+              <span class="text-3xl font-black text-white">219 €</span>
+              <span class="text-xs font-normal text-slate-400">/ mes</span>
+              <span class="ml-auto text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2 py-0.5 rounded whitespace-nowrap">Ahorras 76 €/m</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-5 min-h-[32px]">Cinco motores trabajando en piloto automático las 24 horas para tu negocio.</p>
+            <ul class="text-xs text-slate-300 space-y-3 mb-6">
+              <li class="flex items-start gap-2">
+                <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
+                <span class="leading-snug">
+                  <strong class="block text-white">5 servicios combinados activos</strong>
+                  <span class="block text-slate-400 whitespace-nowrap">(5º módulo a libre elección: +40 €/mes)</span>
+                </span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
+                <span class="leading-snug">
+                  <span class="block">Plan Anual <span class="whitespace-nowrap">(10 meses):</span> <strong class="whitespace-nowrap text-white">2.190 €/año</strong></span>
+                  <span class="block text-emerald-400 font-semibold whitespace-nowrap">(Ahorras 438 € — 2 meses gratis)</span>
+                </span>
+              </li>
+              <li class="flex items-start gap-2 text-amber-300 font-semibold">
+                <span class="flex-shrink-0">🎁</span>
+                <span>Incluye Bóveda Segura de Contraseñas gratis</span>
+              </li>
+            </ul>
+          </div>
+          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20contratar%20el%20Plan%20PYME%20PENTIUM%20%28219%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-3 text-center rounded-xl bg-white/10 hover:bg-teal-700 text-white font-bold text-xs transition-colors">
+            Elegir PYME Pentium (219 €/m)
+          </a>
+        </div>
+
+      </div>
+
+      <!-- LAS 2 MODALIDADES DE PAGO OFICIALES (VÍA 1 FLEXIBLE VS VÍA 2 ANUAL 10 MESES) -->
+      <div class="mt-14 pt-12 border-t border-white/10 max-w-5xl mx-auto">
+        <div class="text-center mb-10">
+          <span class="text-xs uppercase font-extrabold tracking-widest text-teal-400 block mb-2">Transparencia Total Sin Letra Pequeña</span>
+          <h3 class="text-2xl sm:text-3xl font-black text-white tracking-tight">2 Modalidades de Contratación y Puesta en Marcha</h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          <!-- VÍA 1: FLEXIBLE -->
+          <div class="bg-white/[0.03] rounded-2xl p-7 border border-white/15 flex flex-col justify-between hover:border-slate-400 transition-colors">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="inline-block bg-slate-800 text-slate-200 text-xs font-extrabold uppercase tracking-wider px-3.5 py-1 rounded-full border border-slate-600">
+                  🔄 Vía 1: Modalidad Flexible
+                </span>
+                <span class="text-xs font-semibold text-slate-400">Domiciliación SEPA</span>
+              </div>
+              <h4 class="text-xl font-black text-white mb-1">Compromiso Inicial de 3 Meses</h4>
+              <p class="text-xs text-slate-400 italic mb-5">«Máxima adaptabilidad mes a mes para tu tesorería»</p>
+              
+              <ul class="space-y-3 text-xs sm:text-sm text-slate-300 mb-6">
+                <li class="flex items-start gap-2.5">
+                  <span class="text-teal-400 font-bold mt-0.5">✔</span>
+                  <span><strong>Cuota mensual mes a mes</strong> mediante domiciliación bancaria SEPA.</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <span class="text-teal-400 font-bold mt-0.5">✔</span>
+                  <span><strong>Setup Nominal de Ingeniería:</strong> 150 € el 1er servicio y <strong>50% de descuento (+75 €)</strong> en cada módulo adicional activado en tu plan.</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <span class="text-teal-400 font-bold mt-0.5">✔</span>
+                  <span>Tras los 3 primeros meses de rodaje, puedes cancelar o ajustar módulos en cualquier momento con 30 días de preaviso.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="pt-4 border-t border-white/10 text-center text-xs font-bold text-slate-300">
+              Desembolso Día 1: Setup Nominal + Cuota del Mes 1
+            </div>
+          </div>
+          
+          <!-- VÍA 2: PLAN ANUAL (10 MESES = 2 MESES GRATIS) -->
+          <div class="bg-gradient-to-b from-indigo-950/50 via-slate-900 to-slate-950 rounded-2xl p-7 border-2 border-indigo-400/60 flex flex-col justify-between relative shadow-xl shadow-indigo-950/30">
+            <div class="absolute top-0 right-6 -translate-y-1/2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-[10px] font-black uppercase px-3.5 py-1 rounded-full shadow">
+              🎁 2 Meses 100% Gratis
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="inline-block bg-indigo-950 text-indigo-300 text-xs font-extrabold uppercase tracking-wider px-3.5 py-1 rounded-full border border-indigo-500/40">
+                  ⭐ Vía 2: Plan Anual (10 Meses)
+                </span>
+                <span class="text-xs font-semibold text-indigo-300">Máximo Ahorro</span>
+              </div>
+              <h4 class="text-xl font-black text-white mb-1">Pagas 10 Meses y Disfrutas 12</h4>
+              <p class="text-xs text-indigo-300 italic mb-5">«Te regalamos 2 mensualidades completas en cualquier plan»</p>
+              
+              <ul class="space-y-3 text-xs sm:text-sm text-slate-200 mb-6">
+                <li class="flex items-start gap-2.5">
+                  <span class="text-indigo-400 font-bold mt-0.5">✔</span>
+                  <span><strong>Ahorro directo del 16,6% anual:</strong> abonas únicamente 10 mensualidades y tienes el servicio garantizado todo el año (ej. ahorras 198 € en Plan Dúo o 278 € en Plan Trinity).</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <span class="text-indigo-400 font-bold mt-0.5">✔</span>
+                  <span><strong>Setup Nominal de Ingeniería:</strong> 150 € el 1er servicio y <strong>50% de descuento (+75 €)</strong> en cada módulo adicional activado en tu plan.</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <span class="text-indigo-400 font-bold mt-0.5">✔</span>
+                  <span><strong>Tarifa blindada durante 12 meses</strong> con mejoras de IA incluidas y factura anual 100% deducible en tu ejercicio fiscal.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="pt-4 border-t border-indigo-500/30 text-center text-xs font-bold text-indigo-300">
+              Desembolso Día 1: Setup Nominal + 10 Mensualidades (2 Meses Gratis)
+            </div>
+          </div>
+
+        </div>
+
+        <div class="mt-8 text-center">
+          <a href="documentos/desembolso.html" target="_blank" class="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-teal-300 hover:text-teal-200 bg-teal-950/50 hover:bg-teal-900/60 px-5 py-2.5 rounded-xl border border-teal-500/30 transition-all">
+            <span>📊</span>
+            <span>Ver tabla desglosada de puesta en marcha técnica y desembolso Día 1 &rarr;</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================================================================= -->
+  <!-- SECCIÓN: PYME MAGAZINE & PODCAST MULTIMEDIA (LECTURA, AUDIO Y VÍDEO)    -->
+  <!-- ======================================================================= -->
+  <section id="magazine" class="scroll-mt-24 py-16 md:py-24 bg-gradient-to-b from-slate-950 via-brand-dark to-slate-950 border-t border-white/10 relative overflow-hidden">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+      
+      <div class="text-center max-w-3xl mx-auto mb-14">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-extrabold uppercase tracking-wider mb-3">
+          📖 Publicación Editorial y Multimedia • Sistemas Pyme
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          Pyme Magazine: Artículos, Podcast y Vídeo
+        </h2>
+        <p class="text-slate-300 text-sm sm:text-base mt-3">
+          Informes ejecutivos diseñados para dueños de negocios locales. Léelos en PDF/web, <strong>escucha el Podcast de 7 minutos mientras conduces</strong> o <strong>mira la píldora explicativa en vídeo</strong> desde tu propio teléfono.
+        </p>
+      </div>
+
+      <!-- TARJETA DESTACADA MULTIMEDIA: FASCÍCULO Nº 1 -->
+      <div class="rounded-3xl bg-gradient-to-br from-slate-900 via-slate-950 to-teal-950/60 border-2 border-teal-500/40 p-6 sm:p-8 lg:p-10 shadow-2xl mb-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <!-- Portada e imagen de acceso al artículo -->
+          <div class="lg:col-span-5">
+            <a href="articulos/Pyme_Magazine_N1.html" target="_blank" class="block group relative rounded-2xl overflow-hidden border-2 border-white/15 shadow-2xl hover:border-teal-400 transition-all">
+              <div class="bg-slate-950 px-4 py-2 border-b border-white/10 flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-teal-300">
+                <span>PYME MAGAZINE • Nº 1</span>
+                <span class="bg-teal-500/20 px-2 py-0.5 rounded text-emerald-300">Artículo A4</span>
+              </div>
+              <div class="p-6 bg-gradient-to-br from-brand-navy via-slate-900 to-teal-900 relative">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-teal-300 block mb-2">Informe Ejecutivo • Reputación Local</span>
+                <h3 class="text-2xl sm:text-3xl font-black text-white leading-tight mb-3 group-hover:text-teal-200 transition-colors">
+                  La Nueva Regla del «Boca a Boca»
+                </h3>
+                <p class="text-xs text-slate-300 leading-relaxed mb-5">
+                  El secreto de los Google Local Guides, la trampa del «Efecto Loro» en el SEO, el método psicológico HEARD, el blindaje médico RGPD y cómo frenar las quejas en privado por WhatsApp antes de que lleguen a Google Maps.
+                </p>
+                <div class="flex items-center justify-between pt-3 border-t border-white/10 text-xs font-bold text-amber-300">
+                  <span>★★★★★ Especial Google Maps</span>
+                  <span class="group-hover:translate-x-1 transition-transform">Leer Artículo &rarr;</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Contenido y Centro Multimedia (Audio + Vídeo) -->
+          <div class="lg:col-span-7 flex flex-col justify-between space-y-5">
+            <div>
+              <!-- 3 BANNERS SUPERIORES INTERACTIVOS Y CLICABLES -->
+              <div class="flex flex-wrap items-center gap-2.5 mb-3">
+                <a href="articulos/Pyme_Magazine_N1.html" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-extrabold uppercase tracking-wider transition-all hover:scale-105 cursor-pointer shadow-sm group">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 group-hover:animate-pulse"></span>
+                  <span>Fascículo Nº 1 Activo</span>
+                  <span class="text-[10px] opacity-75 font-normal ml-0.5">&rarr;</span>
+                </a>
+                <button type="button" onclick="activarPodcastConScroll()" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 hover:bg-amber-500/30 border border-amber-500/30 text-amber-300 text-xs font-bold transition-all hover:scale-105 cursor-pointer shadow-sm">
+                  <span>🎧</span>
+                  <span>Podcast Audio</span>
+                </button>
+                <button type="button" onclick="activarVideoConScroll()" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/15 hover:bg-purple-500/30 border border-purple-500/30 text-purple-300 text-xs font-bold transition-all hover:scale-105 cursor-pointer shadow-sm">
+                  <span>🎬</span>
+                  <span>Píldora en Vídeo</span>
+                </button>
+              </div>
+
+              <h3 class="text-2xl sm:text-3xl font-black text-white leading-tight mb-3">
+                Nº 1: La Psicología Oculta de las Reseñas en Google Maps y el Escudo Privado
+              </h3>
+
+              <p class="text-sm text-slate-300 leading-relaxed mb-4">
+                ¿Por qué diez clientes satisfechos se marchan en silencio mientras un solo cliente enfadado dedica 15 minutos a ponerte 1 estrella? En este primer número analizamos cómo funciona el algoritmo de Google Maps por dentro y cómo los negocios líderes blindan su nota media sin dedicarle tiempo.
+              </p>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-slate-200 mb-5">
+                <div class="bg-black/30 border border-white/5 rounded-xl p-3 flex items-center gap-2.5">
+                  <span class="text-teal-400 font-black text-base">01</span>
+                  <span>El juego de los <strong>Google Local Guides</strong> (valoraciones que valen x10)</span>
+                </div>
+                <div class="bg-black/30 border border-white/5 rounded-xl p-3 flex items-center gap-2.5">
+                  <span class="text-teal-400 font-black text-base">02</span>
+                  <span><strong>Regla Anti-Efecto Loro:</strong> Por qué discutir en público hunde tu SEO</span>
+                </div>
+                <div class="bg-black/30 border border-white/5 rounded-xl p-3 flex items-center gap-2.5">
+                  <span class="text-teal-400 font-black text-base">03</span>
+                  <span><strong>Método HEARD y Blindaje RGPD</strong> (evita sanciones en clínicas y despachos)</span>
+                </div>
+                <div class="bg-black/30 border border-white/5 rounded-xl p-3 flex items-center gap-2.5">
+                  <span class="text-teal-400 font-black text-base">04</span>
+                  <span><strong>El Cortafuegos de WhatsApp:</strong> Desahogo por nota de voz en privado</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- REPRODUCTOR MULTIMEDIA HÍBRIDO (AUDIO + VÍDEO YOUTUBE) -->
+            <div id="centroMultimediaMagazine" class="scroll-mt-32 bg-slate-950/90 border border-teal-500/40 rounded-2xl p-4 sm:p-5 shadow-inner transition-all">
+              
+              <!-- Selector de Pestaña Multimedia -->
+              <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-3.5">
+                <div class="flex flex-wrap items-center gap-2.5">
+                  <button type="button" id="tabBtnAudio" onclick="cambiarMedioMagazine('audio')" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-lg shadow-teal-950/60 border-2 border-teal-300 transition-all">
+                    <span>🎧</span> <span>Escuchar Podcast <span id="duracionPodcastBtn"></span></span>
+                  </button>
+                  <button type="button" id="tabBtnVideo" onclick="cambiarMedioMagazine('video')" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-950/90 hover:bg-purple-900 text-purple-200 hover:text-white border-2 border-purple-500/60 shadow-md shadow-purple-950/50 hover:shadow-purple-900/60 transition-all group">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                    </span>
+                    <span>🎬</span> 
+                    <span>Ver Píldora en Vídeo</span>
+                    <span class="hidden sm:inline text-[10px] bg-purple-500/30 text-purple-200 border border-purple-400/30 px-1.5 py-0.5 rounded font-black uppercase tracking-wider">HD</span>
+                  </button>
+                </div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-teal-300 bg-teal-950 px-2 py-0.5 rounded border border-teal-700/50 hidden md:inline">Multimedia Oficial</span>
+              </div>
+
+              <!-- Contenedor Audio con soporte MP3 y M4A nativo -->
+              <div id="mediaBoxAudio" class="block">
+                <audio id="audioEpisodio1" controls preload="auto" class="w-full h-10 mt-1 rounded-lg">
+                  <!-- Soporte doble: M4A y MP3 en subcarpeta y variantes -->
+                  <source src="podcasts/episodio-1.m4a" type="audio/mp4">
+                  <source src="podcasts/episodio-1.mp3" type="audio/mpeg">
+                  <source src="podcast/episodio-1.m4a" type="audio/mp4">
+                  <source src="podcast/episodio-1.mp3" type="audio/mpeg">
+                  <source src="../podcasts/episodio-1.m4a" type="audio/mp4">
+                  <source src="../podcasts/episodio-1.mp3" type="audio/mpeg">
+                  <source src="../podcast/episodio-1.m4a" type="audio/mp4">
+                  <source src="../podcast/episodio-1.mp3" type="audio/mpeg">
+                  <source src="episodio-1.m4a" type="audio/mp4">
+                  <source src="episodio-1.mp3" type="audio/mpeg">
+                  Tu navegador no soporta la reproducción directa de audio.
+                </audio>
+                <div class="text-[11px] text-slate-400 mt-2 flex items-center justify-between">
+                  <span>🎙️ Podcast conversacional grabado en español</span>
+                  <a id="enlaceDescargaPodcast" href="podcasts/episodio-1.m4a" download class="text-teal-400 hover:underline font-semibold">Descargar Audio &darr;</a>
+                </div>
+
+                <!-- Panel de diagnóstico visual si el navegador no localiza el audio -->
+                <div id="avisoDiagnosticoAudio" class="hidden mt-3 p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-200">
+                  <div class="font-bold mb-1 flex items-center gap-1.5 text-amber-300">
+                    <span>⚠️</span> <span>El navegador no ha podido cargar el archivo de audio en esta ruta.</span>
+                  </div>
+                  <p class="text-[11px] text-slate-300 mb-2">Haz clic en estos enlaces de prueba directa para comprobar cuál de ellos abre el audio en una pestaña nueva de tu navegador:</p>
+                  <div class="flex flex-wrap gap-2 text-[11px]">
+                    <a href="podcasts/episodio-1.m4a" target="_blank" class="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 rounded border border-amber-500/30 font-semibold">Probar podcasts/episodio-1.m4a &rarr;</a>
+                    <a href="podcasts/episodio-1.mp3" target="_blank" class="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 rounded border border-amber-500/30 font-semibold">Probar podcasts/episodio-1.mp3 &rarr;</a>
+                    <a href="podcast/episodio-1.m4a" target="_blank" class="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 rounded border border-amber-500/30 font-semibold">Probar podcast/episodio-1.m4a &rarr;</a>
+                    <a href="../podcasts/episodio-1.m4a" target="_blank" class="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 rounded border border-amber-500/30 font-semibold">Probar ../podcasts/episodio-1.m4a &rarr;</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Contenedor Vídeo (Incrustación Oficial de Lista de Reproducción de YouTube) -->
+              <div id="mediaBoxVideo" class="hidden">
+                <div class="relative w-full rounded-xl overflow-hidden bg-black/80 border border-white/10 aspect-video flex items-center justify-center">
+                  <!-- REPRODUCTOR OFICIAL DE YOUTUBE (LISTA DE REPRODUCCIÓN / PLAYLIST) -->
+                  <!-- Solo tienes que sustituir 'ID_DE_TU_LISTA_DE_REPRODUCCION' por el código de tu lista de YouTube (ej. PL1234567890abcdef) -->
+                  <iframe id="videoIframe" class="w-full h-full aspect-video rounded-xl"
+                          src="https://www.youtube-nocookie.com/embed/videoseries?list=ID_DE_TU_LISTA_DE_REPRODUCCION"
+                          title="Pyme Magazine Vídeos"
+                          frameborder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowfullscreen>
+                  </iframe>
+                </div>
+                <div class="text-[11px] text-slate-400 mt-2 flex items-center justify-between">
+                  <span>🎬 Serie de vídeos tácticos alojados en la Playlist Oficial de YouTube</span>
+                  <span class="text-purple-300 font-semibold">Canal Oficial Sistemas Pyme</span>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center gap-3 pt-1">
+              <a href="articulos/Pyme_Magazine_N1.html" target="_blank" class="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2.5 bg-brand-teal hover:bg-brand-tealDark text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-lg transition-all hover:scale-[1.01] text-center leading-tight">
+                <span class="text-base flex-shrink-0">📖</span>
+                <span>
+                  <span class="block">Leer Artículo Nº 1 Completo</span>
+                  <span class="block text-[11px] font-semibold text-teal-100/95 whitespace-nowrap mt-0.5">(Pyme Magazine • A4)</span>
+                </span>
+              </a>
+              <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20acabo%20de%20ver%20el%20N%C3%BAmero%201%20de%20Pyme%20Magazine%20en%20tu%20web%20y%20quiero%20informaci%C3%B3n%20para%20mi%20negocio" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 text-white font-bold text-xs sm:text-sm px-5 py-3.5 rounded-xl border border-white/15 transition-colors">
+                <span>💬</span>
+                <span>Consultar sobre este Episodio</span>
+              </a>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- AVANCE PRÓXIMOS FASCÍCULOS COLECCIONABLES -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="glass-card rounded-2xl p-6 border border-white/10 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[11px] font-extrabold uppercase tracking-wider text-blue-300 bg-blue-950/70 px-3 py-0.5 rounded-full border border-blue-700/50">Fascículo Nº 2 • Próxima Entrega</span>
+              <span class="text-xs text-slate-400 font-semibold">Ventas y Captación</span>
+            </div>
+            <h4 class="text-lg font-bold text-white mb-2">La Regla de los 5 Minutos: Por qué se pierde el 60% de los presupuestos web y de redes sociales</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Radiografía del «agujero negro» entre que un cliente pide presupuesto en redes sociales o formularios y el momento en que alguien le contacta horas tarde. Cómo el cierre automático en 10 segundos por WhatsApp multiplica por 4 las ventas.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+            <span class="text-slate-400">Incluye dossier A4 + Podcast + Vídeo</span>
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20av%C3%ADsame%20cuando%20salga%20el%20N%C3%BAmero%202%20de%20Pyme%20Magazine%20sobre%20Cierre%20de%20Presupuestos%20en%2010s" target="_blank" class="text-teal-400 hover:text-teal-300 font-bold">Reservar ejemplar &rarr;</a>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 border border-white/10 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-300 bg-indigo-950/70 px-3 py-0.5 rounded-full border border-indigo-700/50">Fascículo Nº 3 • Próxima Entrega</span>
+              <span class="text-xs text-slate-400 font-semibold">Rentabilidad y Agenda</span>
+            </div>
+            <h4 class="text-lg font-bold text-white mb-2">El Coste Invisible del Sillón Vacío: Cómo eliminar el 85% de los plantones sin llamar a mano</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Análisis financiero del absentismo en clínicas, salones y negocios con cita previa, y cómo los recordatorios interactivos por WhatsApp 24h antes recuperan cientos de euros cada mes reubicando huecos a tiempo con Campañas Flash.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+            <span class="text-slate-400">Incluye dossier A4 + Podcast + Vídeo</span>
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20av%C3%ADsame%20cuando%20salga%20el%20N%C3%BAmero%203%20de%20Pyme%20Magazine%20sobre%20Sistema%20Anti-Plant%C3%B3n" target="_blank" class="text-teal-400 hover:text-teal-300 font-bold">Reservar ejemplar &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- DOCUMENTACIÓN DESCARGABLE Y TARJETONES -->
+  <section class="py-16 bg-slate-950 border-t border-white/5 relative overflow-hidden">
+    <div class="absolute inset-0 hero-glow opacity-30"></div>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 relative z-10 text-center">
+      <h3 class="text-2xl font-bold text-white mb-3">Documentación Oficial y Dossier en Detalle</h3>
+      <p class="text-slate-400 text-sm mb-8">Consulta o imprime nuestro Dossier completo de Servicios en formato A4 y las tablas oficiales de tarifas y puesta en marcha.</p>
+      
+      <div class="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4">
+        <a href="documentos/catalogo.html" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-800 text-white font-semibold text-sm px-6 py-3 rounded-xl border border-slate-600 hover:bg-teal-900/80 hover:border-teal-400 transition-all duration-300 group">
+          <svg class="w-4 h-4 text-teal-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          Abrir Dossier Detallado (4 Págs. A4)
+        </a>
+        <a href="documentos/tarifas.html" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-800 text-white font-semibold text-sm px-6 py-3 rounded-xl border border-slate-600 hover:bg-amber-900/80 hover:border-amber-400 transition-all duration-300 group">
+          <svg class="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          Ver Tarjetón de Tarifas
+        </a>
+        <a href="documentos/setup.html" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-800 text-white font-semibold text-sm px-6 py-3 rounded-xl border border-slate-600 hover:bg-indigo-900/80 hover:border-indigo-400 transition-all duration-300 group">
+          <svg class="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          Anexo Técnico Setup
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- GARANTÍAS OPERATIVAS -->
+  <section class="py-16 bg-black/50 border-t border-white/5">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <h2 class="text-3xl font-black text-white tracking-tight">
+          Garantías y Ventajas Operativas
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center sm:text-left">
+        
+        <div class="p-6 rounded-xl bg-white/[0.02] border border-white/15 hover:border-teal-400/50 transition-colors">
+          <div class="text-3xl mb-3">📲</div>
+          <h4 class="text-base font-bold text-white mb-2">100% WhatsApp Habitual</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Ni tú ni tus clientes tenéis que instalar aplicaciones raras ni aprender programas complejos. Todo fluye a través de la aplicación que ya utilizas todos los días.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-white/[0.02] border border-white/15 hover:border-teal-400/50 transition-colors">
+          <div class="text-3xl mb-3">⚡</div>
+          <h4 class="text-base font-bold text-white mb-2">Puesta en Marcha en 24-48h</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Configuramos, conectamos a tu infraestructura y probamos todo sin interrumpir la actividad comercial de tu local ni generar molestias.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-white/[0.02] border border-white/15 hover:border-teal-400/50 transition-colors">
+          <div class="text-3xl mb-3">🛡️</div>
+          <h4 class="text-base font-bold text-white mb-2">Soporte Técnico Directo</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Mantenimiento continuo, copias de seguridad de tus flujos, protección RGPD y línea directa con Francisco para cualquier duda o ajuste en tu negocio.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CIERRE Y LLAMADA A LA ACCIÓN -->
+  <section id="contacto" class="scroll-mt-24 py-20 bg-gradient-to-b from-brand-dark to-black text-center relative overflow-hidden">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
+      
+      <!-- Logotipo Isotipo SP + Sistemas Pyme con Resplandor -->
+      <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl bg-black border-2 border-teal-400/60 flex items-center justify-center mx-auto mb-7 shadow-[0_0_35px_rgba(0,216,150,0.32)] p-2.5 overflow-hidden hover:scale-105 transition-all">
+        <img src="Logo Simple Verde Neón sin fondo.jpg" 
+             data-img-base="Logo Simple Verde Neón sin fondo, Logo Simple Verde Neon sin fondo, Logo Simple Verde Neón, Logo Simple Verde Neon" 
+             data-img-fallback="https://placehold.co/200x200/000000/00e699?text=SP" 
+             alt="Sistemas Pyme" 
+             class="w-full h-full object-contain" 
+             onerror="cargarSiguienteExtension(this)">
+      </div>
+
+      <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
+        ¿Vemos cómo funciona en vivo en tu negocio?
+      </h2>
+
+      <p class="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mb-9 font-normal leading-relaxed">
+        Deja de perder reseñas de 5★, clientes y horas de tu vida en tareas repetitivas. Escríbeme ahora por WhatsApp y en 5 minutos te hago una demostración real personalizada con el nombre de tu propio negocio.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-5">
+        <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20ver%20c%C3%B3mo%20automatizar%20y%20blindar%20mi%20negocio%20con%20una%20demostraci%C3%B3n%20en%20vivo%20sin%20compromiso" target="_blank" class="btn-glow-pulse w-full sm:w-auto inline-flex items-center justify-center gap-3.5 bg-gradient-to-r from-brand-teal via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-400 text-white font-black text-base sm:text-lg px-9 py-4 rounded-2xl border border-teal-300/50 transition-all">
+          <svg class="w-6 h-6 fill-current flex-shrink-0" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+          <span>Impulsa y Blinda tu Negocio Ahora (Demo en Vivo)</span>
+        </a>
+        <a href="tel:+34711547561" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-slate-300 font-semibold text-base px-6 py-4 rounded-2xl border border-white/10 transition-colors">
+          📞 Llamar: 711 54 75 61
+        </a>
+      </div>
+
+      <p class="text-xs text-teal-400/90 font-semibold mt-4">
+        ⚡ Respuesta directa de Francisco • Sin compromiso ni permanencias ocultas
+      </p>
+
+    </div>
+  </section>
+
+  <!-- PIE DE PÁGINA FISCAL Y LEGAL -->
+  <footer class="border-t border-white/10 bg-black py-10 text-xs text-slate-500">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col gap-6">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="text-center sm:text-left">
+          <p class="font-bold text-slate-300 text-sm">Sistemas Pyme — Francisco M. Gallardo</p>
+          <p class="mt-0.5 text-slate-400">Titular Fiscal: <strong>Francisco M. Gallardo</strong> • NIF/DNI: <strong>52938419D</strong></p>
+          <p class="mt-0.5">Consultoría Tecnológica y Automatización para Negocios • Galicia, España</p>
+        </div>
+        <div class="text-center sm:text-right">
+          <p>Contacto Oficial: <a href="mailto:francisco@sistemaspyme.es" class="text-teal-400 hover:underline">francisco@sistemaspyme.es</a> | Tel: <a href="tel:+34711547561" class="text-slate-300 hover:text-white transition-colors">711 54 75 61</a></p>
+          <div class="mt-2 flex flex-wrap items-center justify-center sm:justify-end gap-3 text-[11px] font-semibold text-slate-400">
+            <button type="button" onclick="abrirModalLegal('aviso')" class="hover:text-teal-400 underline underline-offset-2 transition-colors">Aviso Legal (LSSI-CE)</button>
+            <span>•</span>
+            <button type="button" onclick="abrirModalLegal('privacidad')" class="hover:text-teal-400 underline underline-offset-2 transition-colors">Política de Privacidad (RGPD)</button>
+            <span>•</span>
+            <button type="button" onclick="abrirModalLegal('condiciones')" class="hover:text-teal-400 underline underline-offset-2 transition-colors">Condiciones y Uso de WhatsApp API</button>
+          </div>
+          <p class="mt-1.5 text-[11px] text-slate-500">© 2026 Sistemas Pyme (Francisco M. Gallardo - 52938419D). Todos los derechos reservados.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL DE AVISO LEGAL, PRIVACIDAD Y CUMPLIMIENTO META BUSINESS -->
+  <div id="modalLegal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-slate-900 border border-white/15 rounded-2xl max-w-3xl w-full max-h-[88vh] flex flex-col shadow-2xl overflow-hidden my-auto">
+      
+      <div class="px-6 py-4 bg-slate-950 border-b border-white/10 flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-extrabold uppercase tracking-widest text-teal-400 block">Información Legal y Fiscal Oficial</span>
+          <h3 class="text-lg font-black text-white">Aviso Legal, Privacidad y Condiciones (Sistemas Pyme)</h3>
+        </div>
+        <button type="button" onclick="cerrarModalLegal()" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white flex items-center justify-center font-bold transition-colors">
+          ✕
+        </button>
+      </div>
+
+      <div class="px-6 py-2.5 bg-slate-900/90 border-b border-white/10 flex flex-wrap gap-2 text-xs font-bold">
+        <button type="button" onclick="irSeccionLegal('sec-aviso')" class="px-3 py-1.5 rounded-lg bg-teal-500/20 text-teal-300 border border-teal-500/30 hover:bg-teal-500/30 transition-colors">1. Datos Fiscales y Aviso Legal</button>
+        <button type="button" onclick="irSeccionLegal('sec-privacidad')" class="px-3 py-1.5 rounded-lg bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10 transition-colors">2. Política de Privacidad (RGPD)</button>
+        <button type="button" onclick="irSeccionLegal('sec-meta')" class="px-3 py-1.5 rounded-lg bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10 transition-colors">3. Términos de Mensajería y Meta API</button>
+      </div>
+
+      <div id="contenedorTextoLegal" class="p-6 overflow-y-auto space-y-6 text-xs sm:text-sm text-slate-300 leading-relaxed">
+        
+        <section id="sec-aviso" class="space-y-2.5">
+          <h4 class="text-base font-black text-white border-b border-white/10 pb-1.5 text-teal-300">1. Aviso Legal e Información General (LSSI-CE)</h4>
+          <p>En cumplimiento con el deber de información dispuesto en la Ley 34/2002 de Servicios de la Sociedad de la Información y el Comercio Electrónico (LSSI-CE) de 11 de julio, se facilitan a continuación los datos identificativos y fiscales del titular de este sitio web:</p>
+          <div class="bg-slate-950/90 border border-teal-500/30 rounded-xl p-4 space-y-1.5 text-xs">
+            <p><strong class="text-white">Denominación Comercial:</strong> Sistemas Pyme</p>
+            <p><strong class="text-white">Titular / Responsable Legal:</strong> Francisco M. Gallardo</p>
+            <p><strong class="text-white">NIF / DNI:</strong> <span class="text-teal-300 font-bold">52938419D</span></p>
+            <p><strong class="text-white">Actividad:</strong> Consultoría tecnológica, desarrollo de soluciones de automatización e integración de sistemas de Inteligencia Artificial y mensajería empresarial (WhatsApp Business Platform / Meta Cloud API) para pymes y negocios locales.</p>
+            <p><strong class="text-white">Domicilio de Actividad:</strong> Galicia, España</p>
+            <p><strong class="text-white">Teléfono de Contacto:</strong> +34 711 54 75 61</p>
+            <p><strong class="text-white">Correo Electrónico Oficial:</strong> francisco@sistemaspyme.es</p>
+            <p><strong class="text-white">Sitio Web Oficial:</strong> https://sistemaspyme.es</p>
+          </div>
+          <p>El acceso y uso de este sitio web atribuye la condición de usuario e implica la aceptación plena de las presentes condiciones de uso. El titular se reserva el derecho a modificar cualquier tipo de información que pudiera aparecer en el sitio web sin que exista obligación de preavisar.</p>
+        </section>
+
+        <section id="sec-privacidad" class="space-y-2.5 pt-2">
+          <h4 class="text-base font-black text-white border-b border-white/10 pb-1.5 text-teal-300">2. Política de Privacidad y Protección de Datos (RGPD / LOPDGDD)</h4>
+          <p>De conformidad con el Reglamento (UE) 2016/679 (RGPD) y la Ley Orgánica 3/2018 (LOPDGDD), le informamos sobre el tratamiento de los datos personales recabados a través de este sitio web y de nuestros canales oficiales de comunicación:</p>
+          <ul class="list-disc pl-5 space-y-1.5">
+            <li><strong class="text-white">Responsable del Tratamiento:</strong> Francisco M. Gallardo (Sistemas Pyme), con NIF 52938419D y correo de contacto <a href="mailto:francisco@sistemaspyme.es" class="text-teal-400 underline">francisco@sistemaspyme.es</a>.</li>
+            <li><strong class="text-white">Finalidad del Tratamiento:</strong> Atender las solicitudes de información, demostraciones comerciales, prestación de servicios contratados de digitalización y automatización, facturación y envío de notificaciones operativas o encuestas de satisfacción post-servicio vía WhatsApp Business API cuando exista relación comercial o consentimiento previo.</li>
+            <li><strong class="text-white">Legitimación:</strong> Consentimiento expreso del interesado al contactar, ejecución de un contrato de prestación de servicios o interés legítimo en la evaluación de la calidad del servicio prestado.</li>
+            <li><strong class="text-white">Destinatarios y Encargados de Tratamiento:</strong> No se cederán datos a terceros salvo obligación legal o cuando sea estrictamente necesario para la prestación técnica del servicio a través de proveedores oficiales que cumplen con el RGPD (Meta Platforms Ireland Ltd. para WhatsApp Cloud API y Google Ireland Ltd. para infraestructura Cloud/Workspace).</li>
+            <li><strong class="text-white">Derechos del Usuario:</strong> Puede ejercer en cualquier momento sus derechos de acceso, rectificación, supresión, limitación, portabilidad y oposición enviando un correo electrónico a <strong class="text-white">francisco@sistemaspyme.es</strong> o respondiendo con la palabra «BAJA» en cualquiera de nuestras comunicaciones automatizadas por WhatsApp.</li>
+          </ul>
+        </section>
+
+        <section id="sec-meta" class="space-y-2.5 pt-2">
+          <h4 class="text-base font-black text-white border-b border-white/10 pb-1.5 text-teal-300">3. Condiciones del Servicio y Cumplimiento de WhatsApp Business Platform (Meta)</h4>
+          <p><strong>Sistemas Pyme</strong> (titularidad de Francisco M. Gallardo, NIF <strong>52938419D</strong>) opera como proveedor tecnológico e integrador de soluciones basadas en las APIs oficiales de Meta (WhatsApp Business Cloud API e Instagram Messaging API) y Google Business Profile API.</p>
+          <ul class="list-disc pl-5 space-y-1.5">
+            <li><strong class="text-white">Comunicaciones Transaccionales y de Calidad:</strong> Todos los mensajes enviados a través de nuestras integraciones de WhatsApp Business corresponden exclusivamente a notificaciones solicitadas por los clientes de los comercios adheridos (recordatorios de cita previa, confirmaciones de reserva, encuestas breves de control de calidad post-visita o avisos administrativos).</li>
+            <li><strong class="text-white">Política Anti-Spam y Baja Inmediata (Opt-Out):</strong> Queda prohibido el envío de comunicaciones masivas no solicitadas (spam). Todo usuario final dispone de un mecanismo automático e inmediato de baja respondiendo «BAJA» o «STOP» en el propio chat de WhatsApp, lo que bloquea cualquier envío futuro a dicho número.</li>
+            <li><strong class="text-white">Propiedad Intelectual:</strong> Todos los contenidos, diseños, logotipos, textos y desarrollos de software de Sistemas Pyme están protegidos por la normativa de propiedad intelectual e industrial vigente en España.</li>
+          </ul>
+        </section>
+
+      </div>
+
+      <div class="px-6 py-3.5 bg-slate-950 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+        <span>Titular: Francisco M. Gallardo (NIF: 52938419D)</span>
+        <button type="button" onclick="cerrarModalLegal()" class="bg-brand-teal hover:bg-brand-tealDark text-white font-bold px-5 py-2 rounded-xl transition-colors">
+          Entendido y Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const SVG_LOGO_SP_OSCURO = "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 140"><defs><mask id="m"><rect width="210" height="140" fill="white"/><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="black" stroke-width="6.5"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 134" fill="none" stroke="black" stroke-width="6.5" stroke-linecap="round"/><line x1="126.5" y1="38" x2="126.5" y2="128" stroke="black" stroke-width="6.5"/><circle cx="92" cy="19" r="13.5" fill="black"/></mask></defs><g mask="url(#m)"><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="#0b5551" stroke-width="21" stroke-linejoin="round"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 130" fill="none" stroke="#0b5551" stroke-width="21" stroke-linecap="round" stroke-linejoin="round"/><rect x="116" y="32" width="10.5" height="90" fill="#0b5551"/><rect x="129.5" y="48" width="9.5" height="72" fill="#0b5551"/><rect x="130" y="73.5" width="24" height="21" fill="#0b5551"/></g><circle cx="92" cy="19" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/><circle cx="18" cy="121.5" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/><circle cx="134.5" cy="48" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/><circle cx="134.5" cy="121.5" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/></svg>`);
+
+    const SVG_LOGO_SP_BLANCO = "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 140"><defs><mask id="mb"><rect width="210" height="140" fill="white"/><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="black" stroke-width="6.5"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 134" fill="none" stroke="black" stroke-width="6.5" stroke-linecap="round"/><line x1="126.5" y1="38" x2="126.5" y2="128" stroke="black" stroke-width="6.5"/><circle cx="92" cy="19" r="13.5" fill="black"/></mask></defs><g mask="url(#mb)"><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="#ffffff" stroke-width="21" stroke-linejoin="round"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 130" fill="none" stroke="#ffffff" stroke-width="21" stroke-linecap="round" stroke-linejoin="round"/><rect x="116" y="32" width="10.5" height="90" fill="#ffffff"/><rect x="129.5" y="48" width="9.5" height="72" fill="#ffffff"/><rect x="130" y="73.5" width="24" height="21" fill="#ffffff"/></g><circle cx="92" cy="19" r="9" fill="#081c3a" stroke="#ffffff" stroke-width="5.5"/><circle cx="18" cy="121.5" r="9" fill="#081c3a" stroke="#ffffff" stroke-width="5.5"/><circle cx="134.5" cy="48" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/><circle cx="134.5" cy="121.5" r="9" fill="#081c3a" stroke="#ffffff" stroke-width="5.5"/></svg>`);
+
+    function renderizarQrCorporativoSP(imgEl) {
+      if (!imgEl || imgEl.dataset.qrRendered === "1") return;
+      imgEl.dataset.qrRendered = "1";
+      const url = imgEl.getAttribute("data-qr-url") || "https://sistemaspyme.es";
+      const theme = imgEl.getAttribute("data-qr-theme") || "light";
+      const esOscuro = theme === "dark";
+
+      if (typeof QRCodeStyling === "undefined") {
+        imgEl.src = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&color=0d7d74&data=" + encodeURIComponent(url);
+        return;
+      }
+
+      const qr = new QRCodeStyling({
+        width: 320,
+        height: 320,
+        type: "canvas",
+        data: url,
+        margin: 6,
+        qrOptions: { errorCorrectionLevel: "H" },
+        image: esOscuro ? SVG_LOGO_SP_BLANCO : SVG_LOGO_SP_OSCURO,
+        dotsOptions: {
+          type: "classy-rounded",
+          gradient: {
+            type: "linear",
+            rotation: Math.PI / 4,
+            colorStops: esOscuro
+              ? [{ offset: 0, color: "#00d896" }, { offset: 1, color: "#14b8a6" }]
+              : [{ offset: 0, color: "#00c48c" }, { offset: 1, color: "#0b6460" }]
+          }
+        },
+        cornersSquareOptions: {
+          type: "extra-rounded",
+          color: esOscuro ? "#14b8a6" : "#00b383"
+        },
+        cornersDotOptions: {
+          type: "dot",
+          color: esOscuro ? "#00d896" : "#0b6460"
+        },
+        backgroundOptions: {
+          color: esOscuro ? "#081c3a" : "#ffffff"
+        },
+        imageOptions: {
+          crossOrigin: "anonymous",
+          margin: 5,
+          imageSize: 0.36
+        }
+      });
+
+      qr.getRawData("png").then((blob) => {
+        if (blob) imgEl.src = URL.createObjectURL(blob);
+      }).catch(() => {
+        imgEl.src = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&color=0d7d74&data=" + encodeURIComponent(url);
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll("img[data-qr-url]").forEach((img) => {
+        if (img.getAttribute("data-qr-theme") === "dark" || (img.complete && img.naturalWidth === 0)) {
+          renderizarQrCorporativoSP(img);
+        }
+      });
+      inicializarDuracionAudio();
+    });
+
+    /* DETECCIÓN Y VISUALIZACIÓN DINÁMICA DE DURACIÓN DEL PODCAST */
+    function inicializarDuracionAudio() {
+      const audio = document.getElementById('audioEpisodio1');
+      const spanDuracion = document.getElementById('duracionPodcastBtn');
+      const enlaceDescarga = document.getElementById('enlaceDescargaPodcast');
+      const avisoDiagnostico = document.getElementById('avisoDiagnosticoAudio');
+      if (!audio) return;
+
+      function actualizar() {
+        if (enlaceDescarga && audio.currentSrc) {
+          enlaceDescarga.href = audio.currentSrc;
+        }
+        if (avisoDiagnostico) {
+          avisoDiagnostico.classList.add('hidden');
+        }
+        if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration) && audio.duration > 0) {
+          const totalSegundos = Math.round(audio.duration);
+          const mins = Math.floor(totalSegundos / 60);
+          const segs = totalSegundos % 60;
+          let texto = '';
+          if (mins > 0 && segs > 0) {
+            texto = `(${mins}:${segs.toString().padStart(2, '0')} min)`;
+          } else if (mins > 0) {
+            texto = `(${mins} min)`;
+          } else {
+            texto = `(${segs} seg)`;
+          }
+          if (spanDuracion) spanDuracion.textContent = texto;
+        }
+      }
+
+      function mostrarFallo() {
+        if (avisoDiagnostico && (!audio.currentSrc || audio.networkState === HTMLMediaElement.NETWORK_NO_SOURCE)) {
+          avisoDiagnostico.classList.remove('hidden');
+        }
+      }
+
+      if (audio.readyState >= 1) {
+        actualizar();
+      }
+
+      audio.addEventListener('loadedmetadata', actualizar);
+      audio.addEventListener('durationchange', actualizar);
+      audio.addEventListener('canplay', actualizar);
+      audio.addEventListener('error', mostrarFallo);
+
+      setTimeout(() => {
+        if (!audio.currentSrc || audio.readyState === 0 || isNaN(audio.duration)) {
+          mostrarFallo();
+        }
+      }, 1500);
+    }
+
+    function cargarSiguienteExtension(img) {
+      const bases = (img.getAttribute('data-img-base') || 'imagen').split(',');
+      const extensiones = ['jpeg', 'jpg', 'png', 'webp', 'svg', 'JPG', 'JPEG', 'PNG'];
+      let candidatos = [];
+      bases.forEach(b => {
+        const baseLimpia = b.trim();
+        extensiones.forEach(ext => candidatos.push(`${baseLimpia}.${ext}`));
+      });
+
+      let idx = parseInt(img.getAttribute('data-try-idx') || '0', 10);
+      while (idx < candidatos.length && img.getAttribute('src') === candidatos[idx]) {
+        idx++;
+      }
+
+      if (idx < candidatos.length) {
+        img.setAttribute('data-try-idx', (idx + 1).toString());
+        img.src = candidatos[idx];
+      } else {
+        img.onerror = null;
+        img.src = img.getAttribute('data-img-fallback') || 'https://placehold.co/150x150/0b2545/ffffff?text=SP';
+      }
+    }
+
+    /* CONTROL DEL SELECTOR MULTIMEDIA (AUDIO / VÍDEO YOUTUBE) */
+    function cambiarMedioMagazine(medio) {
+      const boxAudio = document.getElementById('mediaBoxAudio');
+      const boxVideo = document.getElementById('mediaBoxVideo');
+      const btnAudio = document.getElementById('tabBtnAudio');
+      const btnVideo = document.getElementById('tabBtnVideo');
+      const audioEl = document.getElementById('audioEpisodio1');
+      const videoIframe = document.getElementById('videoIframe');
+
+      if (medio === 'video') {
+        if (audioEl) audioEl.pause();
+        boxAudio.classList.add('hidden');
+        boxVideo.classList.remove('hidden');
+        btnVideo.className = "inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-purple-600 via-fuchsia-600 to-indigo-600 text-white shadow-xl shadow-purple-900/60 border-2 border-purple-300 ring-2 ring-purple-400/40 transition-all group";
+        btnAudio.className = "inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-teal-950/80 hover:bg-teal-900 text-teal-200 hover:text-white border-2 border-teal-500/50 shadow-md transition-all";
+      } else {
+        if (videoIframe) {
+          const currentSrc = videoIframe.src;
+          videoIframe.src = currentSrc;
+        }
+        boxVideo.classList.add('hidden');
+        boxAudio.classList.remove('hidden');
+        btnAudio.className = "inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-lg shadow-teal-950/60 border-2 border-teal-300 transition-all";
+        btnVideo.className = "inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-950/90 hover:bg-purple-900 text-purple-200 hover:text-white border-2 border-purple-500/60 shadow-md shadow-purple-950/50 hover:shadow-purple-900/60 transition-all group";
+      }
+    }
+
+    /* ACCIONES DE LOS BANNERS SUPERIORES CON DESPLAZAMIENTO SUAVE */
+    function activarPodcastConScroll() {
+      cambiarMedioMagazine('audio');
+      const contenedor = document.getElementById('centroMultimediaMagazine');
+      if (contenedor) {
+        contenedor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      const audio = document.getElementById('audioEpisodio1');
+      if (audio) {
+        audio.play().catch(() => {});
+      }
+    }
+
+    function activarVideoConScroll() {
+      cambiarMedioMagazine('video');
+      const contenedor = document.getElementById('centroMultimediaMagazine');
+      if (contenedor) {
+        contenedor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function abrirModalLegal(seccion) {
+      const modal = document.getElementById('modalLegal');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      if (seccion === 'privacidad') irSeccionLegal('sec-privacidad');
+      else if (seccion === 'condiciones') irSeccionLegal('sec-meta');
+      else irSeccionLegal('sec-aviso');
+    }
+
+    function cerrarModalLegal() {
+      const modal = document.getElementById('modalLegal');
+      if (!modal) return;
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function irSeccionLegal(idElemento) {
+      const el = document.getElementById(idElemento);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') cerrarModalLegal();
+    });
+  </script>
+
+</body>
+</html>
