@@ -989,83 +989,80 @@
             <stop offset="45%" stop-color="#19b5fe" stop-opacity="0.2"/>
             <stop offset="100%" stop-color="#19b5fe" stop-opacity="0"/>
           </radialGradient>
-          <radialGradient id="highBrightGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
-            <stop offset="22%" stop-color="#00d896" stop-opacity="0.85"/>
-            <stop offset="55%" stop-color="#00d896" stop-opacity="0.35"/>
-            <stop offset="100%" stop-color="#00d896" stop-opacity="0"/>
-          </radialGradient>
           <pattern id="techGrid" width="36" height="36" patternUnits="userSpaceOnUse">
             <circle cx="18" cy="18" r="0.9" fill="#7dd3fc" fill-opacity="0.14"/>
             <path d="M 36 0 L 0 0 0 36" fill="none" stroke="#19b5fe" stroke-width="0.4" stroke-opacity="0.07"/>
           </pattern>
         </defs>
 
+        <!-- Malla tecnológica de fondo y ondas digitales suaves -->
         <rect x="260" y="0" width="640" height="320" fill="url(#techGrid)"/>
         <path d="M 340,320 C 470,220 620,270 900,110 L 900,320 Z" fill="#00d896" fill-opacity="0.06"/>
         <path d="M 480,0 C 610,95 740,45 900,165 L 900,0 Z" fill="#19b5fe" fill-opacity="0.06"/>
 
-        <circle cx="775" cy="96" r="68" fill="none" stroke="#00d896" stroke-width="1" stroke-dasharray="6 5" stroke-opacity="0.22"/>
-        <circle cx="775" cy="96" r="46" fill="none" stroke="#19b5fe" stroke-width="1.2" stroke-opacity="0.2"/>
-        <circle cx="775" cy="96" r="24" fill="url(#nodeGlow)"/>
+        <!-- Anillos tecnológicos concéntricos en la esquina superior derecha (ELEVADOS) -->
+        <circle cx="775" cy="46" r="68" fill="none" stroke="#00d896" stroke-width="1" stroke-dasharray="6 5" stroke-opacity="0.22"/>
+        <circle cx="775" cy="46" r="46" fill="none" stroke="#19b5fe" stroke-width="1.2" stroke-opacity="0.2"/>
+        <circle cx="775" cy="46" r="24" fill="url(#nodeGlow)"/>
 
-        <!-- Trazados Principales -->
+        <!-- Trazados principales de circuitería -->
         <g stroke="url(#circuitLineGrad)" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="260,34 420,34 452,66 575,66 600,92 645,92 675,36 785,36"/>
-          <polyline points="330,92 485,92 518,110 690,110 718,96 775,96"/>
+          <!-- Línea elevada que conecta con el nodo blanco -->
+          <polyline points="330,92 485,92 518,142 626,142 722,46 775,46"/>
           <polyline points="210,152 385,152 415,122 545,122"/>
+          <!-- Línea conectada exactamente al nodo verde en 816 -->
           <polyline points="390,192 555,192 590,157 745,157 778,190 816,190"/>
           <polyline points="295,244 470,244 502,212 658,212 692,246 845,246"/>
           <polyline points="450,286 620,286 650,256 790,256 815,281 895,281"/>
         </g>
 
-        <!-- Trazados Secundarios Cian -->
+        <!-- Trazados secundarios cian entrelazados -->
         <g stroke="url(#circuitCyanGrad)" stroke-width="1.25" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <!-- Línea conectada exactamente al nodo cian en 886 -->
           <polyline points="380,14 495,14 522,41 670,41 705,76 886,76"/>
           <polyline points="435,66 465,96 595,96 625,66"/>
-          <polyline points="518,110 548,135 660,135 695,120 855,120"/>
+          <polyline points="518,142 548,155 660,155 695,120 855,120"/>
           <polyline points="470,244 498,272 590,272 618,244"/>
           <polyline points="658,212 688,182 815,182 848,149 900,149"/>
           <polyline points="555,192 582,219 730,219 762,251"/>
         </g>
 
-        <!-- Micro-chips -->
+        <!-- Micro-chips / módulos integrados decorativos (El cuadrado blanco ha sido elevado a y=32) -->
         <g stroke="#00d896" stroke-opacity="0.38" stroke-width="1.2" fill="#071a36" fill-opacity="0.65">
-          <rect x="506" y="56" width="24" height="24" rx="4"/>
+          <rect x="602" y="80" width="24" height="24" rx="4"/>
           <rect x="642" y="198" width="28" height="28" rx="5"/>
-          <rect x="761" y="82" width="28" height="28" rx="6" stroke="#19b5fe" stroke-opacity="0.55"/>
+          <rect x="761" y="32" width="28" height="28" rx="6" stroke="#19b5fe" stroke-opacity="0.55"/>
         </g>
+        <!-- Pines del chip central -->
         <g stroke="#00d896" stroke-opacity="0.4" stroke-width="1.2">
           <line x1="648" y1="193" x2="648" y2="198"/><line x1="656" y1="193" x2="656" y2="198"/><line x1="664" y1="193" x2="664" y2="198"/>
           <line x1="648" y1="226" x2="648" y2="231"/><line x1="656" y1="226" x2="656" y2="231"/><line x1="664" y1="226" x2="664" y2="231"/>
         </g>
 
-        <!-- Halos -->
+        <!-- Halos de luz en nodos clave (Elevado el de cy=46) -->
         <circle cx="785" cy="36" r="12" fill="url(#nodeGlow)"/>
-        <circle cx="775" cy="96" r="14" fill="url(#cyanGlow)"/>
+        <circle cx="775" cy="46" r="14" fill="url(#cyanGlow)"/>
         <circle cx="886" cy="76" r="11" fill="url(#cyanGlow)"/>
         <circle cx="745" cy="157" r="12" fill="url(#nodeGlow)"/>
         <circle cx="845" cy="246" r="12" fill="url(#nodeGlow)"/>
-        <!-- Halo Psicología -->
-        <circle cx="518" cy="68" r="22" fill="url(#highBrightGlow)"/>
-        <circle cx="518" cy="68" r="11" fill="url(#nodeGlow)"/>
+        <circle cx="518" cy="142" r="10" fill="url(#cyanGlow)"/>
 
-        <!-- Nodos -->
+        <!-- Nodos brillantes de conexión -->
         <circle cx="785" cy="36" r="4" fill="#00d896"/>
-        <circle cx="775" cy="96" r="4.5" fill="#ffffff" stroke="#00d896" stroke-width="2"/>
+        <circle cx="775" cy="46" r="4.5" fill="#ffffff" stroke="#00d896" stroke-width="2"/>
         <circle cx="886" cy="76" r="3.8" fill="#19b5fe"/>
         <circle cx="855" cy="120" r="3.5" fill="#7dd3fc"/>
         <circle cx="745" cy="157" r="4" fill="#00d896"/>
         <circle cx="816" cy="190" r="3.8" fill="#00d896"/>
         <circle cx="845" cy="246" r="4" fill="#00d896"/>
         <circle cx="790" cy="256" r="3.5" fill="#19b5fe"/>
+        <circle cx="518" cy="142" r="3.5" fill="#0a2246" stroke="#19b5fe" stroke-width="2"/>
         <circle cx="545" cy="122" r="3.5" fill="#00d896" fill-opacity="0.8"/>
         <circle cx="590" cy="157" r="3.2" fill="#0a2246" stroke="#00d896" stroke-width="1.8"/>
         <circle cx="502" cy="212" r="3.2" fill="#19b5fe" fill-opacity="0.8"/>
         <circle cx="452" cy="66" r="3" fill="#19b5fe" fill-opacity="0.65"/>
         <circle cx="670" cy="41" r="3" fill="#00d896" fill-opacity="0.75"/>
-        <!-- Nodo Psicología Core -->
-        <circle cx="518" cy="68" r="4.2" fill="#ffffff" stroke="#00d896" stroke-width="2.5"/>
       </svg>
 
       <div class="cover-top-bar">
