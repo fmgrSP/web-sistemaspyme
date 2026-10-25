@@ -783,6 +783,11 @@
       .circuit-desktop { display: none !important; }
       .circuit-mobile { display: block !important; }
 
+      /* OCULTAMOS EL LOGO EN LA CABECERA MÓVIL PARA AHORRAR ALTURA */
+      .folder-brand-lockup { 
+        display: none !important; 
+      }
+
       .print-bar {
         width: 100%;
         max-width: 100%;
@@ -822,15 +827,19 @@
         overflow: hidden;
       }
 
+      /* CABECERA MÁS CORTA EN MÓVIL (Sin Logo) */
       .cover-header-folder {
         height: auto !important;
-        padding: 18px 18px 20px 18px;
-        gap: 18px;
+        padding: 12px 18px 20px 18px !important;
+        gap: 12px !important;
       }
 
       .cover-top-bar {
         flex-direction: column;
         align-items: flex-start;
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: -6px;
         gap: 10px;
       }
       .magazine-issue-meta {
@@ -1252,18 +1261,6 @@
         <circle cx="525" cy="49" r="3" fill="#0a2246" stroke="#19b5fe" stroke-width="1.6" opacity="0.55"/>
       </svg>
       <div class="inner-strip-left">
-        <svg width="28" height="19" viewBox="0 0 210 140" xmlns="http://www.w3.org/2000/svg">
-          <g mask="url(#spExactMaskP1)">
-            <path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="#00e699" stroke-width="21"/>
-            <path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 130" fill="none" stroke="#00e699" stroke-width="21"/>
-            <rect x="116" y="32" width="10.5" height="90" fill="#00e699"/>
-            <rect x="129.5" y="48" width="9.5" height="72" fill="#00e699"/>
-          </g>
-          <circle cx="92" cy="19" r="9" fill="#0a2246" stroke="#00e699" stroke-width="5.5"/>
-          <circle cx="18" cy="121.5" r="9" fill="#0a2246" stroke="#00e699" stroke-width="5.5"/>
-          <circle cx="134.5" cy="48" r="9" fill="#0a2246" stroke="#00e699" stroke-width="5.5"/>
-          <circle cx="134.5" cy="121.5" r="9" fill="#0a2246" stroke="#00e699" stroke-width="5.5"/>
-        </svg>
         <span class="inner-strip-title"><em>Sistemas Pyme</em> • Pyme Magazine Nº 1</span>
       </div>
       <span class="inner-strip-right">El Algoritmo Oculto de Google</span>
@@ -1337,18 +1334,6 @@
         <circle cx="525" cy="49" r="3" fill="#0a2246" stroke="#19b5fe" stroke-width="1.6" opacity="0.55"/>
       </svg>
       <div class="inner-strip-left">
-        <svg width="28" height="19" viewBox="0 0 210 140" xmlns="http://www.w3.org/2000/svg">
-          <g mask="url(#spExactMaskP1)">
-            <path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="#00e699" stroke-width="21"/>
-            <path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 130" fill="none" stroke="#00e699" stroke-width="21"/>
-            <rect x="116" y="32" width="10.5" height="90" fill="#00e699"/>
-            <rect x="129.5" y="48" width="9.5" height="72" fill="#00e699"/>
-          </g>
-          <circle cx="92" cy="19" r="9" fill="#0a2246" stroke="#00e699" stroke-width="5.5"/>
-          <circle cx="18" cy="121.5" r="9" fill="#0a2246" stroke="#00e699" stroke-width="5.5"/>
-          <circle cx="134.5" cy="48" r="9" fill="#0a2246" stroke="#00e699" stroke-width="5.5"/>
-          <circle cx="134.5" cy="121.5" r="9" fill="#0a2246" stroke="#00e699" stroke-width="5.5"/>
-        </svg>
         <span class="inner-strip-title"><em>Sistemas Pyme</em> • Pyme Magazine Nº 1</span>
       </div>
       <span class="inner-strip-right">Blindaje Jurídico, Método HEARD y Diferenciación IA</span>
@@ -1422,18 +1407,6 @@
         <circle cx="525" cy="49" r="3" fill="#0a2246" stroke="#19b5fe" stroke-width="1.6" opacity="0.55"/>
       </svg>
       <div class="inner-strip-left">
-        <svg width="28" height="19" viewBox="0 0 210 140" xmlns="http://www.w3.org/2000/svg">
-          <g mask="url(#spExactMaskP1)">
-            <path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="#00e699" stroke-width="21"/>
-            <path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 130" fill="none" stroke="#00e699" stroke-width="21"/>
-            <rect x="116" y="32" width="10.5" height="90" fill="#00e699"/>
-            <rect x="129.5" y="48" width="9.5" height="72" fill="#00e699"/>
-          </g>
-          <circle cx="92" cy="19" r="9" fill="#0a2246" stroke="#00e699" stroke-width="5.5"/>
-          <circle cx="18" cy="121.5" r="9" fill="#0a2246" stroke="#00e699" stroke-width="5.5"/>
-          <circle cx="134.5" cy="48" r="9" fill="#0a2246" stroke="#00e699" stroke-width="5.5"/>
-          <circle cx="134.5" cy="121.5" r="9" fill="#0a2246" stroke="#00e699" stroke-width="5.5"/>
-        </svg>
         <span class="inner-strip-title"><em>Sistemas Pyme</em> • Pyme Magazine Nº 1</span>
       </div>
       <span class="inner-strip-right">Arquitectura de Reputación 360°</span>
