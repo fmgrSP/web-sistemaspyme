@@ -102,11 +102,17 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
+    details > summary {
+      list-style: none;
+    }
+    details > summary::-webkit-details-marker {
+      display: none;
+    }
   </style>
 </head>
 <body class="bg-brand-dark text-slate-100 font-sans antialiased selection:bg-brand-teal selection:text-white relative overflow-x-hidden w-full">
 
-  <!-- MENÚ MÓVIL PANTALLA COMPLETA (HAMBURGUESA) -->
+  <!-- MENÚ MÓVIL PANTALLA COMPLETA (HAMBURGUESA) - ORDEN NEUROLÓGICO OPTIMIZADO -->
   <div id="mobileMenu" class="fixed inset-0 z-[100] bg-brand-dark/95 backdrop-blur-xl translate-x-full transition-transform duration-300 md:hidden flex flex-col no-scrollbar overflow-y-auto">
     <div class="flex items-center justify-between p-6 border-b border-white/10 sticky top-0 bg-brand-dark/95 backdrop-blur-md">
       <img src="Logo Duotono.svg" 
@@ -120,17 +126,16 @@
       </button>
     </div>
     <nav class="flex flex-col gap-6 p-8 text-xl font-bold text-slate-200">
-      <a href="#disponibles" onclick="toggleMobileMenu()" class="flex items-center gap-3.5 hover:text-teal-400 transition-colors">
-        <span class="text-2xl w-8 text-center flex-shrink-0">⚡</span>
-        <span>Activación Inmediata</span>
+      <a href="#disponibles" onclick="toggleMobileMenu()" class="flex items-center gap-3.5 text-emerald-300 hover:text-emerald-200 bg-emerald-500/15 border border-emerald-500/40 px-4 py-2.5 rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all">
+        <span class="relative flex h-3 w-3 flex-shrink-0">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-400"></span>
+        </span>
+        <span>⚡ Activación Inmediata</span>
       </a>
       <a href="#auditoria-geo" onclick="toggleMobileMenu()" class="flex items-center gap-3.5 text-teal-300 hover:text-teal-200 transition-colors">
         <span class="text-2xl w-8 text-center flex-shrink-0">🔍</span>
         <span>Auditoría SEO + GEO (IA)</span>
-      </a>
-      <a href="#despliegue" onclick="toggleMobileMenu()" class="flex items-center gap-3.5 hover:text-teal-400 transition-colors">
-        <span class="text-2xl w-8 text-center flex-shrink-0">🚀</span>
-        <span>Próximo Despliegue</span>
       </a>
       <a href="#tarifas" onclick="toggleMobileMenu()" class="flex items-center gap-3.5 hover:text-teal-400 transition-colors">
         <span class="text-2xl w-8 text-center flex-shrink-0">💎</span>
@@ -139,6 +144,10 @@
       <a href="#magazine" onclick="toggleMobileMenu()" class="flex items-center gap-3.5 text-amber-200/95 hover:text-amber-100 transition-colors">
         <span class="text-2xl w-8 text-center flex-shrink-0">📖</span> 
         <span>Pyme Magazine</span>
+      </a>
+      <a href="#despliegue" onclick="toggleMobileMenu()" class="flex items-center gap-3.5 hover:text-teal-400 transition-colors">
+        <span class="text-2xl w-8 text-center flex-shrink-0">🚀</span>
+        <span>Próximo Despliegue</span>
       </a>
       <a href="#contacto" onclick="toggleMobileMenu()" class="flex items-center gap-3.5 hover:text-teal-400 transition-colors">
         <span class="text-2xl w-8 text-center flex-shrink-0">💬</span>
@@ -152,7 +161,7 @@
     </div>
   </div>
 
-  <!-- CABECERA PRINCIPAL NAVEGACIÓN -->
+  <!-- CABECERA PRINCIPAL NAVEGACIÓN (ORDEN DE CIERRE EN CALIENTE: ACTIVOS -> AUDITORÍA -> TARIFAS -> MAGAZINE -> DESPLIEGUE) -->
   <header class="sticky top-0 z-50 w-full bg-brand-dark/90 backdrop-blur-md border-b border-white/10 transform-gpu">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-24 flex items-center justify-between gap-2 lg:gap-4">
       
@@ -162,21 +171,24 @@
         </div>
       </a>
 
-      <nav class="hidden md:flex flex-1 items-center justify-center gap-1.5 lg:gap-3 text-[11.5px] lg:text-[13px] font-semibold text-slate-200 whitespace-nowrap">
-        <a href="#disponibles" class="hover:text-teal-400 transition-colors flex items-center gap-1.5 px-1.5 py-1 rounded-md hover:bg-white/5">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0"></span>
+      <nav class="hidden md:flex flex-1 items-center justify-center gap-1.5 lg:gap-2.5 text-[11.5px] lg:text-[13px] font-semibold text-slate-200 whitespace-nowrap">
+        <a href="#disponibles" class="text-emerald-300 hover:text-white font-extrabold transition-all flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-400/50 hover:bg-emerald-500/25 shadow-[0_0_15px_rgba(16,185,129,0.22)]">
+          <span class="relative flex h-2 w-2 flex-shrink-0">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+          </span>
           <span>Activación Inmediata</span>
         </a>
-        <a href="#auditoria-geo" class="text-teal-300 hover:text-teal-200 transition-colors flex items-center gap-1 px-2 py-1 rounded-md bg-teal-500/10 border border-teal-500/30 hover:bg-teal-500/20">
+        <a href="#auditoria-geo" class="text-teal-300 hover:text-teal-200 transition-colors flex items-center gap-1 px-2 py-1 rounded-lg bg-teal-500/10 border border-teal-500/30 hover:bg-teal-500/20">
           <span>🔍</span>
           <span>Auditoría SEO + GEO</span>
         </a>
-        <a href="#despliegue" class="hover:text-teal-400 transition-colors px-1.5 py-1 rounded-md hover:bg-white/5">Próximo Despliegue</a>
         <a href="#tarifas" class="hover:text-teal-400 transition-colors px-1.5 py-1 rounded-md hover:bg-white/5">Tarifas Oficiales</a>
         <a href="#magazine" class="hover:text-amber-300 text-amber-400 transition-colors flex items-center gap-1 px-1.5 py-1 rounded-md hover:bg-white/5">
           <span>📖</span>
           <span>Pyme Magazine</span>
         </a>
+        <a href="#despliegue" class="hover:text-teal-400 transition-colors px-1.5 py-1 rounded-md hover:bg-white/5">Próximo Despliegue</a>
         <a href="#contacto" class="hover:text-teal-400 transition-colors px-1.5 py-1 rounded-md hover:bg-white/5">Contacto</a>
       </nav>
 
@@ -290,7 +302,7 @@
   <section id="disponibles" class="scroll-mt-24 py-16 md:py-24 bg-slate-950/90 border-t border-white/10">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       
-      <div class="text-center max-w-3xl mx-auto mb-14">
+      <div class="text-center max-w-3xl mx-auto mb-10">
         <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-extrabold uppercase tracking-wider mb-3 text-center leading-snug">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping flex-shrink-0"></span>
           <span>Disponibles para Implantación Inmediata <br class="sm:hidden"><span class="whitespace-nowrap">(24-48h)</span></span>
@@ -303,9 +315,39 @@
         </p>
       </div>
 
+      <!-- SOLUCIÓN FRICCIÓN 4: ACTIVADOR DE AVERSIÓN A LA PÉRDIDA (CONTRASTE VISUAL DE 5 SEGUNDOS) -->
+      <div class="mb-12 rounded-2xl bg-slate-900/90 border border-white/10 p-5 sm:p-6 shadow-xl">
+        <div class="text-center mb-4">
+          <span class="text-[11px] font-extrabold uppercase tracking-widest text-amber-400 block">Realidad Operativa en Negocios Locales</span>
+          <h3 class="text-base sm:text-lg font-black text-white mt-0.5">¿Qué ocurre hoy cuando un cliente sale descontento de tu local?</h3>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Sin Sistemas Pyme -->
+          <div class="bg-red-950/25 border border-red-500/30 rounded-xl p-4 flex items-start gap-3.5">
+            <span class="text-2xl flex-shrink-0 mt-0.5">❌</span>
+            <div>
+              <span class="text-xs font-black uppercase tracking-wider text-red-400 block mb-1">Sin Cortafuegos (El riesgo actual)</span>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                Diez clientes felices se marchan en silencio porque olvidan puntuar, pero <strong>1 solo cliente molesto escribe una reseña de 1★ en Google Maps que leen más de 5.000 personas</strong> de tu ciudad, hundiendo tu nota media y desviando clientes a tu competencia.
+              </p>
+            </div>
+          </div>
+          <!-- Con Sistemas Pyme -->
+          <div class="bg-emerald-950/30 border border-emerald-500/40 rounded-xl p-4 flex items-start gap-3.5">
+            <span class="text-2xl flex-shrink-0 mt-0.5">🛡️</span>
+            <div>
+              <span class="text-xs font-black uppercase tracking-wider text-emerald-400 block mb-1">Con Sistemas Pyme (Doble Escudo Activo)</span>
+              <p class="text-xs text-slate-200 leading-relaxed">
+                Los clientes satisfechos van en 1 toque a Google Maps para multiplicar tus <strong>5★</strong>, mientras que cualquier queja queda <strong>retenida en privado en tu WhatsApp</strong> antes de hacerse pública, dándote el control total para solucionarla.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-        <!-- SERVICIO 1: GESTIÓN Y RESPUESTA DE RESEÑAS EN GOOGLE CON IA -->
+        <!-- SERVICIO 1: GESTIÓN Y RESPUESTA DE RESEÑAS EN GOOGLE CON IA (+ MOCKUP VISUAL ESPEJO) -->
         <div class="glow-reputacion backdrop-blur-md border-2 border-teal-500/40 hover:border-teal-400 rounded-2xl p-6 sm:p-7 transition-all flex flex-col justify-between group h-full shadow-xl shadow-teal-950/20">
           <div>
             <div class="flex items-center justify-between gap-2 mb-4">
@@ -319,16 +361,44 @@
             <h3 class="text-xl sm:text-2xl font-black mb-3 text-white">
               Gestión y Respuesta de Reseñas en Google con IA
             </h3>
-            <p class="text-sm text-slate-300 leading-relaxed mb-4">
-              Piloto automático 24/7 que monitoriza tu perfil de Google Business. A las valoraciones positivas (4 y 5★) les responde al instante en el <strong>mismo idioma del cliente</strong> potenciando tu SEO local, alimentando los motores de IA (GEO) y respetando un estricto <strong>blindaje de secreto profesional y RGPD</strong> (ideal para clínicas, despachos y comercios).
+            <p class="text-sm text-slate-300 leading-relaxed mb-3">
+              Piloto automático 24/7 para tu perfil de Google Maps. A las valoraciones positivas (4 y 5★) les responde al instante en el <strong>mismo idioma del cliente</strong> incluyendo de forma natural tus servicios y localidad para subir posiciones en Google, respetando siempre el <strong>secreto profesional y la privacidad (RGPD)</strong>.
             </p>
-            <p class="text-sm text-slate-300 leading-relaxed mb-5">
-              Si detecta una crítica (1 a 3★) o una queja oculta en 4★, <strong>frena la publicación automática</strong> y te envía una alerta al móvil con un borrador diplomático redactado bajo el método psicológico <em>HEARD</em> (con contención jurídica sin admisión de culpa).
+            <p class="text-sm text-slate-300 leading-relaxed mb-4">
+              Si entra una crítica (1 a 3★), <strong>frena la publicación automática</strong> y te envía un aviso inmediato al móvil con una respuesta diplomática lista para aprobar en 1 toque.
             </p>
 
+            <!-- SOLUCIÓN FRICCIÓN 2: SIMULACIÓN VISUAL EN VIVO (MOCKUP SERVICIO 1) -->
+            <div class="bg-slate-950/90 border border-teal-500/30 rounded-xl p-3.5 mb-5 shadow-inner">
+              <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-teal-400 mb-2.5 border-b border-white/10 pb-1.5">
+                <span>📱 Así lo ves en tu móvil en tiempo real</span>
+                <span class="text-emerald-400">● Piloto IA 24/7</span>
+              </div>
+              <div class="space-y-2 text-[11px]">
+                <div class="bg-emerald-950/40 border border-emerald-500/30 rounded-lg p-2.5">
+                  <div class="flex items-center justify-between font-bold text-emerald-300 mb-0.5">
+                    <span>🇬🇧 Reseña 5★ de Sarah M. (Turista)</span>
+                    <span class="text-[9px] bg-emerald-500/20 px-1.5 py-0.5 rounded">Auto-Respondida SEO</span>
+                  </div>
+                  <p class="text-slate-300 italic">«Thank you so much, Sarah! We are thrilled you enjoyed our service here in Galicia. We look forward to seeing you again!»</p>
+                </div>
+                <div class="bg-amber-950/40 border border-amber-500/40 rounded-lg p-2.5">
+                  <div class="flex items-center justify-between font-bold text-amber-300 mb-1">
+                    <span>🛡️ Alerta 2★ detectada — Publicación Pausada</span>
+                    <span class="text-[9px] bg-amber-500/20 px-1.5 py-0.5 rounded">Requiere tu OK</span>
+                  </div>
+                  <p class="text-slate-300 mb-2">Borrador diplomático preparado (sin admitir culpa ni revelar datos privados). ¿Deseas publicarlo?</p>
+                  <div class="flex gap-2">
+                    <span class="bg-emerald-600/80 text-white font-bold px-2.5 py-1 rounded text-[10px]">✅ Aprobar en 1 toque</span>
+                    <span class="bg-white/10 text-slate-300 font-semibold px-2.5 py-1 rounded text-[10px]">✏️ Editar por voz</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <ul class="space-y-2 text-xs text-slate-200 mb-6 bg-black/30 p-4 rounded-xl border border-white/5">
-              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Auto-respuesta SEO multilingüe en valoraciones de 4 y 5★</li>
-              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Freno de emergencia y contención jurídica HEARD/RGPD (1 a 3★)</li>
+              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Auto-respuesta multilingüe en valoraciones de 4 y 5★</li>
+              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Freno de emergencia y contención diplomática HEARD/RGPD (1 a 3★)</li>
               <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Bandeja móvil de aprobación en 1 toque + Informe mensual</li>
             </ul>
           </div>
@@ -343,7 +413,7 @@
           </div>
         </div>
 
-        <!-- SERVICIO 2: FILTRADO Y CAPTACIÓN DE RESEÑAS (ENCUESTA INTELIGENTE) -->
+        <!-- SERVICIO 2: FILTRADO Y CAPTACIÓN DE RESEÑAS (+ MOCKUP VISUAL WHATSAPP) -->
         <div class="glow-reputacion backdrop-blur-md border-2 border-teal-500/40 hover:border-teal-400 rounded-2xl p-6 sm:p-7 transition-all flex flex-col justify-between group h-full shadow-xl shadow-teal-950/20">
           <div>
             <div class="flex items-center justify-between gap-2 mb-4">
@@ -358,21 +428,41 @@
               Filtrado y Captación de Reseñas (Encuesta Inteligente)
             </h3>
             <p class="text-sm text-slate-300 leading-relaxed mb-4">
-              Cortafuegos proactivo por <strong>WhatsApp Oficial (Meta API)</strong> diseñado para negocios con cita previa, reservas, reparaciones o entregas (clínicas, salones, talleres, instaladores). Dos horas después del servicio, el cliente recibe una breve encuesta con botones interactivos en castellano o gallego:
+              Cortafuegos proactivo por <strong>WhatsApp Oficial</strong> para negocios con cita previa, reservas, reparaciones o entregas (clínicas, salones, talleres, instaladores). Dos horas después de su visita, el cliente recibe un mensaje cercano con 3 botones interactivos:
             </p>
+
+            <!-- SOLUCIÓN FRICCIÓN 2: SIMULACIÓN VISUAL DEL CHAT DE WHATSAPP (MOCKUP SERVICIO 2) -->
+            <div class="bg-[#0b141a] border border-emerald-500/40 rounded-xl p-3.5 mb-5 shadow-inner">
+              <div class="flex items-center justify-between text-[10px] font-bold text-emerald-400 border-b border-white/10 pb-1.5 mb-2.5">
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> WhatsApp de tu Negocio (Vista del Cliente)</span>
+                <span class="text-slate-400">2h tras la visita</span>
+              </div>
+              <div class="bg-[#1f2c34] text-slate-100 text-[11px] rounded-lg rounded-tl-none p-2.5 leading-snug mb-2">
+                ¡Hola Marta! 😊 Gracias por confiar hoy en nosotros. Para seguir mejorando cada día, ¿cómo valorarías tu experiencia de hoy?
+              </div>
+              <div class="grid grid-cols-3 gap-1.5 text-center text-[10.5px] font-bold mb-2.5">
+                <div class="bg-[#1f2c34] border border-emerald-500/40 text-emerald-300 py-1.5 rounded-lg">🌟 Excelente</div>
+                <div class="bg-[#1f2c34] border border-teal-500/30 text-teal-300 py-1.5 rounded-lg">😊 Bueno</div>
+                <div class="bg-[#1f2c34] border border-amber-500/50 text-amber-300 py-1.5 rounded-lg">🛡️ Mejorable</div>
+              </div>
+              <div class="bg-emerald-950/60 border border-emerald-500/30 rounded-lg px-2.5 py-2 text-[10.5px] text-emerald-200 flex items-center justify-between gap-2">
+                <span><strong>Si pulsa 🌟 Excelente:</strong> Va en 1 toque a Google Maps (5★).</span>
+                <span class="text-amber-300 font-bold"><strong>Si pulsa 🛡️ Mejorable:</strong> Queja detenida en privado.</span>
+              </div>
+            </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-5 text-xs">
               <div class="bg-black/40 border border-teal-500/30 rounded-xl p-3">
                 <strong class="text-emerald-400 block mb-1">🌟 «Excelente»</strong>
-                <span class="text-slate-300 text-[11px] leading-snug block">Le entrega el enlace directo para publicar su reseña 5★ en Google Maps en 1 toque.</span>
+                <span class="text-slate-300 text-[11px] leading-snug block">Enlace directo para publicar su 5★ en Google Maps en 1 toque.</span>
               </div>
               <div class="bg-black/40 border border-teal-500/30 rounded-xl p-3">
                 <strong class="text-teal-300 block mb-1">😊 «Bueno»</strong>
-                <span class="text-slate-300 text-[11px] leading-snug block">Agradece la visita y pregunta en privado qué detalle mejoraría para llegar al 10.</span>
+                <span class="text-slate-300 text-[11px] leading-snug block">Agradece la visita y pregunta en privado qué detalle mejoraría.</span>
               </div>
               <div class="bg-black/40 border border-amber-500/40 rounded-xl p-3">
                 <strong class="text-amber-400 block mb-1">🛡️ «Mejorable»</strong>
-                <span class="text-slate-300 text-[11px] leading-snug block">Frena el envío a Google, abre canal privado y te avisa al móvil al instante.</span>
+                <span class="text-slate-300 text-[11px] leading-snug block">Frena el envío a Google, abre chat privado y te avisa al móvil.</span>
               </div>
             </div>
 
@@ -394,13 +484,14 @@
 
       <!-- ========================================================================= -->
       <!-- BLOQUE DESTACADO EN VERDE CORPORATIVO: AUDITORÍA PREMIUM SEO + GEO (195€) -->
+      <!-- (SOLUCIÓN FRICCIÓN 1 Y 2: LENGUAJE CLARO + COMPARATIVA VISUAL CHATGPT + DESPLEGABLE TÉCNICO) -->
       <!-- ========================================================================= -->
       <div id="auditoria-geo" class="pt-6 -mt-6">
       <div class="mt-8 glow-reputacion backdrop-blur-md border-2 border-teal-400/70 rounded-3xl p-6 sm:p-8 lg:p-9 shadow-2xl shadow-teal-950/40 relative overflow-hidden">
         <div class="absolute -top-24 -right-24 w-72 h-72 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <!-- Cabecera + Píldora desglosada a la derecha -->
-        <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-7 border-b border-teal-500/30 pb-6">
+        <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-6 border-b border-teal-500/30 pb-6">
           <div class="flex-1">
             <div class="flex flex-wrap items-center gap-2.5 mb-3">
               <span class="w-9 h-9 rounded-xl bg-teal-500 text-slate-950 font-black text-lg flex items-center justify-center shadow">🔍</span>
@@ -414,9 +505,20 @@
             <p class="text-base sm:text-lg font-bold text-teal-300 leading-snug mb-2.5">
               Hace que tu negocio sea mucho más visible en las búsquedas de los navegadores y sea recomendado por las inteligencias artificiales (ChatGPT, Gemini, Google Maps, Perplexity, etc.).
             </p>
-            <p class="text-sm text-slate-300 leading-relaxed">
-              Auditamos tu presencia digital con nuestro <strong>escáner técnico de 16 parámetros</strong> y programamos a medida el paquete de código estructurado <strong>Schema.org JSON-LD</strong> (<code>LocalBusiness</code>, <code>AggregateRating</code>, <code>FAQPage</code>), etiquetas <code>&lt;title&gt;</code>, <code>&lt;meta description&gt;</code>, jerarquía <code>H1/H2</code> y textos optimizados de tu ficha de Google Business Profile para que los algoritmos entiendan exactamente qué ofreces, en qué localidad trabajas y por qué deben recomendarte frente a tu competencia.
+            <p class="text-sm text-slate-200 leading-relaxed mb-3">
+              Analizamos tu presencia digital con nuestro <strong>escáner de 16 parámetros</strong> y <strong>traducimos tu página web y tu ficha de Google Maps al idioma interno que leen ChatGPT, Gemini y Google</strong>. Así, cuando un vecino o turista pregunte cuál es el mejor negocio de tu sector en tu localidad, la IA entenderá tus servicios, horarios, valoraciones y tarifas y te recomendará en primer lugar frente a tu competencia.
             </p>
+
+            <!-- SOLUCIÓN FRICCIÓN 1: JERGA DE INGENIERO ENCAPSULADA EN DESPLEGABLE TÉCNICO -->
+            <details class="group bg-black/30 border border-teal-500/30 rounded-xl px-4 py-2.5 text-xs text-slate-300 cursor-pointer transition-all">
+              <summary class="font-bold text-teal-300 flex items-center justify-between select-none">
+                <span>🛠️ Ver especificaciones técnicas de ingeniería incluidas (Para informáticos y agencias)</span>
+                <span class="text-teal-400 group-open:rotate-180 transition-transform">▼</span>
+              </summary>
+              <div class="pt-2.5 mt-2 border-t border-white/10 text-[11.5px] text-slate-300 leading-relaxed">
+                Programación e inyección a medida del paquete de datos estructurados <code>Schema.org JSON-LD</code> (entidades <code>LocalBusiness</code>, <code>AggregateRating</code> y <code>FAQPage</code>), optimización de etiquetas <code>&lt;title&gt;</code>, <code>&lt;meta description&gt;</code>, jerarquía semántica <code>H1/H2</code> y redacción optimizada de categorías y servicios en Google Business Profile.
+              </div>
+            </details>
           </div>
 
           <!-- Píldora desglosada a la derecha (Código 200 € + Implantación 150 € = Total 350 €) -->
@@ -440,6 +542,30 @@
           </div>
         </div>
 
+        <!-- MICRO-COMPARATIVA VISUAL "ANTES VS DESPUÉS DE LA AUDITORÍA GEO" EN CHATGPT/GEMINI -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-7">
+          <div class="bg-slate-950/80 border border-red-500/30 rounded-2xl p-4">
+            <div class="flex items-center justify-between text-[11px] font-bold text-red-300 mb-2">
+              <span>🤖 ChatGPT / Gemini — SIN Auditoría GEO</span>
+              <span class="bg-red-500/20 px-2 py-0.5 rounded text-[10px]">Invisible para la IA</span>
+            </div>
+            <p class="text-xs text-slate-400 italic leading-relaxed">
+              «Usuario: ¿Qué clínica / taller / restaurante me recomiendas en mi zona?»<br>
+              <strong class="text-slate-300 not-italic">Respuesta IA:</strong> «Te recomiendo [Tu Competidor], ya que cuenta con servicios verificados, horario actualizado y una valoración destacada...» <span class="text-red-400 font-semibold">(Tu web no aparece porque la IA no logra leer tus datos).</span>
+            </p>
+          </div>
+          <div class="bg-slate-950/90 border-2 border-emerald-500/50 rounded-2xl p-4 shadow-lg shadow-emerald-950/30">
+            <div class="flex items-center justify-between text-[11px] font-bold text-emerald-300 mb-2">
+              <span>🚀 ChatGPT / Gemini — CON Auditoría GEO</span>
+              <span class="bg-emerald-500/20 px-2 py-0.5 rounded text-[10px]">Recomendado Nº 1</span>
+            </div>
+            <p class="text-xs text-slate-200 leading-relaxed">
+              «Usuario: ¿Qué clínica / taller / restaurante me recomiendas en mi zona?»<br>
+              <strong class="text-emerald-300">Respuesta IA:</strong> «La opción mejor valorada es <strong>[Tu Negocio]</strong> (4.9★ en Google Maps). Destaca por su especialidad en..., atención inmediata y puedes reservar en...»
+            </p>
+          </div>
+        </div>
+
         <!-- Las 3 Formas de Contratar la Auditoría Premium -->
         <div class="mb-6">
           <h4 class="text-xs font-extrabold uppercase tracking-widest text-teal-300 mb-3.5 text-center sm:text-left">
@@ -458,7 +584,7 @@
                   Paquete Técnico «Hazlo tú mismo»
                 </span>
                 <p class="text-xs text-slate-300 leading-relaxed">
-                  Realizamos la auditoría de 16 parámetros y te entregamos el <strong>paquete completo de código Schema.org JSON-LD, etiquetas Meta y textos optimizados</strong> listos para copiar y pegar, para que tu propio informático o agencia web lo implante.
+                  Realizamos la auditoría de 16 parámetros y te entregamos el <strong>paquete completo de código y textos optimizados</strong> listos para copiar y pegar, para que tu propio informático o agencia web lo implante.
                 </p>
               </div>
               <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20encargar%20la%20Opci%C3%B3n%201%20de%20la%20Auditor%C3%ADa%20SEO%2BGEO%3A%20Solo%20el%20Paquete%20de%20C%C3%B3digo%20a%20medida%20%28200%20%E2%82%AC%29" target="_blank" class="mt-5 w-full py-2.5 text-center rounded-xl bg-white/10 hover:bg-teal-700 text-white font-bold text-xs transition-colors block">
@@ -477,7 +603,7 @@
                   Suelta o con Plan Base (1 Servicio)
                 </span>
                 <p class="text-xs text-slate-300 leading-relaxed">
-                  <strong>Código (200 €) + Implantación (+150 €):</strong> entramos en tu web (WordPress, Wix, etc.) y en tu ficha de Google Business Profile y lo dejamos inyectado. <em>(Tarifa aplicable al contratarla suelta o con 1 único servicio).</em>
+                  <strong>Código (200 €) + Implantación (+150 €):</strong> nos encargamos de todo en tu web (WordPress, Wix, etc.) y en tu ficha de Google Maps y lo dejamos funcionando. <em>(Tarifa aplicable suelta o con 1 único servicio).</em>
                 </p>
               </div>
               <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20contratar%20la%20Auditor%C3%ADa%20e%20Implantaci%C3%B3n%20SEO%2BGEO%20Todo%20Incluido%20Llave%20en%20Mano%20%28350%20%E2%82%AC%29" target="_blank" class="mt-5 w-full py-2.5 text-center rounded-xl bg-teal-600/40 border border-teal-400/50 hover:bg-teal-600 text-white font-bold text-xs transition-colors block">
@@ -493,13 +619,10 @@
               <div>
                 <div class="flex items-baseline justify-between gap-2 mb-2">
                   <span class="text-sm font-black text-emerald-300 uppercase tracking-wide">3. Con Escudo Total ★</span>
-                  <div class="text-right">
-                    <span class="text-xs line-through text-slate-400 mr-1">350 €</span>
-                    <span class="text-2xl font-black text-emerald-400">195 €</span>
-                  </div>
+                  <span class="text-2xl font-black text-emerald-400">195 €</span>
                 </div>
                 <span class="inline-block text-[10px] font-extrabold uppercase tracking-wider text-emerald-200 bg-emerald-900/60 border border-emerald-500/40 px-2.5 py-0.5 rounded mb-3">
-                  Te ahorras los 150 € de Implantación + 5 €
+                  Ahorras 155 € (Implantación 150 € Gratis)
                 </span>
                 <p class="text-xs text-slate-200 leading-relaxed">
                   Al activar tu <strong>Pack Escudo (Dúo 99 €/m) o superior</strong>, te regalamos los 150 € de mano de obra de implantación y te dejamos todo instalado en tu Web y Google Maps por solo <strong>195 € de pago único</strong> (o <strong>95 € en Plan Anual Trinity+</strong>).
@@ -514,7 +637,7 @@
         </div>
 
         <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-teal-500/30 text-xs text-slate-300">
-          <span>💡 <strong>Nota de Escalera de Valor:</strong> En contratación suelta o con <strong>Plan Base (1 servicio)</strong> la Auditoría Llave en Mano mantiene su tarifa oficial de <strong>350 €</strong> (500 € de entrada junto al Setup de 150 €). Con el <strong>Pack Escudo Total (2 servicios)</strong> la entrada baja a <strong>420 €</strong> (225 € Setup + 195 € Auditoría): <strong>pagas 80 € menos el primer día llevándote el doble de servicios</strong>.</span>
+          <span>💡 <strong>Ventaja Matemática de Entrada:</strong> Si contratas 1 solo servicio + la Auditoría Llave en Mano abonas <strong>500 € de inicio</strong> (150 € Setup + 350 € Auditoría). Con el <strong>Pack Escudo Total (2 servicios)</strong> la entrada baja a <strong>420 €</strong> (225 € Setup + 195 € Auditoría): <strong>pagas 80 € menos el primer día llevándote el doble de servicios</strong>.</span>
         </div>
       </div>
       </div>
@@ -529,7 +652,7 @@
             Elige tu Nivel de Blindaje: <span class="text-teal-300">Pack Escudo Básico</span> o <span class="text-emerald-400">Pack Escudo Total (+ GEO IA)</span>
           </h4>
           <p class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
-            Al unir la <strong>Gestión de Reseñas IA (S1)</strong> y la <strong>Encuesta Cortafuegos por WhatsApp (S2)</strong>, el 2º servicio suma solo <strong>+40 €/mes</strong> (99 €/mes en total). Además, desbloqueas la <strong>Auditoría e Implantación Premium SEO+GEO Llave en Mano por solo 195 € de pago único</strong> (en lugar de 350 €, ahorrando los 150 € de mano de obra de implantación).
+            Al unir la <strong>Gestión de Reseñas IA (S1)</strong> y la <strong>Encuesta Cortafuegos por WhatsApp (S2)</strong>, el 2º servicio suma solo <strong>+40 €/mes</strong> (99 €/mes en total). Además, desbloqueas la <strong>Auditoría e Implantación Premium SEO+GEO Llave en Mano por solo 195 € de pago único</strong> (ahorrando 155 €).
           </p>
         </div>
 
@@ -583,7 +706,7 @@
               </div>
               <h5 class="text-xl font-black text-white mb-2">Pack Escudo Total + Auditoría SEO/GEO</h5>
               <p class="text-xs text-slate-200 leading-relaxed mb-4">
-                Todo lo del Escudo Básico (<strong>S1 + S2</strong>) + la <strong>Auditoría e Implantación Técnica Llave en Mano SEO Local + GEO IA</strong> inyectada por nosotros en tu Web y Google Maps para que te recomienden ChatGPT, Gemini y Google.
+                Todo lo del Escudo Básico (<strong>S1 + S2</strong>) + la <strong>Auditoría e Implantación Técnica Llave en Mano SEO Local + GEO IA</strong> instalada por nosotros en tu Web y Google Maps para que te recomienden ChatGPT, Gemini y Google.
               </p>
 
               <!-- Caja de desglose Mensualidad + Pago Fijo Único -->
@@ -596,10 +719,9 @@
                 <div class="pl-2">
                   <span class="text-[10px] uppercase font-bold text-amber-300 block">+ Auditoría GEO Fija</span>
                   <div>
-                    <span class="text-xs line-through text-slate-400 mr-1">350 €</span>
                     <span class="text-2xl font-black text-emerald-400">195 €</span>
                   </div>
-                  <span class="text-[10px] text-emerald-200 block">Ahorras 155 € (Setup Dúo: 225 €)</span>
+                  <span class="text-[10px] text-emerald-200 font-semibold block">Ahorras 155 € (Setup Dúo: 225 €)</span>
                 </div>
               </div>
             </div>
@@ -615,179 +737,36 @@
     </div>
   </section>
 
-  <!-- SECCIÓN II: PRÓXIMO DESPLIEGUE MODULAR (FASE 1) -->
-  <section id="despliegue" class="scroll-mt-24 py-16 md:py-24 bg-brand-dark/60 border-t border-white/5">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6">
-      
-      <div class="text-center max-w-3xl mx-auto mb-14">
-        <div class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 sm:py-1 rounded-2xl sm:rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-xs font-extrabold uppercase tracking-wider mb-3 text-center leading-snug">
-          <span>Calendario de Despliegue Modular <span class="hidden sm:inline">• </span><br class="sm:hidden"><span class="whitespace-nowrap">Reserva Prioritaria Abierta</span></span>
-        </div>
-        <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
-          II. Próximos Módulos de Ventas, Agenda y Finanzas
-        </h2>
-        <p class="text-slate-400 text-sm sm:text-base mt-3">
-          Amplía el ecosistema de tu negocio a medida que lo necesites. Cada nuevo módulo que sumes a tu plan se integra con tarifa modular transparente (<strong>+40 €/mes</strong> del 2º al 5º servicio, y solo <strong>+30 €/mes</strong> a partir del 6º).
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:auto-rows-fr">
-
-        <!-- SERVICIO 3: RESPUESTA LEADS + EXTRACTOR DE PORTALES -->
-        <div class="glow-captacion backdrop-blur-md border border-blue-500/30 hover:border-blue-400/60 rounded-2xl p-6 transition-all flex flex-col justify-between group h-full">
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-2">
-                <span class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 font-black text-sm flex items-center justify-center border border-blue-500/30">3</span>
-                <span class="text-[11px] font-bold uppercase tracking-wider text-blue-300 bg-blue-950/70 px-2.5 py-0.5 rounded-full border border-blue-700/50">Próximo Despliegue</span>
-              </div>
-              <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/40">Cierre en Caliente</span>
-            </div>
-            
-            <h3 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Leads en 10s + Extractor de Portales</h3>
-            <p class="text-sm text-slate-300 leading-relaxed mb-4">
-              Responder en los primeros 5 minutos multiplica por 4 las ventas. Quien pide presupuesto por tu web, redes sociales, anuncios o correos de portales (Habitissimo, Bodas.net, etc.) recibe un WhatsApp inmediato. A la vez, <strong>te avisamos discretamente al móvil</strong> para llamarle en caliente con su interés al 100%.
-            </p>
-          </div>
-          
-          <div class="pt-4 border-t border-blue-500/30 flex items-center justify-between gap-2 mt-auto">
-            <span class="text-xs font-medium text-blue-300">Adelántate a tu competencia</span>
-            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20acceso%20prioritario%20al%20Servicio%203%3A%20Leads%20en%2010s%20%2B%20Extractor%20de%20Portales" target="_blank" class="text-xs font-bold text-teal-400 hover:text-teal-300 inline-flex items-center gap-1 whitespace-nowrap flex-shrink-0">
-              <span>Solicitar Acceso Prioritario</span> <span class="flex-shrink-0">&rarr;</span>
-            </a>
-          </div>
-        </div>
-
-        <!-- SERVICIO 4: CITAS ANTI-PLANTÓN + CAMPAÑAS FLASH -->
-        <div class="glow-eficiencia backdrop-blur-md border border-indigo-500/30 hover:border-indigo-400/60 rounded-2xl p-6 transition-all flex flex-col justify-between group h-full">
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-2">
-                <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 font-black text-sm flex items-center justify-center border border-indigo-500/30">4</span>
-                <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-300 bg-indigo-950/70 px-2.5 py-0.5 rounded-full border border-indigo-700/50">Próximo Despliegue</span>
-              </div>
-              <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/40">-85% de Ausencias</span>
-            </div>
-            
-            <h3 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Sistema Anti-Plantón + Campañas Flash</h3>
-            <p class="text-sm text-slate-300 leading-relaxed mb-4">
-              Sincronizado con tu calendario: envía un recordatorio automático por WhatsApp 24 horas antes con botones interactivos de <strong>[Confirmar] o [Reubicar]</strong>. Si alguien cancela con antelación, libera el hueco y lanza avisos automáticos a clientes en lista de espera para reasignar la hora vacía al momento.
-            </p>
-          </div>
-          
-          <div class="pt-4 border-t border-indigo-500/30 flex items-center justify-between gap-2 mt-auto">
-            <span class="text-xs font-medium text-indigo-300">Cero horas muertas en agenda</span>
-            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20acceso%20prioritario%20al%20Servicio%204%3A%20Sistema%20Anti-Plant%C3%B3n%20%2B%20Campa%C3%B1as%20Flash" target="_blank" class="text-xs font-bold text-teal-400 hover:text-teal-300 inline-flex items-center gap-1 whitespace-nowrap flex-shrink-0">
-              <span>Solicitar Acceso Prioritario</span> <span class="flex-shrink-0">&rarr;</span>
-            </a>
-          </div>
-        </div>
-
-        <!-- SERVICIO 5: FACTURAS Y GASTOS AL GESTOR CON IA -->
-        <div class="glow-eficiencia backdrop-blur-md border border-indigo-500/30 hover:border-indigo-400/60 rounded-2xl p-6 transition-all flex flex-col justify-between group h-full md:col-span-2 max-w-2xl mx-auto w-full">
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-2">
-                <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 font-black text-sm flex items-center justify-center border border-indigo-500/30">5</span>
-                <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-300 bg-indigo-950/70 px-2.5 py-0.5 rounded-full border border-indigo-700/50">Próximo Despliegue</span>
-              </div>
-              <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/40">Cero Papeles</span>
-            </div>
-            
-            <h3 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Facturas y Gastos al Gestor con IA</h3>
-            <p class="text-sm text-slate-300 leading-relaxed mb-4">
-              Foto al ticket o factura por WhatsApp: la visión artificial extrae fecha, NIF, proveedor, base e IVA en 5 segundos, archiva el documento en la nube de tu gestoría con desglose en Excel. Con el <strong>Add-on Correo opcional</strong>, la IA revisa tu buzón (Gmail/Outlook) y clasifica facturas de compras sola.
-            </p>
-          </div>
-          
-          <div class="pt-4 border-t border-indigo-500/30 flex items-center justify-between gap-2 mt-auto">
-            <span class="text-[11.5px] sm:text-xs font-medium text-indigo-300">
-              <span>No pierdas ni un euro de IVA</span><span class="hidden sm:inline"> deducible</span>
-            </span>
-            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20acceso%20prioritario%20al%20Servicio%205%3A%20Facturas%20y%20Gastos%20al%20Gestor%20con%20IA" target="_blank" class="text-xs font-bold text-teal-400 hover:text-teal-300 inline-flex items-center gap-1 whitespace-nowrap flex-shrink-0">
-              <span>Solicitar Acceso Prioritario</span> <span class="flex-shrink-0">&rarr;</span>
-            </a>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- MÓDULO SATÉLITE INSTAGRAM (ACTUALIZADO A +40 €/M EN COMBO) -->
-      <div class="max-w-5xl mx-auto mt-12">
-        <div class="rounded-2xl p-[2px] bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 shadow-2xl shadow-fuchsia-900/30">
-          <div class="rounded-2xl p-6 sm:p-8 bg-slate-950 h-full w-full relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-64 h-64 bg-fuchsia-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-            
-            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 relative z-10">
-              
-              <div class="flex-1">
-                <div class="flex items-center gap-3 mb-4">
-                  <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-violet-600 to-fuchsia-600 p-[2px] flex-shrink-0">
-                    <div class="bg-slate-950 w-full h-full rounded-full flex items-center justify-center">
-                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                    </div>
-                  </div>
-                  <div class="text-xs sm:text-sm font-black text-fuchsia-400 tracking-widest uppercase leading-snug">
-                    <span>Módulo Satélite Prémium</span><br class="sm:hidden">
-                    <span class="whitespace-nowrap sm:ml-1.5">(Meta Graph API Oficial)</span>
-                  </div>
-                </div>
-                
-                <h3 class="text-2xl sm:text-3xl font-black text-white mb-3 tracking-tight leading-tight">
-                  <span>INSTAGRAM</span> <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">INTELIGENTE</span><br class="sm:hidden">
-                  <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400 whitespace-nowrap sm:ml-1">3 EN 1</span>
-                </h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5 mb-6">
-                  <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-left hover:bg-white/10 transition-colors h-full flex flex-col">
-                    <div class="text-fuchsia-400 font-bold text-xs mb-1.5 uppercase tracking-wider">1. Envío al Comentar</div>
-                    <div class="text-slate-300 text-xs leading-relaxed flex-1">Dices: Escribe «CITA» o «CARTA». El sistema responde al segundo entregando el enlace por privado y disparando el alcance orgánico de tu Reel.</div>
-                  </div>
-                  <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-left hover:bg-white/10 transition-colors h-full flex flex-col">
-                    <div class="text-fuchsia-400 font-bold text-xs mb-1.5 uppercase tracking-wider">2. Recepcionista DMs 24/7</div>
-                    <div class="text-slate-300 text-xs leading-relaxed flex-1">Asistente interactivo que responde dudas frecuentes (precios, carta, ubicación, horarios) y guía hacia la reserva en cualquier momento.</div>
-                  </div>
-                  <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-left hover:bg-white/10 transition-colors h-full flex flex-col">
-                    <div class="text-fuchsia-400 font-bold text-xs mb-1.5 uppercase tracking-wider">3. Regalo por Historias</div>
-                    <div class="text-slate-300 text-xs leading-relaxed flex-1">Si un cliente te menciona en sus Stories, lo detecta al vuelo y le envía un mensaje privado con un detalle exclusivo para incentivar su regreso.</div>
-                  </div>
-                </div>
-
-                <div class="flex flex-col sm:flex-row items-center gap-3 mt-2">
-                  <span class="w-full sm:w-auto text-center text-sm font-black text-fuchsia-300 bg-fuchsia-950/60 px-4 sm:px-5 py-2.5 rounded-xl border border-fuchsia-500/40 leading-snug">
-                    <span class="whitespace-nowrap">+40 € / mes</span> <span class="text-xs font-normal opacity-90 block sm:inline sm:ml-1">(Vinculado a cualquier servicio troncal | <span class="whitespace-nowrap">Setup 50%: 75 €</span>)</span>
-                  </span>
-                  <span class="w-full sm:w-auto text-center text-sm font-bold text-white bg-white/10 px-4 sm:px-5 py-2.5 rounded-xl border border-white/20 leading-snug">
-                    <span class="whitespace-nowrap">69 € / mes</span> <span class="text-xs font-normal text-slate-400 block sm:inline sm:ml-1">(Contratado suelto | <span class="whitespace-nowrap">Setup: 150 €</span>)</span>
-                  </span>
-                </div>
-              </div>
-
-              <div class="w-full md:w-auto flex-shrink-0 flex justify-center md:justify-end mt-2 md:mt-0">
-                <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20estoy%20interesado%20en%20el%20M%C3%B3dulo%20Sat%C3%A9lite%20de%20Instagram%20Inteligente%203%20en%201" target="_blank" class="w-full md:w-auto text-center inline-flex items-center justify-center gap-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold text-sm px-7 py-4 rounded-xl shadow-lg transition-all hover:scale-105">
-                  Consultar Módulo IG &rarr;
-                </a>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- SECCIÓN TARIFAS OFICIALES (5 PLANES FASE 1 + AUDITORÍA PREMIUM SEO/GEO) -->
+  <!-- ======================================================================= -->
+  <!-- SECCIÓN TARIFAS OFICIALES (SUBIDA AQUÍ PARA CIERRE DE VENTA EN CALIENTE) -->
+  <!-- SOLUCIÓN FRICCIÓN 3 Y 5: CONMUTADOR INTERACTIVO MENSUAL / ANUAL          -->
+  <!-- ======================================================================= -->
   <section id="tarifas" class="scroll-mt-24 py-16 md:py-24 bg-brand-dark relative border-t border-white/10">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       
-      <div class="text-center max-w-3xl mx-auto mb-14">
+      <div class="text-center max-w-3xl mx-auto mb-8">
         <span class="text-xs uppercase font-extrabold tracking-widest text-teal-400 block mb-2">Escalado Modular Transparente • Fase 1</span>
         <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
           Tarifas Oficiales Claras y Modulares
         </h2>
         <p class="text-slate-300 text-sm sm:text-base mt-3">
-          Combina libremente los servicios que necesites. El <strong>1er servicio son 59 €/mes</strong> y del <strong>2º al 5º suman +40 €/mes</strong> por módulo adicional. Además, a partir del Plan Dúo accedes a la <strong>Auditoría e Implantación SEO+GEO Llave en Mano por solo 195 €</strong> (ahorrando los 150 € de implantación).
+          Combina libremente los servicios que necesites. El <strong>1er servicio son 59 €/mes</strong> y del <strong>2º al 5º suman +40 €/mes</strong> por módulo adicional. A partir del Plan Dúo desbloqueas la <strong>Auditoría SEO+GEO Llave en Mano por 195 €</strong> (o <strong>95 €</strong> desde Plan Anual Trinity).
+        </p>
+      </div>
+
+      <!-- SOLUCIÓN FRICCIÓN 5: CONMUTADOR INTERACTIVO MENSUAL / ANUAL (REDUCE A LA MITAD EL RUIDO NUMÉRICO) -->
+      <div class="flex flex-col items-center justify-center mb-12">
+        <div class="bg-slate-950/90 p-1.5 rounded-2xl border border-teal-500/40 inline-flex items-center gap-1.5 shadow-xl">
+          <button type="button" id="btnSwitchMensual" onclick="cambiarModoTarifas('mensual')" class="px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all bg-brand-teal text-white shadow-md">
+            🔄 Pago Mensual Flexible
+          </button>
+          <button type="button" id="btnSwitchAnual" onclick="cambiarModoTarifas('anual')" class="px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-300 hover:text-white flex items-center gap-2">
+            <span>⭐ Plan Anual</span>
+            <span class="bg-emerald-500 text-slate-950 text-[10px] font-black uppercase px-2 py-0.5 rounded-full">2 Meses Gratis (-16%)</span>
+          </button>
+        </div>
+        <p id="subtituloModoTarifas" class="text-xs text-teal-300 font-semibold mt-2.5 text-center">
+          Mostrando tarifas en <strong>Modalidad Mensual Flexible</strong> (pulsa en «Plan Anual» para ver el descuento de 2 meses gratis y la Auditoría GEO a 95 €).
         </p>
       </div>
 
@@ -799,38 +778,29 @@
           <div>
             <div class="flex items-center justify-between mb-1">
               <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">1 Servicio</span>
-              <span class="text-[11px] font-semibold text-slate-400">Setup Nominal: 150 €</span>
+              <span class="text-[11px] font-semibold text-slate-400">Setup Único: 150 €</span>
             </div>
             <h3 class="text-xl font-black text-white mb-2">PYME <span class="text-slate-400">BASE</span></h3>
             <div class="flex items-center justify-between gap-2 mb-2.5">
               <div class="flex items-baseline gap-1.5">
-                <span class="text-3xl font-black text-white leading-none">59 €</span>
-                <span class="text-xs font-normal text-slate-400">/ mes</span>
+                <span class="text-3xl font-black text-white leading-none" data-plan-price="base">59 €</span>
+                <span class="text-xs font-normal text-slate-400" data-plan-period="base">/ mes</span>
               </div>
+              <span data-plan-pill="base" class="text-[11px] font-bold bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-0.5 rounded whitespace-nowrap">Cuota Base</span>
             </div>
-            <p class="text-xs text-slate-400 mb-5 min-h-[32px]">Para automatizar un cuello de botella clave (ej. Gestión de Reseñas IA o Encuesta WhatsApp).</p>
+            <p class="text-xs text-slate-300 font-medium mb-4 min-h-[20px]" data-plan-sub="base">Puesta en marcha flexible mes a mes.</p>
             <ul class="text-xs text-slate-300 space-y-3 mb-6">
               <li class="flex items-start gap-2">
                 <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
-                <span class="leading-snug">
-                  <strong class="block text-white">1 servicio troncal activo</strong>
-                  <span class="block text-slate-400">(a libre elección del catálogo)</span>
-                </span>
+                <span><strong class="text-white">1 servicio troncal activo</strong> a libre elección (ej. Reseñas IA o Encuesta WhatsApp).</span>
               </li>
               <li class="flex items-start gap-2">
                 <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
-                <span class="leading-snug">
-                  <span class="block">Plan Anual <span class="whitespace-nowrap">(10 meses):</span> <strong class="whitespace-nowrap text-white">590 €/año</strong></span>
-                  <span class="block text-emerald-400 font-semibold whitespace-nowrap">(Ahorras 118 € — 2 meses gratis)</span>
-                </span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
-                <span>Soporte técnico directo y copias en la nube</span>
+                <span>Soporte técnico directo y copias en la nube incluidas.</span>
               </li>
             </ul>
           </div>
-          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20contratar%20el%20Plan%20PYME%20BASE%20%2859%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-3 text-center rounded-xl bg-white/10 hover:bg-slate-700 text-white font-bold text-xs transition-colors">
+          <a id="ctaPlanBase" href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20contratar%20el%20Plan%20PYME%20BASE%20%2859%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-3 text-center rounded-xl bg-white/10 hover:bg-slate-700 text-white font-bold text-xs transition-colors">
             Elegir PYME Base (59 €/m)
           </a>
         </div>
@@ -840,39 +810,29 @@
           <div>
             <div class="flex items-center justify-between mb-1">
               <span class="text-xs font-bold text-blue-300 uppercase tracking-wider">2 Servicios (59€ + 40€)</span>
-              <span class="text-[11px] font-semibold text-blue-300">Setup Nominal: 225 €</span>
+              <span class="text-[11px] font-semibold text-blue-300">Setup Dúo: 225 €</span>
             </div>
             <h3 class="text-xl font-black text-white mb-2">PYME <span class="text-blue-400">DÚO</span></h3>
             <div class="flex items-center justify-between gap-2 mb-2.5">
               <div class="flex items-baseline gap-1.5">
-                <span class="text-3xl font-black text-white leading-none">99 €</span>
-                <span class="text-xs font-normal text-slate-400">/ mes</span>
+                <span class="text-3xl font-black text-white leading-none" data-plan-price="duo">99 €</span>
+                <span class="text-xs font-normal text-slate-400" data-plan-period="duo">/ mes</span>
               </div>
-              <span class="text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2.5 py-0.5 rounded whitespace-nowrap">Ahorras 19 €/m</span>
+              <span data-plan-pill="duo" class="text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2.5 py-0.5 rounded whitespace-nowrap">Ahorras 19 €/m</span>
             </div>
-            <p class="text-xs text-slate-400 mb-5 min-h-[32px]">Ideal para el <strong>Pack Escudo</strong> (Gestión Reseñas IA + Encuesta Filtro WhatsApp).</p>
+            <p class="text-xs text-blue-200 font-medium mb-4 min-h-[20px]" data-plan-sub="duo">Ideal para el <strong>Pack Escudo</strong> (S1 + S2).</p>
             <ul class="text-xs text-slate-300 space-y-3 mb-6">
               <li class="flex items-start gap-2">
                 <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
-                <span class="leading-snug">
-                  <strong class="block text-white">2 servicios combinados activos</strong>
-                  <span class="block text-slate-400 whitespace-nowrap">(2º módulo a libre elección: +40 €/mes)</span>
-                </span>
+                <span><strong class="text-white">2 servicios combinados activos</strong> (el 2º módulo suma solo +40 €/mes).</span>
               </li>
-              <li class="flex items-start gap-2">
-                <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
-                <span class="leading-snug">
-                  <span class="block">Plan Anual <span class="whitespace-nowrap">(10 meses):</span> <strong class="whitespace-nowrap text-white">990 €/año</strong></span>
-                  <span class="block text-emerald-400 font-semibold whitespace-nowrap">(Ahorras 198 € — 2 meses gratis)</span>
-                </span>
-              </li>
-              <li class="flex items-start gap-2 text-teal-300 font-semibold">
+              <li class="flex items-start gap-2 text-teal-300 font-semibold bg-teal-950/40 p-2 rounded-lg border border-teal-500/30">
                 <span class="flex-shrink-0">🔍</span>
-                <span><strong>Desbloquea Auditoría SEO+GEO Llave en Mano por solo 195 €</strong> (ahorras 155 €)</span>
+                <span><strong>Desbloquea Auditoría SEO+GEO Llave en Mano por solo 195 €</strong> (ahorras 155 €).</span>
               </li>
             </ul>
           </div>
-          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20contratar%20el%20Plan%20PYME%20D%C3%9AO%20%2899%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-3 text-center rounded-xl bg-blue-600/30 border border-blue-500/40 group-hover/btn:bg-blue-600 text-white font-bold text-xs transition-all duration-300">
+          <a id="ctaPlanDuo" href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20contratar%20el%20Plan%20PYME%20D%C3%9AO%20%2899%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-3 text-center rounded-xl bg-blue-600/30 border border-blue-500/40 group-hover/btn:bg-blue-600 text-white font-bold text-xs transition-all duration-300">
             Elegir PYME Dúo (99 €/m)
           </a>
         </div>
@@ -885,39 +845,29 @@
           <div>
             <div class="flex items-center justify-between mb-1">
               <span class="text-xs font-bold text-teal-300 uppercase tracking-wider">3 Servicios</span>
-              <span class="text-[11px] font-semibold text-teal-300">Setup Nominal: 300 €</span>
+              <span class="text-[11px] font-semibold text-teal-300">Setup Trinity: 300 €</span>
             </div>
             <h3 class="text-xl font-black text-white mb-2">PYME <span class="text-emerald-400">TRINITY</span></h3>
             <div class="flex items-center justify-between gap-2 mb-2.5">
               <div class="flex items-baseline gap-1.5">
-                <span class="text-3xl font-black text-teal-300 leading-none">139 €</span>
-                <span class="text-xs font-normal text-slate-400">/ mes</span>
+                <span class="text-3xl font-black text-teal-300 leading-none" data-plan-price="trinity">139 €</span>
+                <span class="text-xs font-normal text-slate-400" data-plan-period="trinity">/ mes</span>
               </div>
-              <span class="text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-500/50 px-2.5 py-0.5 rounded whitespace-nowrap">Ahorras 38 €/m</span>
+              <span data-plan-pill="trinity" class="text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-500/50 px-2.5 py-0.5 rounded whitespace-nowrap">Ahorras 38 €/m</span>
             </div>
-            <p class="text-xs text-slate-300 mb-5 min-h-[32px]">Equilibrio total entre reputación, captación de clientes y ahorro de tiempo.</p>
+            <p class="text-xs text-emerald-200 font-medium mb-4 min-h-[20px]" data-plan-sub="trinity">Equilibrio total: reputación, ventas y ahorro de tiempo.</p>
             <ul class="text-xs text-slate-200 space-y-3 mb-6">
               <li class="flex items-start gap-2">
                 <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
-                <span class="leading-snug">
-                  <strong class="block text-white">3 servicios combinados activos</strong>
-                  <span class="block text-slate-300 whitespace-nowrap">(3er módulo a libre elección: +40 €/mes)</span>
-                </span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
-                <span class="leading-snug">
-                  <span class="block">Plan Anual <span class="whitespace-nowrap">(10 meses):</span> <strong class="whitespace-nowrap text-white">1.390 €/año</strong></span>
-                  <span class="block text-emerald-400 font-semibold whitespace-nowrap">(Ahorras 278 € — 2 meses gratis)</span>
-                </span>
+                <span><strong class="text-white">3 servicios combinados activos</strong> a libre elección.</span>
               </li>
               <li class="flex items-start gap-2 text-amber-300 font-semibold bg-amber-950/40 p-2 rounded-lg border border-amber-500/30">
                 <span class="flex-shrink-0">🎁</span>
-                <span><strong>Bono Incluido:</strong> Bóveda de Contraseñas Gratis (150 €) + Auditoría SEO/GEO Llave en Mano bonificada a <strong>195 €</strong></span>
+                <span data-plan-geo-note="trinity"><strong>Bóveda de Contraseñas Gratis (150 €)</strong> + Auditoría SEO/GEO bonificada a <strong>195 €</strong> (o <strong>95 € en Plan Anual</strong>).</span>
               </li>
             </ul>
           </div>
-          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20contratar%20el%20Plan%20PYME%20TRINITY%20%28139%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-3 text-center rounded-xl bg-brand-teal group-hover/trinity:bg-emerald-400 group-hover/trinity:text-slate-950 text-white font-black text-xs transition-all duration-300 shadow-lg">
+          <a id="ctaPlanTrinity" href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20contratar%20el%20Plan%20PYME%20TRINITY%20%28139%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-3 text-center rounded-xl bg-brand-teal group-hover/trinity:bg-emerald-400 group-hover/trinity:text-slate-950 text-white font-black text-xs transition-all duration-300 shadow-lg">
             Elegir Pack Trinity (139 €/m)
           </a>
         </div>
@@ -927,39 +877,29 @@
           <div>
             <div class="flex items-center justify-between mb-1">
               <span class="text-xs font-bold text-indigo-300 uppercase tracking-wider">4 Servicios</span>
-              <span class="text-[11px] font-semibold text-indigo-300">Setup Nominal: 375 €</span>
+              <span class="text-[11px] font-semibold text-indigo-300">Setup Quatro: 375 €</span>
             </div>
             <h3 class="text-xl font-black text-white mb-2">PYME <span class="text-indigo-400">QUATRO</span></h3>
             <div class="flex items-center justify-between gap-2 mb-2.5">
               <div class="flex items-baseline gap-1.5">
-                <span class="text-3xl font-black text-white leading-none">179 €</span>
-                <span class="text-xs font-normal text-slate-400">/ mes</span>
+                <span class="text-3xl font-black text-white leading-none" data-plan-price="quatro">179 €</span>
+                <span class="text-xs font-normal text-slate-400" data-plan-period="quatro">/ mes</span>
               </div>
-              <span class="text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2.5 py-0.5 rounded whitespace-nowrap">Ahorras 57 €/m</span>
+              <span data-plan-pill="quatro" class="text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2.5 py-0.5 rounded whitespace-nowrap">Ahorras 57 €/m</span>
             </div>
-            <p class="text-xs text-slate-400 mb-5 min-h-[32px]">Automatización avanzada combinando reputación, ventas, agenda y administración.</p>
+            <p class="text-xs text-slate-300 font-medium mb-4 min-h-[20px]" data-plan-sub="quatro">Automatización avanzada de 4 áreas clave.</p>
             <ul class="text-xs text-slate-300 space-y-3 mb-6">
               <li class="flex items-start gap-2">
                 <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
-                <span class="leading-snug">
-                  <strong class="block text-white">4 servicios combinados activos</strong>
-                  <span class="block text-slate-400 whitespace-nowrap">(4º módulo a libre elección: +40 €/mes)</span>
-                </span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
-                <span class="leading-snug">
-                  <span class="block">Plan Anual <span class="whitespace-nowrap">(10 meses):</span> <strong class="whitespace-nowrap text-white">1.790 €/año</strong></span>
-                  <span class="block text-emerald-400 font-semibold whitespace-nowrap">(Ahorras 358 € — 2 meses gratis)</span>
-                </span>
+                <span><strong class="text-white">4 servicios combinados activos</strong> a libre elección.</span>
               </li>
               <li class="flex items-start gap-2 text-amber-300 font-semibold">
                 <span class="flex-shrink-0">🎁</span>
-                <span>Bóveda Contraseñas Gratis + Auditoría SEO/GEO a 195 €</span>
+                <span data-plan-geo-note="quatro">Bóveda Contraseñas Gratis + Auditoría SEO/GEO a <strong>195 €</strong> (o <strong>95 € en Plan Anual</strong>).</span>
               </li>
             </ul>
           </div>
-          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20contratar%20el%20Plan%20PYME%20QUATRO%20%28179%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-3 text-center rounded-xl bg-white/10 hover:bg-indigo-600 text-white font-bold text-xs transition-colors">
+          <a id="ctaPlanQuatro" href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20contratar%20el%20Plan%20PYME%20QUATRO%20%28179%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-3 text-center rounded-xl bg-white/10 hover:bg-indigo-600 text-white font-bold text-xs transition-colors">
             Elegir PYME Quatro (179 €/m)
           </a>
         </div>
@@ -969,39 +909,29 @@
           <div>
             <div class="flex items-center justify-between mb-1">
               <span class="text-xs font-bold text-teal-300 uppercase tracking-wider">5 Servicios</span>
-              <span class="text-[11px] font-semibold text-teal-300">Setup Nominal: 450 €</span>
+              <span class="text-[11px] font-semibold text-teal-300">Setup Pentium: 450 €</span>
             </div>
             <h3 class="text-xl font-black text-white mb-2">PYME <span class="text-teal-400">PENTIUM</span></h3>
             <div class="flex items-center justify-between gap-2 mb-2.5">
               <div class="flex items-baseline gap-1.5">
-                <span class="text-3xl font-black text-white leading-none">219 €</span>
-                <span class="text-xs font-normal text-slate-400">/ mes</span>
+                <span class="text-3xl font-black text-white leading-none" data-plan-price="pentium">219 €</span>
+                <span class="text-xs font-normal text-slate-400" data-plan-period="pentium">/ mes</span>
               </div>
-              <span class="text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2.5 py-0.5 rounded whitespace-nowrap">Ahorras 76 €/m</span>
+              <span data-plan-pill="pentium" class="text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2.5 py-0.5 rounded whitespace-nowrap">Ahorras 76 €/m</span>
             </div>
-            <p class="text-xs text-slate-400 mb-5 min-h-[32px]">Cinco motores trabajando en piloto automático las 24 horas para tu negocio.</p>
+            <p class="text-xs text-slate-300 font-medium mb-4 min-h-[20px]" data-plan-sub="pentium">Cinco motores trabajando 24/7 para tu local.</p>
             <ul class="text-xs text-slate-300 space-y-3 mb-6">
               <li class="flex items-start gap-2">
                 <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
-                <span class="leading-snug">
-                  <strong class="block text-white">5 servicios combinados activos</strong>
-                  <span class="block text-slate-400 whitespace-nowrap">(5º módulo a libre elección: +40 €/mes)</span>
-                </span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-teal-400 font-bold flex-shrink-0">✓</span>
-                <span class="leading-snug">
-                  <span class="block">Plan Anual <span class="whitespace-nowrap">(10 meses):</span> <strong class="whitespace-nowrap text-white">2.190 €/año</strong></span>
-                  <span class="block text-emerald-400 font-semibold whitespace-nowrap">(Ahorras 438 € — 2 meses gratis)</span>
-                </span>
+                <span><strong class="text-white">5 servicios combinados activos</strong> a libre elección.</span>
               </li>
               <li class="flex items-start gap-2 text-amber-300 font-semibold">
                 <span class="flex-shrink-0">🎁</span>
-                <span>Bóveda Contraseñas Gratis + Auditoría SEO/GEO a 195 €</span>
+                <span data-plan-geo-note="pentium">Bóveda Contraseñas Gratis + Auditoría SEO/GEO a <strong>195 €</strong> (o <strong>95 € en Plan Anual</strong>).</span>
               </li>
             </ul>
           </div>
-          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20contratar%20el%20Plan%20PYME%20PENTIUM%20%28219%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-3 text-center rounded-xl bg-white/10 hover:bg-teal-700 text-white font-bold text-xs transition-colors">
+          <a id="ctaPlanPentium" href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20contratar%20el%20Plan%20PYME%20PENTIUM%20%28219%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-3 text-center rounded-xl bg-white/10 hover:bg-teal-700 text-white font-bold text-xs transition-colors">
             Elegir PYME Pentium (219 €/m)
           </a>
         </div>
@@ -1016,24 +946,24 @@
             <h3 class="text-xl font-black text-white mb-2">AUDITORÍA <span class="text-teal-300">SEO + GEO</span></h3>
             <div class="flex items-center justify-between gap-2 mb-2.5">
               <div class="flex items-baseline gap-1.5">
-                <span class="text-2xl sm:text-3xl font-black text-emerald-400 leading-none">195 €</span>
-                <span class="text-xs font-semibold text-slate-300">en Combo Dúo+</span>
+                <span class="text-2xl sm:text-3xl font-black text-emerald-400 leading-none" id="precioAuditoriaCard">195 €</span>
+                <span class="text-xs font-semibold text-slate-300" id="etiquetaAuditoriaCard">en Combo Dúo+</span>
               </div>
               <span class="text-[10px] font-bold bg-teal-950 text-teal-200 border border-teal-500/40 px-2 py-0.5 rounded whitespace-nowrap">Suelta: 200€ / 350€</span>
             </div>
-            <p class="text-xs text-slate-300 mb-5 min-h-[32px]">Inyección de código estructurado Schema.org JSON-LD para ser recomendado por las IAs y dominar Google Maps.</p>
+            <p class="text-xs text-slate-300 mb-4">Optimización completa para ser recomendado por las IAs y dominar Google Maps.</p>
             <ul class="text-xs text-slate-200 space-y-2.5 mb-6">
               <li class="flex items-start gap-2">
                 <span class="text-teal-400 font-bold flex-shrink-0">1.</span>
-                <span><strong>Solo Paquete Código (200 €):</strong> escáner 16 parámetros + código JSON-LD para tu informático.</span>
+                <span><strong>Solo Paquete Código (200 €):</strong> escáner 16 parámetros + código listo para tu informático.</span>
               </li>
               <li class="flex items-start gap-2">
                 <span class="text-teal-400 font-bold flex-shrink-0">2.</span>
-                <span><strong>Llave en Mano (350 €):</strong> código (200 €) + nuestra implantación en tu Web y Google Maps (+150 €).</span>
+                <span><strong>Llave en Mano (350 €):</strong> código (200 €) + nuestra implantación en tu Web y Maps (+150 €).</span>
               </li>
               <li class="flex items-start gap-2 text-emerald-300 font-semibold">
                 <span class="flex-shrink-0">3.</span>
-                <span><strong>Con Pack Escudo Total / Dúo+ (195 €):</strong> te regalamos los 150 € de implantación técnica (ahorras 155 €).</span>
+                <span><strong>Con Pack Dúo+ (195 €) o Anual Trinity+ (95 €):</strong> te ahorras la implantación técnica.</span>
               </li>
             </ul>
           </div>
@@ -1142,7 +1072,7 @@
   </section>
 
   <!-- ======================================================================= -->
-  <!-- SECCIÓN: PYME MAGAZINE & PODCAST MULTIMEDIA (LECTURA, AUDIO Y VÍDEO)    -->
+  <!-- SECCIÓN: PYME MAGAZINE & PODCAST MULTIMEDIA (AUTORIDAD MULTISENSORIAL)  -->
   <!-- ======================================================================= -->
   <section id="magazine" class="scroll-mt-24 py-16 md:py-24 bg-gradient-to-b from-slate-950 via-brand-dark to-slate-950 border-t border-white/10 relative overflow-hidden">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
@@ -1431,6 +1361,171 @@
     </div>
   </section>
 
+  <!-- ======================================================================= -->
+  <!-- SECCIÓN II: HOJA DE RUTA DE EXPANSIÓN Y PRÓXIMO DESPLIEGUE (FASE 1)      -->
+  <!-- (REESTRUCTURADO DESPUÉS DE TARIFAS Y MAGAZINE PARA EVITAR LEY DE HICK)  -->
+  <!-- ======================================================================= -->
+  <section id="despliegue" class="scroll-mt-24 py-16 md:py-24 bg-brand-dark/60 border-t border-white/5">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      
+      <div class="text-center max-w-3xl mx-auto mb-14">
+        <div class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 sm:py-1 rounded-2xl sm:rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-xs font-extrabold uppercase tracking-wider mb-3 text-center leading-snug">
+          <span>Hoja de Ruta de Expansión para Clientes <span class="hidden sm:inline">• </span><br class="sm:hidden"><span class="whitespace-nowrap">Reserva Prioritaria Abierta</span></span>
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          II. Próximos Módulos de Ventas, Agenda y Finanzas
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base mt-3">
+          Empieza hoy blindando tu reputación y posicionamiento IA, y amplía el ecosistema de tu negocio cuando quieras. Cada nuevo módulo adicional que sumes a tu plan se integra con tarifa reducida de socio (<strong>+40 €/mes</strong> del 2º al 5º servicio, y <strong>+30 €/mes</strong> a partir del 6º).
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:auto-rows-fr">
+
+        <!-- SERVICIO 3: RESPUESTA LEADS + EXTRACTOR DE PORTALES -->
+        <div class="glow-captacion backdrop-blur-md border border-blue-500/30 hover:border-blue-400/60 rounded-2xl p-6 transition-all flex flex-col justify-between group h-full">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 font-black text-sm flex items-center justify-center border border-blue-500/30">3</span>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-blue-300 bg-blue-950/70 px-2.5 py-0.5 rounded-full border border-blue-700/50">Próximo Despliegue</span>
+              </div>
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/40">Cierre en Caliente</span>
+            </div>
+            
+            <h3 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Leads en 10s + Extractor de Portales</h3>
+            <p class="text-sm text-slate-300 leading-relaxed mb-4">
+              Responder en los primeros 5 minutos multiplica por 4 las ventas. Quien pide presupuesto por tu web, redes sociales, anuncios o correos de portales (Habitissimo, Bodas.net, etc.) recibe un WhatsApp inmediato. A la vez, <strong>te avisamos discretamente al móvil</strong> para llamarle en caliente con su interés al 100%.
+            </p>
+          </div>
+          
+          <div class="pt-4 border-t border-blue-500/30 flex items-center justify-between gap-2 mt-auto">
+            <span class="text-xs font-medium text-blue-300">Adelántate a tu competencia</span>
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20acceso%20prioritario%20al%20Servicio%203%3A%20Leads%20en%2010s%20%2B%20Extractor%20de%20Portales" target="_blank" class="text-xs font-bold text-teal-400 hover:text-teal-300 inline-flex items-center gap-1 whitespace-nowrap flex-shrink-0">
+              <span>Solicitar Acceso Prioritario</span> <span class="flex-shrink-0">&rarr;</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- SERVICIO 4: CITAS ANTI-PLANTÓN + CAMPAÑAS FLASH -->
+        <div class="glow-eficiencia backdrop-blur-md border border-indigo-500/30 hover:border-indigo-400/60 rounded-2xl p-6 transition-all flex flex-col justify-between group h-full">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 font-black text-sm flex items-center justify-center border border-indigo-500/30">4</span>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-300 bg-indigo-950/70 px-2.5 py-0.5 rounded-full border border-indigo-700/50">Próximo Despliegue</span>
+              </div>
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/40">-85% de Ausencias</span>
+            </div>
+            
+            <h3 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Sistema Anti-Plantón + Campañas Flash</h3>
+            <p class="text-sm text-slate-300 leading-relaxed mb-4">
+              Sincronizado con tu calendario: envía un recordatorio automático por WhatsApp 24 horas antes con botones interactivos de <strong>[Confirmar] o [Reubicar]</strong>. Si alguien cancela con antelación, libera el hueco y lanza avisos automáticos a clientes en lista de espera para reasignar la hora vacía al momento.
+            </p>
+          </div>
+          
+          <div class="pt-4 border-t border-indigo-500/30 flex items-center justify-between gap-2 mt-auto">
+            <span class="text-xs font-medium text-indigo-300">Cero horas muertas en agenda</span>
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20acceso%20prioritario%20al%20Servicio%204%3A%20Sistema%20Anti-Plant%C3%B3n%20%2B%20Campa%C3%B1as%20Flash" target="_blank" class="text-xs font-bold text-teal-400 hover:text-teal-300 inline-flex items-center gap-1 whitespace-nowrap flex-shrink-0">
+              <span>Solicitar Acceso Prioritario</span> <span class="flex-shrink-0">&rarr;</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- SERVICIO 5: FACTURAS Y GASTOS AL GESTOR CON IA -->
+        <div class="glow-eficiencia backdrop-blur-md border border-indigo-500/30 hover:border-indigo-400/60 rounded-2xl p-6 transition-all flex flex-col justify-between group h-full md:col-span-2 max-w-2xl mx-auto w-full">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 font-black text-sm flex items-center justify-center border border-indigo-500/30">5</span>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-300 bg-indigo-950/70 px-2.5 py-0.5 rounded-full border border-indigo-700/50">Próximo Despliegue</span>
+              </div>
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/40">Cero Papeles</span>
+            </div>
+            
+            <h3 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Facturas y Gastos al Gestor con IA</h3>
+            <p class="text-sm text-slate-300 leading-relaxed mb-4">
+              Foto al ticket o factura por WhatsApp: la inteligencia artificial extrae fecha, NIF, proveedor, base e IVA en 5 segundos y archiva el documento en la nube de tu gestoría con desglose en Excel. Con el <strong>Add-on Correo opcional</strong>, revisa tu buzón (Gmail/Outlook) y clasifica facturas de compras sola.
+            </p>
+          </div>
+          
+          <div class="pt-4 border-t border-indigo-500/30 flex items-center justify-between gap-2 mt-auto">
+            <span class="text-[11.5px] sm:text-xs font-medium text-indigo-300">
+              <span>No pierdas ni un euro de IVA</span><span class="hidden sm:inline"> deducible</span>
+            </span>
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20acceso%20prioritario%20al%20Servicio%205%3A%20Facturas%20y%20Gastos%20al%20Gestor%20con%20IA" target="_blank" class="text-xs font-bold text-teal-400 hover:text-teal-300 inline-flex items-center gap-1 whitespace-nowrap flex-shrink-0">
+              <span>Solicitar Acceso Prioritario</span> <span class="flex-shrink-0">&rarr;</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- MÓDULO SATÉLITE INSTAGRAM (ACTUALIZADO A +40 €/M EN COMBO Y LENGUAJE FLUIDO) -->
+      <div class="max-w-5xl mx-auto mt-12">
+        <div class="rounded-2xl p-[2px] bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 shadow-2xl shadow-fuchsia-900/30">
+          <div class="rounded-2xl p-6 sm:p-8 bg-slate-950 h-full w-full relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-fuchsia-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+            
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 relative z-10">
+              
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-violet-600 to-fuchsia-600 p-[2px] flex-shrink-0">
+                    <div class="bg-slate-950 w-full h-full rounded-full flex items-center justify-center">
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    </div>
+                  </div>
+                  <div class="text-xs sm:text-sm font-black text-fuchsia-400 tracking-widest uppercase leading-snug">
+                    <span>Módulo Satélite Prémium</span><br class="sm:hidden">
+                    <span class="whitespace-nowrap sm:ml-1.5">(Conexión Oficial Verificada con Instagram)</span>
+                  </div>
+                </div>
+                
+                <h3 class="text-2xl sm:text-3xl font-black text-white mb-3 tracking-tight leading-tight">
+                  <span>INSTAGRAM</span> <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">INTELIGENTE</span><br class="sm:hidden">
+                  <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400 whitespace-nowrap sm:ml-1">3 EN 1</span>
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5 mb-6">
+                  <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-left hover:bg-white/10 transition-colors h-full flex flex-col">
+                    <div class="text-fuchsia-400 font-bold text-xs mb-1.5 uppercase tracking-wider">1. Envío al Comentar</div>
+                    <div class="text-slate-300 text-xs leading-relaxed flex-1">Dices: Escribe «CITA» o «CARTA». El sistema responde al segundo entregando el enlace por privado y disparando el alcance orgánico de tu Reel.</div>
+                  </div>
+                  <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-left hover:bg-white/10 transition-colors h-full flex flex-col">
+                    <div class="text-fuchsia-400 font-bold text-xs mb-1.5 uppercase tracking-wider">2. Recepcionista DMs 24/7</div>
+                    <div class="text-slate-300 text-xs leading-relaxed flex-1">Asistente interactivo que responde dudas frecuentes (precios, carta, ubicación, horarios) y guía hacia la reserva en cualquier momento.</div>
+                  </div>
+                  <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-left hover:bg-white/10 transition-colors h-full flex flex-col">
+                    <div class="text-fuchsia-400 font-bold text-xs mb-1.5 uppercase tracking-wider">3. Regalo por Historias</div>
+                    <div class="text-slate-300 text-xs leading-relaxed flex-1">Si un cliente te menciona en sus Stories, lo detecta al vuelo y le envía un mensaje privado con un detalle exclusivo para incentivar su regreso.</div>
+                  </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center gap-3 mt-2">
+                  <span class="w-full sm:w-auto text-center text-sm font-black text-fuchsia-300 bg-fuchsia-950/60 px-4 sm:px-5 py-2.5 rounded-xl border border-fuchsia-500/40 leading-snug">
+                    <span class="whitespace-nowrap">+40 € / mes</span> <span class="text-xs font-normal opacity-90 block sm:inline sm:ml-1">(Vinculado a cualquier servicio troncal | <span class="whitespace-nowrap">Setup 50%: 75 €</span>)</span>
+                  </span>
+                  <span class="w-full sm:w-auto text-center text-sm font-bold text-white bg-white/10 px-4 sm:px-5 py-2.5 rounded-xl border border-white/20 leading-snug">
+                    <span class="whitespace-nowrap">69 € / mes</span> <span class="text-xs font-normal text-slate-400 block sm:inline sm:ml-1">(Contratado suelto | <span class="whitespace-nowrap">Setup: 150 €</span>)</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="w-full md:w-auto flex-shrink-0 flex justify-center md:justify-end mt-2 md:mt-0">
+                <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20estoy%20interesado%20en%20el%20M%C3%B3dulo%20Sat%C3%A9lite%20de%20Instagram%20Inteligente%203%20en%201" target="_blank" class="w-full md:w-auto text-center inline-flex items-center justify-center gap-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold text-sm px-7 py-4 rounded-xl shadow-lg transition-all hover:scale-105">
+                  Consultar Módulo IG &rarr;
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
   <!-- DOCUMENTACIÓN DESCARGABLE Y TARJETONES -->
   <section class="py-16 bg-slate-950 border-t border-white/5 relative overflow-hidden">
     <div class="absolute inset-0 hero-glow opacity-30"></div>
@@ -1479,7 +1574,7 @@
           <div class="text-3xl mb-3">⚡</div>
           <h4 class="text-base font-bold text-white mb-2">Puesta en Marcha en 24-48h</h4>
           <p class="text-xs text-slate-400 leading-relaxed">
-            Configuramos, conectamos a tu infraestructura e inyectamos el código estructurado SEO+GEO sin interrumpir la actividad comercial de tu local.
+            Configuramos, conectamos a tu infraestructura e implantamos la optimización SEO+GEO sin interrumpir la actividad comercial de tu local.
           </p>
         </div>
 
@@ -1690,6 +1785,71 @@
         menu.classList.add('translate-x-full');
         document.body.style.overflow = '';
       }
+    }
+
+    // CONMUTADOR INTERACTIVO DE TARIFAS MENSUAL / ANUAL (SOLUCIÓN FRICCIÓN 5)
+    function cambiarModoTarifas(modo) {
+      const btnMensual = document.getElementById('btnSwitchMensual');
+      const btnAnual = document.getElementById('btnSwitchAnual');
+      const subtitulo = document.getElementById('subtituloModoTarifas');
+
+      const datosPlanes = {
+        base: {
+          mensual: { price: '59 €', period: '/ mes', pill: 'Cuota Base', sub: 'Puesta en marcha flexible mes a mes.', ctaText: 'Elegir PYME Base (59 €/m)', wa: 'Hola Francisco, quiero contratar el Plan PYME BASE (59 €/mes)' },
+          anual:   { price: '49 €', period: '/ mes eq.', pill: 'Ahorras 118 €/año', sub: '590 €/año (Pagas 10 meses y disfrutas 12)', ctaText: 'Elegir Base Anual (590 €/año)', wa: 'Hola Francisco, quiero contratar el Plan Anual PYME BASE (590 €/año con 2 meses gratis)' }
+        },
+        duo: {
+          mensual: { price: '99 €', period: '/ mes', pill: 'Ahorras 19 €/m', sub: 'Ideal para el <strong>Pack Escudo</strong> (S1 + S2).', ctaText: 'Elegir PYME Dúo (99 €/m)', wa: 'Hola Francisco, quiero contratar el Plan PYME DÚO (99 €/mes)' },
+          anual:   { price: '82,50 €', period: '/ mes eq.', pill: 'Ahorras 198 €/año', sub: '990 €/año (2 meses gratis) + Auditoría GEO a 195 €', ctaText: 'Elegir Dúo Anual (990 €/año)', wa: 'Hola Francisco, quiero contratar el Plan Anual PYME DÚO (990 €/año con 2 meses gratis)' }
+        },
+        trinity: {
+          mensual: { price: '139 €', period: '/ mes', pill: 'Ahorras 38 €/m', sub: 'Equilibrio total: reputación, ventas y ahorro de tiempo.', ctaText: 'Elegir Pack Trinity (139 €/m)', wa: 'Hola Francisco, quiero contratar el Plan PYME TRINITY (139 €/mes)', geoNote: '<strong>Bóveda de Contraseñas Gratis (150 €)</strong> + Auditoría SEO/GEO bonificada a <strong>195 €</strong>.' },
+          anual:   { price: '115,80 €', period: '/ mes eq.', pill: 'Ahorras 278 €/año', sub: '1.390 €/año (2 meses gratis) + GEO a 95 €', ctaText: 'Elegir Trinity Anual (1.390 €/año)', wa: 'Hola Francisco, quiero contratar el Plan Anual PYME TRINITY (1.390 €/año + Auditoría GEO a 95 €)', geoNote: '<strong>¡Ventaja Anual Trinity!</strong> Bóveda Gratis (150 €) + <strong>Auditoría SEO/GEO Llave en Mano por solo 95 €</strong> (ahorras 255 €).' }
+        },
+        quatro: {
+          mensual: { price: '179 €', period: '/ mes', pill: 'Ahorras 57 €/m', sub: 'Automatización avanzada de 4 áreas clave.', ctaText: 'Elegir PYME Quatro (179 €/m)', wa: 'Hola Francisco, quiero contratar el Plan PYME QUATRO (179 €/mes)', geoNote: 'Bóveda Contraseñas Gratis + Auditoría SEO/GEO a <strong>195 €</strong>.' },
+          anual:   { price: '149 €', period: '/ mes eq.', pill: 'Ahorras 358 €/año', sub: '1.790 €/año (2 meses gratis) + GEO a 95 €', ctaText: 'Elegir Quatro Anual (1.790 €/año)', wa: 'Hola Francisco, quiero contratar el Plan Anual PYME QUATRO (1.790 €/año + Auditoría GEO a 95 €)', geoNote: 'Bóveda Gratis + <strong>Auditoría SEO/GEO Llave en Mano por solo 95 €</strong>.' }
+        },
+        pentium: {
+          mensual: { price: '219 €', period: '/ mes', pill: 'Ahorras 76 €/m', sub: 'Cinco motores trabajando 24/7 para tu local.', ctaText: 'Elegir PYME Pentium (219 €/m)', wa: 'Hola Francisco, quiero contratar el Plan PYME PENTIUM (219 €/mes)', geoNote: 'Bóveda Contraseñas Gratis + Auditoría SEO/GEO a <strong>195 €</strong>.' },
+          anual:   { price: '182,50 €', period: '/ mes eq.', pill: 'Ahorras 438 €/año', sub: '2.190 €/año (2 meses gratis) + GEO a 95 €', ctaText: 'Elegir Pentium Anual (2.190 €/año)', wa: 'Hola Francisco, quiero contratar el Plan Anual PYME PENTIUM (2.190 €/año + Auditoría GEO a 95 €)', geoNote: 'Bóveda Gratis + <strong>Auditoría SEO/GEO Llave en Mano por solo 95 €</strong>.' }
+        }
+      };
+
+      if (modo === 'anual') {
+        btnAnual.className = "px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all bg-gradient-to-r from-indigo-600 to-teal-600 text-white shadow-lg flex items-center gap-2";
+        btnMensual.className = "px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-300 hover:text-white";
+        subtitulo.innerHTML = '🎉 Mostrando <strong>Plan Anual (Pagas 10 meses y disfrutas 12)</strong> + <strong>Auditoría SEO/GEO Llave en Mano por solo 95 €</strong> desde Plan Trinity.';
+        document.getElementById('precioAuditoriaCard').textContent = '95 €';
+        document.getElementById('etiquetaAuditoriaCard').textContent = 'en Anual Trinity+';
+      } else {
+        btnMensual.className = "px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all bg-brand-teal text-white shadow-md";
+        btnAnual.className = "px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-300 hover:text-white flex items-center gap-2";
+        subtitulo.innerHTML = 'Mostrando tarifas en <strong>Modalidad Mensual Flexible</strong> (pulsa en «Plan Anual» para ver el descuento de 2 meses gratis y la Auditoría GEO a 95 €).';
+        document.getElementById('precioAuditoriaCard').textContent = '195 €';
+        document.getElementById('etiquetaAuditoriaCard').textContent = 'en Combo Dúo+';
+      }
+
+      Object.keys(datosPlanes).forEach(key => {
+        const info = datosPlanes[key][modo];
+        const elPrice = document.querySelector(`[data-plan-price="${key}"]`);
+        const elPeriod = document.querySelector(`[data-plan-period="${key}"]`);
+        const elPill = document.querySelector(`[data-plan-pill="${key}"]`);
+        const elSub = document.querySelector(`[data-plan-sub="${key}"]`);
+        const elGeoNote = document.querySelector(`[data-plan-geo-note="${key}"]`);
+        const idCta = 'ctaPlan' + key.charAt(0).toUpperCase() + key.slice(1);
+        const elCta = document.getElementById(idCta);
+
+        if (elPrice) elPrice.textContent = info.price;
+        if (elPeriod) elPeriod.textContent = info.period;
+        if (elPill) elPill.textContent = info.pill;
+        if (elSub) elSub.innerHTML = info.sub;
+        if (elGeoNote && info.geoNote) elGeoNote.innerHTML = info.geoNote;
+        if (elCta) {
+          elCta.textContent = info.ctaText;
+          elCta.href = 'https://wa.me/34711547561?text=' + encodeURIComponent(info.wa);
+        }
+      });
     }
 
     const SVG_LOGO_SP_OSCURO = "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 140"><defs><mask id="m"><rect width="210" height="140" fill="white"/><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="black" stroke-width="6.5"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 134" fill="none" stroke="black" stroke-width="6.5" stroke-linecap="round"/><line x1="126.5" y1="38" x2="126.5" y2="128" stroke="black" stroke-width="6.5"/><circle cx="92" cy="19" r="13.5" fill="black"/></mask></defs><g mask="url(#m)"><path d="M 92,26 H 50 C 27,26 27,68 50,68 H 68 C 93,68 93,114 68,114 H 20" fill="none" stroke="#0b5551" stroke-width="21" stroke-linejoin="round"/><path d="M 50,41 H 96 C 105,41 110,26 120,26 H 152 C 185,26 185,84 152,84 H 130" fill="none" stroke="#0b5551" stroke-width="21" stroke-linecap="round" stroke-linejoin="round"/><rect x="116" y="32" width="10.5" height="90" fill="#0b5551"/><rect x="129.5" y="48" width="9.5" height="72" fill="#0b5551"/><rect x="130" y="73.5" width="24" height="21" fill="#0b5551"/></g><circle cx="92" cy="19" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/><circle cx="18" cy="121.5" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/><circle cx="134.5" cy="48" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/><circle cx="134.5" cy="121.5" r="9" fill="#ffffff" stroke="#0b5551" stroke-width="5.5"/></svg>`);
@@ -2124,7 +2284,7 @@
     }
 
     function irSeccionLegal(idElemento) {
-      const el = document.getElementById ? document.getElementId(idElemento) : document.getElementById(idElemento);
+      const el = document.getElementId ? document.getElementId(idElemento) : document.getElementById(idElemento);
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
@@ -2140,7 +2300,6 @@
 
       const header = document.querySelector('header');
       const alturaHeader = header ? header.offsetHeight : 96;
-      // Margen extra de respiro bajo la barra de navegación (22px)
       const margenRespiro = 22;
 
       const elementoObjetivo = (hash === '#auditoria-geo')
