@@ -391,7 +391,8 @@
       <!-- ========================================================================= -->
       <!-- BLOQUE DESTACADO EN VERDE CORPORATIVO: AUDITORÍA PREMIUM SEO + GEO (195€) -->
       <!-- ========================================================================= -->
-      <div id="auditoria-geo" class="scroll-mt-32 md:scroll-mt-36 mt-8 glow-reputacion backdrop-blur-md border-2 border-teal-400/70 rounded-3xl p-6 sm:p-8 lg:p-9 shadow-2xl shadow-teal-950/40 relative overflow-hidden">
+      <div id="auditoria-geo" class="pt-6 -mt-6">
+      <div class="mt-8 glow-reputacion backdrop-blur-md border-2 border-teal-400/70 rounded-3xl p-6 sm:p-8 lg:p-9 shadow-2xl shadow-teal-950/40 relative overflow-hidden">
         <div class="absolute -top-24 -right-24 w-72 h-72 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <!-- Cabecera + Píldora desglosada a la derecha -->
@@ -511,6 +512,7 @@
         <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-teal-500/30 text-xs text-slate-300">
           <span>💡 <strong>Nota de Escalera de Valor:</strong> En contratación suelta o con <strong>Plan Base (1 servicio)</strong> la Auditoría Llave en Mano mantiene su tarifa oficial de <strong>350 €</strong> (500 € de entrada junto al Setup de 150 €). Con el <strong>Pack Escudo Total (2 servicios)</strong> la entrada baja a <strong>420 €</strong> (225 € Setup + 195 € Auditoría): <strong>pagas 80 € menos el primer día llevándote el doble de servicios</strong>.</span>
         </div>
+      </div>
       </div>
 
       <!-- BANNER COMBINADO NEUROMARKETING: PACK ESCUDO BÁSICO VS PACK ESCUDO TOTAL (+ AUDITORÍA 195 €) -->
@@ -1490,7 +1492,7 @@
   </section>
 
   <!-- CIERRE Y LLAMADA A LA ACCIÓN -->
-  <section id="contacto" class="scroll-mt-28 md:scroll-mt-32 pt-24 pb-28 md:pt-28 md:pb-36 bg-gradient-to-b from-brand-dark to-black text-center relative overflow-hidden">
+  <section id="contacto" class="pt-12 pb-28 md:pt-14 md:pb-44 bg-gradient-to-b from-brand-dark to-black text-center relative overflow-hidden">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
       
       <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl bg-black border-2 border-teal-400/60 flex items-center justify-center mx-auto mb-7 shadow-[0_0_35px_rgba(0,216,150,0.32)] p-2.5 overflow-hidden hover:scale-105 transition-all">
@@ -2124,6 +2126,57 @@
 
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') cerrarModalLegal();
+    });
+
+    // CONTROLADOR EXACTO DE SCROLL PARA ANCLAS DEL MENÚ (EVITA CORTES BAJO LA CABECERA FIJA)
+    function irASeccionConOffset(hash, suave = true) {
+      if (!hash || !hash.startsWith('#') || hash === '#') return false;
+      const destino = document.querySelector(hash);
+      if (!destino) return false;
+
+      const header = document.querySelector('header');
+      const alturaHeader = header ? header.offsetHeight : 96;
+      // Margen extra de respiro bajo la barra de navegación (22px)
+      const margenRespiro = 22;
+
+      const elementoObjetivo = (hash === '#auditoria-geo')
+        ? (destino.firstElementChild || destino)
+        : destino;
+
+      const rect = elementoObjetivo.getBoundingClientRect();
+      const topAbsoluto = rect.top + window.pageYOffset;
+      const posicionFinal = Math.max(0, topAbsoluto - alturaHeader - margenRespiro);
+
+      window.scrollTo({
+        top: posicionFinal,
+        behavior: suave ? 'smooth' : 'auto'
+      });
+
+      if (history.pushState) {
+        history.pushState(null, null, hash);
+      }
+      return true;
+    }
+
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest('a[href^="#"]');
+      if (!link) return;
+      const hash = link.getAttribute('href');
+      if (hash && hash.length > 1) {
+        const destino = document.querySelector(hash);
+        if (destino) {
+          e.preventDefault();
+          irASeccionConOffset(hash, true);
+        }
+      }
+    });
+
+    window.addEventListener('load', () => {
+      if (window.location.hash && window.location.hash !== '#play-podcast') {
+        setTimeout(() => {
+          irASeccionConOffset(window.location.hash, false);
+        }, 60);
+      }
     });
 
     window.addEventListener('pageshow', (event) => {
