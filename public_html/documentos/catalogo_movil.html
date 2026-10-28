@@ -154,26 +154,27 @@
     .card-title-wrap {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 5px;
+      width: 100%;
     }
     .card-title {
       font-size: 1.12em;
       font-weight: 900;
       color: #ffffff;
-      line-height: 1.25;
+      line-height: 1.26;
       display: block;
     }
     .card-subtitle {
       display: inline-block;
-      font-size: 0.84em;
+      font-size: 0.83em;
       font-weight: 800;
       color: #5eead4;
       background: rgba(20, 184, 166, 0.14);
       border: 1px solid rgba(20, 184, 166, 0.35);
-      padding: 2px 9px;
+      padding: 3px 10px;
       border-radius: 8px;
       width: fit-content;
-      white-space: nowrap;
+      max-width: 100%;
     }
     .card-subtitle.amber {
       color: #fcd34d;
@@ -190,12 +191,17 @@
       background: rgba(99, 102, 241, 0.16);
       border-color: rgba(99, 102, 241, 0.4);
     }
+    .card-subtitle.pink {
+      color: #f9a8d4;
+      background: rgba(236, 72, 153, 0.16);
+      border-color: rgba(236, 72, 153, 0.4);
+    }
     .price-tag {
       background: rgba(20, 184, 166, 0.18);
       color: #5eead4;
       border: 1px solid rgba(20, 184, 166, 0.4);
       font-weight: 900;
-      font-size: 0.98em;
+      font-size: 0.96em;
       padding: 4px 10px;
       border-radius: 10px;
       white-space: nowrap;
@@ -318,9 +324,9 @@
 
   <main class="container">
     <div class="hero-box">
-      <span class="badge">Dossier Técnico Detallado • 4 Páginas</span>
+      <span class="badge">Dossier Técnico de Funcionamiento</span>
       <h1 class="hero-title">Dossier Completo en Profundidad (Fase 1 y Fase 2)</h1>
-      <p class="hero-sub">Explicación técnica detallada paso a paso de los 10 servicios troncales, el Atril NFC, la Auditoría SEO+GEO IA y los 3 Satélites.</p>
+      <p class="hero-sub">Explicación técnica detallada paso a paso del funcionamiento de los 10 servicios troncales, el Atril NFC, la Auditoría SEO+GEO IA y los 3 Satélites.</p>
     </div>
 
     
@@ -330,17 +336,16 @@
       <div class="card-top">
         <div class="card-title-wrap">
           <span class="card-title">★ Atril Inteligente de Mostrador (NFC + QR)</span>
-          <span class="card-subtitle amber">Hardware Sin Cuotas • Activación en 1 Segundo</span>
+          <span class="card-subtitle amber">Activación Instantánea en 1 Segundo</span>
         </div>
-        <span class="price-tag amber">39 € Único</span>
       </div>
       <p>Soporte físico de metacrilato de alta resistencia con chip inalámbrico NFC NTAG215 integrado y código QR vectorial de alta densidad.</p>
       <div class="deep-box">
         <span class="deep-title amber">⚙️ ¿Cómo funciona exactamente en tu mostrador?</span>
         <ul class="list-check">
-          <li><span class="chk">1.</span><span>Justo en el momento de cobrar o despedir a un cliente contento, le invitas a acercar su teléfono (iPhone o Android) al atril.</span></li>
+          <li><span class="chk">1.</span><span>Justo en el momento de cobrar o despedir a un cliente satisfecho, le invitas a acercar su teléfono (iPhone o Android) al atril.</span></li>
           <li><span class="chk">2.</span><span>Sin abrir la cámara ni buscar tu negocio en Google, la ventana oficial de 5 estrellas de tu ficha se despliega automáticamente en <strong>menos de 1 segundo</strong>.</span></li>
-          <li><span class="chk">3.</span><span>Nuestro servidor registra de forma anónima la métrica de cada escaneo (NFC vs. QR, iPhone vs. Android y franja horaria punta) en tu <strong>Informe Ejecutivo 360°</strong>.</span></li>
+          <li><span class="chk">3.</span><span>Nuestro servidor registra de forma anónima la telemetría de cada escaneo (NFC vs. QR, iPhone vs. Android y franja horaria punta) en tu <strong>Informe Ejecutivo 360°</strong>.</span></li>
         </ul>
       </div>
     </article>
@@ -351,7 +356,6 @@
           <span class="card-title">1. Gestión y Respuesta de Reseñas en Google con IA</span>
           <span class="card-subtitle">Blindaje Jurídico HEARD + RGPD + SEO Local</span>
         </div>
-        <span class="price-tag">59 € / mes</span>
       </div>
       <p>Sistema autónomo conectado a tu perfil de Google Business Profile que monitoriza, redacta y gestiona el 100% de tus reseñas con inteligencia artificial entrenada específicamente con el contexto de tu negocio.</p>
       <div class="deep-box">
@@ -359,8 +363,8 @@
         <ul class="list-check">
           <li><span class="chk">✔</span><span><strong>En Reseñas Positivas (4 y 5★):</strong> El motor detecta el idioma del autor (español, gallego, catalán, inglés, francés, alemán, etc.), redacta una respuesta cálida estructurada en 4 párrafos con las palabras clave de tu especialidad y localidad para impulsar tu SEO en Google Maps y la publica automáticamente.</span></li>
           <li><span class="chk">✔</span><span><strong>En Reseñas Críticas (1 a 3★) o Quejas Ocultas en 4★:</strong> El sistema <strong>bloquea la publicación automática</strong> y te envía al instante una alerta urgente por <strong>WhatsApp, Telegram y Correo HTML</strong>.</span></li>
-          <li><span class="chk">✔</span><span><strong>Gestor Interactivo de 4 Tonos:</strong> Desde tu móvil abres en 1 toque las 4 propuestas redactadas con el protocolo psicológico <strong>HEARD</strong> (<em>Formal, Semiformal, Cercano y Directo</em>), acompañadas de una <strong>Nota Psicológica interna para gerencia</strong> y aviso de riesgo legal.</span></li>
-          <li><span class="chk">✔</span><span><strong>Blindaje Médico/Legal RGPD y Regla Anti-Efecto Loro:</strong> Jamás confirma públicamente patologías ni tratamientos en clínicas (evitando multas de la AEPD) y nunca repite palabras tóxicas del cliente (como «estafa» o «caro») para que Google no las indexe en tu contra.</span></li>
+          <li><span class="chk">✔</span><span><strong>Gestor Interactivo de 4 Tonos:</strong> Desde tu móvil abres en 1 toque las 4 propuestas redactadas con el protocolo psicológico <strong>HEARD</strong> (<em>Formal, Semiformal, Cercano y Directo</em>), acompañadas de una <strong>Nota Psicológica interna para gerencia</strong> y análisis de nivel de riesgo.</span></li>
+          <li><span class="chk">✔</span><span><strong>Blindaje Médico/Legal RGPD y Regla Anti-Efecto Loro:</strong> Jamás confirma públicamente patologías ni tratamientos en clínicas (evitando sanciones de la AEPD) y nunca repite palabras tóxicas del cliente para que Google no las indexe en tu contra.</span></li>
         </ul>
       </div>
     </article>
@@ -371,7 +375,6 @@
           <span class="card-title">2. Filtrado y Captación de Reseñas (Encuesta Inteligente)</span>
           <span class="card-subtitle">Cortafuegos Preventivo por WhatsApp Oficial</span>
         </div>
-        <span class="price-tag">59 € / mes</span>
       </div>
       <p>El escudo definitivo para negocios con cita previa, reservas, reparaciones o entregas. Evita que un malentendido puntual acabe convertido en una reseña de 1 estrella en Google Maps.</p>
       <div class="deep-box">
@@ -390,9 +393,8 @@
       <div class="card-top">
         <div class="card-title-wrap">
           <span class="card-title">🔍 Auditoría e Implantación Premium SEO Local + GEO (IA)</span>
-          <span class="card-subtitle amber">Visibilidad en ChatGPT, Gemini, Perplexity y Google</span>
+          <span class="card-subtitle amber">Visibilidad en ChatGPT, Gemini, Perplexity y Google Maps</span>
         </div>
-        <span class="price-tag amber">195 € en Dúo+</span>
       </div>
       <p>Hoy tus clientes ya no solo buscan en Google: le preguntan directamente a <strong>ChatGPT, Gemini o Perplexity</strong> qué profesional elegir en su localidad. Si tu web no tiene datos estructurados, para la IA eres invisible.</p>
       <div class="deep-box">
@@ -401,7 +403,6 @@
           <li><span class="chk">✔</span><span><strong>Escáner Técnico de 16 Parámetros:</strong> Auditoría completa de indexación, velocidad, autoridad local y brechas frente a tus 3 principales competidores.</span></li>
           <li><span class="chk">✔</span><span><strong>Programación a medida de Código Schema.org JSON-LD:</strong> Inyectamos en el código de tu web las entidades <code>LocalBusiness</code>, <code>MedicalBusiness / LegalService / Store</code>, <code>AggregateRating</code>, coordenadas geográficas, horarios y <code>FAQPage</code> para que los motores de IA lean tus servicios con precisión milimétrica.</span></li>
           <li><span class="chk">✔</span><span><strong>Optimización On-Page y Google Business Profile:</strong> Reescritura estratégica de etiquetas <code>&lt;title&gt;</code>, <code>&lt;meta description&gt;</code>, encabezados <code>H1/H2</code> y textos de categorías/servicios en Google Maps.</span></li>
-          <li><span class="chk">✔</span><span><strong>3 Modalidades:</strong> Solo Paquete Código (200 €), Todo Incluido Llave en Mano (350 €), o <strong>Bonificada a 195 € con Pack Escudo</strong> (y <strong>95 € en Plan Anual Trinity+</strong>).</span></li>
         </ul>
       </div>
     </article>
@@ -414,7 +415,6 @@
           <span class="card-title">3. Leads en 10s + Extractor de Portales</span>
           <span class="card-subtitle blue">Cierre de Presupuestos en Caliente</span>
         </div>
-        <span class="price-tag">+40 €/m</span>
       </div>
       <p>Los estudios de conversión demuestran que contactar a un potencial cliente en los primeros 5 minutos multiplica por 4 la probabilidad de cierre frente a llamarle 2 horas después.</p>
       <div class="deep-box">
@@ -433,14 +433,13 @@
           <span class="card-title">4. Rescate Automático de Llamadas Perdidas</span>
           <span class="card-subtitle blue">Cero Clientes Perdidos hacia la Competencia</span>
         </div>
-        <span class="price-tag">+40 €/m</span>
       </div>
       <p>El 75% de las personas que llaman a un negocio local y no obtienen respuesta no dejan mensaje en el contestador: cuelgan y llaman inmediatamente al siguiente resultado de Google.</p>
       <div class="deep-box">
         <span class="deep-title blue">📞 Funcionamiento Técnico</span>
         <ul class="list-check">
           <li><span class="chk">✔</span><span>Cuando estás atendiendo a un cliente o con las manos ocupadas y entra una llamada móvil que no puedes contestar, el sistema detecta la llamada perdida.</span></li>
-          <li><span class="chk">✔</span><span>A los <strong>5 segundos</strong> le envía un WhatsApp educado: <em>«¡Hola! Te escribimos de [Tu Negocio]. Justo estamos atendiendo en este instante y no pudimos cogerte el teléfono, ¿en qué podemos ayudarte por aquí?»</em>, reteniendo la venta en tu WhatsApp.</span></li>
+          <li><span class="chk">✔</span><span>A los <strong>5 segundos</strong> le envía un WhatsApp educado: <em>«¡Hola! Te escribimos de [Tu Negocio]. Justo estamos atendiendo en este instante y no pudimos cogerte el teléfono, ¿en qué podemos ayudarte por aquí?»</em>, reteniendo la oportunidad comercial en tu WhatsApp.</span></li>
         </ul>
       </div>
     </article>
@@ -451,14 +450,13 @@
           <span class="card-title">5. Reactivación Automática de Clientes Inactivos</span>
           <span class="card-subtitle blue">Ingresos Recurrentes sobre tu Base Actual</span>
         </div>
-        <span class="price-tag">+40 €/m</span>
       </div>
-      <p>Venderle de nuevo a un cliente que ya te conoce es 7 veces más rentable que captar a un desconocido desde cero.</p>
+      <p>Fidelizar a un cliente que ya te conoce es hasta 7 veces más rentable que captar a un desconocido desde cero.</p>
       <div class="deep-box">
         <span class="deep-title blue">🔄 Funcionamiento Técnico</span>
         <ul class="list-check">
           <li><span class="chk">✔</span><span>El sistema audita diariamente tu histórico de visitas o servicios (revisiones anuales de taller/ITV, limpiezas dentales cada 6 meses, sesiones de estética o mantenimiento).</span></li>
-          <li><span class="chk">✔</span><span>Cuando un cliente supera su ciclo habitual (ej. 60, 90 o 180 días sin acudir), recibe un WhatsApp personalizado recordándole su revisión o invitándole con un detalle preferente.</span></li>
+          <li><span class="chk">✔</span><span>Cuando un cliente supera su ciclo habitual (ej. 60, 90 o 180 días sin acudir), recibe un WhatsApp personalizado recordándole su revisión o invitándole con una atención preferente.</span></li>
         </ul>
       </div>
     </article>
@@ -471,9 +469,8 @@
           <span class="card-title">6. Sistema Anti-Plantón + Campañas Flash</span>
           <span class="card-subtitle indigo">Reducción del 85% de Ausencias en Agenda</span>
         </div>
-        <span class="price-tag">+40 €/m</span>
       </div>
-      <p>Cada cita a la que un cliente no acude sin avisar es una hora de facturación perdida que nunca se recupera (4 citas perdidas a la semana a 30 € suponen <strong>480 € perdidos al mes</strong>).</p>
+      <p>Cada cita a la que un cliente no acude sin avisar es una hora de trabajo perdida que nunca se recupera.</p>
       <div class="deep-box">
         <span class="deep-title">📅 Funcionamiento Técnico</span>
         <ul class="list-check">
@@ -489,13 +486,12 @@
           <span class="card-title">7. Centralita de Voz y Citas con IA (24/7)</span>
           <span class="card-subtitle indigo">Recepcionista Telefónico Inteligente</span>
         </div>
-        <span class="price-tag">+40 €/m</span>
       </div>
       <p>Agente telefónico de voz neuronal en español que atiende llamadas simultáneas las 24 horas del día, los 365 días del año.</p>
       <div class="deep-box">
         <span class="deep-title">🎙️ Funcionamiento Técnico</span>
         <ul class="list-check">
-          <li><span class="chk">✔</span><span>Responde con voz humana natural dudas sobre horarios, ubicación, tarifas o servicios de tu negocio.</span></li>
+          <li><span class="chk">✔</span><span>Responde con voz humana natural dudas sobre horarios, ubicación, servicios o especialidades de tu negocio.</span></li>
           <li><span class="chk">✔</span><span>Consulta disponibilidad en tiempo real en tu calendario, agenda la cita y envía confirmación por WhatsApp al cliente.</span></li>
         </ul>
       </div>
@@ -507,7 +503,6 @@
           <span class="card-title">8. Firma de Presupuestos + Onboarding IA</span>
           <span class="card-subtitle indigo">Formalización Legal en 1 Clic</span>
         </div>
-        <span class="price-tag">+40 €/m</span>
       </div>
       <p>Elimina la fricción de imprimir, escanear y perseguir presupuestos pendientes de aceptación.</p>
       <div class="deep-box">
@@ -525,9 +520,8 @@
           <span class="card-title">9. Facturas y Gastos al Gestor con IA</span>
           <span class="card-subtitle indigo">Visión Artificial Contable (+ Add-on Correo)</span>
         </div>
-        <span class="price-tag">+40 €/m</span>
       </div>
-      <p>Olvídate de acumular tickets arrugados en la guantera del coche o perder horas cada trimestre picando facturas.</p>
+      <p>Olvídate de acumular tickets arrugados o perder horas cada trimestre picando facturas a mano.</p>
       <div class="deep-box">
         <span class="deep-title">🧾 Funcionamiento Técnico</span>
         <ul class="list-check">
@@ -544,7 +538,6 @@
           <span class="card-title">10. Anti-Morosidad Diplomático</span>
           <span class="card-subtitle indigo">Recobro Amable (+ Add-on Proveedores)</span>
         </div>
-        <span class="price-tag">+40 €/m</span>
       </div>
       <p>Cobrar a tiempo sin desgastar la relación personal con tu cliente.</p>
       <div class="deep-box">
@@ -562,7 +555,7 @@
       <div class="card-top">
         <div class="card-title-wrap">
           <span class="card-title">📱 Satélite 1: Instagram Inteligente 3 en 1</span>
-          <span class="card-subtitle">Meta Graph API Oficial • +40 €/m en combo (69 €/m suelto)</span>
+          <span class="card-subtitle pink">Meta Graph API Oficial • Captación Orgánica 24/7</span>
         </div>
       </div>
       <ul class="list-check">
@@ -576,7 +569,7 @@
       <div class="card-top">
         <div class="card-title-wrap">
           <span class="card-title">📦 Satélite 2: Escudo Logístico 360</span>
-          <span class="card-subtitle blue">E-commerce y Reparto • +40 €/m en combo (69 €/m suelto)</span>
+          <span class="card-subtitle blue">E-commerce y Reparto • Cero Entregas Fallidas</span>
         </div>
       </div>
       <ul class="list-check">
@@ -590,7 +583,7 @@
       <div class="card-top">
         <div class="card-title-wrap">
           <span class="card-title">🤖 Satélite 3: Redactor Técnico B2B (IA RAG)</span>
-          <span class="card-subtitle indigo">Cerebro Documental Propio • +40 €/m en combo (69 €/m suelto)</span>
+          <span class="card-subtitle indigo">Cerebro Documental Propio • Ahorro de 2h Diarias</span>
         </div>
       </div>
       <ul class="list-check">

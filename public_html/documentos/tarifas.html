@@ -1310,6 +1310,20 @@
     .page-footer-a4 { padding: 3.5mm 15mm; background: var(--slate-50); border-top: 1px solid var(--slate-200); display: flex; justify-content: space-between; align-items: center; font-size: 9.5px; color: var(--slate-600); font-weight: 600; }
     .page-number-a4 { background: var(--slate-200); color: var(--slate-800); width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 800; }
   </style>
+<!-- [SP_PC_SCREEN_ZOOM_START] -->
+<style>
+  @media screen and (min-width: 821px) {
+    .sheet, .page, .a4-page, .a5-sheet, main.sheet {
+      zoom: 1.24;
+    }
+  }
+  @media print {
+    .sheet, .page, .a4-page, .a5-sheet, main.sheet {
+      zoom: 1 !important;
+    }
+  }
+</style>
+<!-- [SP_PC_SCREEN_ZOOM_END] -->
 </head>
 <body>
   <div class="tarjeton-group active">
