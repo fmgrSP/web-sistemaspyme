@@ -16,7 +16,6 @@ def localizar_directorio_public_html():
         if os.path.isdir(r) and os.path.isfile(os.path.join(r, "index.html")):
             return r
 
-    # Búsqueda recursiva en Escritorio si cambiaste el nombre de alguna carpeta
     for esc in [os.path.join(home, "Desktop"), os.path.join(home, "Escritorio")]:
         if not os.path.isdir(esc):
             continue
@@ -27,303 +26,185 @@ def localizar_directorio_public_html():
     return None
 
 
-def construir_bloque_head_seo_geo_llmo():
+def construir_desplegable_auditoria_completo():
     """
-    Genera el bloque completo de Metadatos Hiperlocales, Geo-Tags y el Grafo Conectado
-    Schema.org JSON-LD (@graph: LocalBusiness/ProfessionalService + WebSite + Service + FAQPage)
-    con enlaces sameAs a Wikidata y Wikipedia tal y como exige el documento estratégico GEO/LLMO.
+    Construye el nuevo desplegable técnico de la Auditoría SEO + GEO mucho más completo,
+    estructurado en los 6 pilares de ingeniería del documento oficial.
     """
-    return """  <!-- [SP_GEO_LLMO_HEAD_START] -->
-  <link rel="canonical" href="https://sistemaspyme.es/">
-  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-  <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-  <meta name="author" content="Francisco M. Gallardo — Sistemas Pyme">
-  <meta name="geo.region" content="ES-GA">
-  <meta name="geo.placename" content="Galicia, España">
-  <meta name="geo.position" content="42.88052;-8.54569">
-  <meta name="ICBM" content="42.88052, -8.54569">
-
-  <!-- Open Graph / Social / Co-citación IA -->
-  <meta property="og:type" content="website">
-  <meta property="og:locale" content="es_ES">
-  <meta property="og:site_name" content="Sistemas Pyme">
-  <meta property="og:title" content="Sistemas Pyme | Automatización IA, Reseñas Google Maps y Auditoría SEO Local + GEO en Galicia">
-  <meta property="og:description" content="Consultoría tecnológica líder en Galicia para negocios locales: gestión automática de reseñas en Google con IA (59 €/mes), cortafuegos de quejas por WhatsApp Oficial y Auditoría SEO Local + GEO (LLMO) para salir recomendado en ChatGPT, Gemini y Google Maps.">
-  <meta property="og:url" content="https://sistemaspyme.es/">
-  <meta property="og:image" content="https://sistemaspyme.es/logo.png">
-
-  <!-- Grafo Conectado Schema.org JSON-LD Avanzado (GEO / LLMO / Knowledge Graph con Wikidata sameAs) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": ["ProfessionalService", "LocalBusiness"],
-        "@id": "https://sistemaspyme.es/#localbusiness",
-        "name": "Sistemas Pyme",
-        "alternateName": "Sistemas Pyme — Automatización IA y Posicionamiento GEO Local",
-        "legalName": "Francisco M. Gallardo (Sistemas Pyme)",
-        "taxID": "52938419D",
-        "description": "Consultoría tecnológica especializada en automatización por WhatsApp Business API Oficial, gestión de reseñas en Google Maps con Inteligencia Artificial (método HEARD y blindaje RGPD) y Auditoría e Implantación de SEO Local y Optimización para Motores Generativos (GEO / LLMO: ChatGPT, SearchGPT, Google Gemini y Perplexity) para pymes, clínicas, talleres, hostelería y despachos en Galicia y España.",
-        "url": "https://sistemaspyme.es/",
-        "telephone": "+34 711 54 75 61",
-        "email": "francisco@sistemaspyme.es",
-        "priceRange": "39€ - 350€",
-        "currenciesAccepted": "EUR",
-        "paymentAccepted": "Transferencia Bancaria, Domiciliación SEPA, Bizum Profesional",
-        "image": "https://sistemaspyme.es/perfil.jpeg",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://sistemaspyme.es/logo.png"
-        },
-        "founder": {
-          "@type": "Person",
-          "@id": "https://sistemaspyme.es/#founder",
-          "name": "Francisco M. Gallardo",
-          "jobTitle": "Consultor Senior en Automatización IA, SEO Local y Optimización GEO (LLMO)",
-          "telephone": "+34 711 54 75 61",
-          "email": "francisco@sistemaspyme.es",
-          "url": "https://sistemaspyme.es/tarjeta.html"
-        },
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": "Santa Comba, A Coruña",
-          "addressLocality": "Santiago de Compostela / A Coruña",
-          "addressRegion": "Galicia",
-          "postalCode": "15840",
-          "addressCountry": "ES"
-        },
-        "geo": {
-          "@type": "GeoCoordinates",
-          "latitude": "43.03651",
-          "longitude": "-8.80932"
-        },
-        "openingHoursSpecification": [
-          {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-            "opens": "09:00",
-            "closes": "20:00"
-          }
-        ],
-        "areaServed": [
-          {
-            "@type": "AdministrativeArea",
-            "name": "Galicia",
-            "sameAs": "https://www.wikidata.org/wiki/Q3908"
-          },
-          {
-            "@type": "City",
-            "name": "Santiago de Compostela",
-            "sameAs": "https://www.wikidata.org/wiki/Q14314"
-          },
-          {
-            "@type": "City",
-            "name": "A Coruña",
-            "sameAs": "https://www.wikidata.org/wiki/Q8757"
-          },
-          {
-            "@type": "City",
-            "name": "Vigo",
-            "sameAs": "https://www.wikidata.org/wiki/Q8745"
-          },
-          {
-            "@type": "City",
-            "name": "Pontevedra",
-            "sameAs": "https://www.wikidata.org/wiki/Q12411"
-          },
-          {
-            "@type": "City",
-            "name": "Lugo",
-            "sameAs": "https://www.wikidata.org/wiki/Q11125"
-          },
-          {
-            "@type": "City",
-            "name": "Ourense",
-            "sameAs": "https://www.wikidata.org/wiki/Q99151"
-          },
-          {
-            "@type": "Country",
-            "name": "España",
-            "sameAs": "https://www.wikidata.org/wiki/Q29"
-          }
-        ],
-        "knowsAbout": [
-          {
-            "@type": "Thing",
-            "name": "Posicionamiento en buscadores (SEO Local)",
-            "sameAs": "https://es.wikipedia.org/wiki/Posicionamiento_en_buscadores"
-          },
-          {
-            "@type": "Thing",
-            "name": "Generative Engine Optimization (GEO / LLMO)",
-            "sameAs": "https://www.wikidata.org/wiki/Q125930656"
-          },
-          {
-            "@type": "Thing",
-            "name": "Google Business Profile y Google Maps",
-            "sameAs": "https://www.wikidata.org/wiki/Q19861372"
-          },
-          {
-            "@type": "Thing",
-            "name": "Inteligencia Artificial Generativa y Sistemas RAG",
-            "sameAs": "https://es.wikipedia.org/wiki/Inteligencia_artificial_generativa"
-          },
-          {
-            "@type": "Thing",
-            "name": "WhatsApp Business Cloud API y Automatización de Procesos",
-            "sameAs": "https://www.wikidata.org/wiki/Q1068652"
-          },
-          {
-            "@type": "Thing",
-            "name": "Gestión de la Reputación Online y Método HEARD",
-            "sameAs": "https://es.wikipedia.org/wiki/Gesti%C3%B3n_de_la_reputaci%C3%B3n_en_l%C3%ADnea"
-          }
-        ],
-        "sameAs": [
-          "https://wa.me/34711547561",
-          "https://sistemaspyme.es/tarjeta.html",
-          "https://sistemaspyme.es/articulos/Pyme_Magazine_N1.html"
-        ],
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "5.0",
-          "bestRating": "5",
-          "worstRating": "1",
-          "reviewCount": "48"
-        },
-        "hasOfferCatalog": {
-          "@type": "OfferCatalog",
-          "name": "Catálogo Oficial de Automatización IA y Posicionamiento GEO para Negocios Locales",
-          "itemListElement": [
-            {
-              "@type": "Offer",
-              "name": "Servicio 1: Gestión y Respuesta de Reseñas en Google con IA (HEARD + RGPD)",
-              "description": "Auto-publicación multilingüe en 4-5 estrellas y freno en 1-3 estrellas con alerta a WhatsApp y consola de 4 tonos.",
-              "price": "59.00",
-              "priceCurrency": "EUR"
-            },
-            {
-              "@type": "Offer",
-              "name": "Servicio 2: Filtrado y Captación de Reseñas (Encuesta Cortafuegos por WhatsApp Oficial)",
-              "description": "Encuesta post-visita con 3 botones (Excelente, Bien, Mejorable) que multiplica las 5 estrellas en Google Maps y retiene quejas en privado.",
-              "price": "59.00",
-              "priceCurrency": "EUR"
-            },
-            {
-              "@type": "Offer",
-              "name": "Pack Escudo Básico (Servicio 1 + Servicio 2 Combinados)",
-              "description": "Doble motor activo 24/7: Respuesta de reseñas con IA + Encuesta Cortafuegos por WhatsApp (el 2º módulo suma solo +40 €/mes).",
-              "price": "99.00",
-              "priceCurrency": "EUR"
-            },
-            {
-              "@type": "Offer",
-              "name": "Auditoría e Implantación Premium SEO Local + GEO (LLMO)",
-              "description": "Escáner de 16 parámetros, inyección de Schema.org JSON-LD conectado a Wikidata, optimización de Google Business Profile, Bing Places y apertura a bots de IA (SearchGPT, Gemini, Perplexity).",
-              "price": "195.00",
-              "priceCurrency": "EUR"
-            },
-            {
-              "@type": "Offer",
-              "name": "Atril Inteligente de Mostrador (Chip Inalámbrico NFC + Código QR)",
-              "description": "Soporte físico de metacrilato grabado a medida sin cuotas mensuales que abre la ventana de 5 estrellas de Google Maps en 1 segundo.",
-              "price": "39.00",
-              "priceCurrency": "EUR"
-            }
-          ]
-        }
-      },
-      {
-        "@type": "FAQPage",
-        "@id": "https://sistemaspyme.es/#faqpage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "¿Cómo hacer que mi negocio local aparezca recomendado en ChatGPT, Google Gemini y Google Maps?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Para que ChatGPT (SearchGPT), Google Gemini y Perplexity recomienden tu negocio local necesitas tres pilares técnicos que implantamos en Sistemas Pyme: 1) Inyectar un grafo conectado de datos estructurados Schema.org JSON-LD vinculado a Wikidata (sameAs), 2) Estandarizar tu ficha de Google Business Profile y Bing Places con consistencia estricta NAP+W y permitir el rastreo de bots de IA en robots.txt, y 3) Mantener una velocidad constante de reseñas de 5 estrellas respondidas semánticamente con palabras clave de tu servicio y ciudad."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "¿Cuánto cuesta automatizar las reseñas de Google Maps y el posicionamiento GEO con IA en un negocio local?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "En Sistemas Pyme nuestras tarifas oficiales son 100% transparentes y modulares: activar 1 servicio troncal cuesta 59 €/mes (Setup único de 150 €). Al combinar 2 servicios en el Pack Escudo (Gestión de Reseñas IA + Encuesta Cortafuegos por WhatsApp), el segundo servicio suma solo +40 €/mes (99 €/mes en total, o 82,50 €/mes en Plan Anual con 2 meses gratis). La Auditoría e Implantación SEO Local + GEO cuesta 200 € (solo código), 350 € (llave en mano suelta) o queda bonificada a 195 € de pago único al contratar el Pack Escudo Dúo (y 95 € en Plan Anual Trinity)."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "¿Cómo evitar reseñas negativas de 1 estrella en Google Maps de forma legal con un cortafuegos de WhatsApp?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Nuestro Servicio 2 (Encuesta Inteligente por WhatsApp Business API Oficial) envía un mensaje automático tras la cita o visita con 3 botones: «Excelente», «Bien» y «Mejorable». Si el cliente pulsa «Excelente», recibe el enlace directo para publicar 5 estrellas en Google Maps en un toque. Si pulsa «Bien» o «Mejorable», el cortafuegos frena el envío a Google Maps, le invita a enviar su queja en privado (en texto o nota de voz transcrita por IA) y alerta al móvil del dueño en menos de 15 segundos para solucionarlo internamente."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "¿Qué incluye exactamente la Auditoría e Implantación Premium SEO Local + GEO (LLMO) de Sistemas Pyme?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Incluye un diagnóstico de 16 parámetros técnicos y la implantación llave en mano de: 1) Código Schema.org JSON-LD específico de tu sector con desambiguación de entidades en Wikidata (areaServed y knowsAbout), 2) Optimización de categorías principales y secundarias, catálogo de servicios y atributos en Google Business Profile y Bing Places, 3) Estructura On-Page RAG-Friendly (Title, H1/H2 conversacionales y consistencia NAP+W), y 4) Apertura del archivo robots.txt para OAI-SearchBot, PerplexityBot, Google-Extended y ClaudeBot."
-            }
-          }
-        ]
-      }
-    ]
-  }
-  </script>
-  <!-- [SP_GEO_LLMO_HEAD_END] -->"""
+    return """            <!-- JERGA DE INGENIERO ENCAPSULADA EN DESPLEGABLE TÉCNICO COMPLETO (6 PILARES GEO/LLMO) -->
+            <details class="group bg-black/40 border border-teal-500/40 rounded-xl px-4 py-3 text-xs text-slate-300 cursor-pointer transition-all">
+              <summary class="font-bold text-teal-300 flex items-center justify-between select-none">
+                <span>🛠️ Ver especificaciones técnicas de ingeniería incluidas (Para informáticos, agencias y dirección técnica)</span>
+                <span class="text-teal-400 group-open:rotate-180 transition-transform ml-2">▼</span>
+              </summary>
+              <div class="pt-3 mt-3 border-t border-white/10 text-[11.5px] text-slate-300 leading-relaxed space-y-2.5">
+                <p class="text-teal-200 font-semibold">
+                  Despliegue técnico basado en arquitectura de Entidades Verificadas para el <em>Knowledge Graph</em> de Google y sistemas <strong>RAG (Retrieval-Augmented Generation)</strong> de SearchGPT, Perplexity, Gemini y Claude:
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-1">
+                  <div class="bg-slate-950/80 border border-white/10 rounded-lg p-2.5">
+                    <strong class="text-emerald-400 block mb-0.5">1. Grafo Conectado Schema.org JSON-LD (@graph):</strong>
+                    Inyección de subclase sectorial exacta (<code>Dentist</code>, <code>MedicalClinic</code>, <code>AutoRepair</code>, <code>Restaurant</code>, <code>LegalService</code>...) con nodos <code>@id</code>, <code>GeoCoordinates</code> de alta precisión, <code>hasOfferCatalog</code>, <code>AggregateRating</code>, <code>FAQPage</code> y desambiguación semántica mediante enlaces <code>sameAs</code> hacia <strong>Wikidata y Wikipedia</strong> en <code>areaServed</code> y <code>knowsAbout</code>.
+                  </div>
+                  <div class="bg-slate-950/80 border border-white/10 rounded-lg p-2.5">
+                    <strong class="text-emerald-400 block mb-0.5">2. Reingeniería de GBP, Bing Places y NAP+W:</strong>
+                    Selección quirúrgica de categoría primaria y hasta 9 secundarias en <strong>Google Business Profile</strong>, alta y sincronización en <strong>Bing Places</strong> (índice base de SearchGPT/OpenAI), catálogo de servicios long-tail con precios y estandarización carácter por carácter de tu <strong>NAP+W</strong>.
+                  </div>
+                  <div class="bg-slate-950/80 border border-white/10 rounded-lg p-2.5">
+                    <strong class="text-emerald-400 block mb-0.5">3. Arquitectura On-Page «RAG-Friendly»:</strong>
+                    Optimización de <code>&lt;title&gt;</code>, <code>&lt;meta description&gt;</code>, <code>canonical</code>, geo-tags (<code>ICBM</code> / <code>geo.position</code>) y jerarquía <code>H1/H2/H3</code> que replica prompts conversacionales reales con bloques de respuesta directa en las primeras 40 palabras y datos cuantitativos.
+                  </div>
+                  <div class="bg-slate-950/80 border border-white/10 rounded-lg p-2.5">
+                    <strong class="text-emerald-400 block mb-0.5">4. Apertura a Agentes de IA (robots.txt + llms.txt):</strong>
+                    Configuración de reglas de acceso para permitir la indexación y lectura en tiempo real a <code>OAI-SearchBot</code>, <code>ChatGPT-User</code>, <code>PerplexityBot</code>, <code>Google-Extended</code>, <code>ClaudeBot</code> y <code>bingbot</code>, junto con despliegue del archivo estándar <code>/llms.txt</code> y <code>sitemap.xml</code>.
+                  </div>
+                  <div class="bg-slate-950/80 border border-white/10 rounded-lg p-2.5">
+                    <strong class="text-emerald-400 block mb-0.5">5. Ingeniería de Señales de Reseñas (UGC + Velocity):</strong>
+                    Inducción semántica en solicitudes de reseña para que el usuario mencione servicio y ciudad de forma natural, más respuestas en &lt;24h con co-ocurrencia local.
+                  </div>
+                  <div class="bg-slate-950/80 border border-white/10 rounded-lg p-2.5">
+                    <strong class="text-emerald-400 block mb-0.5">6. Trazabilidad y Atribución Híbrida (UTM &amp; Zero-Click):</strong>
+                    Etiquetado de enlaces (<code>utm_source=google&amp;utm_medium=organic_local</code>) para medir llamadas directas, rutas en Google Maps y referencias desde motores de IA.
+                  </div>
+                </div>
+              </div>
+            </details>"""
 
 
-def construir_seccion_rag_friendly_y_geo():
+def construir_seccion_rag_con_conmutador_dual():
     """
-    Construye una sección visual 'RAG-Friendly' (Chunks de Pregunta-Respuesta Directa en las primeras 40 palabras,
-    Matriz de los 4 Pilares Técnicos del Documento GEO/LLMO y Datos Cuantitativos) lista para ser extraída
-    tanto por clientes humanos como por SearchGPT, Perplexity y Google Gemini.
+    Construye la sección 'Por qué los Motores de IA recomiendan a nuestros clientes' con un
+    conmutador interactivo arriba:
+    - Modo Dueño de Negocio (En Cristiano / Sencillo) -> ACTIVO POR DEFECTO
+    - Modo Informático / Técnico (Ingeniería GEO & RAG)
     """
     return """  <!-- [SP_RAG_FRIENDLY_SECTION_START] -->
   <section id="estrategia-geo-llmo" class="scroll-mt-24 py-14 md:py-20 bg-slate-950/95 border-t border-white/10 relative overflow-hidden">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
 
-      <!-- Cabecera Técnica GEO / LLMO -->
-      <div class="text-center max-w-3xl mx-auto mb-10">
-        <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-500/15 border border-teal-400/40 text-teal-300 text-xs font-extrabold uppercase tracking-wider mb-3">
-          <span>🧠 Ingeniería de Entidades Verificadas • Knowledge Graph &amp; RAG</span>
+      <!-- Cabecera + Conmutador Interactivo (Modo Sencillo vs Modo Informático) -->
+      <div class="text-center max-w-3xl mx-auto mb-8">
+        <span id="badgeTopGeoMode" class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-500/15 border border-teal-400/40 text-teal-300 text-xs font-extrabold uppercase tracking-wider mb-3">
+          <span>🧭 Explicado de Forma Sencilla • Cómo te encuentran más clientes</span>
         </span>
         <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight">
           Por qué los Motores de IA (ChatGPT, Gemini y Perplexity) y Google Maps Recomiendan a Nuestros Clientes
         </h2>
-        <p class="text-slate-300 text-sm sm:text-base mt-3 leading-relaxed">
-          Los motores de Inteligencia Artificial ya no buscan simples palabras clave: usan sistemas <strong>RAG (Generación Aumentada por Recuperación)</strong> que cruzan tu web, tu ficha de Google Maps/Bing Places y el sentimiento de tus reseñas para decidir qué único negocio recomendar en tu ciudad.
+        <p id="introGeoMode" class="text-slate-300 text-sm sm:text-base mt-3 leading-relaxed">
+          Hoy tus clientes ya no solo buscan en Google: también le preguntan directamente a <strong>ChatGPT o al móvil</strong> qué clínica, taller, restaurante o profesional es el más fiable de su zona. Así conseguimos que te elijan a ti:
         </p>
+
+        <!-- BOTÓN CONMUTADOR DUAL: EXPLICACIÓN SENCILLA VS MODO TÉCNICO INFORMÁTICO -->
+        <div class="mt-6 flex flex-col items-center justify-center">
+          <div class="bg-slate-900 p-1.5 rounded-2xl border border-teal-500/40 inline-flex flex-wrap items-center justify-center gap-1.5 shadow-xl">
+            <button type="button" id="btnGeoMundano" onclick="cambiarModoExplicacionGeo('mundano')" class="px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all bg-brand-teal text-white shadow-md flex items-center gap-2">
+              <span>👔</span>
+              <span>Explicación Sencilla (Para Dueños de Negocio)</span>
+            </button>
+            <button type="button" id="btnGeoTecnico" onclick="cambiarModoExplicacionGeo('tecnico')" class="px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-300 hover:text-white flex items-center gap-2">
+              <span>💻</span>
+              <span>Modo Informático / Técnico (Ingeniería IA)</span>
+            </button>
+          </div>
+          <p id="subtituloModoGeo" class="text-[11.5px] text-teal-300 font-semibold mt-2">
+            ✨ Estás viendo la <strong>versión clara y sin tecnicismos</strong>. (Si eres informático o quieres ver qué código tocamos por dentro, pulsa en «Modo Informático»).
+          </p>
+        </div>
       </div>
 
-      <!-- Los 4 Pilares del Informe Estratégico Aplicados en cada Negocio -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-        <article class="bg-slate-900/90 border border-teal-500/30 rounded-2xl p-5 flex flex-col justify-between">
+      <!-- ========================================================================= -->
+      <!-- VISTA 1 (POR DEFECTO): EXPLICACIÓN SENCILLA / MUNDANA PARA DUEÑOS DE PYME -->
+      <!-- ========================================================================= -->
+      <div id="gridPilaresMundano" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+        <article class="bg-slate-900/90 border-2 border-teal-500/40 rounded-2xl p-5 flex flex-col justify-between shadow-lg">
           <div>
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-black uppercase tracking-wider text-teal-400">Pilar 1 • Google &amp; Bing</span>
+              <span class="text-xs font-black uppercase tracking-wider text-teal-300">Paso 1 • Tu Escaparate</span>
+              <span class="text-lg">📍</span>
+            </div>
+            <h3 class="text-base font-black text-white mb-2">Tu Ficha de Google y Mapas al 100%</h3>
+            <p class="text-xs text-slate-200 leading-relaxed">
+              Colocamos tu negocio en las categorías exactas por las que pagan tus mejores clientes, subimos tu catálogo de servicios con precios claros y dejamos tu nombre, dirección y teléfono idénticos en Google, Apple Maps y Bing (el buscador que usa ChatGPT).
+            </p>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-white/10 text-[11px] font-bold text-emerald-400">
+            ✔ Entre un 15% y 25% más de llamadas directas
+          </div>
+        </article>
+
+        <article class="bg-slate-900/90 border-2 border-teal-500/40 rounded-2xl p-5 flex flex-col justify-between shadow-lg">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-black uppercase tracking-wider text-teal-300">Paso 2 • Tu Fama Real</span>
+              <span class="text-lg">⭐</span>
+            </div>
+            <h3 class="text-base font-black text-white mb-2">Reseñas Constantes que Hablan de Ti</h3>
+            <p class="text-xs text-slate-200 leading-relaxed">
+              Conseguimos que tus clientes felices dejen reseñas todas las semanas mencionando qué servicio les hiciste y en qué ciudad estás, y que todas queden respondidas en menos de 24h. Al ver movimiento real y constante, Google te sube al Top 3 de tu zona.
+            </p>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-white/10 text-[11px] font-bold text-emerald-400">
+            ✔ Nota media de 4.8★ o superior asegurada
+          </div>
+        </article>
+
+        <article class="bg-slate-900/90 border-2 border-teal-500/40 rounded-2xl p-5 flex flex-col justify-between shadow-lg">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-black uppercase tracking-wider text-teal-300">Paso 3 • Tu Carné Digital</span>
+              <span class="text-lg">🪪</span>
+            </div>
+            <h3 class="text-base font-black text-white mb-2">Traducimos tu Web al Idioma de las IAs</h3>
+            <p class="text-xs text-slate-200 leading-relaxed">
+              Las Inteligencias Artificiales no "ven" tu web como una persona: necesitan una ficha técnica interna. Se la instalamos a tu web para que Google y ChatGPT sepan sin ninguna duda a qué te dedicas, en qué barrios trabajas y por qué eres la opción más fiable.
+            </p>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-white/10 text-[11px] font-bold text-emerald-400">
+            ✔ Google y ChatGPT entienden tu negocio al 100%
+          </div>
+        </article>
+
+        <article class="bg-slate-900/90 border-2 border-teal-500/40 rounded-2xl p-5 flex flex-col justify-between shadow-lg">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-black uppercase tracking-wider text-teal-300">Paso 4 • Puerta Abierta IA</span>
+              <span class="text-lg">🤖</span>
+            </div>
+            <h3 class="text-base font-black text-white mb-2">Pase VIP para ChatGPT y Gemini</h3>
+            <p class="text-xs text-slate-200 leading-relaxed">
+              Muchas páginas web bloquean sin querer a los robots de ChatGPT y Gemini. Nosotros les abrimos la puerta principal y les dejamos un resumen masticado con tus precios, horarios y ventajas para que te recomienden cuando alguien pregunte en tu ciudad.
+            </p>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-white/10 text-[11px] font-bold text-emerald-400">
+            ✔ Recomendado cuando preguntan a la IA en tu zona
+          </div>
+        </article>
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- VISTA 2 (MODO INFORMÁTICO / TÉCNICO): INGENIERÍA DE ENTIDADES Y RAG       -->
+      <!-- ========================================================================= -->
+      <div id="gridPilaresTecnico" class="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+        <article class="bg-slate-900/90 border border-indigo-400/50 rounded-2xl p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-black uppercase tracking-wider text-indigo-300">Pilar 1 • Google &amp; Bing</span>
               <span class="text-lg">📍</span>
             </div>
             <h3 class="text-base font-black text-white mb-2">Taxonomía GBP, Bing Places y NAP+W</h3>
             <p class="text-xs text-slate-300 leading-relaxed">
-              Selección quirúrgica de tu <strong>categoría principal y hasta 9 secundarias</strong>, catálogo de servicios con precios claros, estandarización carácter por carácter de tu <strong>NAP+W</strong> (Nombre, Dirección, Teléfono y Web) y sincronización con <strong>Bing Places</strong> (el índice del que bebe ChatGPT/SearchGPT).
+              Selección quirúrgica de tu <strong>categoría principal y hasta 9 secundarias</strong>, catálogo de servicios long-tail con precios claros, estandarización carácter por carácter de tu <strong>NAP+W</strong> (Name, Address, Phone + Website) y sincronización con <strong>Bing Places</strong> (el índice del que bebe SearchGPT).
             </p>
           </div>
           <div class="mt-3 pt-2.5 border-t border-white/10 text-[11px] font-bold text-emerald-400">
-            ✔ +15-25% de llamadas y rutas directas
+            ✔ +15-25% en acciones directas GBP (UTM)
           </div>
         </article>
 
-        <article class="bg-slate-900/90 border border-teal-500/30 rounded-2xl p-5 flex flex-col justify-between">
+        <article class="bg-slate-900/90 border border-indigo-400/50 rounded-2xl p-5 flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-black uppercase tracking-wider text-teal-400">Pilar 2 • Review Signals</span>
+              <span class="text-xs font-black uppercase tracking-wider text-indigo-300">Pilar 2 • Review Signals</span>
               <span class="text-lg">⭐</span>
             </div>
             <h3 class="text-base font-black text-white mb-2">Review Velocity y Semántica UGC</h3>
@@ -332,14 +213,14 @@ def construir_seccion_rag_friendly_y_geo():
             </p>
           </div>
           <div class="mt-3 pt-2.5 border-t border-white/10 text-[11px] font-bold text-emerald-400">
-            ✔ Nota media objetivo ≥ 4.8★ sostenida
+            ✔ Nota media objetivo ≥ 4.8★ y SoLV en Geo-Grid
           </div>
         </article>
 
-        <article class="bg-slate-900/90 border border-teal-500/30 rounded-2xl p-5 flex flex-col justify-between">
+        <article class="bg-slate-900/90 border border-indigo-400/50 rounded-2xl p-5 flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-black uppercase tracking-wider text-teal-400">Pilar 3 • Grafo JSON-LD</span>
+              <span class="text-xs font-black uppercase tracking-wider text-indigo-300">Pilar 3 • Grafo JSON-LD</span>
               <span class="text-lg">🧬</span>
             </div>
             <h3 class="text-base font-black text-white mb-2">Schema Conectado a Wikidata (@id)</h3>
@@ -348,19 +229,19 @@ def construir_seccion_rag_friendly_y_geo():
             </p>
           </div>
           <div class="mt-3 pt-2.5 border-t border-white/10 text-[11px] font-bold text-emerald-400">
-            ✔ Entidad verificada sin ambigüedad
+            ✔ Entidad verificada sin ambigüedad semántica
           </div>
         </article>
 
-        <article class="bg-slate-900/90 border border-teal-500/30 rounded-2xl p-5 flex flex-col justify-between">
+        <article class="bg-slate-900/90 border border-indigo-400/50 rounded-2xl p-5 flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-black uppercase tracking-wider text-teal-400">Pilar 4 • Rastreo IA (RAG)</span>
+              <span class="text-xs font-black uppercase tracking-wider text-indigo-300">Pilar 4 • Rastreo IA (RAG)</span>
               <span class="text-lg">🤖</span>
             </div>
             <h3 class="text-base font-black text-white mb-2">Apertura a Bots IA y Chunks RAG</h3>
             <p class="text-xs text-slate-300 leading-relaxed">
-              Configuración de <code>robots.txt</code> y <code>llms.txt</code> autorizando a <strong>OAI-SearchBot, ChatGPT-User, PerplexityBot, Google-Extended y ClaudeBot</strong>, junto con bloques de Pregunta-Respuesta directa y tablas de precios que aumentan un <strong>+40% la citación en IA</strong>.
+              Configuración de <code>robots.txt</code> y <code>llms.txt</code> autorizando a <strong>OAI-SearchBot, ChatGPT-User, PerplexityBot, Google-Extended y ClaudeBot</strong>, junto con bloques de Pregunta-Respuesta directa (&lt;40 palabras) y tablas de precios que aumentan un <strong>+40% la citación en IA</strong>.
             </p>
           </div>
           <div class="mt-3 pt-2.5 border-t border-white/10 text-[11px] font-bold text-emerald-400">
@@ -373,11 +254,11 @@ def construir_seccion_rag_friendly_y_geo():
       <div class="rounded-3xl bg-slate-900/80 border border-white/10 p-6 sm:p-8">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 border-b border-white/10 pb-4">
           <div>
-            <span class="text-[11px] font-extrabold uppercase tracking-widest text-teal-400 block">Respuestas Directas Verificadas (Estructura RAG-Friendly)</span>
+            <span class="text-[11px] font-extrabold uppercase tracking-widest text-teal-400 block">Respuestas Directas Verificadas (Dudas Frecuentes)</span>
             <h2 class="text-xl sm:text-2xl font-black text-white">Preguntas Frecuentes sobre Automatización IA, Reseñas y Posicionamiento GEO Local</h2>
           </div>
           <span class="text-[11px] font-bold text-slate-400 bg-black/40 px-3 py-1 rounded-lg border border-white/10 self-start sm:self-center">
-            Datos indexables en HTML plano + JSON-LD
+            Respuestas claras al grano
           </span>
         </div>
 
@@ -387,7 +268,7 @@ def construir_seccion_rag_friendly_y_geo():
               ¿Cómo hacer que mi negocio local aparezca recomendado en ChatGPT, Google Gemini y Google Maps?
             </h3>
             <p class="text-xs sm:text-[13px] text-slate-200 leading-relaxed">
-              Para ser recomendado por <strong>ChatGPT (SearchGPT), Gemini y Perplexity</strong>, un negocio local debe consolidarse como una <strong>Entidad Verificada</strong> mediante tres acciones: inyectar código estructurado <code>Schema.org JSON-LD</code> conectado a Wikidata, mantener consistencia exacta <strong>NAP+W</strong> entre su web, Google Business Profile y Bing Places, y generar un flujo constante de reseñas de 5★ respondidas con palabras clave de su servicio y ciudad.
+              Para ser recomendado por <strong>ChatGPT (SearchGPT), Gemini y Perplexity</strong>, un negocio local debe consolidarse como una <strong>Entidad Verificada</strong> mediante tres acciones: inyectar código estructurado <code>Schema.org JSON-LD</code> conectado a Wikidata, mantener consistencia exacta de sus datos (Nombre, Dirección, Teléfono y Web) entre Google Business Profile y Bing Places, y generar un flujo constante de reseñas de 5★ respondidas con palabras clave de su servicio y ciudad.
             </p>
           </article>
 
@@ -425,160 +306,48 @@ def construir_seccion_rag_friendly_y_geo():
   <!-- [SP_RAG_FRIENDLY_SECTION_END] -->"""
 
 
-def construir_robots_txt():
-    """
-    Genera el archivo robots.txt siguiendo la sección 3.3 del informe técnico:
-    apertura explícita para OAI-SearchBot, ChatGPT-User, PerplexityBot, Google-Extended,
-    Googlebot, ClaudeBot y Bingbot.
-    """
-    return """# ============================================================================
-# ROBOTS.TXT OFICIAL — SISTEMAS PYME (SEO LOCAL + OPTIMIZACIÓN GEO / LLMO)
-# Autorización explícita para Motores de Búsqueda y Agentes RAG de IA
-# ============================================================================
+def construir_js_conmutador_geo():
+    return """    // CONMUTADOR DE EXPLICACIÓN DE LOS 4 PILARES IA: MUNDANO (DUEÑOS DE PYME) VS TÉCNICO (INFORMÁTICOS)
+    function cambiarModoExplicacionGeo(modo) {
+      const gridMundano = document.getElementById('gridPilaresMundano');
+      const gridTecnico = document.getElementById('gridPilaresTecnico');
+      const btnMundano = document.getElementById('btnGeoMundano');
+      const btnTecnico = document.getElementById('btnGeoTecnico');
+      const badgeTop = document.getElementById('badgeTopGeoMode');
+      const intro = document.getElementById('introGeoMode');
+      const sub = document.getElementById('subtituloModoGeo');
 
-User-agent: *
-Allow: /
-Disallow: /backups_sp/
-Disallow: /Backups/
+      if (!gridMundano || !gridTecnico) return;
 
-# 1. OpenAI / SearchGPT / ChatGPT Navegación en Tiempo Real
-User-agent: OAI-SearchBot
-Allow: /
+      if (modo === 'tecnico') {
+        gridMundano.classList.add('hidden');
+        gridMundano.classList.remove('grid');
+        gridTecnico.classList.remove('hidden');
+        gridTecnico.classList.add('grid');
 
-User-agent: ChatGPT-User
-Allow: /
+        if (btnTecnico) btnTecnico.className = "px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all bg-gradient-to-r from-indigo-600 to-teal-600 text-white shadow-lg flex items-center gap-2";
+        if (btnMundano) btnMundano.className = "px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-300 hover:text-white flex items-center gap-2";
+        if (badgeTop) badgeTop.innerHTML = '<span>🧠 Ingeniería de Entidades Verificadas • Knowledge Graph &amp; RAG</span>';
+        if (intro) intro.innerHTML = 'Los motores de Inteligencia Artificial ya no buscan simples palabras clave: usan sistemas <strong>RAG (Generación Aumentada por Recuperación)</strong> que cruzan tu web, tu ficha de Google Maps/Bing Places y el sentimiento de tus reseñas para decidir qué único negocio recomendar en tu ciudad.';
+        if (sub) sub.innerHTML = '💻 Estás viendo las <strong>especificaciones técnicas avanzadas (SEO Local + GEO / LLMO)</strong>. Pulsa en «Explicación Sencilla» para volver al lenguaje claro.';
+      } else {
+        gridTecnico.classList.add('hidden');
+        gridTecnico.classList.remove('grid');
+        gridMundano.classList.remove('hidden');
+        gridMundano.classList.add('grid');
 
-User-agent: GPTBot
-Allow: /
-
-# 2. Perplexity AI (Motor de Respuesta RAG)
-User-agent: PerplexityBot
-Allow: /
-
-# 3. Google Gemini / AI Overviews & Google Search / Maps
-User-agent: Google-Extended
-Allow: /
-
-User-agent: Googlebot
-Allow: /
-
-# 4. Anthropic / Claude AI
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: anthropic-ai
-Allow: /
-
-# 5. Microsoft Bing (Infraestructura base de SearchGPT y Copilot)
-User-agent: bingbot
-Allow: /
-
-# 6. Apple Maps / Apple Intelligence
-User-agent: Applebot
-Allow: /
-
-Sitemap: https://sistemaspyme.es/sitemap.xml
-"""
-
-
-def construir_llms_txt():
-    """
-    Genera el archivo estándar /llms.txt en la raíz del dominio para que cualquier LLM
-    (ChatGPT, Claude, Perplexity, Gemini) extraiga directamente la ficha técnica, precios,
-    NAP+W y servicios verificados de Sistemas Pyme.
-    """
-    return """# Sistemas Pyme — Automatización con IA, Reputación en Google Maps y Posicionamiento GEO (LLMO)
-
-> Consultoría tecnológica especializada en digitalización táctica, automatización por WhatsApp Business API Oficial, blindaje de reseñas en Google Maps con Inteligencia Artificial y Auditoría e Implantación de SEO Local + Optimización para Motores Generativos (GEO / LLMO) para pymes y negocios locales en Galicia y España.
-
-## Datos Oficiales de Entidad Verificada (NAP+W)
-- **Nombre Comercial:** Sistemas Pyme
-- **Titular / Consultor Senior:** Francisco M. Gallardo (NIF: 52938419D)
-- **Ubicación Principal:** Santa Comba / Santiago de Compostela, A Coruña, Galicia, España (CP 15840)
-- **Área de Servicio:** Galicia (A Coruña, Santiago de Compostela, Vigo, Pontevedra, Lugo, Ourense) y toda España
-- **Teléfono y WhatsApp Oficial:** +34 711 54 75 61
-- **Correo Electrónico:** francisco@sistemaspyme.es
-- **Web Oficial:** https://sistemaspyme.es/
-
-## Soluciones Activas de Implantación Inmediata (24-48h)
-1. **Atril Inteligente de Mostrador (NFC + QR):** 39 € pago único sin cuotas. Abre la pantalla de valoración 5 estrellas de Google Maps en 1 segundo al acercar el móvil.
-2. **Servicio 1 — Gestión y Respuesta de Reseñas en Google con IA:** 59 €/mes (o +40 €/mes combinado). Auto-publica respuestas multilingües con SEO Local en reseñas de 4-5 estrellas y detiene las de 1-3 estrellas enviando alerta a WhatsApp/Telegram/Email con 4 propuestas de tono (Formal, Semiformal, Cercano, Directo) bajo metodología HEARD y blindaje RGPD sanitario/legal.
-3. **Servicio 2 — Filtrado y Captación de Reseñas (Encuesta Cortafuegos por WhatsApp Oficial):** 59 €/mes (o +40 €/mes combinado). Envía encuesta interactiva post-visita con 3 botones (`Excelente`, `Bien`, `Mejorable`). Deriva a los clientes felices a Google Maps y retiene las quejas en privado (texto o nota de voz transcrita por IA).
-4. **Auditoría e Implantación Premium SEO Local + GEO (LLMO):**
-   - **Opción 1 (Solo Paquete de Código):** 200 € pago único.
-   - **Opción 2 (Llave en Mano Suelta o con 1 servicio):** 350 € pago único (200 € código + 150 € implantación).
-   - **Opción 3 (Bonificada con Pack Escudo Dúo o superior):** 195 € pago único (ahorra 155 €) o 95 € en Plan Anual Trinity+.
-
-## Estructura de Planes Modulares Oficiales
-- **Plan PYME BASE (1 Servicio):** 59 €/mes | Setup único: 150 € | Plan Anual (10 meses): 590 €/año.
-- **Plan PYME DÚO / Pack Escudo (2 Servicios):** 99 €/mes | Setup único: 225 € | Plan Anual: 990 €/año + Desbloquea Auditoría GEO a 195 €.
-- **Plan PYME TRINITY (3 Servicios):** 139 €/mes | Setup único: 300 € | Plan Anual: 1.390 €/año + Bóveda de Contraseñas Gratis + Auditoría GEO a 95 € en modalidad anual.
-- **Plan PYME QUATRO (4 Servicios):** 179 €/mes | Setup único: 375 € | Plan Anual: 1.790 €/año.
-- **Plan PYME PENTIUM (5 Servicios):** 219 €/mes | Setup único: 450 € | Plan Anual: 2.190 €/año.
-
-## Documentación Técnica Pública Indexable
-- [Página Principal y Simulador en Vivo](https://sistemaspyme.es/)
-- [Dossier Técnico Completo A4 (10 Servicios + GEO + 3 Satélites)](https://sistemaspyme.es/documentos/catalogo.html)
-- [Tarjetón Oficial de Tarifas y Modalidades](https://sistemaspyme.es/documentos/tarifas.html)
-- [Anexo Técnico de Puesta en Marcha (Setup y GEO)](https://sistemaspyme.es/documentos/setup.html)
-- [Tabla de Desembolso Día 1](https://sistemaspyme.es/documentos/desembolso.html)
-- [Pyme Magazine Nº 1: La Nueva Regla del Boca a Boca en Google Maps](https://sistemaspyme.es/articulos/Pyme_Magazine_N1.html)
-"""
-
-
-def construir_sitemap_xml():
-    fecha_hoy = datetime.now().strftime("%Y-%m-%d")
-    return f"""<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://sistemaspyme.es/</loc>
-    <lastmod>{fecha_hoy}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://sistemaspyme.es/documentos/catalogo.html</loc>
-    <lastmod>{fecha_hoy}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://sistemaspyme.es/documentos/tarifas.html</loc>
-    <lastmod>{fecha_hoy}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://sistemaspyme.es/documentos/setup.html</loc>
-    <lastmod>{fecha_hoy}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://sistemaspyme.es/documentos/desembolso.html</loc>
-    <lastmod>{fecha_hoy}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://sistemaspyme.es/articulos/Pyme_Magazine_N1.html</loc>
-    <lastmod>{fecha_hoy}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://sistemaspyme.es/tarjeta.html</loc>
-    <lastmod>{fecha_hoy}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-</urlset>
-"""
+        if (btnMundano) btnMundano.className = "px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all bg-brand-teal text-white shadow-md flex items-center gap-2";
+        if (btnTecnico) btnTecnico.className = "px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-300 hover:text-white flex items-center gap-2";
+        if (badgeTop) badgeTop.innerHTML = '<span>🧭 Explicado de Forma Sencilla • Cómo te encuentran más clientes</span>';
+        if (intro) intro.innerHTML = 'Hoy tus clientes ya no solo buscan en Google: también le preguntan directamente a <strong>ChatGPT o al móvil</strong> qué clínica, taller, restaurante o profesional es el más fiable de su zona. Así conseguimos que te elijan a ti:';
+        if (sub) sub.innerHTML = '✨ Estás viendo la <strong>versión clara y sin tecnicismos</strong>. (Si eres informático o quieres ver qué código tocamos por dentro, pulsa en «Modo Informático»).';
+      }
+    }"""
 
 
 def ejecutar_actualizacion():
     print("=" * 86)
-    print("🚀 APLICANDO ESTRATEGIA AVANZADA DE SEO LOCAL Y OPTIMIZACIÓN GEO (LLMO) EN TU WEB")
+    print("🚀 ACTUALIZANDO DESPLEGABLE AUDITORÍA, ORDEN DE GARANTÍAS Y BOTÓN MODO SENCILLO/TÉCNICO")
     print("=" * 86)
 
     dir_raiz = localizar_directorio_public_html()
@@ -600,82 +369,76 @@ def ejecutar_actualizacion():
 
     cambios = 0
 
-    # 1. Optimizar <title> y <meta name="description"> siguiendo la regla 3.2 del informe ([Servicio Principal] en [Región] | [Propuesta de Valor] - [Marca])
-    print("🔍 [1/4] Optimizando Title Tag, Meta Description hiperlocal y Grafo Schema.org JSON-LD (@graph + Wikidata sameAs)...")
-    nuevo_title = "<title>Automatización con IA, Reseñas Google Maps y Auditoría SEO Local + GEO en Galicia | Sistemas Pyme</title>"
-    nueva_desc = '<meta name="description" content="Sistemas tácticos de Inteligencia Artificial, Gestión de Reseñas en Google Maps (59 €/mes), Cortafuegos por WhatsApp Oficial y Auditoría SEO Local + GEO (LLMO) en Galicia y España para que tu negocio sea recomendado por ChatGPT, Gemini, Perplexity y Google Maps.">'
+    # 1. Ampliar el desplegable técnico de la Auditoría SEO + GEO con los 6 pilares completos
+    print("🔍 [1/4] Ampliando el desplegable de especificaciones técnicas en la Auditoría SEO + GEO...")
+    patron_details = re.compile(
+        r"<!-- JERGA DE INGENIERO ENCAPSULADA.*?-->\s*<details\b.*?</details>",
+        re.DOTALL
+    )
+    if patron_details.search(html):
+        html = patron_details.sub(construir_desplegable_auditoria_completo(), html, count=1)
+        cambios += 1
+        print("   ✔ Desplegable técnico de la Auditoría ampliado con los 6 bloques de ingeniería GEO/LLMO.")
+    else:
+        # Fallback buscando el summary directamente
+        patron_details_alt = re.compile(
+            r"<details\b[^>]*>\s*<summary[^>]*>\s*<span>🛠️ Ver especificaciones técnicas.*?</details>",
+            re.DOTALL
+        )
+        if patron_details_alt.search(html):
+            html = patron_details_alt.sub(construir_desplegable_auditoria_completo(), html, count=1)
+            cambios += 1
+            print("   ✔ Desplegable técnico de la Auditoría actualizado.")
 
-    if "<title>" in html:
-        html = re.sub(r"<title>.*?</title>", nuevo_title, html, count=1, flags=re.DOTALL)
-    if 'name="description"' in html:
-        html = re.sub(r'<meta\s+name="description"\s+content="[^"]*">', nueva_desc, html, count=1)
+    # 2. Actualizar la sección de los 4 Pilares de la IA con el Conmutador Sencillo / Informático
+    print("🔍 [2/4] Actualizando los 4 pilares de Motores IA con el botón 'Explicación Sencilla' vs 'Modo Informático'...")
+    patron_rag = re.compile(
+        r"<!-- \[SP_RAG_FRIENDLY_SECTION_START\] -->.*?<!-- \[SP_RAG_FRIENDLY_SECTION_END\] -->",
+        re.DOTALL
+    )
+    nueva_seccion_rag = construir_seccion_rag_con_conmutador_dual()
+    if patron_rag.search(html):
+        html = patron_rag.sub(nueva_seccion_rag, html, count=1)
+        cambios += 1
+        print("   ✔ Sección de Motores IA actualizada con el botón conmutador Dual (Sencillo por defecto / Técnico).")
 
-    # Limpiar bloque previo si ya existiera e inyectar antes de </head>
+    # 3. Reubicar "GARANTÍAS Y VENTAJAS OPERATIVAS" justo encima de "CIERRE Y LLAMADA A LA ACCIÓN (#contacto)"
+    print("🔍 [3/4] Moviendo 'Garantías y Ventajas Operativas' justo encima de la sección final de Contacto...")
+    patron_garantias = re.compile(
+        r"\s*<!-- GARANTÍAS OPERATIVAS -->\s*<section\b[^>]*>.*?</section>",
+        re.DOTALL
+    )
+    match_garantias = patron_garantias.search(html)
+    if match_garantias:
+        bloque_garantias = match_garantias.group(0).strip()
+        # Quitamos el bloque de garantías de donde estaba
+        html = patron_garantias.sub("", html, count=1)
+        # Lo insertamos justo antes del cierre de Contacto (#contacto)
+        patron_contacto = re.compile(r"(\s*<!-- CIERRE Y LLAMADA A LA ACCIÓN -->|\s*<section id=\"contacto\")")
+        if patron_contacto.search(html):
+            html = patron_contacto.sub(f"\n\n  {bloque_garantias}\\1", html, count=1)
+            cambios += 1
+            print("   ✔ Sección 'Garantías y Ventajas Operativas' colocada justo encima de Contacto.")
+
+    # 4. Inyectar la función JS cambiarModoExplicacionGeo
+    print("🔍 [4/4] Añadiendo lógica interactiva JavaScript para alternar entre Explicación Sencilla y Modo Informático...")
     html = re.sub(
-        r"\s*<!-- \[SP_GEO_LLMO_HEAD_START\] -->.*?<!-- \[SP_GEO_LLMO_HEAD_END\] -->",
+        r"\s*// CONMUTADOR DE EXPLICACIÓN DE LOS 4 PILARES IA:.*?function cambiarModoExplicacionGeo\(modo\)\s*\{.*?\n    \}",
         "",
         html,
         flags=re.DOTALL
     )
-    bloque_head = construir_bloque_head_seo_geo_llmo()
-    if "</head>" in html:
-        html = html.replace("</head>", f"{bloque_head}\n</head>", 1)
+    js_geo = construir_js_conmutador_geo()
+    if "function cambiarModoTarifas(modo)" in html:
+        html = html.replace("function cambiarModoTarifas(modo)", f"{js_geo}\n\n    function cambiarModoTarifas(modo)", 1)
         cambios += 1
-        print("   ✔ Grafo Schema.org JSON-LD (@id, GeoCoordinates, Wikidata areaServed/knowsAbout y FAQPage) inyectado en <head>.")
-
-    # 2. Insertar la sección visible RAG-Friendly (4 Pilares GEO + Preguntas Frecuentes Directas H2/H3)
-    print("🔍 [2/4] Inyectando bloque visible 'RAG-Friendly' (Pilar GEO/LLMO + Preguntas Frecuentes Directas)...")
-    html = re.sub(
-        r"\s*<!-- \[SP_RAG_FRIENDLY_SECTION_START\] -->.*?<!-- \[SP_RAG_FRIENDLY_SECTION_END\] -->",
-        "",
-        html,
-        flags=re.DOTALL
-    )
-    seccion_rag = construir_seccion_rag_friendly_y_geo()
-    # Insertarlo justo antes del cierre de contacto (#contacto) o del footer
-    patron_contacto = re.compile(r'(\s*<!-- CIERRE Y LLAMADA A LA ACCIÓN -->|\s*<section id="contacto")')
-    if patron_contacto.search(html):
-        html = patron_contacto.sub(f"\n{seccion_rag}\\1", html, count=1)
-        cambios += 1
-        print("   ✔ Sección RAG-Friendly (4 Pilares + FAQs conversacionales en <40 palabras) añadida antes de Contacto.")
-    elif "<footer" in html:
-        html = html.replace("<footer", f"{seccion_rag}\n\n  <footer", 1)
-        cambios += 1
-
-    # 3. Estandarizar el bloque NAP+W en el footer con microdatos semánticos legibles por bots
-    print("🔍 [3/4] Estandarizando consistencia estricta NAP+W en el pie de página...")
-    viejo_nap = '<p class="mt-0.5">Consultoría Tecnológica, Posicionamiento GEO IA y Automatización para Negocios • Galicia, España</p>'
-    nuevo_nap = (
-        '<p class="mt-0.5 text-slate-300"><strong>NAP+W Oficial Verificado:</strong> Sistemas Pyme • '
-        'Santa Comba / Área de Santiago de Compostela y A Coruña (CP 15840, Galicia, España) • '
-        'Tel: <a href="tel:+34711547561" class="text-teal-400 hover:underline">+34 711 54 75 61</a> • '
-        'Web: <a href="https://sistemaspyme.es/" class="text-teal-400 hover:underline">https://sistemaspyme.es</a></p>'
-    )
-    if viejo_nap in html:
-        html = html.replace(viejo_nap, nuevo_nap, 1)
-        cambios += 1
-        print("   ✔ Bloque NAP+W estandarizado en el footer.")
+        print("   ✔ Función 'cambiarModoExplicacionGeo' inyectada correctamente.")
 
     with open(ruta_index, "w", encoding="utf-8") as f:
         f.write(html)
 
-    # 4. Generar archivos técnicos de rastreo para Agentes de IA: robots.txt, llms.txt y sitemap.xml
-    print("🔍 [4/4] Generando 'robots.txt' (apertura a OAI-SearchBot, PerplexityBot, Google-Extended, ClaudeBot y Bingbot), 'llms.txt' y 'sitemap.xml'...")
-    ruta_robots = os.path.join(dir_raiz, "robots.txt")
-    with open(ruta_robots, "w", encoding="utf-8") as f:
-        f.write(construir_robots_txt())
-
-    ruta_llms = os.path.join(dir_raiz, "llms.txt")
-    with open(ruta_llms, "w", encoding="utf-8") as f:
-        f.write(construir_llms_txt())
-
-    ruta_sitemap = os.path.join(dir_raiz, "sitemap.xml")
-    with open(ruta_sitemap, "w", encoding="utf-8") as f:
-        f.write(construir_sitemap_xml())
-
-    print("   ✔ Archivos 'robots.txt', 'llms.txt' y 'sitemap.xml' creados en public_html.")
     print("=" * 86)
-    print(f"🎉 PROCESO COMPLETADO: '{ruta_index}' actualizado ({cambios} bloques inyectados) + 3 archivos de indexación IA creados.")
+    print(f"🎉 PROCESO COMPLETADO: '{ruta_index}' actualizado con éxito ({cambios} mejoras aplicadas).")
     print("=" * 86)
 
 
