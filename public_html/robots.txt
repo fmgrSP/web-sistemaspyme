@@ -1,0 +1,47 @@
+# ============================================================================
+# ROBOTS.TXT OFICIAL — SISTEMAS PYME (SEO LOCAL + OPTIMIZACIÓN GEO / LLMO)
+# Autorización explícita para Motores de Búsqueda y Agentes RAG de IA
+# ============================================================================
+
+User-agent: *
+Allow: /
+Disallow: /backups_sp/
+Disallow: /Backups/
+
+# 1. OpenAI / SearchGPT / ChatGPT Navegación en Tiempo Real
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+# 2. Perplexity AI (Motor de Respuesta RAG)
+User-agent: PerplexityBot
+Allow: /
+
+# 3. Google Gemini / AI Overviews & Google Search / Maps
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+# 4. Anthropic / Claude AI
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# 5. Microsoft Bing (Infraestructura base de SearchGPT y Copilot)
+User-agent: bingbot
+Allow: /
+
+# 6. Apple Maps / Apple Intelligence
+User-agent: Applebot
+Allow: /
+
+Sitemap: https://sistemaspyme.es/sitemap.xml

@@ -15,1192 +15,668 @@ def localizar_directorio_public_html():
     for r in rutas_directas:
         if os.path.isdir(r) and os.path.isfile(os.path.join(r, "index.html")):
             return r
+
+    # Búsqueda recursiva en Escritorio si cambiaste el nombre de alguna carpeta
+    for esc in [os.path.join(home, "Desktop"), os.path.join(home, "Escritorio")]:
+        if not os.path.isdir(esc):
+            continue
+        for raiz, dirs, archivos in os.walk(esc):
+            dirs[:] = [d for d in dirs if not d.startswith(".") and d not in ("backups_sp", "Backups", "node_modules")]
+            if "index.html" in archivos and os.path.basename(raiz) == "public_html":
+                return raiz
     return None
 
 
-def construir_dossier_a4_pc_completo():
+def construir_bloque_head_seo_geo_llmo():
     """
-    Construye documentos/catalogo.html (Versión Ordenador e Impresión A4 de 4 Páginas):
-    - Descripciones aún más amplias y detalladas en las 4 páginas, con especial profundidad en las Páginas 3 y 4.
-    - En Páginas 3 y 4 cada subcaja tiene entre 2 y 3 viñetas técnicas explicadas paso a paso y rellena el 100% de la hoja A4 sin huecos vacíos.
-    - 100% libre de precios comerciales.
+    Genera el bloque completo de Metadatos Hiperlocales, Geo-Tags y el Grafo Conectado
+    Schema.org JSON-LD (@graph: LocalBusiness/ProfessionalService + WebSite + Service + FAQPage)
+    con enlaces sameAs a Wikidata y Wikipedia tal y como exige el documento estratégico GEO/LLMO.
     """
-    return """<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Dossier Técnico Completo en Profundidad (4 Págs. A4) — Sistemas Pyme</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- [SP_SMART_REDIRECT_START] -->
-  <script>
-    (function() {
-      try {
-        var params = new URLSearchParams(window.location.search);
-        if (params.get('modo') === 'impreso') return;
-        var esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth > 0 && window.innerWidth <= 820);
-        if (esMovil) {
-          window.location.replace('catalogo_movil.html');
+    return """  <!-- [SP_GEO_LLMO_HEAD_START] -->
+  <link rel="canonical" href="https://sistemaspyme.es/">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="author" content="Francisco M. Gallardo — Sistemas Pyme">
+  <meta name="geo.region" content="ES-GA">
+  <meta name="geo.placename" content="Galicia, España">
+  <meta name="geo.position" content="42.88052;-8.54569">
+  <meta name="ICBM" content="42.88052, -8.54569">
+
+  <!-- Open Graph / Social / Co-citación IA -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_ES">
+  <meta property="og:site_name" content="Sistemas Pyme">
+  <meta property="og:title" content="Sistemas Pyme | Automatización IA, Reseñas Google Maps y Auditoría SEO Local + GEO en Galicia">
+  <meta property="og:description" content="Consultoría tecnológica líder en Galicia para negocios locales: gestión automática de reseñas en Google con IA (59 €/mes), cortafuegos de quejas por WhatsApp Oficial y Auditoría SEO Local + GEO (LLMO) para salir recomendado en ChatGPT, Gemini y Google Maps.">
+  <meta property="og:url" content="https://sistemaspyme.es/">
+  <meta property="og:image" content="https://sistemaspyme.es/logo.png">
+
+  <!-- Grafo Conectado Schema.org JSON-LD Avanzado (GEO / LLMO / Knowledge Graph con Wikidata sameAs) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": ["ProfessionalService", "LocalBusiness"],
+        "@id": "https://sistemaspyme.es/#localbusiness",
+        "name": "Sistemas Pyme",
+        "alternateName": "Sistemas Pyme — Automatización IA y Posicionamiento GEO Local",
+        "legalName": "Francisco M. Gallardo (Sistemas Pyme)",
+        "taxID": "52938419D",
+        "description": "Consultoría tecnológica especializada en automatización por WhatsApp Business API Oficial, gestión de reseñas en Google Maps con Inteligencia Artificial (método HEARD y blindaje RGPD) y Auditoría e Implantación de SEO Local y Optimización para Motores Generativos (GEO / LLMO: ChatGPT, SearchGPT, Google Gemini y Perplexity) para pymes, clínicas, talleres, hostelería y despachos en Galicia y España.",
+        "url": "https://sistemaspyme.es/",
+        "telephone": "+34 711 54 75 61",
+        "email": "francisco@sistemaspyme.es",
+        "priceRange": "39€ - 350€",
+        "currenciesAccepted": "EUR",
+        "paymentAccepted": "Transferencia Bancaria, Domiciliación SEPA, Bizum Profesional",
+        "image": "https://sistemaspyme.es/perfil.jpeg",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://sistemaspyme.es/logo.png"
+        },
+        "founder": {
+          "@type": "Person",
+          "@id": "https://sistemaspyme.es/#founder",
+          "name": "Francisco M. Gallardo",
+          "jobTitle": "Consultor Senior en Automatización IA, SEO Local y Optimización GEO (LLMO)",
+          "telephone": "+34 711 54 75 61",
+          "email": "francisco@sistemaspyme.es",
+          "url": "https://sistemaspyme.es/tarjeta.html"
+        },
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Santa Comba, A Coruña",
+          "addressLocality": "Santiago de Compostela / A Coruña",
+          "addressRegion": "Galicia",
+          "postalCode": "15840",
+          "addressCountry": "ES"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "43.03651",
+          "longitude": "-8.80932"
+        },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+            "opens": "09:00",
+            "closes": "20:00"
+          }
+        ],
+        "areaServed": [
+          {
+            "@type": "AdministrativeArea",
+            "name": "Galicia",
+            "sameAs": "https://www.wikidata.org/wiki/Q3908"
+          },
+          {
+            "@type": "City",
+            "name": "Santiago de Compostela",
+            "sameAs": "https://www.wikidata.org/wiki/Q14314"
+          },
+          {
+            "@type": "City",
+            "name": "A Coruña",
+            "sameAs": "https://www.wikidata.org/wiki/Q8757"
+          },
+          {
+            "@type": "City",
+            "name": "Vigo",
+            "sameAs": "https://www.wikidata.org/wiki/Q8745"
+          },
+          {
+            "@type": "City",
+            "name": "Pontevedra",
+            "sameAs": "https://www.wikidata.org/wiki/Q12411"
+          },
+          {
+            "@type": "City",
+            "name": "Lugo",
+            "sameAs": "https://www.wikidata.org/wiki/Q11125"
+          },
+          {
+            "@type": "City",
+            "name": "Ourense",
+            "sameAs": "https://www.wikidata.org/wiki/Q99151"
+          },
+          {
+            "@type": "Country",
+            "name": "España",
+            "sameAs": "https://www.wikidata.org/wiki/Q29"
+          }
+        ],
+        "knowsAbout": [
+          {
+            "@type": "Thing",
+            "name": "Posicionamiento en buscadores (SEO Local)",
+            "sameAs": "https://es.wikipedia.org/wiki/Posicionamiento_en_buscadores"
+          },
+          {
+            "@type": "Thing",
+            "name": "Generative Engine Optimization (GEO / LLMO)",
+            "sameAs": "https://www.wikidata.org/wiki/Q125930656"
+          },
+          {
+            "@type": "Thing",
+            "name": "Google Business Profile y Google Maps",
+            "sameAs": "https://www.wikidata.org/wiki/Q19861372"
+          },
+          {
+            "@type": "Thing",
+            "name": "Inteligencia Artificial Generativa y Sistemas RAG",
+            "sameAs": "https://es.wikipedia.org/wiki/Inteligencia_artificial_generativa"
+          },
+          {
+            "@type": "Thing",
+            "name": "WhatsApp Business Cloud API y Automatización de Procesos",
+            "sameAs": "https://www.wikidata.org/wiki/Q1068652"
+          },
+          {
+            "@type": "Thing",
+            "name": "Gestión de la Reputación Online y Método HEARD",
+            "sameAs": "https://es.wikipedia.org/wiki/Gesti%C3%B3n_de_la_reputaci%C3%B3n_en_l%C3%ADnea"
+          }
+        ],
+        "sameAs": [
+          "https://wa.me/34711547561",
+          "https://sistemaspyme.es/tarjeta.html",
+          "https://sistemaspyme.es/articulos/Pyme_Magazine_N1.html"
+        ],
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "5.0",
+          "bestRating": "5",
+          "worstRating": "1",
+          "reviewCount": "48"
+        },
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Catálogo Oficial de Automatización IA y Posicionamiento GEO para Negocios Locales",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "name": "Servicio 1: Gestión y Respuesta de Reseñas en Google con IA (HEARD + RGPD)",
+              "description": "Auto-publicación multilingüe en 4-5 estrellas y freno en 1-3 estrellas con alerta a WhatsApp y consola de 4 tonos.",
+              "price": "59.00",
+              "priceCurrency": "EUR"
+            },
+            {
+              "@type": "Offer",
+              "name": "Servicio 2: Filtrado y Captación de Reseñas (Encuesta Cortafuegos por WhatsApp Oficial)",
+              "description": "Encuesta post-visita con 3 botones (Excelente, Bien, Mejorable) que multiplica las 5 estrellas en Google Maps y retiene quejas en privado.",
+              "price": "59.00",
+              "priceCurrency": "EUR"
+            },
+            {
+              "@type": "Offer",
+              "name": "Pack Escudo Básico (Servicio 1 + Servicio 2 Combinados)",
+              "description": "Doble motor activo 24/7: Respuesta de reseñas con IA + Encuesta Cortafuegos por WhatsApp (el 2º módulo suma solo +40 €/mes).",
+              "price": "99.00",
+              "priceCurrency": "EUR"
+            },
+            {
+              "@type": "Offer",
+              "name": "Auditoría e Implantación Premium SEO Local + GEO (LLMO)",
+              "description": "Escáner de 16 parámetros, inyección de Schema.org JSON-LD conectado a Wikidata, optimización de Google Business Profile, Bing Places y apertura a bots de IA (SearchGPT, Gemini, Perplexity).",
+              "price": "195.00",
+              "priceCurrency": "EUR"
+            },
+            {
+              "@type": "Offer",
+              "name": "Atril Inteligente de Mostrador (Chip Inalámbrico NFC + Código QR)",
+              "description": "Soporte físico de metacrilato grabado a medida sin cuotas mensuales que abre la ventana de 5 estrellas de Google Maps en 1 segundo.",
+              "price": "39.00",
+              "priceCurrency": "EUR"
+            }
+          ]
         }
-      } catch(e) {}
-    })();
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://sistemaspyme.es/#faqpage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Cómo hacer que mi negocio local aparezca recomendado en ChatGPT, Google Gemini y Google Maps?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Para que ChatGPT (SearchGPT), Google Gemini y Perplexity recomienden tu negocio local necesitas tres pilares técnicos que implantamos en Sistemas Pyme: 1) Inyectar un grafo conectado de datos estructurados Schema.org JSON-LD vinculado a Wikidata (sameAs), 2) Estandarizar tu ficha de Google Business Profile y Bing Places con consistencia estricta NAP+W y permitir el rastreo de bots de IA en robots.txt, y 3) Mantener una velocidad constante de reseñas de 5 estrellas respondidas semánticamente con palabras clave de tu servicio y ciudad."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Cuánto cuesta automatizar las reseñas de Google Maps y el posicionamiento GEO con IA en un negocio local?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "En Sistemas Pyme nuestras tarifas oficiales son 100% transparentes y modulares: activar 1 servicio troncal cuesta 59 €/mes (Setup único de 150 €). Al combinar 2 servicios en el Pack Escudo (Gestión de Reseñas IA + Encuesta Cortafuegos por WhatsApp), el segundo servicio suma solo +40 €/mes (99 €/mes en total, o 82,50 €/mes en Plan Anual con 2 meses gratis). La Auditoría e Implantación SEO Local + GEO cuesta 200 € (solo código), 350 € (llave en mano suelta) o queda bonificada a 195 € de pago único al contratar el Pack Escudo Dúo (y 95 € en Plan Anual Trinity)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Cómo evitar reseñas negativas de 1 estrella en Google Maps de forma legal con un cortafuegos de WhatsApp?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Nuestro Servicio 2 (Encuesta Inteligente por WhatsApp Business API Oficial) envía un mensaje automático tras la cita o visita con 3 botones: «Excelente», «Bien» y «Mejorable». Si el cliente pulsa «Excelente», recibe el enlace directo para publicar 5 estrellas en Google Maps en un toque. Si pulsa «Bien» o «Mejorable», el cortafuegos frena el envío a Google Maps, le invita a enviar su queja en privado (en texto o nota de voz transcrita por IA) y alerta al móvil del dueño en menos de 15 segundos para solucionarlo internamente."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Qué incluye exactamente la Auditoría e Implantación Premium SEO Local + GEO (LLMO) de Sistemas Pyme?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Incluye un diagnóstico de 16 parámetros técnicos y la implantación llave en mano de: 1) Código Schema.org JSON-LD específico de tu sector con desambiguación de entidades en Wikidata (areaServed y knowsAbout), 2) Optimización de categorías principales y secundarias, catálogo de servicios y atributos en Google Business Profile y Bing Places, 3) Estructura On-Page RAG-Friendly (Title, H1/H2 conversacionales y consistencia NAP+W), y 4) Apertura del archivo robots.txt para OAI-SearchBot, PerplexityBot, Google-Extended y ClaudeBot."
+            }
+          }
+        ]
+      }
+    ]
+  }
   </script>
-  <!-- [SP_SMART_REDIRECT_END] -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
-  <style>
-    @page {
-      size: A4 portrait;
-      margin: 0;
-    }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #071629;
-      color: #0f172a;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 28px;
-      padding: 24px 0 56px 0;
-    }
-    .topbar-pc {
-      position: sticky;
-      top: 12px;
-      z-index: 100;
-      background: rgba(11, 37, 69, 0.96);
-      backdrop-filter: blur(12px);
-      border: 1.5px solid rgba(20, 184, 166, 0.5);
-      border-radius: 14px;
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      width: 92%;
-      max-width: 980px;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
-      color: #ffffff;
-    }
-    .topbar-title {
-      font-size: 13.5px;
-      font-weight: 800;
-      color: #f1f5f9;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .btn-pc {
-      background: #0d7d74;
-      color: #ffffff;
-      border: 1px solid #14b8a6;
-      padding: 8px 16px;
-      border-radius: 9px;
-      font-size: 12.5px;
-      font-weight: 800;
-      text-decoration: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
-    }
-    .btn-pc:hover {
-      background: #0f766e;
-      transform: translateY(-1px);
-    }
-    .btn-pc.secondary {
-      background: #1e293b;
-      border-color: #475569;
-      color: #cbd5e1;
-    }
-    .btn-pc.secondary:hover {
-      background: #334155;
-      color: #ffffff;
-    }
+  <!-- [SP_GEO_LLMO_HEAD_END] -->"""
 
-    /* PÁGINA A4 OFICIAL (210mm x 297mm) */
-    .a4-page {
-      width: 210mm;
-      height: 297mm;
-      min-height: 297mm;
-      max-height: 297mm;
-      background: #ffffff;
-      padding: 8.5mm 11.5mm 7.5mm 11.5mm;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
-      page-break-after: always;
-      page-break-inside: avoid;
-      overflow: hidden;
-      position: relative;
-    }
-    @media screen and (min-width: 821px) {
-      .a4-page {
-        zoom: 1.24;
-      }
-    }
-    @media print {
-      body {
-        background: none !important;
-        padding: 0 !important;
-        gap: 0 !important;
-      }
-      .no-print {
-        display: none !important;
-      }
-      .a4-page {
-        box-shadow: none !important;
-        margin: 0 !important;
-        zoom: 1 !important;
-        width: 210mm !important;
-        height: 297mm !important;
-        max-height: 297mm !important;
-        page-break-after: always !important;
-      }
-    }
 
-    /* CABECERA DE PÁGINA A4 */
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 2.2px solid #0b2545;
-      padding-bottom: 4.5px;
-      margin-bottom: 5.5px;
-    }
-    .brand-logo {
-      max-height: 46px;
-      width: auto;
-      object-fit: contain;
-    }
-    .header-meta {
-      text-align: right;
-    }
-    .header-meta .doc-tag {
-      font-size: 8.6px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      color: #0f766e;
-      display: block;
-    }
-    .header-meta .doc-title {
-      font-size: 12.4px;
-      font-weight: 900;
-      color: #0b2545;
-      line-height: 1.18;
-    }
-    .header-meta .doc-sub {
-      font-size: 8.4px;
-      font-weight: 600;
-      color: #475569;
-    }
+def construir_seccion_rag_friendly_y_geo():
+    """
+    Construye una sección visual 'RAG-Friendly' (Chunks de Pregunta-Respuesta Directa en las primeras 40 palabras,
+    Matriz de los 4 Pilares Técnicos del Documento GEO/LLMO y Datos Cuantitativos) lista para ser extraída
+    tanto por clientes humanos como por SearchGPT, Perplexity y Google Gemini.
+    """
+    return """  <!-- [SP_RAG_FRIENDLY_SECTION_START] -->
+  <section id="estrategia-geo-llmo" class="scroll-mt-24 py-14 md:py-20 bg-slate-950/95 border-t border-white/10 relative overflow-hidden">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
 
-    /* BANNER DE CATEGORÍA */
-    .cat-banner {
-      background: linear-gradient(90deg, #0f766e 0%, #14b8a6 100%);
-      color: #ffffff;
-      padding: 5.5px 11px;
-      border-radius: 5.5px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 5.5px;
-    }
-    .cat-banner.blue {
-      background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%);
-    }
-    .cat-banner.indigo {
-      background: linear-gradient(90deg, #312e81 0%, #4f46e5 100%);
-    }
-    .cat-banner.pink {
-      background: linear-gradient(90deg, #831843 0%, #0369a1 52%, #4338ca 100%);
-    }
-    .cat-banner h2 {
-      font-size: 10.6px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.35px;
-    }
-    .cat-banner .cat-pill {
-      font-size: 8.2px;
-      font-weight: 700;
-      background: rgba(255, 255, 255, 0.22);
-      padding: 2px 8px;
-      border-radius: 99px;
-    }
-
-    /* TARJETAS DE SERVICIO EN PROFUNDIDAD */
-    .service-card {
-      background: #f8fafc;
-      border: 1.3px solid #cbd5e1;
-      border-left: 4.5px solid #0f766e;
-      border-radius: 6.5px;
-      padding: 7px 10px;
-      margin-bottom: 6px;
-    }
-    .service-card.amber {
-      background: #fffbeb;
-      border-color: #fde68a;
-      border-left-color: #d97706;
-    }
-    .service-card.teal-featured {
-      background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
-      border-color: #5eead4;
-      border-left-color: #0f766e;
-    }
-    .service-card.blue {
-      background: #f8fafc;
-      border-color: #bfdbfe;
-      border-left-color: #1d4ed8;
-    }
-    .service-card.indigo {
-      background: #f8fafc;
-      border-color: #c7d2fe;
-      border-left-color: #4338ca;
-    }
-    .service-card.pink {
-      background: linear-gradient(135deg, #fdf2f8 0%, #ffffff 100%);
-      border-color: #fbcfe8;
-      border-left-color: #be185d;
-    }
-
-    .srv-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 3.5px;
-    }
-    .srv-title-group {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-    .srv-num {
-      width: 21px;
-      height: 21px;
-      border-radius: 5px;
-      background: #0f766e;
-      color: #ffffff;
-      font-size: 10px;
-      font-weight: 900;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .srv-num.amber { background: #d97706; }
-    .srv-num.blue { background: #1d4ed8; }
-    .srv-num.indigo { background: #4338ca; }
-    .srv-num.pink { background: #be185d; }
-
-    .srv-title {
-      font-size: 11px;
-      font-weight: 900;
-      color: #0b2545;
-      line-height: 1.18;
-    }
-    .srv-badge {
-      font-size: 7.8px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.25px;
-      padding: 2px 7.5px;
-      border-radius: 5px;
-      background: #ccfbf1;
-      color: #115e59;
-      border: 1px solid #99f6e4;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .srv-badge.amber { background: #fef3c7; color: #92400e; border-color: #fde68a; }
-    .srv-badge.blue { background: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
-    .srv-badge.indigo { background: #e0e7ff; color: #3730a3; border-color: #c7d2fe; }
-    .srv-badge.pink { background: #fce7f3; color: #9d174d; border-color: #fbcfe8; }
-
-    .srv-lead {
-      font-size: 8.9px;
-      color: #1e293b;
-      line-height: 1.32;
-      margin-bottom: 4.5px;
-    }
-    .srv-columns {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 6.5px;
-    }
-    .srv-box {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 5px;
-      padding: 5px 7.5px;
-    }
-    .srv-box-title {
-      font-size: 8px;
-      font-weight: 900;
-      text-transform: uppercase;
-      color: #0f766e;
-      margin-bottom: 2.5px;
-      display: block;
-      letter-spacing: 0.2px;
-    }
-    .srv-box-title.blue { color: #1d4ed8; }
-    .srv-box-title.indigo { color: #4338ca; }
-    .srv-box-title.amber { color: #b45309; }
-    .srv-box-title.pink { color: #be185d; }
-
-    .srv-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 2.4px;
-      font-size: 8.3px;
-      color: #334155;
-      line-height: 1.29;
-    }
-    .srv-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 4.5px;
-    }
-    .srv-list li strong {
-      color: #0f172a;
-    }
-    .chk-icon {
-      color: #0f766e;
-      font-weight: 900;
-      flex-shrink: 0;
-    }
-
-    /* CAJA DE IMPACTO / NEUROMARKETING */
-    .impact-callout {
-      background: linear-gradient(135deg, #0b2545 0%, #1e293b 100%);
-      color: #ffffff;
-      border-radius: 6.5px;
-      padding: 7.5px 11px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-top: 2px;
-    }
-    .impact-callout h4 {
-      font-size: 9.5px;
-      font-weight: 900;
-      color: #5eead4;
-      text-transform: uppercase;
-      margin-bottom: 2px;
-    }
-    .impact-callout p {
-      font-size: 8.4px;
-      color: #e2e8f0;
-      line-height: 1.32;
-    }
-
-    /* BANNER QR Y CONTACTO PIE DE PÁGINA */
-    .footer-contact-banner {
-      background: #f0fdfa;
-      border: 1.5px dashed #0f766e;
-      border-radius: 6px;
-      padding: 5px 9.5px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: auto;
-    }
-    .footer-qr-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex: 1;
-    }
-    .footer-qr-img {
-      width: 40px;
-      height: 40px;
-      border-radius: 4px;
-      flex-shrink: 0;
-    }
-    .footer-qr-text {
-      font-size: 8.3px;
-      color: #1e293b;
-      line-height: 1.26;
-    }
-    .footer-qr-text strong {
-      font-size: 9.2px;
-      color: #115e59;
-      display: block;
-      margin-bottom: 1px;
-    }
-    .footer-person-box {
-      border-left: 1.5px solid #99f6e4;
-      padding-left: 10px;
-      text-align: right;
-      font-size: 7.9px;
-      line-height: 1.25;
-      color: #1e293b;
-      flex-shrink: 0;
-    }
-    .footer-person-box .name {
-      font-size: 9.4px;
-      font-weight: 900;
-      color: #0b2545;
-      display: block;
-    }
-    .footer-person-box .role {
-      font-size: 7px;
-      font-weight: 800;
-      color: #0f766e;
-      text-transform: uppercase;
-      display: block;
-    }
-    .page-footer-line {
-      border-top: 1px solid #cbd5e1;
-      padding-top: 3.5px;
-      margin-top: 3.5px;
-      font-size: 7.8px;
-      color: #64748b;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-  </style>
-</head>
-<body>
-
-  <!-- BARRA SUPERIOR DE CONTROL EN ORDENADOR -->
-  <aside class="topbar-pc no-print">
-    <div class="topbar-title">
-      <span>📘</span>
-      <span>Dossier Técnico en Profundidad — Los 10 Servicios Troncales + Auditoría GEO + 3 Satélites (4 Págs. A4)</span>
-    </div>
-    <div class="topbar-actions">
-      <a href="../index.html#documentacion" onclick="if(window.opener && !window.opener.closed){event.preventDefault();window.close();}" class="btn-pc secondary">⬅ Volver a la Web</a>
-      <button type="button" onclick="window.print()" class="btn-pc">🖨️ Imprimir / Guardar PDF A4</button>
-    </div>
-  </aside>
-
-  <!-- ========================================================================= -->
-  <!-- PÁGINA 1 DE 4: CATEGORÍA I — REPUTACIÓN Y VISIBILIDAD EN GOOGLE E IA      -->
-  <!-- ========================================================================= -->
-  <main class="a4-page">
-    <div>
-      <header class="page-header">
-        <img src="../logo.png" alt="Sistemas Pyme" class="brand-logo" onerror="this.onerror=null; this.src='logo.png';">
-        <div class="header-meta">
-          <span class="doc-tag">Dossier Técnico Oficial • Sin Precios Comerciales</span>
-          <div class="doc-title">Arquitectura y Funcionamiento de Soluciones (Fase 1 y 2)</div>
-          <div class="doc-sub">Guía detallada paso a paso de nuestros 10 servicios troncales, Auditoría GEO IA y 3 Satélites</div>
-        </div>
-      </header>
-
-      <div class="cat-banner">
-        <h2>I. Mejorar la Reputación y la Visibilidad en Google e IA (Disponibles Hoy)</h2>
-        <span class="cat-pill">Puesta en marcha en 24-48h</span>
+      <!-- Cabecera Técnica GEO / LLMO -->
+      <div class="text-center max-w-3xl mx-auto mb-10">
+        <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-500/15 border border-teal-400/40 text-teal-300 text-xs font-extrabold uppercase tracking-wider mb-3">
+          <span>🧠 Ingeniería de Entidades Verificadas • Knowledge Graph &amp; RAG</span>
+        </span>
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight">
+          Por qué los Motores de IA (ChatGPT, Gemini y Perplexity) y Google Maps Recomiendan a Nuestros Clientes
+        </h2>
+        <p class="text-slate-300 text-sm sm:text-base mt-3 leading-relaxed">
+          Los motores de Inteligencia Artificial ya no buscan simples palabras clave: usan sistemas <strong>RAG (Generación Aumentada por Recuperación)</strong> que cruzan tu web, tu ficha de Google Maps/Bing Places y el sentimiento de tus reseñas para decidir qué único negocio recomendar en tu ciudad.
+        </p>
       </div>
 
-      <!-- HARDWARE: ATRIL INTELIGENTE NFC + QR -->
-      <article class="service-card amber">
-        <div class="srv-header">
-          <div class="srv-title-group">
-            <span class="srv-num amber">★</span>
-            <span class="srv-title">Atril Inteligente de Mostrador (Tecnología Inalámbrica NFC + Código QR)</span>
+      <!-- Los 4 Pilares del Informe Estratégico Aplicados en cada Negocio -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+        <article class="bg-slate-900/90 border border-teal-500/30 rounded-2xl p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-black uppercase tracking-wider text-teal-400">Pilar 1 • Google &amp; Bing</span>
+              <span class="text-lg">📍</span>
+            </div>
+            <h3 class="text-base font-black text-white mb-2">Taxonomía GBP, Bing Places y NAP+W</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Selección quirúrgica de tu <strong>categoría principal y hasta 9 secundarias</strong>, catálogo de servicios con precios claros, estandarización carácter por carácter de tu <strong>NAP+W</strong> (Nombre, Dirección, Teléfono y Web) y sincronización con <strong>Bing Places</strong> (el índice del que bebe ChatGPT/SearchGPT).
+            </p>
           </div>
-          <span class="srv-badge amber">Captación en Mostrador en 1 Segundo</span>
-        </div>
-        <p class="srv-lead">
-          Soporte físico de metacrilato de alta densidad con chip inalámbrico <strong>NFC NTAG215</strong> y código QR vectorial integrado. Diseñado para capturar la valoración del cliente en el pico máximo de satisfacción justo antes de que cruce la puerta de salida de tu local.
-        </p>
-        <div class="srv-columns">
-          <div class="srv-box">
-            <span class="srv-box-title amber">⚙️ Funcionamiento Paso a Paso en tu Local</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">1.</span><span><strong>Contacto sin fricción:</strong> Al despedir a un cliente contento, acerca su iPhone o Android a menos de 3 cm del atril sin abrir cámara ni buscar tu negocio.</span></li>
-              <li><span class="chk-icon">2.</span><span><strong>Apertura directa:</strong> En <strong>menos de 1 segundo</strong> se despliega directamente el recuadro oficial de 5 estrellas de tu perfil de Google Maps.</span></li>
-            </ul>
+          <div class="mt-3 pt-2.5 border-t border-white/10 text-[11px] font-bold text-emerald-400">
+            ✔ +15-25% de llamadas y rutas directas
           </div>
-          <div class="srv-box">
-            <span class="srv-box-title amber">📊 Telemetría y Ventaja Competitiva</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Medición en tu Informe 360°:</strong> Registra de forma anónima cada toque (NFC vs. QR, iOS vs. Android y horario punta de interacción).</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Propiedad vitalicia:</strong> Grabado a medida para tu negocio, 100% legal ante Google y sin cuotas mensuales de mantenimiento.</span></li>
-            </ul>
-          </div>
-        </div>
-      </article>
+        </article>
 
-      <!-- SERVICIO 1: GESTIÓN Y RESPUESTA DE RESEÑAS EN GOOGLE CON IA -->
-      <article class="service-card">
-        <div class="srv-header">
-          <div class="srv-title-group">
-            <span class="srv-num">1</span>
-            <span class="srv-title">Gestión y Respuesta de Reseñas en Google con Inteligencia Artificial</span>
+        <article class="bg-slate-900/90 border border-teal-500/30 rounded-2xl p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-black uppercase tracking-wider text-teal-400">Pilar 2 • Review Signals</span>
+              <span class="text-lg">⭐</span>
+            </div>
+            <h3 class="text-base font-black text-white mb-2">Review Velocity y Semántica UGC</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Flujo constante de reseñas reales (sin activar filtros anti-spam <em>Review Guard</em>) inducidas por WhatsApp para que el cliente mencione de forma natural el <strong>servicio realizado y tu localidad</strong>, respondidas al 100% en menos de 24h con refuerzo semántico local.
+            </p>
           </div>
-          <span class="srv-badge">Piloto Automático 24/7 + Blindaje HEARD y RGPD</span>
-        </div>
-        <p class="srv-lead">
-          Motor de Inteligencia Artificial conectado mediante la API oficial de <strong>Google Business Profile</strong> que monitoriza, analiza psicológicamente y responde tus reseñas entrenado con el contexto, servicios, especialidad y tono real de tu negocio.
-        </p>
-        <div class="srv-columns">
-          <div class="srv-box">
-            <span class="srv-box-title">🌟 Protocolo en Reseñas Positivas (4 y 5 Estrellas)</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Auto-publicación multilingüe:</strong> Detecta el idioma del cliente (español, gallego, inglés, francés, alemán, etc.) y responde al instante en su mismo idioma.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Inyección SEO Local:</strong> Estructura la respuesta en 4 párrafos limpios integrando tus palabras clave y localidad sin sonar robótico ni repetitivo.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Detección de quejas ocultas:</strong> Si un 4★ incluye un reproche, frena la publicación automática y te avisa en privado.</span></li>
-            </ul>
+          <div class="mt-3 pt-2.5 border-t border-white/10 text-[11px] font-bold text-emerald-400">
+            ✔ Nota media objetivo ≥ 4.8★ sostenida
           </div>
-          <div class="srv-box">
-            <span class="srv-box-title">🛡️ Protocolo en Reseñas Críticas (1 a 3 Estrellas)</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Freno y Alerta Multicanal:</strong> Detiene la respuesta pública y te alerta al instante por <strong>WhatsApp, Telegram y Email</strong>.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Consola de 4 Tonos + Nota Psicológica:</strong> Te entrega 4 propuestas redactadas con el método <strong>HEARD</strong> (<em>Formal, Semiformal, Cercano y Directo</em>) más un diagnóstico psicológico interno para gerencia.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Blindaje RGPD y Anti-Efecto Loro:</strong> Jamás confirma patologías ni tratamientos médicos en público y nunca repite palabras tóxicas del autor.</span></li>
-            </ul>
-          </div>
-        </div>
-      </article>
+        </article>
 
-      <!-- SERVICIO 2: FILTRADO Y CAPTACIÓN DE RESEÑAS (ENCUESTA INTELIGENTE) -->
-      <article class="service-card">
-        <div class="srv-header">
-          <div class="srv-title-group">
-            <span class="srv-num">2</span>
-            <span class="srv-title">Filtrado y Captación de Reseñas (Encuesta Inteligente por WhatsApp Oficial)</span>
+        <article class="bg-slate-900/90 border border-teal-500/30 rounded-2xl p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-black uppercase tracking-wider text-teal-400">Pilar 3 • Grafo JSON-LD</span>
+              <span class="text-lg">🧬</span>
+            </div>
+            <h3 class="text-base font-black text-white mb-2">Schema Conectado a Wikidata (@id)</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Desambiguación total ante el <em>Knowledge Graph</em> mediante subclase específica de tu sector (<code>Dentist</code>, <code>MedicalClinic</code>, <code>AutoRepair</code>, <code>LegalService</code>...) enlazando <code>areaServed</code> y <code>knowsAbout</code> mediante propiedades <code>sameAs</code> a <strong>Wikidata y Wikipedia</strong>.
+            </p>
           </div>
-          <span class="srv-badge">Cortafuegos Preventivo de Quejas</span>
-        </div>
-        <p class="srv-lead">
-          El escudo definitivo para negocios con cita previa, reservas, reparaciones o entregas. Contacta al cliente por <strong>WhatsApp Business API Oficial</strong> tras su visita mediante una plantilla verificada con 3 botones interactivos: <strong>«↩ Excelente»</strong>, <strong>«↩ Bien»</strong> y <strong>«↩ Mejorable»</strong>.
-        </p>
-        <div class="srv-columns">
-          <div class="srv-box">
-            <span class="srv-box-title">🚀 Ruta de Impulso (Botón «Excelente»)</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Conversión en 1 toque:</strong> Envía agradecimiento personalizado con enlace directo al cuadro de 5★ de Google Maps.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Memoria de 180 días:</strong> Reconoce si un cliente habitual ya dejó reseña recientemente para agradecerle sin saturarle.</span></li>
-            </ul>
+          <div class="mt-3 pt-2.5 border-t border-white/10 text-[11px] font-bold text-emerald-400">
+            ✔ Entidad verificada sin ambigüedad
           </div>
-          <div class="srv-box">
-            <span class="srv-box-title">🛑 Ruta Cortafuegos (Botones «Bien» o «Mejorable»)</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Retención 100% privada:</strong> No envía el enlace de Google Maps; invita al cliente a desahogarse en ese mismo chat por texto o <strong>nota de voz</strong>.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Transcripción IA de Audios:</strong> Nuestra IA transcribe el audio palabra por palabra y te alerta al móvil para resolverlo antes de que vaya a internet.</span></li>
-            </ul>
-          </div>
-        </div>
-      </article>
+        </article>
 
-      <!-- AUDITORÍA E IMPLANTACIÓN PREMIUM SEO LOCAL + GEO (IA) -->
-      <article class="service-card teal-featured" style="margin-bottom: 0;">
-        <div class="srv-header">
-          <div class="srv-title-group">
-            <span class="srv-num">🔍</span>
-            <span class="srv-title">Auditoría e Implantación Premium SEO Local + GEO (Posicionamiento en IA)</span>
+        <article class="bg-slate-900/90 border border-teal-500/30 rounded-2xl p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-black uppercase tracking-wider text-teal-400">Pilar 4 • Rastreo IA (RAG)</span>
+              <span class="text-lg">🤖</span>
+            </div>
+            <h3 class="text-base font-black text-white mb-2">Apertura a Bots IA y Chunks RAG</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Configuración de <code>robots.txt</code> y <code>llms.txt</code> autorizando a <strong>OAI-SearchBot, ChatGPT-User, PerplexityBot, Google-Extended y ClaudeBot</strong>, junto con bloques de Pregunta-Respuesta directa y tablas de precios que aumentan un <strong>+40% la citación en IA</strong>.
+            </p>
           </div>
-          <span class="srv-badge">Recomendado por ChatGPT, Gemini y Google Maps</span>
-        </div>
-        <p class="srv-lead">
-          Traducimos la arquitectura de tu página web y de tu ficha de Google Business Profile al lenguaje semántico estructurado que leen los motores de búsqueda y las inteligencias artificiales generativas (<strong>ChatGPT, Google Gemini, Perplexity y Copilot</strong>) para que te recomienden como opción número 1 en tu ciudad.
-        </p>
-        <div class="srv-columns">
-          <div class="srv-box">
-            <span class="srv-box-title">🔬 Escáner de 16 Parámetros y Código JSON-LD</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Auditoría técnica profunda:</strong> Diagnóstico de indexación, velocidad, autoridad local y comparativa frente a tus competidores directos.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Inyección Schema.org JSON-LD:</strong> Programación a medida de las entidades <code>LocalBusiness</code>, <code>AggregateRating</code>, horarios, coordenadas y <code>FAQPage</code>.</span></li>
-            </ul>
+          <div class="mt-3 pt-2.5 border-t border-white/10 text-[11px] font-bold text-emerald-400">
+            ✔ Top 3 en Share of Model (SOM) local
           </div>
-          <div class="srv-box">
-            <span class="srv-box-title">🌐 Optimización On-Page y Google Maps</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Estructura semántica Web:</strong> Optimización de etiquetas <code>&lt;title&gt;</code>, <code>&lt;meta description&gt;</code> y jerarquía de encabezados <code>H1/H2/H3</code> locales.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Ficha de Google Business Profile:</strong> Redacción optimizada de descripción oficial, servicios, atributos y categorías secundarias.</span></li>
-            </ul>
-          </div>
-        </div>
-      </article>
-    </div>
-
-    <div>
-      <div class="footer-contact-banner">
-        <div class="footer-qr-left">
-          <img src="../qr-code.png" data-qr-url="https://wa.me/34711547561?text=Hola%20Francisco%2C%20estoy%20leyendo%20el%20Dossier%20T%C3%A9cnico%20A4%20y%20quiero%20ver%20una%20demostraci%C3%B3n" alt="QR Contacto" class="footer-qr-img" onerror="this.style.display='none'">
-          <div class="footer-qr-text">
-            <strong>¿Quieres ver una demostración en vivo personalizada con el nombre de tu negocio?</strong>
-            Escanea este código QR con tu móvil o escríbenos por WhatsApp para evaluar tu caso sin compromiso.
-          </div>
-        </div>
-        <div class="footer-person-box">
-          <span class="name">Francisco M. Gallardo</span>
-          <span class="role">Consultor Tecnológico</span>
-          <strong>711 54 75 61</strong> • francisco@sistemaspyme.es<br>
-          sistemaspyme.es • Galicia
-        </div>
-      </div>
-      <footer class="page-footer-line">
-        <span><strong>Sistemas Pyme</strong> — Dossier Técnico de Soluciones de Automatización e IA</span>
-        <span>Reputación, Cortafuegos WhatsApp y Posicionamiento GEO IA</span>
-        <span><strong>PÁGINA 1 DE 4</strong></span>
-      </footer>
-    </div>
-  </main>
-
-  <!-- ========================================================================= -->
-  <!-- PÁGINA 2 DE 4: CATEGORÍA II — AUMENTAR FACTURACIÓN Y CIERRE DE VENTAS     -->
-  <!-- ========================================================================= -->
-  <main class="a4-page">
-    <div>
-      <header class="page-header">
-        <img src="../logo.png" alt="Sistemas Pyme" class="brand-logo" onerror="this.onerror=null; this.src='logo.png';">
-        <div class="header-meta">
-          <span class="doc-tag">Dossier Técnico Oficial • Captación y Ventas</span>
-          <div class="doc-title">II. Sistemas de Respuesta Instantánea y Recuperación Comercial</div>
-          <div class="doc-sub">Automatización del embudo de entrada para no perder ni una sola oportunidad de venta</div>
-        </div>
-      </header>
-
-      <div class="cat-banner blue">
-        <h2>II. Aumentar Facturación y Cierre de Ventas (Servicios 3, 4 y 5)</h2>
-        <span class="cat-pill">Multiplica por 4 la conversión de presupuestos</span>
+        </article>
       </div>
 
-      <!-- SERVICIO 3: LEADS EN 10S + EXTRACTOR DE PORTALES -->
-      <article class="service-card blue">
-        <div class="srv-header">
-          <div class="srv-title-group">
-            <span class="srv-num blue">3</span>
-            <span class="srv-title">Respuesta a Leads en 10 Segundos + Extractor Inteligente de Portales</span>
+      <!-- BLOQUE DE PREGUNTAS FRECUENTES ESTRUCTURADAS EN FORMATO "RAG-FRIENDLY" (H2/H3 CONVERSACIONALES) -->
+      <div class="rounded-3xl bg-slate-900/80 border border-white/10 p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 border-b border-white/10 pb-4">
+          <div>
+            <span class="text-[11px] font-extrabold uppercase tracking-widest text-teal-400 block">Respuestas Directas Verificadas (Estructura RAG-Friendly)</span>
+            <h2 class="text-xl sm:text-2xl font-black text-white">Preguntas Frecuentes sobre Automatización IA, Reseñas y Posicionamiento GEO Local</h2>
           </div>
-          <span class="srv-badge blue">Cierre de Presupuestos en Caliente</span>
+          <span class="text-[11px] font-bold text-slate-400 bg-black/40 px-3 py-1 rounded-lg border border-white/10 self-start sm:self-center">
+            Datos indexables en HTML plano + JSON-LD
+          </span>
         </div>
-        <p class="srv-lead">
-          En los sectores locales, el <strong>78% de los clientes contrata al primer profesional que le atiende de forma clara y rápida</strong>. Cuando tardas horas en responder un formulario web o un aviso de portal, el cliente ya ha pedido precio en otros tres sitios.
-        </p>
-        <div class="srv-columns">
-          <div class="srv-box">
-            <span class="srv-box-title blue">⚡ Cómo actúa hacia tu Potencial Cliente</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">1.</span><span><strong>Detección multicanal 24/7:</strong> Conectamos el formulario de tu web, tus anuncios de Facebook/Instagram (Meta Lead Ads) y los correos de portales sectoriales (Idealista, Fotocasa, Habitissimo, Bodas.net, Doctoralia, Milanuncios, etc.).</span></li>
-              <li><span class="chk-icon">2.</span><span><strong>WhatsApp en 10 segundos:</strong> El interesado recibe al instante un WhatsApp oficial de tu negocio saludándole por su nombre, confirmando su solicitud y haciéndole una primera pregunta de cualificación.</span></li>
-            </ul>
-          </div>
-          <div class="srv-box">
-            <span class="srv-box-title blue">📲 Cómo te asiste a Ti y a tu Equipo</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Ficha ejecutiva en tu móvil:</strong> Recibes al mismo segundo una alerta interna con el nombre, teléfono clicable, origen del contacto y resumen de lo que necesita el cliente.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Llamada en el pico de interés:</strong> Puedes llamarle en 1 toque cuando todavía tiene el móvil en la mano buscando proveedor, cuadruplicando la tasa de cierre.</span></li>
-            </ul>
-          </div>
-        </div>
-      </article>
 
-      <!-- SERVICIO 4: RESCATE AUTOMÁTICO DE LLAMADAS PERDIDAS -->
-      <article class="service-card blue">
-        <div class="srv-header">
-          <div class="srv-title-group">
-            <span class="srv-num blue">4</span>
-            <span class="srv-title">Rescate Automático de Llamadas Perdidas por WhatsApp</span>
-          </div>
-          <span class="srv-badge blue">Cero Llamadas Fugadas a la Competencia</span>
-        </div>
-        <p class="srv-lead">
-          El <strong>75% de las personas que llaman a un negocio local y no obtienen respuesta no dejan mensaje en el buzón de voz</strong>: cuelgan y llaman inmediatamente al siguiente negocio que aparece en Google Maps.
-        </p>
-        <div class="srv-columns">
-          <div class="srv-box">
-            <span class="srv-box-title blue">📞 Detección y Respuesta en 5 Segundos</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">1.</span><span><strong>Activación automática:</strong> Cuando estás atendiendo a un paciente/cliente, en cabina, en obra o fuera de horario y entra una llamada que no puedes contestar, el sistema detecta el evento al vuelo.</span></li>
-              <li><span class="chk-icon">2.</span><span><strong>Mensaje de cortesía inmediato:</strong> Envía un WhatsApp educado: <em>«¡Hola! Te escribimos de [Tu Negocio]. Justo estamos atendiendo en este instante y no pudimos cogerte el teléfono, ¿en qué podemos ayudarte por aquí?»</em>.</span></li>
-            </ul>
-          </div>
-          <div class="srv-box">
-            <span class="srv-box-title blue">🛡️ Retención Comercial y Filtro Inteligente</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Corta la búsqueda en Google:</strong> Al recibir tu WhatsApp al instante, el cliente deja de llamar a otros competidores y te escribe directamente lo que necesita o pide cita.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Filtro inteligente anti-spam:</strong> Ignora teléfonos fijos sin WhatsApp, números ocultos y evita enviar duplicados si el mismo número llama dos veces seguidas.</span></li>
-            </ul>
-          </div>
-        </div>
-      </article>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-left">
+          <article class="bg-slate-950/80 border border-white/10 rounded-2xl p-5">
+            <h3 class="text-sm sm:text-base font-black text-teal-300 mb-2">
+              ¿Cómo hacer que mi negocio local aparezca recomendado en ChatGPT, Google Gemini y Google Maps?
+            </h3>
+            <p class="text-xs sm:text-[13px] text-slate-200 leading-relaxed">
+              Para ser recomendado por <strong>ChatGPT (SearchGPT), Gemini y Perplexity</strong>, un negocio local debe consolidarse como una <strong>Entidad Verificada</strong> mediante tres acciones: inyectar código estructurado <code>Schema.org JSON-LD</code> conectado a Wikidata, mantener consistencia exacta <strong>NAP+W</strong> entre su web, Google Business Profile y Bing Places, y generar un flujo constante de reseñas de 5★ respondidas con palabras clave de su servicio y ciudad.
+            </p>
+          </article>
 
-      <!-- SERVICIO 5: REACTIVACIÓN AUTOMÁTICA DE CLIENTES INACTIVOS -->
-      <article class="service-card blue">
-        <div class="srv-header">
-          <div class="srv-title-group">
-            <span class="srv-num blue">5</span>
-            <span class="srv-title">Reactivación Automática de Clientes Inactivos y Revisiones Periódicas</span>
-          </div>
-          <span class="srv-badge blue">Facturación Recurrente Automática</span>
-        </div>
-        <p class="srv-lead">
-          El activo más rentable de cualquier negocio local es la base de clientes que ya confió en él una vez. Sin embargo, por falta de seguimiento, cientos de clientes olvidan programar su revisión anual, mantenimiento o nueva sesión.
-        </p>
-        <div class="srv-columns">
-          <div class="srv-box">
-            <span class="srv-box-title blue">🔄 Vigilancia Silenciosa de Ciclos de Vida</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">1.</span><span><strong>Auditoría diaria de base de datos:</strong> El sistema revisa cada mañana la fecha de la última visita o servicio de tus clientes (ej. 60, 90, 180 o 365 días según la recurrencia natural de tu sector).</span></li>
-              <li><span class="chk-icon">2.</span><span><strong>Recordatorio personalizado:</strong> Envía un WhatsApp cercano recordándole su revisión anual (ITV/taller, higiene dental, revisión óptica, mantenimiento de caldera o sesión de estética).</span></li>
-            </ul>
-          </div>
-          <div class="srv-box">
-            <span class="srv-box-title blue">📈 Llenado de Semanas Flojas sin Publicidad</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Coste de captación cero:</strong> Genera citas y ventas nuevas cada semana entre clientes que ya te conocen, sin gastar un solo euro adicional en anuncios.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Cumplimiento RGPD total:</strong> Incluye gestión automática de baja en 1 palabra («BAJA») para máxima tranquilidad legal.</span></li>
-            </ul>
-          </div>
-        </div>
-      </article>
+          <article class="bg-slate-950/80 border border-white/10 rounded-2xl p-5">
+            <h3 class="text-sm sm:text-base font-black text-teal-300 mb-2">
+              ¿Cuánto cuesta automatizar las reseñas de Google y la Auditoría SEO Local + GEO en Galicia y España?
+            </h3>
+            <p class="text-xs sm:text-[13px] text-slate-200 leading-relaxed">
+              En <strong>Sistemas Pyme</strong> el 1er servicio troncal cuesta <strong>59 €/mes</strong> (Setup único de 150 €). Al unir 2 servicios en el <strong>Pack Escudo</strong> (Reseñas IA + Encuesta Cortafuegos WhatsApp), el 2º módulo suma solo <strong>+40 €/mes (99 €/mes en total)</strong> y desbloquea la <strong>Auditoría e Implantación SEO Local + GEO Llave en Mano por solo 195 € de pago único</strong> (en lugar de 350 €, ahorrando los 150 € de implantación técnica).
+            </p>
+          </article>
 
-      <!-- CAJA DE ANÁLISIS DE IMPACTO COMERCIAL -->
-      <div class="impact-callout">
-        <div>
-          <h4>💡 Realidad Matemática en Negocios Locales: La Regla de los 5 Minutos</h4>
-          <p>
-            Un solo presupuesto rescatado al mes gracias a responder en 10 segundos (Servicio 3) o una sola llamada perdida recuperada por WhatsApp mientras estabas ocupado (Servicio 4) suele generar entre <strong>150 € y 1.500 € de facturación directa</strong> que antes se llevaba tu competencia.
-          </p>
+          <article class="bg-slate-950/80 border border-white/10 rounded-2xl p-5">
+            <h3 class="text-sm sm:text-base font-black text-teal-300 mb-2">
+              ¿Cómo funciona el cortafuegos preventivo por WhatsApp para frenar reseñas de 1 estrella?
+            </h3>
+            <p class="text-xs sm:text-[13px] text-slate-200 leading-relaxed">
+              Tras la visita o servicio, el cliente recibe un mensaje oficial por <strong>WhatsApp Business API</strong> con tres botones: <strong>«Excelente»</strong>, <strong>«Bien»</strong> y <strong>«Mejorable»</strong>. Quien pulsa «Excelente» va directo en 1 toque a puntuar 5★ en Google Maps; quien pulsa «Bien» o «Mejorable» es atendido en un <strong>canal privado de texto o nota de voz transcrita por IA</strong>, alertando al propietario al instante antes de que publique una queja en internet.
+            </p>
+          </article>
+
+          <article class="bg-slate-950/80 border border-white/10 rounded-2xl p-5">
+            <h3 class="text-sm sm:text-base font-black text-teal-300 mb-2">
+              ¿En qué ciudades y sectores trabaja Sistemas Pyme e implanta sus sistemas en 24-48 horas?
+            </h3>
+            <p class="text-xs sm:text-[13px] text-slate-200 leading-relaxed">
+              Realizamos implantaciones presenciales y remotas en toda <strong>Galicia (Santiago de Compostela, A Coruña, Vigo, Pontevedra, Lugo, Ourense y comarcas)</strong> y en el resto de <strong>España</strong> para clínicas dentales y médicas, salones de estética y peluquería, talleres mecánicos, restaurantes, hoteles, inmobiliarias, instaladores, asesorías y despachos profesionales, dejando todo operativo en <strong>24 a 48 horas</strong> sin cambiar su software actual.
+            </p>
+          </article>
         </div>
       </div>
+
     </div>
+  </section>
+  <!-- [SP_RAG_FRIENDLY_SECTION_END] -->"""
 
-    <div>
-      <div class="footer-contact-banner">
-        <div class="footer-qr-left">
-          <img src="../qr-code.png" data-qr-url="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesan%20los%20m%C3%B3dulos%20de%20Captaci%C3%B3n%20y%20Ventas%20del%20Dossier%20A4" alt="QR Contacto" class="footer-qr-img" onerror="this.style.display='none'">
-          <div class="footer-qr-text">
-            <strong>¿Quieres integrar estos sistemas de captación y rescate de ventas en tu negocio?</strong>
-            Escanea el código QR para hablar directamente por WhatsApp con Francisco y diseñar tu flujo a medida.
-          </div>
-        </div>
-        <div class="footer-person-box">
-          <span class="name">Francisco M. Gallardo</span>
-          <span class="role">Consultor Tecnológico</span>
-          <strong>711 54 75 61</strong> • francisco@sistemaspyme.es<br>
-          sistemaspyme.es • Galicia
-        </div>
-      </div>
-      <footer class="page-footer-line">
-        <span><strong>Sistemas Pyme</strong> — Dossier Técnico de Soluciones de Automatización e IA</span>
-        <span>Captación de Leads en 10s, Rescate de Llamadas y Reactivación de Clientes</span>
-        <span><strong>PÁGINA 2 DE 4</strong></span>
-      </footer>
-    </div>
-  </main>
 
-  <!-- ========================================================================= -->
-  <!-- PÁGINA 3 DE 4: CATEGORÍA III — AHORRO DE TIEMPO, AGENDA Y FINANZAS        -->
-  <!-- ========================================================================= -->
-  <main class="a4-page">
-    <div>
-      <header class="page-header">
-        <img src="../logo.png" alt="Sistemas Pyme" class="brand-logo" onerror="this.onerror=null; this.src='logo.png';">
-        <div class="header-meta">
-          <span class="doc-tag">Dossier Técnico Oficial • Eficiencia Operativa</span>
-          <div class="doc-title">III. Ahorro de Tiempo, Blindaje de Agenda y Administración con IA</div>
-          <div class="doc-sub">Elimina tareas administrativas repetitivas, plantones en agenda y persecución de facturas</div>
-        </div>
-      </header>
+def construir_robots_txt():
+    """
+    Genera el archivo robots.txt siguiendo la sección 3.3 del informe técnico:
+    apertura explícita para OAI-SearchBot, ChatGPT-User, PerplexityBot, Google-Extended,
+    Googlebot, ClaudeBot y Bingbot.
+    """
+    return """# ============================================================================
+# ROBOTS.TXT OFICIAL — SISTEMAS PYME (SEO LOCAL + OPTIMIZACIÓN GEO / LLMO)
+# Autorización explícita para Motores de Búsqueda y Agentes RAG de IA
+# ============================================================================
 
-      <div class="cat-banner indigo">
-        <h2>III. Facilitar la Vida: Agenda, Voz IA, Presupuestos y Finanzas (Servicios 6 al 10)</h2>
-        <span class="cat-pill">Recupera más de 10 horas semanales de gestión</span>
-      </div>
+User-agent: *
+Allow: /
+Disallow: /backups_sp/
+Disallow: /Backups/
 
-      <!-- SERVICIO 6: SISTEMA ANTI-PLANTÓN + CAMPAÑAS FLASH (AMPLIADO EN PROFUNDIDAD) -->
-      <article class="service-card indigo" style="padding: 6px 9.5px; margin-bottom: 5px;">
-        <div class="srv-header" style="margin-bottom: 2.5px;">
-          <div class="srv-title-group">
-            <span class="srv-num indigo">6</span>
-            <span class="srv-title">Sistema Anti-Plantón de Citas + Campañas Flash de Lista de Espera</span>
-          </div>
-          <span class="srv-badge indigo">Reducción del 85% de Ausencias</span>
-        </div>
-        <p class="srv-lead" style="margin-bottom: 3.5px;">
-          Sincronizado bidireccionalmente con tu calendario (Google Calendar o software de gestión). Elimina el coste invisible de los sillones, cabinas o mesas vacías por clientes que olvidan su cita y cubre automáticamente las bajas de última hora.
-        </p>
-        <div class="srv-columns">
-          <div class="srv-box" style="padding: 4.5px 7px;">
-            <span class="srv-box-title indigo">📅 Confirmación Interactiva 24h Antes</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Aviso automático por WhatsApp Oficial:</strong> 24h antes de la cita envía un mensaje personalizado con fecha, hora, profesional asignado y botones rápidos: <strong>[Confirmar Asistencia]</strong> o <strong>[Solicitar Cambio]</strong>.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Actualización en vivo:</strong> Marca en verde en tu agenda las citas confirmadas sin que tu recepción tenga que hacer una sola llamada manual.</span></li>
-            </ul>
-          </div>
-          <div class="srv-box" style="padding: 4.5px 7px;">
-            <span class="srv-box-title indigo">⚡ Reubicación con Campañas Flash</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Disparo a Lista de Espera:</strong> Si un cliente cancela con antelación, libera el hueco y avisa automáticamente por WhatsApp a los clientes que querían adelantar cita.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Adjudicación automática:</strong> El primer cliente en pulsar se queda con la hora libre, facturando una sesión que se habría perdido.</span></li>
-            </ul>
-          </div>
-        </div>
-      </article>
+# 1. OpenAI / SearchGPT / ChatGPT Navegación en Tiempo Real
+User-agent: OAI-SearchBot
+Allow: /
 
-      <!-- SERVICIO 7: CENTRALITA DE VOZ Y CITAS CON IA (AMPLIADO EN PROFUNDIDAD) -->
-      <article class="service-card indigo" style="padding: 6px 9.5px; margin-bottom: 5px;">
-        <div class="srv-header" style="margin-bottom: 2.5px;">
-          <div class="srv-title-group">
-            <span class="srv-num indigo">7</span>
-            <span class="srv-title">Centralita Telefónica de Voz y Citas con Inteligencia Artificial (24/7)</span>
-          </div>
-          <span class="srv-badge indigo">Recepcionista Neuronal 24 Horas</span>
-        </div>
-        <p class="srv-lead" style="margin-bottom: 3.5px;">
-          Agente telefónico con voz humana natural de baja latencia entrenado con el manual de tu negocio. Atiende múltiples llamadas simultáneas cuando tu equipo está ocupado, en festivos o fuera de horario comercial sin dejar a nadie en espera.
-        </p>
-        <div class="srv-columns">
-          <div class="srv-box" style="padding: 4.5px 7px;">
-            <span class="srv-box-title indigo">🎙️ Atención Conversacional y Triaje</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Resolución de dudas en vivo:</strong> Informa con naturalidad sobre tus servicios, tarifas orientativas, horarios, ubicación, aparcamiento y preparación previa.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Desvío inteligente de urgencias:</strong> Si detecta un caso urgente o prioritario, transfiere la llamada o te envía una alerta inmediata.</span></li>
-            </ul>
-          </div>
-          <div class="srv-box" style="padding: 4.5px 7px;">
-            <span class="srv-box-title indigo">🗓️ Agendado Directo + Doble Resumen</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Reserva en calendario real:</strong> Consulta tu disponibilidad en directo durante la conversación, ofrece huecos libres y bloquea la cita en tu agenda.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Confirmación por escrito:</strong> Al colgar, envía un WhatsApp de confirmación al cliente y un resumen transcrito de la llamada a tu móvil.</span></li>
-            </ul>
-          </div>
-        </div>
-      </article>
+User-agent: ChatGPT-User
+Allow: /
 
-      <!-- SERVICIO 8: FIRMA DE PRESUPUESTOS + ONBOARDING IA (AMPLIADO EN PROFUNDIDAD) -->
-      <article class="service-card indigo" style="padding: 6px 9.5px; margin-bottom: 5px;">
-        <div class="srv-header" style="margin-bottom: 2.5px;">
-          <div class="srv-title-group">
-            <span class="srv-num indigo">8</span>
-            <span class="srv-title">Firma Digital de Presupuestos + Onboarding Automático con IA</span>
-          </div>
-          <span class="srv-badge indigo">Formalización Legal en 1 Clic</span>
-        </div>
-        <p class="srv-lead" style="margin-bottom: 3.5px;">
-          Acelera drásticamente el paso desde que envías una propuesta económica hasta que el proyecto arranca y cobras la señal. Elimina impresoras, escáneres y semanas de incertidumbre persiguiendo presupuestos pendientes de respuesta.
-        </p>
-        <div class="srv-columns">
-          <div class="srv-box" style="padding: 4.5px 7px;">
-            <span class="srv-box-title indigo">✍️ Firma Móvil con Validez Jurídica</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Aceptación con el dedo en 10s:</strong> El cliente abre el presupuesto en su móvil vía WhatsApp/Email y lo firma en pantalla sin instalar nada.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Certificado y Seguimiento:</strong> Registra sello de tiempo, IP y copia PDF firmada, y envía recordatorios corteses si el presupuesto sigue abierto tras 48h.</span></li>
-            </ul>
-          </div>
-          <div class="srv-box" style="padding: 4.5px 7px;">
-            <span class="srv-box-title indigo">📂 Alta Automática de Expediente (Onboarding)</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Creación de estructura en la nube:</strong> En el segundo en que firma, el sistema crea su carpeta de cliente en Google Drive con toda la documentación.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Bienvenida y cobro inicial:</strong> Envía mensaje de bienvenida solicitando los datos o archivos necesarios y el enlace/cuenta para el pago del anticipo.</span></li>
-            </ul>
-          </div>
-        </div>
-      </article>
+User-agent: GPTBot
+Allow: /
 
-      <!-- SERVICIO 9: FACTURAS Y GASTOS AL GESTOR CON IA (+ ADD-ON CORREO) (AMPLIADO EN PROFUNDIDAD) -->
-      <article class="service-card indigo" style="padding: 6px 9.5px; margin-bottom: 5px;">
-        <div class="srv-header" style="margin-bottom: 2.5px;">
-          <div class="srv-title-group">
-            <span class="srv-num indigo">9</span>
-            <span class="srv-title">Facturas y Gastos al Gestor con IA (+ Booster Opcional Add-on Correo)</span>
-          </div>
-          <span class="srv-badge indigo">Visión Artificial Contable</span>
-        </div>
-        <p class="srv-lead" style="margin-bottom: 3.5px;">
-          Se acabó perder tickets térmicos que se borran en la guantera o pasar el fin de semana de cierre trimestral picando facturas a mano. Haces una foto por WhatsApp al gasto y la IA contable lo deja clasificado y cuadrado para tu asesoría.
-        </p>
-        <div class="srv-columns">
-          <div class="srv-box" style="padding: 4.5px 7px;">
-            <span class="srv-box-title indigo">🧾 Lectura OCR IA en 5 Segundos</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Extracción fiscal completa:</strong> Identifica Fecha, Proveedor, NIF/CIF, Concepto, Base Imponible, % de IVA, Retención IRPF e Importe Total.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Archivo y libro Excel en vivo:</strong> Renombra el documento (<code>AAAA-MM-DD_Proveedor.pdf</code>), lo guarda en la carpeta trimestral y añade la fila al Excel de tu gestor.</span></li>
-            </ul>
-          </div>
-          <div class="srv-box" style="padding: 4.5px 7px;">
-            <span class="srv-box-title amber">⚡ Booster Opcional: Add-on Correo (Gmail/Outlook)</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Vigilancia automática de bandeja de entrada:</strong> Detecta cada correo nuevo que contenga facturas adjuntas en PDF (luz, telefonía, software, proveedores).</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Cero intervención humana:</strong> Descarga el PDF, extrae el desglose fiscal y lo contabiliza directamente en tu carpeta del trimestre.</span></li>
-            </ul>
-          </div>
-        </div>
-      </article>
+# 2. Perplexity AI (Motor de Respuesta RAG)
+User-agent: PerplexityBot
+Allow: /
 
-      <!-- SERVICIO 10: ANTI-MOROSIDAD DIPLOMÁTICO (+ ADD-ON PROVEEDORES) (AMPLIADO EN PROFUNDIDAD) -->
-      <article class="service-card indigo" style="padding: 6px 9.5px; margin-bottom: 0;">
-        <div class="srv-header" style="margin-bottom: 2.5px;">
-          <div class="srv-title-group">
-            <span class="srv-num indigo">10</span>
-            <span class="srv-title">Sistema Anti-Morosidad Diplomático (+ Booster Opcional Add-on Proveedores)</span>
-          </div>
-          <span class="srv-badge indigo">Cobro Puntual sin Fricción Personal</span>
-        </div>
-        <p class="srv-lead" style="margin-bottom: 3.5px;">
-          Protege la liquidez de tu negocio sin sufrir la incomodidad personal de llamar a un cliente conocido para reclamarle un pago pendiente. El sistema actúa en nombre de tu departamento de administración con educación exquisita y constancia.
-        </p>
-        <div class="srv-columns">
-          <div class="srv-box" style="padding: 4.5px 7px;">
-            <span class="srv-box-title indigo">⚖️ Secuencia Diplomática de Recobro</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Avisos escalonados inteligentes:</strong> Envía recordatorio preventivo (vencimiento próximo), aviso cordial a los 3 días y seguimiento formal a los 10 y 20 días.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Cobro facilitado en 1 toque:</strong> Adjunta siempre el duplicado en PDF de la factura junto con tu IBAN o enlace de pago rápido para eliminar excusas.</span></li>
-            </ul>
-          </div>
-          <div class="srv-box" style="padding: 4.5px 7px;">
-            <span class="srv-box-title amber">⚡ Booster Opcional: Add-on Control de Proveedores</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Vigilancia de plazos de entrega:</strong> Monitoriza los pedidos realizados a tus proveedores y las fechas de llegada prometidas para tu mercancía o recambios.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Reclamación automática:</strong> Si un pedido vence sin albarán de entrada, redacta y envía reclamación formal al proveedor y te avisa al móvil.</span></li>
-            </ul>
-          </div>
-        </div>
-      </article>
-    </div>
+# 3. Google Gemini / AI Overviews & Google Search / Maps
+User-agent: Google-Extended
+Allow: /
 
-    <div>
-      <div class="footer-contact-banner">
-        <div class="footer-qr-left">
-          <img src="../qr-code.png" data-qr-url="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesan%20los%20m%C3%B3dulos%20de%20Agenda%20y%20Facturas%20con%20IA%20del%20Dossier" alt="QR Contacto" class="footer-qr-img" onerror="this.style.display='none'">
-          <div class="footer-qr-text">
-            <strong>¿Quieres automatizar tus citas, presupuestos o el envío de facturas al gestor?</strong>
-            Escanea este código con tu móvil para hablar con Francisco y configurar tu plan modular.
-          </div>
-        </div>
-        <div class="footer-person-box">
-          <span class="name">Francisco M. Gallardo</span>
-          <span class="role">Consultor Tecnológico</span>
-          <strong>711 54 75 61</strong> • francisco@sistemaspyme.es<br>
-          sistemaspyme.es • Galicia
-        </div>
-      </div>
-      <footer class="page-footer-line">
-        <span><strong>Sistemas Pyme</strong> — Dossier Técnico de Soluciones de Automatización e IA</span>
-        <span>Agenda Anti-Plantón, Centralita Voz IA, Firma Digital y Facturación Inteligente</span>
-        <span><strong>PÁGINA 3 DE 4</strong></span>
-      </footer>
-    </div>
-  </main>
+User-agent: Googlebot
+Allow: /
 
-  <!-- ========================================================================= -->
-  <!-- PÁGINA 4 DE 4: LOS 3 MÓDULOS SATÉLITE PRÉMIUM + BÓVEDA + GARANTÍAS        -->
-  <!-- ========================================================================= -->
-  <main class="a4-page">
-    <div>
-      <header class="page-header">
-        <img src="../logo.png" alt="Sistemas Pyme" class="brand-logo" onerror="this.onerror=null; this.src='logo.png';">
-        <div class="header-meta">
-          <span class="doc-tag">Dossier Técnico Oficial • Ecosistema Avanzado</span>
-          <div class="doc-title">IV. Los 3 Módulos Satélite Prémium, Bóveda Digital y Garantías</div>
-          <div class="doc-sub">Soluciones especializadas en Redes Sociales (Meta API), Logística E-commerce e Inteligencia Documental RAG</div>
-        </div>
-      </header>
+# 4. Anthropic / Claude AI
+User-agent: ClaudeBot
+Allow: /
 
-      <div class="cat-banner pink">
-        <h2>IV. Los 3 Módulos Satélite Prémium (Especialización Sectorial)</h2>
-        <span class="cat-pill">Integración Oficial Meta Graph API, Logística &amp; IA RAG</span>
-      </div>
+User-agent: anthropic-ai
+Allow: /
 
-      <!-- SATÉLITE 1: INSTAGRAM INTELIGENTE 3 EN 1 (AMPLIADO EN PROFUNDIDAD) -->
-      <article class="service-card pink" style="padding: 6.5px 10px; margin-bottom: 5.5px;">
-        <div class="srv-header" style="margin-bottom: 3px;">
-          <div class="srv-title-group">
-            <span class="srv-num pink">📱</span>
-            <span class="srv-title">Módulo Satélite 1: Instagram Inteligente 3 en 1 (Conexión Oficial Meta Graph API)</span>
-          </div>
-          <span class="srv-badge pink">Captación Orgánica en Reels, DMs y Stories</span>
-        </div>
-        <p class="srv-lead" style="margin-bottom: 4px;">
-          Transforma tu cuenta de Instagram en un canal automático de captación de reservas, presupuestos y ventas las 24 horas del día. Opera al 100% sobre la <strong>API Oficial Verificada de Meta</strong>, garantizando seguridad total para tu cuenta y cero riesgo de penalizaciones.
-        </p>
-        <div class="srv-columns">
-          <div class="srv-box" style="padding: 4.5px 7.5px;">
-            <span class="srv-box-title pink">🚀 1. Auto-DM al Comentar Reels o Posts</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Activador por palabra clave:</strong> Pides en tu Reel o publicación: <em>«Comenta CITA, CARTA, PROMO o PRECIO y te lo envío por privado»</em>.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Doble respuesta en 2 segundos:</strong> Responde públicamente a su comentario en el post y le abre simultáneamente un mensaje privado (DM) con la información y enlace directo.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Impulso algorítmico:</strong> Al duplicar el número de comentarios, el algoritmo de Instagram multiplica el alcance gratuito de tus publicaciones en tu ciudad.</span></li>
-            </ul>
-          </div>
-          <div class="srv-box" style="padding: 4.5px 7.5px;">
-            <span class="srv-box-title pink">💬 2. Recepcionista DMs 24/7 + 3. Fidelización Stories</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Atención inmediata de Mensajes Directos:</strong> Responde al instante dudas sobre horarios, ubicación, carta/servicios o disponibilidad incluso de madrugada o en domingo.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Detección de menciones en Historias (Stories):</strong> Cuando un cliente sube una Story etiquetando a tu negocio, el sistema lo detecta en tiempo real.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Recompensa de embajadores:</strong> Envía un DM automático agradeciendo la mención con un detalle o incentivo para que vuelva pronto con sus amigos.</span></li>
-            </ul>
-          </div>
-        </div>
-      </article>
+# 5. Microsoft Bing (Infraestructura base de SearchGPT y Copilot)
+User-agent: bingbot
+Allow: /
 
-      <!-- SATÉLITE 2: ESCUDO LOGÍSTICO 360 (AMPLIADO EN PROFUNDIDAD) -->
-      <article class="service-card blue" style="padding: 6.5px 10px; margin-bottom: 5.5px;">
-        <div class="srv-header" style="margin-bottom: 3px;">
-          <div class="srv-title-group">
-            <span class="srv-num blue">📦</span>
-            <span class="srv-title">Módulo Satélite 2: Escudo Logístico 360 (Comercios con Envíos, Reparto o Encargos)</span>
-          </div>
-          <span class="srv-badge blue">Cero Entregas Fallidas y Menos Llamadas</span>
-        </div>
-        <p class="srv-lead" style="margin-bottom: 4px;">
-          Diseñado para comercios locales con tienda online (WooCommerce, Shopify, PrestaShop), floristerías, pastelerías, distribuidores, ópticas, talleres con recambios o negocios con reparto propio o mediante agencia de transporte.
-        </p>
-        <div class="srv-columns">
-          <div class="srv-box" style="padding: 4.5px 7.5px;">
-            <span class="srv-box-title blue">🚚 Seguimiento Proactivo por WhatsApp Oficial</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Confirmación de salida y Tracking:</strong> Notifica por WhatsApp cuando el pedido sale de tu almacén o está listo para recoger en tienda con enlace en vivo.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Alerta Matinal «Llega Hoy»:</strong> Avisa al comprador la mañana del reparto con la franja estimada para garantizar que haya alguien en casa.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Ahorro del 80% en llamadas de soporte:</strong> Elimina las continuas llamadas y mensajes preguntando <em>«¿Dónde está mi pedido?»</em>.</span></li>
-            </ul>
-          </div>
-          <div class="srv-box" style="padding: 4.5px 7.5px;">
-            <span class="srv-box-title blue">🛡️ Gestión Inmediata de Ausencias e Incidencias</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Rescate en tiempo real:</strong> Si el repartidor registra destinatario ausente o dirección incompleta, dispara un WhatsApp urgente al comprador en el acto.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Reubicación en 1 toque:</strong> Permite al cliente confirmar nueva franja horaria, corregir el portal o elegir punto de recogida antes de que el paquete vuelva al almacén.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Protección del margen comercial:</strong> Evita los costes de logística inversa y segundos envíos que destruyen el beneficio del pedido.</span></li>
-            </ul>
-          </div>
-        </div>
-      </article>
+# 6. Apple Maps / Apple Intelligence
+User-agent: Applebot
+Allow: /
 
-      <!-- SATÉLITE 3: REDACTOR TÉCNICO B2B (IA RAG) (AMPLIADO EN PROFUNDIDAD) -->
-      <article class="service-card indigo" style="padding: 6.5px 10px; margin-bottom: 5.5px;">
-        <div class="srv-header" style="margin-bottom: 3px;">
-          <div class="srv-title-group">
-            <span class="srv-num indigo">🤖</span>
-            <span class="srv-title">Módulo Satélite 3: Redactor Técnico B2B con Memoria Documental Propia (IA RAG)</span>
-          </div>
-          <span class="srv-badge indigo">Cerebro Corporativo Privado • Ahorra 2h/día</span>
-        </div>
-        <p class="srv-lead" style="margin-bottom: 4px;">
-          Pensado para empresas instaladoras, ingenierías, distribuidores técnicos, clínicas especializadas, asesorías y despachos B2B que invierten horas cada día en redactar correos complejos consultando catálogos, normativas o tarifas.
-        </p>
-        <div class="srv-columns">
-          <div class="srv-box" style="padding: 4.5px 7.5px;">
-            <span class="srv-box-title indigo">📚 Base de Conocimiento Vectorial Privada (RAG)</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Entrenamiento con tu documentación real:</strong> Indexamos tus catálogos en PDF, fichas técnicas, tarifas, normativas, pliegos, preguntas frecuentes y contratos.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Cero invenciones (Fidelidad documental):</strong> La IA responde ciñéndose estrictamente a los datos oficiales de tu empresa sin inventar precios ni especificaciones.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Privacidad empresarial blindada:</strong> Tus documentos permanecen en un entorno seguro y nunca se utilizan para entrenar modelos públicos.</span></li>
-            </ul>
-          </div>
-          <div class="srv-box" style="padding: 4.5px 7.5px;">
-            <span class="srv-box-title indigo">✉️ Borradores Técnicos Listos en Segundos</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Pre-redacción en tu bandeja de correo:</strong> Cuando entra una consulta técnica de un cliente, analiza qué pide, cruza los datos con tu catálogo y genera el borrador completo.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Supervisión humana en 30 segundos:</strong> Te deja el borrador listo en Gmail/Outlook con referencias exactas y tono corporativo para que solo revises y pulses <em>Enviar</em>.</span></li>
-            </ul>
-          </div>
-        </div>
-      </article>
+Sitemap: https://sistemaspyme.es/sitemap.xml
+"""
 
-      <!-- BONO REGALO TRINITY+: BÓVEDA SEGURA DE CONTRASEÑAS + GARANTÍAS OPERATIVAS (AMPLIADO) -->
-      <article class="service-card amber" style="padding: 6.5px 10px; margin-bottom: 0;">
-        <div class="srv-header" style="margin-bottom: 3px;">
-          <div class="srv-title-group">
-            <span class="srv-num amber">🎁</span>
-            <span class="srv-title">Bóveda Segura de Contraseñas de Equipo + Garantías Operativas Sistemas Pyme</span>
-          </div>
-          <span class="srv-badge amber">Incluida en Planes de 3 o más Servicios (Trinity+)</span>
-        </div>
-        <div class="srv-columns">
-          <div class="srv-box" style="padding: 4.5px 7.5px;">
-            <span class="srv-box-title amber">🔐 Bóveda Cifrada de Accesos para Empleados</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>Acceso en 1 clic sin revelar claves:</strong> Tu equipo entra a las herramientas del negocio sin ver la contraseña maestra ni apuntarla en libretas o post-its.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Revocación instantánea:</strong> Si un trabajador finaliza su etapa en la empresa, desactivas su permiso en 1 segundo desde tu móvil sin cambiar todas tus claves.</span></li>
-            </ul>
-          </div>
-          <div class="srv-box" style="padding: 4.5px 7.5px;">
-            <span class="srv-box-title">🛡️ Garantía Técnica Llave en Mano y Escalabilidad</span>
-            <ul class="srv-list">
-              <li><span class="chk-icon">✔</span><span><strong>100% desde tu WhatsApp habitual:</strong> Sin obligar a tu equipo ni a tus clientes a instalar apps externas. Incluye copias de seguridad y cumplimiento RGPD.</span></li>
-              <li><span class="chk-icon">✔</span><span><strong>Escalabilidad garantizada:</strong> Puedes empezar por 1 o 2 módulos hoy y ampliar tu plan en cualquier momento conservando las bonificaciones de socio.</span></li>
-            </ul>
-          </div>
-        </div>
-      </article>
-    </div>
 
-    <div>
-      <div class="footer-contact-banner">
-        <div class="footer-qr-left">
-          <img src="../qr-code.png" data-qr-url="https://wa.me/34711547561?text=Hola%20Francisco%2C%20he%20le%C3%ADdo%20el%20Dossier%20Completo%20de%204%20p%C3%A1ginas%20y%20quiero%20asesoramiento%20para%20mi%20negocio" alt="QR Contacto" class="footer-qr-img" onerror="this.style.display='none'">
-          <div class="footer-qr-text">
-            <strong>¿Qué combinación de módulos encaja mejor con la operativa actual de tu negocio?</strong>
-            Escanea este código QR o escríbenos al 711 54 75 61 para recibir un diagnóstico personalizado sin compromiso.
-          </div>
-        </div>
-        <div class="footer-person-box">
-          <span class="name">Francisco M. Gallardo</span>
-          <span class="role">Consultor Tecnológico</span>
-          <strong>711 54 75 61</strong> • francisco@sistemaspyme.es<br>
-          sistemaspyme.es • Galicia
-        </div>
-      </div>
-      <footer class="page-footer-line">
-        <span><strong>Sistemas Pyme</strong> — Dossier Técnico de Soluciones de Automatización e IA</span>
-        <span>Módulos Satélite Prémium, Bóveda de Seguridad y Garantías de Implantación</span>
-        <span><strong>PÁGINA 4 DE 4</strong></span>
-      </footer>
-    </div>
-  </main>
+def construir_llms_txt():
+    """
+    Genera el archivo estándar /llms.txt en la raíz del dominio para que cualquier LLM
+    (ChatGPT, Claude, Perplexity, Gemini) extraiga directamente la ficha técnica, precios,
+    NAP+W y servicios verificados de Sistemas Pyme.
+    """
+    return """# Sistemas Pyme — Automatización con IA, Reputación en Google Maps y Posicionamiento GEO (LLMO)
 
-</body>
-</html>"""
+> Consultoría tecnológica especializada en digitalización táctica, automatización por WhatsApp Business API Oficial, blindaje de reseñas en Google Maps con Inteligencia Artificial y Auditoría e Implantación de SEO Local + Optimización para Motores Generativos (GEO / LLMO) para pymes y negocios locales en Galicia y España.
+
+## Datos Oficiales de Entidad Verificada (NAP+W)
+- **Nombre Comercial:** Sistemas Pyme
+- **Titular / Consultor Senior:** Francisco M. Gallardo (NIF: 52938419D)
+- **Ubicación Principal:** Santa Comba / Santiago de Compostela, A Coruña, Galicia, España (CP 15840)
+- **Área de Servicio:** Galicia (A Coruña, Santiago de Compostela, Vigo, Pontevedra, Lugo, Ourense) y toda España
+- **Teléfono y WhatsApp Oficial:** +34 711 54 75 61
+- **Correo Electrónico:** francisco@sistemaspyme.es
+- **Web Oficial:** https://sistemaspyme.es/
+
+## Soluciones Activas de Implantación Inmediata (24-48h)
+1. **Atril Inteligente de Mostrador (NFC + QR):** 39 € pago único sin cuotas. Abre la pantalla de valoración 5 estrellas de Google Maps en 1 segundo al acercar el móvil.
+2. **Servicio 1 — Gestión y Respuesta de Reseñas en Google con IA:** 59 €/mes (o +40 €/mes combinado). Auto-publica respuestas multilingües con SEO Local en reseñas de 4-5 estrellas y detiene las de 1-3 estrellas enviando alerta a WhatsApp/Telegram/Email con 4 propuestas de tono (Formal, Semiformal, Cercano, Directo) bajo metodología HEARD y blindaje RGPD sanitario/legal.
+3. **Servicio 2 — Filtrado y Captación de Reseñas (Encuesta Cortafuegos por WhatsApp Oficial):** 59 €/mes (o +40 €/mes combinado). Envía encuesta interactiva post-visita con 3 botones (`Excelente`, `Bien`, `Mejorable`). Deriva a los clientes felices a Google Maps y retiene las quejas en privado (texto o nota de voz transcrita por IA).
+4. **Auditoría e Implantación Premium SEO Local + GEO (LLMO):**
+   - **Opción 1 (Solo Paquete de Código):** 200 € pago único.
+   - **Opción 2 (Llave en Mano Suelta o con 1 servicio):** 350 € pago único (200 € código + 150 € implantación).
+   - **Opción 3 (Bonificada con Pack Escudo Dúo o superior):** 195 € pago único (ahorra 155 €) o 95 € en Plan Anual Trinity+.
+
+## Estructura de Planes Modulares Oficiales
+- **Plan PYME BASE (1 Servicio):** 59 €/mes | Setup único: 150 € | Plan Anual (10 meses): 590 €/año.
+- **Plan PYME DÚO / Pack Escudo (2 Servicios):** 99 €/mes | Setup único: 225 € | Plan Anual: 990 €/año + Desbloquea Auditoría GEO a 195 €.
+- **Plan PYME TRINITY (3 Servicios):** 139 €/mes | Setup único: 300 € | Plan Anual: 1.390 €/año + Bóveda de Contraseñas Gratis + Auditoría GEO a 95 € en modalidad anual.
+- **Plan PYME QUATRO (4 Servicios):** 179 €/mes | Setup único: 375 € | Plan Anual: 1.790 €/año.
+- **Plan PYME PENTIUM (5 Servicios):** 219 €/mes | Setup único: 450 € | Plan Anual: 2.190 €/año.
+
+## Documentación Técnica Pública Indexable
+- [Página Principal y Simulador en Vivo](https://sistemaspyme.es/)
+- [Dossier Técnico Completo A4 (10 Servicios + GEO + 3 Satélites)](https://sistemaspyme.es/documentos/catalogo.html)
+- [Tarjetón Oficial de Tarifas y Modalidades](https://sistemaspyme.es/documentos/tarifas.html)
+- [Anexo Técnico de Puesta en Marcha (Setup y GEO)](https://sistemaspyme.es/documentos/setup.html)
+- [Tabla de Desembolso Día 1](https://sistemaspyme.es/documentos/desembolso.html)
+- [Pyme Magazine Nº 1: La Nueva Regla del Boca a Boca en Google Maps](https://sistemaspyme.es/articulos/Pyme_Magazine_N1.html)
+"""
+
+
+def construir_sitemap_xml():
+    fecha_hoy = datetime.now().strftime("%Y-%m-%d")
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://sistemaspyme.es/</loc>
+    <lastmod>{fecha_hoy}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://sistemaspyme.es/documentos/catalogo.html</loc>
+    <lastmod>{fecha_hoy}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sistemaspyme.es/documentos/tarifas.html</loc>
+    <lastmod>{fecha_hoy}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sistemaspyme.es/documentos/setup.html</loc>
+    <lastmod>{fecha_hoy}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sistemaspyme.es/documentos/desembolso.html</loc>
+    <lastmod>{fecha_hoy}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sistemaspyme.es/articulos/Pyme_Magazine_N1.html</loc>
+    <lastmod>{fecha_hoy}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sistemaspyme.es/tarjeta.html</loc>
+    <lastmod>{fecha_hoy}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>
+"""
 
 
 def ejecutar_actualizacion():
-    print("=" * 84)
-    print("🚀 AMPLIANDO DESCRIPCIONES DEL DOSSIER A4 DE ORDENADOR (catalogo.html) — PÁGINAS 2, 3 Y 4")
-    print("=" * 84)
+    print("=" * 86)
+    print("🚀 APLICANDO ESTRATEGIA AVANZADA DE SEO LOCAL Y OPTIMIZACIÓN GEO (LLMO) EN TU WEB")
+    print("=" * 86)
 
     dir_raiz = localizar_directorio_public_html()
     if not dir_raiz:
-        print("❌ No se encontró la carpeta public_html.")
+        print("❌ No se encontró el directorio 'public_html' con 'index.html'.")
         return
 
     carpeta_backups = os.path.join(dir_raiz, "backups_sp")
     os.makedirs(carpeta_backups, exist_ok=True)
     marca = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    dir_docs = os.path.join(dir_raiz, "documentos")
-    os.makedirs(dir_docs, exist_ok=True)
+    ruta_index = os.path.join(dir_raiz, "index.html")
+    ruta_bk = os.path.join(carpeta_backups, f"index.html.backup_{marca}")
+    shutil.copy2(ruta_index, ruta_bk)
+    print(f"📦 Backup automático creado en: {ruta_bk}")
 
-    ruta_catalogo_pc = os.path.join(dir_docs, "catalogo.html")
-    if os.path.isfile(ruta_catalogo_pc):
-        ruta_bk = os.path.join(carpeta_backups, f"catalogo.html.backup_{marca}")
-        shutil.copy2(ruta_catalogo_pc, ruta_bk)
-        print(f"📦 Backup creado en: {ruta_bk}")
+    with open(ruta_index, "r", encoding="utf-8") as f:
+        html = f.read()
 
-    with open(ruta_catalogo_pc, "w", encoding="utf-8") as f:
-        f.write(construir_dossier_a4_pc_completo())
+    cambios = 0
 
-    print("   ✔ 'documentos/catalogo.html' actualizado con descripciones ampliadas:")
-    print("     • Página 3 (Servicios 6 al 10): cada columna tiene ahora 2 puntos explicativos completos paso a paso (en vez de 1 línea corta).")
-    print("     • Página 4 (Satélites 1, 2 y 3 + Bóveda + Garantías): cada columna tiene ahora de 2 a 3 puntos detallados (algoritmo IG, logística inversa, seguridad RAG y revocación de claves).")
-    print("=" * 84)
-    print("✅ PROCESO COMPLETADO CON ÉXITO.")
-    print("=" * 84)
+    # 1. Optimizar <title> y <meta name="description"> siguiendo la regla 3.2 del informe ([Servicio Principal] en [Región] | [Propuesta de Valor] - [Marca])
+    print("🔍 [1/4] Optimizando Title Tag, Meta Description hiperlocal y Grafo Schema.org JSON-LD (@graph + Wikidata sameAs)...")
+    nuevo_title = "<title>Automatización con IA, Reseñas Google Maps y Auditoría SEO Local + GEO en Galicia | Sistemas Pyme</title>"
+    nueva_desc = '<meta name="description" content="Sistemas tácticos de Inteligencia Artificial, Gestión de Reseñas en Google Maps (59 €/mes), Cortafuegos por WhatsApp Oficial y Auditoría SEO Local + GEO (LLMO) en Galicia y España para que tu negocio sea recomendado por ChatGPT, Gemini, Perplexity y Google Maps.">'
+
+    if "<title>" in html:
+        html = re.sub(r"<title>.*?</title>", nuevo_title, html, count=1, flags=re.DOTALL)
+    if 'name="description"' in html:
+        html = re.sub(r'<meta\s+name="description"\s+content="[^"]*">', nueva_desc, html, count=1)
+
+    # Limpiar bloque previo si ya existiera e inyectar antes de </head>
+    html = re.sub(
+        r"\s*<!-- \[SP_GEO_LLMO_HEAD_START\] -->.*?<!-- \[SP_GEO_LLMO_HEAD_END\] -->",
+        "",
+        html,
+        flags=re.DOTALL
+    )
+    bloque_head = construir_bloque_head_seo_geo_llmo()
+    if "</head>" in html:
+        html = html.replace("</head>", f"{bloque_head}\n</head>", 1)
+        cambios += 1
+        print("   ✔ Grafo Schema.org JSON-LD (@id, GeoCoordinates, Wikidata areaServed/knowsAbout y FAQPage) inyectado en <head>.")
+
+    # 2. Insertar la sección visible RAG-Friendly (4 Pilares GEO + Preguntas Frecuentes Directas H2/H3)
+    print("🔍 [2/4] Inyectando bloque visible 'RAG-Friendly' (Pilar GEO/LLMO + Preguntas Frecuentes Directas)...")
+    html = re.sub(
+        r"\s*<!-- \[SP_RAG_FRIENDLY_SECTION_START\] -->.*?<!-- \[SP_RAG_FRIENDLY_SECTION_END\] -->",
+        "",
+        html,
+        flags=re.DOTALL
+    )
+    seccion_rag = construir_seccion_rag_friendly_y_geo()
+    # Insertarlo justo antes del cierre de contacto (#contacto) o del footer
+    patron_contacto = re.compile(r'(\s*<!-- CIERRE Y LLAMADA A LA ACCIÓN -->|\s*<section id="contacto")')
+    if patron_contacto.search(html):
+        html = patron_contacto.sub(f"\n{seccion_rag}\\1", html, count=1)
+        cambios += 1
+        print("   ✔ Sección RAG-Friendly (4 Pilares + FAQs conversacionales en <40 palabras) añadida antes de Contacto.")
+    elif "<footer" in html:
+        html = html.replace("<footer", f"{seccion_rag}\n\n  <footer", 1)
+        cambios += 1
+
+    # 3. Estandarizar el bloque NAP+W en el footer con microdatos semánticos legibles por bots
+    print("🔍 [3/4] Estandarizando consistencia estricta NAP+W en el pie de página...")
+    viejo_nap = '<p class="mt-0.5">Consultoría Tecnológica, Posicionamiento GEO IA y Automatización para Negocios • Galicia, España</p>'
+    nuevo_nap = (
+        '<p class="mt-0.5 text-slate-300"><strong>NAP+W Oficial Verificado:</strong> Sistemas Pyme • '
+        'Santa Comba / Área de Santiago de Compostela y A Coruña (CP 15840, Galicia, España) • '
+        'Tel: <a href="tel:+34711547561" class="text-teal-400 hover:underline">+34 711 54 75 61</a> • '
+        'Web: <a href="https://sistemaspyme.es/" class="text-teal-400 hover:underline">https://sistemaspyme.es</a></p>'
+    )
+    if viejo_nap in html:
+        html = html.replace(viejo_nap, nuevo_nap, 1)
+        cambios += 1
+        print("   ✔ Bloque NAP+W estandarizado en el footer.")
+
+    with open(ruta_index, "w", encoding="utf-8") as f:
+        f.write(html)
+
+    # 4. Generar archivos técnicos de rastreo para Agentes de IA: robots.txt, llms.txt y sitemap.xml
+    print("🔍 [4/4] Generando 'robots.txt' (apertura a OAI-SearchBot, PerplexityBot, Google-Extended, ClaudeBot y Bingbot), 'llms.txt' y 'sitemap.xml'...")
+    ruta_robots = os.path.join(dir_raiz, "robots.txt")
+    with open(ruta_robots, "w", encoding="utf-8") as f:
+        f.write(construir_robots_txt())
+
+    ruta_llms = os.path.join(dir_raiz, "llms.txt")
+    with open(ruta_llms, "w", encoding="utf-8") as f:
+        f.write(construir_llms_txt())
+
+    ruta_sitemap = os.path.join(dir_raiz, "sitemap.xml")
+    with open(ruta_sitemap, "w", encoding="utf-8") as f:
+        f.write(construir_sitemap_xml())
+
+    print("   ✔ Archivos 'robots.txt', 'llms.txt' y 'sitemap.xml' creados en public_html.")
+    print("=" * 86)
+    print(f"🎉 PROCESO COMPLETADO: '{ruta_index}' actualizado ({cambios} bloques inyectados) + 3 archivos de indexación IA creados.")
+    print("=" * 86)
 
 
 if __name__ == "__main__":
