@@ -385,7 +385,7 @@
                 </div>
 
                 <div class="flex items-center justify-between text-[9.5px] font-bold text-slate-300 mb-1">
-                  <span>✏️ Pulsa un tono para ver cómo redacta la IA:</span>
+                  <span>✏️ Pulsa un tono para ver un resumen de cómo redacta la IA:</span>
                   <span class="text-emerald-400 text-[9px]">4-5★ Auto-Publicadas</span>
                 </div>
                 <div class="grid grid-cols-4 gap-1 text-center text-[9.5px] font-bold mb-2">
@@ -416,6 +416,11 @@
                   <span class="bg-blue-600/80 text-white px-2 py-1 rounded flex-1 text-center">👉 Abrir Gestor de Respuestas (4 Tonos)</span>
                   <span class="bg-slate-800 text-teal-300 border border-teal-500/30 px-2 py-1 rounded">📊 Informe 360°</span>
                 </div>
+              </div>
+
+              <div class="mt-2 pt-1.5 border-t border-white/10 text-[9.5px] text-teal-200/90 leading-snug flex items-start gap-1.5">
+                <span class="text-amber-400 font-bold flex-shrink-0">✨</span>
+                <span><strong>Nota (Vista resumida de aproximación):</strong> En el sistema real en vivo, las respuestas de la IA, el análisis jurídico de la alerta y la nota psicológica son <strong>aún más completas, extensas y personalizadas</strong> al contexto exacto de tu negocio.</span>
               </div>
             </div>
 
@@ -461,7 +466,7 @@
                 <span class="bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded text-[9px]">Enviada 2h tras la cita • ES / GAL / CAT</span>
               </div>
 
-              <!-- Burbuja blanca/oscura idéntica a la plantilla de Meta Business Suite -->
+              <!-- Burbuja idéntica a la plantilla de Meta Business Suite -->
               <div class="bg-[#1f2c34] text-slate-100 text-[10.5px] rounded-lg rounded-tl-none p-2.5 leading-snug mb-1.5 border border-white/5 shadow">
                 <p class="mb-1">Hola, <strong>Marta</strong>.</p>
                 <p class="mb-1">Gracias por confiar en <strong>Clínica Dental / Tu Negocio</strong>.</p>
@@ -506,6 +511,11 @@
               <!-- Cierre / Acción del Escudo Privado y Alerta a Gerencia -->
               <div id="cajaCierreEscudoS2" class="bg-teal-950/50 border border-teal-500/30 rounded-md p-2 text-[9.5px] text-teal-200 leading-snug">
                 🔁 <strong class="text-teal-300">Memoria Inteligente (Regla 180 días + 2 oportunidades):</strong> Si el cliente recurrente ya dejó su reseña anteriormente, el sistema lo detecta y le envía la variante de agradecimiento <em>sin enlace</em> para no saturarle jamás.
+              </div>
+
+              <div class="mt-2 pt-1.5 border-t border-white/10 text-[9.5px] text-emerald-200/90 leading-snug flex items-start gap-1.5">
+                <span class="text-amber-400 font-bold flex-shrink-0">✨</span>
+                <span><strong>Nota (Simulación resumida):</strong> En producción el sistema adapta los mensajes en <strong>4 tonos (Formal, Semiformal, Cercano o Directo) y 3 idiomas</strong>, transcribe audios por IA y te entrega alertas completas con botón para contactar al cliente en 1 toque.</span>
               </div>
             </div>
 
@@ -1859,6 +1869,54 @@
 
       if (elLabel) elLabel.textContent = info.label;
       if (elPropuesta) elPropuesta.innerHTML = info.propuesta;
+      if (elNota) elNota.innerHTML = info.nota;
+
+      ['FORMAL', 'SEMIFORMAL', 'CERCANO', 'DIRECTO'].forEach(t => {
+        const btn = document.getElementById('btnTonoS1_' + t);
+        if (!btn) return;
+        const nombres = { FORMAL: 'Formal', SEMIFORMAL: 'Semiformal', CERCANO: 'Cercano', DIRECTO: 'Directo' };
+        if (t === tono) {
+          btn.className = 'bg-teal-500/30 border border-teal-400 text-teal-200 py-1 rounded transition-all cursor-pointer';
+          btn.textContent = nombres[t] + ' ✓';
+        } else {
+          btn.className = 'bg-slate-800 hover:bg-slate-700 border border-white/10 text-slate-300 py-1 rounded transition-all cursor-pointer';
+          btn.textContent = nombres[t];
+        }
+      });
+    }
+
+    // SELECTOR INTERACTIVO DE LOS 4 TONOS EN EL SERVICIO 1 (Simulación Real de motor_ia_prompts.py)
+    function cambiarTonoDemoS1(tono) {
+      const datosTonos = {
+        FORMAL: {
+          label: 'Tono Formal (Usted)',
+          propuesta: '<p>Estimado Carlos:</p><p>Lamentamos sinceramente que el tiempo de espera y su percepción sobre nuestra atención no hayan estado a la altura de sus expectativas.</p><p>En nuestro centro aplicamos rigurosos estándares de calidad asistencial y máxima transparencia en cada presupuesto.</p><p>Por estricto respeto a la confidencialidad de sus datos (RGPD), le invitamos a contactar directamente con dirección para revisar su expediente en privado.<br><span class="not-italic text-teal-300 font-semibold">Atentamente, Dirección.</span></p>',
+          nota: 'Tono institucional de máxima contención jurídica: trata de «usted», protege el secreto profesional sanitario (RGPD) y neutraliza la acusación económica sin admitir responsabilidad civil.'
+        },
+        SEMIFORMAL: {
+          label: 'Tono Semiformal',
+          propuesta: '<p>Hola, Carlos:</p><p>Lamentamos sinceramente que los tiempos de espera y la percepción sobre tu visita no hayan cumplido tus expectativas.</p><p>En nuestro centro trabajamos bajo estrictos protocolos de calidad y transparencia presupuestaria en cada atención personalizada.</p><p>Por respeto a tu privacidad, te invitamos a contactarnos directamente con dirección para revisar tu expediente personalmente.<br><span class="not-italic text-teal-300 font-semibold">Un cordial saludo, Dirección.</span></p>',
+          nota: 'Aplicamos la <em>Paradoja de Recuperación del Servicio</em>: validamos su malestar por la demora sin confirmar jamás en público qué tratamiento clínico se realizó (RGPD) ni repetir la palabra tóxica, derivando la aclaración a privado.'
+        },
+        CERCANO: {
+          label: 'Tono Cercano',
+          propuesta: '<p>Hola, Carlos:</p><p>Sentimos muchísimo que tu paso por nuestro centro te haya dejado esta sensación y que hayas tenido que esperar más de lo habitual.</p><p>Para todo nuestro equipo lo más importante es que cada persona se sienta bien cuidada y con total claridad en todo momento.</p><p>Por favor, escríbenos o llámanos directamente a dirección para que podamos escucharte en privado y darte una solución personal.<br><span class="not-italic text-teal-300 font-semibold">Un abrazo, el equipo de Dirección.</span></p>',
+          nota: 'Empatía cálida y humana que desactiva la hostilidad del cliente ante miles de lectores en Google Maps, manteniendo intacto el escudo RGPD y la regla Anti-Efecto Loro.'
+        },
+        DIRECTO: {
+          label: 'Tono Directo',
+          propuesta: '<p>Hola, Carlos:</p><p>Tomamos nota de tu comentario sobre el tiempo de espera y lamentamos que tu experiencia no haya sido satisfactoria.</p><p>Trabajamos siempre con presupuestos cerrados y explicados previamente con total rigor profesional.</p><p>Por privacidad no tratamos expedientes particulares por esta vía pública; contáctanos directamente en dirección para revisarlo hoy mismo.<br><span class="not-italic text-teal-300 font-semibold">Un saludo, Dirección.</span></p>',
+          nota: 'Respuesta ejecutiva, concisa y firme: corta de raíz el debate público en 3 frases claras, transmite seriedad empresarial y lleva la conversación al terreno privado.'
+        }
+      };
+
+      const info = datosTonos[tono] || datosTonos.SEMIFORMAL;
+      const elLabel = document.getElementById('labelTonoActivoS1');
+      const elProp = document.getElementById('textoPropuestaS1');
+      const elNota = document.getElementById('textoNotaPsicoS1');
+
+      if (elLabel) elLabel.textContent = info.label;
+      if (elProp) elProp.innerHTML = info.propuesta;
       if (elNota) elNota.innerHTML = info.nota;
 
       ['FORMAL', 'SEMIFORMAL', 'CERCANO', 'DIRECTO'].forEach(t => {
