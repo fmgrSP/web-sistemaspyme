@@ -991,24 +991,17 @@
       }
     }
   </style>
-
-
-
-
-
-
-<!-- [SP_AUTO_FIT_MOBILE_START] Autoencuadre Directo + Letra Más Grande -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" id="sp-dynamic-viewport">
+<!-- [SP_AUTO_FIT_MOBILE_START] Autoencuadre Directo + Tablas Completas sin Recortes -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0" id="sp-dynamic-viewport">
 <style id="sp-direct-autofit-css">
   @media screen {
     html, body {
       margin: 0 !important;
-      padding: 0 !important;
-      width: 100% !important;
-      overflow-x: hidden !important;
+      padding: 8px 0 24px 0 !important;
+      overflow-x: visible !important;
       -webkit-text-size-adjust: 100% !important;
     }
-    /* Permitir que cada hoja crezca en altura en pantalla para albergar la letra más grande sin cortar nada */
+    /* Evitar que ningún contenedor recorte trozos de tablas o de la Vía 2 */
     .sheet, .page, .a4-page, .a5-page, .dossier-page, .magazine-page {
       height: auto !important;
       min-height: 0 !important;
@@ -1017,54 +1010,82 @@
       margin-left: auto !important;
       margin-right: auto !important;
     }
+    .pricing-table-box, .table-box, .table-container, .via-card, .modalidad-box, section, article, div {
+      overflow: visible !important;
+      max-height: none !important;
+    }
+    table {
+      width: 100% !important;
+      max-width: 100% !important;
+      border-collapse: collapse !important;
+      table-layout: auto !important;
+    }
+    th, td {
+      word-break: normal !important;
+      overflow-wrap: break-word !important;
+    }
   }
 </style>
 <script id="sp-auto-fit-mobile">
 (function() {
-  function aplicarAutoencuadreYLetraGrande() {
+  function ajustarDocumentoYTablas() {
     var hojas = document.querySelectorAll('.sheet, .page, .a4-page, .a5-page, .dossier-page, .magazine-page');
-    if (!hojas.length) return;
+    var contenedorPrincipal = hojas.length ? hojas[0] : document.body.firstElementChild;
+    if (!contenedorPrincipal) return;
 
-    /* 1. Agrandar proporcionalmente todas las letras del documento en pantalla (+35%) una sola vez */
-    if (!document.body.dataset.spFontBoosted) {
-      document.body.dataset.spFontBoosted = '1';
-      hojas.forEach(function(hoja) {
+    /* 1. Aumentar de forma segura la letra de los textos generales (+22%), pero en tablas densas (+8%) para que no rompan ni desborden ninguna columna */
+    if (!document.body.dataset.spFontAdjusted) {
+      document.body.dataset.spFontAdjusted = '1';
+      var contenedores = hojas.length ? hojas : [document.body];
+      contenedores.forEach(function(hoja) {
         var elementos = hoja.querySelectorAll('*');
         var cambios = [];
         elementos.forEach(function(el) {
-          if (el.children.length === 0 || el.tagName === 'P' || el.tagName === 'TD' || el.tagName === 'TH' || el.tagName === 'LI' || el.tagName === 'SPAN' || el.tagName === 'STRONG' || /^H[1-6]$/.test(el.tagName)) {
+          if (el.children.length === 0 || el.tagName === 'P' || el.tagName === 'TD' || el.tagName === 'TH' || el.tagName === 'LI' || el.tagName === 'SPAN' || el.tagName === 'STRONG') {
             var cs = window.getComputedStyle(el);
             var fs = parseFloat(cs.fontSize);
-            if (fs && fs > 0 && fs < 17) {
-              var nuevoFs = Math.min(18, Math.round(fs * 1.32 * 10) / 10);
-              cambios.push({ el: el, size: nuevoFs });
+            if (fs && fs > 0 && fs < 14) {
+              var dentroDeTabla = !!el.closest('table');
+              var factor = dentroDeTabla ? 1.08 : 1.20;
+              var tope = dentroDeTabla ? 11.5 : 15.0;
+              var nuevoFs = Math.min(tope, Math.round(fs * factor * 10) / 10);
+              cambios.push({ el: el, size: nuevoFs, enTabla: dentroDeTabla });
             }
           }
         });
         cambios.forEach(function(item) {
           item.el.style.fontSize = item.size + 'px';
-          item.el.style.lineHeight = '1.28';
+          if (!item.enTabla) {
+            item.el.style.lineHeight = '1.26';
+          }
         });
       });
     }
 
-    /* 2. Autoencuadrar el documento exactamente al ancho de la pantalla del móvil */
-    var primeraHoja = hojas[0];
-    var anchoHoja = primeraHoja.offsetWidth || 560;
-    var vp = document.getElementById('sp-dynamic-viewport') || document.querySelector('meta[name="viewport"]');
+    /* 2. Calcular el ancho real máximo (incluyendo cualquier tabla ancha como la de desembolso.html o Cara B de tarifas.html) */
+    var maxAncho = contenedorPrincipal.scrollWidth || contenedorPrincipal.offsetWidth || 600;
+    hojas.forEach(function(h) {
+      if (h.scrollWidth > maxAncho) maxAncho = h.scrollWidth;
+      if (h.offsetWidth > maxAncho) maxAncho = h.offsetWidth;
+    });
+    document.querySelectorAll('table').forEach(function(t) {
+      if (t.scrollWidth + 24 > maxAncho) maxAncho = t.scrollWidth + 24;
+    });
 
-    if (vp && window.screen && window.screen.width < 820) {
-      var anchoObjetivo = anchoHoja + 16;
-      vp.setAttribute('content', 'width=' + anchoObjetivo + ', user-scalable=yes, maximum-scale=5.0');
+    /* 3. Fijar el viewport del móvil al ancho real del documento + 24px de margen para que se autoencuadre entero sin cortar ningún borde */
+    var vp = document.getElementById('sp-dynamic-viewport') || document.querySelector('meta[name="viewport"]');
+    if (vp) {
+      var anchoViewport = Math.max(580, maxAncho + 24);
+      vp.setAttribute('content', 'width=' + anchoViewport + ', user-scalable=yes, maximum-scale=5.0');
     }
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', aplicarAutoencuadreYLetraGrande);
+    document.addEventListener('DOMContentLoaded', ajustarDocumentoYTablas);
   } else {
-    aplicarAutoencuadreYLetraGrande();
+    ajustarDocumentoYTablas();
   }
-  window.addEventListener('load', aplicarAutoencuadreYLetraGrande);
+  window.addEventListener('load', ajustarDocumentoYTablas);
 })();
 </script>
 <!-- [SP_AUTO_FIT_MOBILE_END] -->
