@@ -17,12 +17,12 @@
       color: #f1f5f9;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 16.5px;
-      line-height: 1.55;
+      line-height: 1.58;
       -webkit-text-size-adjust: 100%;
     }
     body.font-xl {
       font-size: 19px;
-      line-height: 1.62;
+      line-height: 1.65;
     }
     .topbar {
       position: sticky;
@@ -51,6 +51,7 @@
       align-items: center;
       gap: 5px;
       white-space: nowrap;
+      cursor: pointer;
     }
     .topbar-actions {
       display: flex;
@@ -75,7 +76,7 @@
       border-color: #475569;
     }
     .container {
-      max-width: 640px;
+      max-width: 660px;
       margin: 0 auto;
       padding: 18px 16px 48px 16px;
       display: flex;
@@ -103,10 +104,10 @@
       margin-bottom: 8px;
     }
     .hero-title {
-      font-size: 1.45em;
+      font-size: 1.42em;
       font-weight: 900;
       color: #ffffff;
-      line-height: 1.22;
+      line-height: 1.24;
       margin-bottom: 6px;
     }
     .hero-sub {
@@ -116,7 +117,7 @@
     .section-head {
       background: linear-gradient(90deg, #0f766e 0%, #115e59 100%);
       color: #ffffff;
-      padding: 10px 14px;
+      padding: 11px 14px;
       border-radius: 12px;
       font-weight: 900;
       font-size: 0.95em;
@@ -127,6 +128,7 @@
     .section-head.blue { background: linear-gradient(90deg, #1e3a8a 0%, #1d4ed8 100%); }
     .section-head.indigo { background: linear-gradient(90deg, #3730a3 0%, #4f46e5 100%); }
     .section-head.amber { background: linear-gradient(90deg, #b45309 0%, #d97706 100%); }
+    .section-head.pink { background: linear-gradient(90deg, #831843 0%, #be185d 100%); }
     .card {
       background: #0f172a;
       border: 1.5px solid rgba(255,255,255,0.12);
@@ -135,24 +137,58 @@
       padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 11px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.25);
     }
     .card.amber { border-left-color: #f59e0b; background: linear-gradient(145deg, #1c1917 0%, #0f172a 100%); }
     .card.emerald { border-left-color: #10b981; border-color: rgba(16,185,129,0.45); background: linear-gradient(145deg, rgba(6,78,59,0.45) 0%, #0f172a 100%); }
     .card.blue { border-left-color: #3b82f6; }
     .card.indigo { border-left-color: #6366f1; }
+    .card.pink { border-left-color: #ec4899; background: linear-gradient(145deg, rgba(131,24,67,0.3) 0%, #0f172a 100%); }
     .card-top {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
       gap: 10px;
     }
+    .card-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
     .card-title {
       font-size: 1.12em;
       font-weight: 900;
       color: #ffffff;
       line-height: 1.25;
+      display: block;
+    }
+    .card-subtitle {
+      display: inline-block;
+      font-size: 0.84em;
+      font-weight: 800;
+      color: #5eead4;
+      background: rgba(20, 184, 166, 0.14);
+      border: 1px solid rgba(20, 184, 166, 0.35);
+      padding: 2px 9px;
+      border-radius: 8px;
+      width: fit-content;
+      white-space: nowrap;
+    }
+    .card-subtitle.amber {
+      color: #fcd34d;
+      background: rgba(245, 158, 11, 0.16);
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+    .card-subtitle.blue {
+      color: #93c5fd;
+      background: rgba(59, 130, 246, 0.16);
+      border-color: rgba(59, 130, 246, 0.4);
+    }
+    .card-subtitle.indigo {
+      color: #c7d2fe;
+      background: rgba(99, 102, 241, 0.16);
+      border-color: rgba(99, 102, 241, 0.4);
     }
     .price-tag {
       background: rgba(20, 184, 166, 0.18);
@@ -174,6 +210,24 @@
       font-size: 0.95em;
       color: #e2e8f0;
     }
+    .deep-box {
+      background: rgba(0, 0, 0, 0.32);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .deep-title {
+      font-size: 0.84em;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #5eead4;
+    }
+    .deep-title.amber { color: #fcd34d; }
+    .deep-title.blue { color: #93c5fd; }
     .data-grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -207,7 +261,7 @@
     }
     .data-val.highlight {
       color: #34d399;
-      font-size: 1.05em;
+      font-size: 1.04em;
     }
     .list-check {
       list-style: none;
@@ -255,10 +309,10 @@
 </head>
 <body>
   <header class="topbar">
-    <a href="../index.html#tarifas" class="btn-back">⬅ Volver a la Web</a>
+    <a href="../index.html#tarifas" onclick="volverACerrarPestana(event, '../index.html#tarifas')" class="btn-back">⬅ Volver a la Web</a>
     <div class="topbar-actions">
       <button type="button" id="btnToggleFont" onclick="toggleFont()" class="btn-action">🔎 Letra A+</button>
-      <a href="desembolso.html?modo=impreso" class="btn-action secondary">📄 Ver Original A4/A5</a>
+      <a href="desembolso.html?modo=impreso" class="btn-action secondary">📄 Original A4/A5</a>
     </div>
   </header>
 
@@ -274,7 +328,10 @@
 
     <article class="card">
       <div class="card-top">
-        <span class="card-title">1. Plan PYME BASE (1 Servicio)</span>
+        <div class="card-title-wrap">
+          <span class="card-title">1. Plan PYME BASE</span>
+          <span class="card-subtitle">1 Servicio Activo</span>
+        </div>
         <span class="price-tag">59 €/m</span>
       </div>
       <div class="data-grid">
@@ -287,7 +344,10 @@
 
     <article class="card emerald">
       <div class="card-top">
-        <span class="card-title">2. PACK ESCUDO / DÚO ★ (2 Servicios)</span>
+        <div class="card-title-wrap">
+          <span class="card-title">2. PACK ESCUDO / PLAN DÚO ★</span>
+          <span class="card-subtitle">2 Servicios Activos</span>
+        </div>
         <span class="price-tag amber">99 €/m</span>
       </div>
       <p><strong>Efecto Anclaje:</strong> Contratar 2 servicios + la Auditoría GEO cuesta <strong>420 € de entrada</strong> (225€ Setup + 195€ GEO), es decir, <strong>80 € menos que contratar 1 solo servicio + GEO (500 €)</strong>.</p>
@@ -302,7 +362,10 @@
 
     <article class="card emerald">
       <div class="card-top">
-        <span class="card-title">3. Plan PYME TRINITY ★ (3 Servicios)</span>
+        <div class="card-title-wrap">
+          <span class="card-title">3. Plan PYME TRINITY ★</span>
+          <span class="card-subtitle amber">3 Servicios Activos</span>
+        </div>
         <span class="price-tag">139 €/m</span>
       </div>
       <div class="data-grid">
@@ -316,7 +379,10 @@
 
     <article class="card blue">
       <div class="card-top">
-        <span class="card-title">4. Plan PYME QUATRO (4 Servicios)</span>
+        <div class="card-title-wrap">
+          <span class="card-title">4. Plan PYME QUATRO</span>
+          <span class="card-subtitle blue">4 Servicios Activos</span>
+        </div>
         <span class="price-tag">179 €/m</span>
       </div>
       <div class="data-grid">
@@ -328,7 +394,10 @@
 
     <article class="card indigo">
       <div class="card-top">
-        <span class="card-title">5. Plan PYME PENTIUM (5 Servicios)</span>
+        <div class="card-title-wrap">
+          <span class="card-title">5. Plan PYME PENTIUM</span>
+          <span class="card-subtitle indigo">5 Servicios Activos</span>
+        </div>
         <span class="price-tag">219 €/m</span>
       </div>
       <div class="data-grid">
@@ -361,6 +430,12 @@
         btn.textContent = '🔎 Letra A+';
         btn.style.background = '#0d7d74';
         btn.style.color = '#ffffff';
+      }
+    }
+    function volverACerrarPestana(e, fallbackUrl) {
+      if (window.opener && !window.opener.closed) {
+        e.preventDefault();
+        window.close();
       }
     }
   </script>
