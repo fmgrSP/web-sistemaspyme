@@ -2583,5 +2583,31 @@
     });
   </script>
 
+<!-- [SP_INDEX_DOC_ROUTER_START] -->
+<script>
+  (function() {
+    function esDispositivoMovilSP() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 820;
+    }
+    const mapaMovil = {
+      'documentos/catalogo.html': 'documentos/catalogo_movil.html',
+      'documentos/tarifas.html': 'documentos/tarifas_movil.html',
+      'documentos/setup.html': 'documentos/setup_movil.html',
+      'documentos/desembolso.html': 'documentos/desembolso_movil.html',
+      'articulos/Pyme_Magazine_N1.html': 'articulos/Pyme_Magazine_N1_movil.html'
+    };
+    document.addEventListener('click', function(e) {
+      const link = e.target.closest('a[href]');
+      if (!link) return;
+      const href = link.getAttribute('href') || '';
+      if (mapaMovil[href] && esDispositivoMovilSP()) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.location.href = mapaMovil[href];
+      }
+    }, true);
+  })();
+</script>
+<!-- [SP_INDEX_DOC_ROUTER_END] -->
 </body>
 </html>

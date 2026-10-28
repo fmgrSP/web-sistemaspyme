@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<!-- [SP_SMART_REDIRECT_START] -->
+<script>
+  (function() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('modo') === 'impreso') return;
+      var esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth > 0 && window.innerWidth <= 820);
+      if (esMovil) {
+        window.location.replace('tarifas_movil.html');
+      }
+    } catch(e) {}
+  })();
+</script>
+<!-- [SP_SMART_REDIRECT_END] -->
   <meta charset="UTF-8">
   <title>5/9 • Tarifas Fase 1 Oficial 59€ (A5) - Sistemas Pyme</title>
   <meta name="viewport" content="width=820">

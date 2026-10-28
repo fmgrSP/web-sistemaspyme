@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Pyme Magazine Nº 1: La Nueva Regla del «Boca a Boca» (Versión Móvil Lectura Cómoda) — Sistemas Pyme</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      background-color: #071629;
+      color: #f1f5f9;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 16.5px;
+      line-height: 1.55;
+      -webkit-text-size-adjust: 100%;
+    }
+    body.font-xl {
+      font-size: 19px;
+      line-height: 1.62;
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(7, 22, 41, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid #14b8a6;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    }
+    .btn-back {
+      background: #1e293b;
+      color: #5eead4;
+      border: 1px solid rgba(20,184,166,0.45);
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-action {
+      background: #0d7d74;
+      color: #ffffff;
+      border: 1px solid #14b8a6;
+      font-weight: 800;
+      font-size: 12.5px;
+      padding: 8px 11px;
+      border-radius: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-action.secondary {
+      background: #1e293b;
+      color: #cbd5e1;
+      border-color: #475569;
+    }
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 18px 16px 48px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .hero-box {
+      background: linear-gradient(145deg, #0b2545 0%, #0f172a 100%);
+      border: 1.5px solid rgba(20, 184, 166, 0.45);
+      border-radius: 18px;
+      padding: 18px 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(20, 184, 166, 0.18);
+      color: #5eead4;
+      border: 1px solid rgba(20, 184, 166, 0.4);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 4px 10px;
+      border-radius: 99px;
+      margin-bottom: 8px;
+    }
+    .hero-title {
+      font-size: 1.45em;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.22;
+      margin-bottom: 6px;
+    }
+    .hero-sub {
+      font-size: 0.92em;
+      color: #cbd5e1;
+    }
+    .section-head {
+      background: linear-gradient(90deg, #0f766e 0%, #115e59 100%);
+      color: #ffffff;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 900;
+      font-size: 0.95em;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-top: 6px;
+    }
+    .section-head.blue { background: linear-gradient(90deg, #1e3a8a 0%, #1d4ed8 100%); }
+    .section-head.indigo { background: linear-gradient(90deg, #3730a3 0%, #4f46e5 100%); }
+    .section-head.amber { background: linear-gradient(90deg, #b45309 0%, #d97706 100%); }
+    .card {
+      background: #0f172a;
+      border: 1.5px solid rgba(255,255,255,0.12);
+      border-left: 5px solid #14b8a6;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    }
+    .card.amber { border-left-color: #f59e0b; background: linear-gradient(145deg, #1c1917 0%, #0f172a 100%); }
+    .card.emerald { border-left-color: #10b981; border-color: rgba(16,185,129,0.45); background: linear-gradient(145deg, rgba(6,78,59,0.45) 0%, #0f172a 100%); }
+    .card.blue { border-left-color: #3b82f6; }
+    .card.indigo { border-left-color: #6366f1; }
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .card-title {
+      font-size: 1.12em;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.25;
+    }
+    .price-tag {
+      background: rgba(20, 184, 166, 0.18);
+      color: #5eead4;
+      border: 1px solid rgba(20, 184, 166, 0.4);
+      font-weight: 900;
+      font-size: 0.98em;
+      padding: 4px 10px;
+      border-radius: 10px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .price-tag.amber {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fcd34d;
+      border-color: rgba(245, 158, 11, 0.45);
+    }
+    .card p {
+      font-size: 0.95em;
+      color: #e2e8f0;
+    }
+    .data-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px dashed rgba(255,255,255,0.1);
+      font-size: 0.92em;
+    }
+    .data-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .data-label {
+      color: #94a3b8;
+      font-weight: 600;
+    }
+    .data-val {
+      color: #ffffff;
+      font-weight: 800;
+      text-align: right;
+    }
+    .data-val.highlight {
+      color: #34d399;
+      font-size: 1.05em;
+    }
+    .list-check {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.94em;
+      color: #e2e8f0;
+    }
+    .list-check li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .list-check li span.chk {
+      color: #2dd4bf;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    .cta-box {
+      background: linear-gradient(145deg, #064e3b 0%, #0f172a 100%);
+      border: 2px solid #10b981;
+      border-radius: 18px;
+      padding: 20px 16px;
+      text-align: center;
+      margin-top: 8px;
+    }
+    .btn-wa {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      background: #10b981;
+      color: #052e16;
+      font-weight: 900;
+      font-size: 1.02em;
+      padding: 14px 18px;
+      border-radius: 14px;
+      text-decoration: none;
+      margin-top: 12px;
+      box-shadow: 0 6px 20px rgba(16,185,129,0.35);
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="../index.html#magazine" class="btn-back">⬅ Volver a la Web</a>
+    <div class="topbar-actions">
+      <button type="button" id="btnToggleFont" onclick="toggleFont()" class="btn-action">🔎 Letra A+</button>
+      <a href="Pyme_Magazine_N1.html?modo=impreso" class="btn-action secondary">📄 Ver Original A4/A5</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="hero-box">
+      <span class="badge">Pyme Magazine • Fascículo Nº 1</span>
+      <h1 class="hero-title">Pyme Magazine Nº 1: La Nueva Regla del «Boca a Boca»</h1>
+      <p class="hero-sub">Informe Ejecutivo: Psicología de las reseñas en Google Maps, Regla Anti-Efecto Loro, Blindaje RGPD y Cortafuegos de WhatsApp.</p>
+    </div>
+
+    
+    <div class="section-head">01. El Juego Oculto de los Google Local Guides</div>
+    <article class="card">
+      <p>En Google Maps no todas las reseñas pesan igual. La reseña de un <strong>Google Local Guide</strong> (usuarios con insignia de estrella naranja que escriben reseñas detalladas y suben fotos) tiene hasta <strong>10 veces más impacto en el posicionamiento de tu ficha</strong> que una puntuación vacía.</p>
+      <p>Con el <strong>Atril NFC de mostrador</strong> y la <strong>Encuesta Post-Visita por WhatsApp</strong> logras que ningún cliente satisfecho se marche sin dejar su valoración.</p>
+    </article>
+
+    <div class="section-head amber">02. La Trampa del «Efecto Loro» en el SEO</div>
+    <article class="card amber">
+      <p>Cuando un cliente enfadado escribe palabras tóxicas en una reseña (como <em>«estafa», «caro», «sucio» o «mal trato»</em>) y el dueño responde repitiendo esas mismas palabras para defenderse (<em>«No somos ninguna estafa...»</em>), el algoritmo de Google indexa por partida doble ese término negativo asociado a tu local.</p>
+      <p>Nuestro motor de IA aplica la <strong>Regla Anti-Efecto Loro</strong>: jamás repite términos dañinos y los sustituye por lenguaje diplomático de alta autoridad.</p>
+    </article>
+
+    <div class="section-head blue">03. Método Psicológico HEARD y Blindaje RGPD</div>
+    <article class="card blue">
+      <p>Desarrollado originalmente por Disney para la recuperación de clientes, el protocolo <strong>HEARD (Hear, Empathize, Apologize, Resolve, Diagnose)</strong> desactiva la hostilidad del lector futuro en 4 párrafos estructurados.</p>
+      <p>Además, en clínicas médicas, dentales, fisioterapia o despachos jurídicos, nuestro sistema aplica <strong>Blindaje RGPD estricto</strong>: nunca confirma públicamente qué tratamiento o patología tuvo el paciente aunque él mismo lo mencione, evitando sanciones de la AEPD.</p>
+    </article>
+
+    <div class="section-head indigo">04. El Cortafuegos Privado de WhatsApp</div>
+    <article class="card emerald">
+      <p>La mejor reseña negativa es la que nunca llega a publicarse en Google Maps. Al enviar la encuesta interactiva 2 horas después de la cita:</p>
+      <ul class="list-check">
+        <li><span class="chk">🌟</span><span><strong>Si pulsa «Excelente»:</strong> Va directo en 1 toque a publicar sus 5★ en Google Maps.</span></li>
+        <li><span class="chk">🛡️</span><span><strong>Si pulsa «Bien» o «Mejorable»:</strong> Se abre un canal privado en WhatsApp (texto o nota de voz transcrita por IA) y recibes una alerta urgente para solucionarlo en persona antes de que toque internet.</span></li>
+      </ul>
+    </article>
+    
+
+    <div class="cta-box">
+      <div style="font-size: 0.85em; font-weight: 800; color: #6ee7b7; text-transform: uppercase;">Atención Directa • Galicia</div>
+      <div style="font-size: 1.2em; font-weight: 900; color: #ffffff; margin-top: 4px;">Francisco M. Gallardo</div>
+      <div style="font-size: 0.92em; color: #cbd5e1; margin-top: 2px;">Tel: <strong>711 54 75 61</strong> • francisco@sistemaspyme.es</div>
+      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20estoy%20viendo%20la%20documentaci%C3%B3n%20en%20el%20m%C3%B3vil%20y%20quiero%20informaci%C3%B3n%20para%20mi%20negocio" target="_blank" class="btn-wa">
+        💬 Hablar con Francisco por WhatsApp
+      </a>
+    </div>
+  </main>
+
+  <script>
+    function toggleFont() {
+      document.body.classList.toggle('font-xl');
+      const btn = document.getElementById('btnToggleFont');
+      if (document.body.classList.contains('font-xl')) {
+        btn.textContent = '🔎 Letra Normal';
+        btn.style.background = '#f59e0b';
+        btn.style.color = '#0f172a';
+      } else {
+        btn.textContent = '🔎 Letra A+';
+        btn.style.background = '#0d7d74';
+        btn.style.color = '#ffffff';
+      }
+    }
+  </script>
+</body>
+</html>
