@@ -36,7 +36,7 @@
   
   <style>
     html, body {
-      overflow-x: hidden;
+      overflow-x: clip;
       max-width: 100%;
     }
     .hero-glow {
@@ -53,7 +53,7 @@
       background: linear-gradient(145deg, rgba(30, 58, 138, 0.22) 0%, rgba(30, 58, 138, 0.04) 100%);
     }
     .glow-eficiencia {
-      background: linear-gradient(145deg, rgba(67, 56, 202, 0.22) 0%, rgba(67, 56, 202, 0.04) 100%);
+      background: linear-gradient(145deg, rgba(67, 56, 202, 0.22) 0%, rgba(67, 56, 202, 0.04) / 100%);
     }
     @keyframes spGlowPulse {
       0%, 100% {
@@ -110,7 +110,7 @@
     }
   </style>
 </head>
-<body class="bg-brand-dark text-slate-100 font-sans antialiased selection:bg-brand-teal selection:text-white relative overflow-x-hidden w-full">
+<body class="bg-brand-dark text-slate-100 font-sans antialiased selection:bg-brand-teal selection:text-white relative pt-24 w-full">
 
   <!-- MENÚ MÓVIL PANTALLA COMPLETA (HAMBURGUESA) - ORDEN NEUROLÓGICO OPTIMIZADO -->
   <div id="mobileMenu" class="fixed inset-0 z-[100] bg-brand-dark/95 backdrop-blur-xl translate-x-full transition-transform duration-300 md:hidden flex flex-col no-scrollbar overflow-y-auto">
@@ -161,8 +161,8 @@
     </div>
   </div>
 
-  <!-- CABECERA PRINCIPAL NAVEGACIÓN (ORDEN DE CIERRE EN CALIENTE: ACTIVOS -> AUDITORÍA -> TARIFAS -> MAGAZINE -> DESPLIEGUE) -->
-  <header class="sticky top-0 z-50 w-full bg-brand-dark/90 backdrop-blur-md border-b border-white/10 transform-gpu">
+  <!-- CABECERA PRINCIPAL SIEMPRE VISIBLE (FIXED TOP-0) -->
+  <header class="fixed top-0 left-0 right-0 z-50 w-full bg-brand-dark/95 backdrop-blur-md border-b border-white/10 shadow-lg shadow-black/30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-24 flex items-center justify-between gap-2 lg:gap-4">
       
       <a href="#" class="flex items-center group flex-shrink-0">
@@ -256,7 +256,7 @@
         </div>
 
         <div class="lg:col-span-5">
-          <div id="atril-nfc" class="scroll-mt-32 relative rounded-2xl bg-gradient-to-b from-amber-500/10 via-slate-900 to-slate-950 p-6 sm:p-8 border-2 border-amber-500/30 shadow-2xl shadow-amber-950/20">
+          <div id="atril-nfc" class="scroll-mt-28 relative rounded-2xl bg-gradient-to-b from-amber-500/10 via-slate-900 to-slate-950 p-6 sm:p-8 border-2 border-amber-500/30 shadow-2xl shadow-amber-950/20">
             
             <div class="flex items-center justify-between gap-2 mb-4">
               <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-amber-500/20 text-amber-300 text-xs font-bold uppercase tracking-wider border border-amber-500/30">
@@ -276,7 +276,7 @@
             <div class="bg-black/40 rounded-xl p-4 border border-white/5 mb-6 flex items-center justify-between">
               <div>
                 <span class="text-xs text-slate-400 block font-medium">Pago único sin cuotas mensuales:</span>
-                <span class="text-2xl font-black text-amber-400">39 €</span>
+                <span class="text-2xl font-black text-amber-400 whitespace-nowrap">39 €</span>
                 <span class="text-[11px] text-slate-400 block">Equipo propio grabado de por vida</span>
               </div>
               <div class="text-right">
@@ -299,7 +299,7 @@
   </section>
 
   <!-- SECCIÓN I: SERVICIOS ACTIVOS DE REPUTACIÓN, VISIBILIDAD Y AUDITORÍA GEO IA -->
-  <section id="disponibles" class="scroll-mt-24 py-16 md:py-24 bg-slate-950/90 border-t border-white/10">
+  <section id="disponibles" class="scroll-mt-24 pt-12 pb-16 md:pt-16 md:pb-24 bg-slate-950/90 border-t border-white/10">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       
       <div class="text-center max-w-3xl mx-auto mb-10">
@@ -315,7 +315,7 @@
         </p>
       </div>
 
-      <!-- SOLUCIÓN FRICCIÓN 4: ACTIVADOR DE AVERSIÓN A LA PÉRDIDA (CONTRASTE VISUAL DE 5 SEGUNDOS) -->
+      <!-- ACTIVADOR DE AVERSIÓN A LA PÉRDIDA (CONTRASTE VISUAL DE 5 SEGUNDOS) -->
       <div class="mb-12 rounded-2xl bg-slate-900/90 border border-white/10 p-5 sm:p-6 shadow-xl">
         <div class="text-center mb-4">
           <span class="text-[11px] font-extrabold uppercase tracking-widest text-amber-400 block">Realidad Operativa en Negocios Locales</span>
@@ -338,7 +338,7 @@
             <div>
               <span class="text-xs font-black uppercase tracking-wider text-emerald-400 block mb-1">Con Sistemas Pyme (Doble Escudo Activo)</span>
               <p class="text-xs text-slate-200 leading-relaxed">
-                Los clientes satisfechos van en 1 toque a Google Maps para multiplicar tus <strong>5★</strong>, mientras que cualquier queja queda <strong>retenida en privado en tu WhatsApp</strong> antes de hacerse pública, dándote el control total para solucionarla.
+                Los clientes satisfechos van en 1 toque a Google Maps para multiplicar tus <strong>5★</strong>, mientras que cualquier sugerencia o queja queda <strong>retenida en privado en tu WhatsApp</strong> antes de hacerse pública, dándote el control total para solucionarla.
               </p>
             </div>
           </div>
@@ -347,7 +347,7 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-        <!-- SERVICIO 1: GESTIÓN Y RESPUESTA DE RESEÑAS EN GOOGLE CON IA (+ MOCKUP VISUAL ESPEJO) -->
+        <!-- SERVICIO 1: GESTIÓN Y RESPUESTA DE RESEÑAS EN GOOGLE CON IA (CON EL FLUJO REAL DEL GESTOR DE 4 TONOS) -->
         <div class="glow-reputacion backdrop-blur-md border-2 border-teal-500/40 hover:border-teal-400 rounded-2xl p-6 sm:p-7 transition-all flex flex-col justify-between group h-full shadow-xl shadow-teal-950/20">
           <div>
             <div class="flex items-center justify-between gap-2 mb-4">
@@ -355,51 +355,50 @@
                 <span class="w-9 h-9 rounded-xl bg-teal-500 text-slate-950 font-black text-base flex items-center justify-center shadow">1</span>
                 <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-300 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-500/40">● Activo • Blindaje de Reputación</span>
               </div>
-              <span class="text-lg font-black text-teal-300">59 €<span class="text-xs font-normal text-slate-400">/mes</span></span>
+              <span class="text-lg font-black text-teal-300 whitespace-nowrap">59 €<span class="text-xs font-normal text-slate-400">/mes</span></span>
             </div>
             
             <h3 class="text-xl sm:text-2xl font-black mb-3 text-white">
               Gestión y Respuesta de Reseñas en Google con IA
             </h3>
             <p class="text-sm text-slate-300 leading-relaxed mb-3">
-              Piloto automático 24/7 para tu perfil de Google Maps. A las valoraciones positivas (4 y 5★) les responde al instante en el <strong>mismo idioma del cliente</strong> incluyendo de forma natural tus servicios y localidad para subir posiciones en Google, respetando siempre el <strong>secreto profesional y la privacidad (RGPD)</strong>.
+              Piloto automático 24/7 para tu perfil de Google Maps. A las valoraciones positivas (4 y 5★) les responde y publica al instante en el <strong>mismo idioma del cliente</strong> incluyendo de forma natural tus servicios y localidad para subir posiciones en Google, respetando siempre el <strong>secreto profesional y la privacidad (RGPD)</strong>.
             </p>
             <p class="text-sm text-slate-300 leading-relaxed mb-4">
-              Si entra una crítica (1 a 3★), <strong>frena la publicación automática</strong> y te envía un aviso inmediato al móvil con una respuesta diplomática lista para aprobar en 1 toque.
+              Si entra una crítica (1 a 3★) o una queja oculta en 4★, <strong>frena la publicación automática</strong> y te envía una alerta urgente por <strong>WhatsApp, Telegram o Email</strong> con el enlace a tu <strong>Gestor de 4 Tonos</strong> para revisar o editar antes de publicar:
             </p>
 
-            <!-- SOLUCIÓN FRICCIÓN 2: SIMULACIÓN VISUAL EN VIVO (MOCKUP SERVICIO 1) -->
-            <div class="bg-slate-950/90 border border-teal-500/30 rounded-xl p-3.5 mb-5 shadow-inner">
-              <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-teal-400 mb-2.5 border-b border-white/10 pb-1.5">
-                <span>📱 Así lo ves en tu móvil en tiempo real</span>
-                <span class="text-emerald-400">● Piloto IA 24/7</span>
+            <!-- RECREACIÓN FIEL DE LA ALERTA REAL DE RESEÑA Y EL GESTOR DE 4 TONOS DE SISTEMAS PYME -->
+            <div class="bg-[#0b141a] border border-teal-500/40 rounded-xl p-3.5 mb-5 shadow-inner">
+              <div class="flex items-center justify-between text-[10px] font-bold text-teal-300 border-b border-white/10 pb-1.5 mb-2.5">
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Alerta recibida en tu WhatsApp / Telegram / Email</span>
+                <span class="text-emerald-400 font-semibold">4-5★ Auto-Publicadas</span>
               </div>
-              <div class="space-y-2 text-[11px]">
-                <div class="bg-emerald-950/40 border border-emerald-500/30 rounded-lg p-2.5">
-                  <div class="flex items-center justify-between font-bold text-emerald-300 mb-0.5">
-                    <span>🇬🇧 Reseña 5★ de Sarah M. (Turista)</span>
-                    <span class="text-[9px] bg-emerald-500/20 px-1.5 py-0.5 rounded">Auto-Respondida SEO</span>
-                  </div>
-                  <p class="text-slate-300 italic">«Thank you so much, Sarah! We are thrilled you enjoyed our service here in Galicia. We look forward to seeing you again!»</p>
+              <div class="bg-[#1f2c34] border-l-4 border-red-500 text-slate-100 text-[11px] rounded-lg p-3 leading-snug mb-2">
+                <div class="font-black text-red-400 mb-1">🚨 ALERTA DE RESEÑA (1★) — Tu Negocio</div>
+                <div class="text-slate-300 mb-1.5">👤 <strong>Autor:</strong> Carlos M. • 💬 <em>«Tardaron más de la cuenta en atenderme...»</em></div>
+                <div class="bg-black/30 rounded p-2 text-teal-200 text-[10.5px] mb-2 border border-white/5">
+                  🛡️ <strong>Propuesta IA preparada (Método HEARD + RGPD):</strong><br>
+                  <span class="italic text-slate-300">«Hola, Carlos: Lamentamos la espera puntual. Tomamos nota en dirección para ofrecerte una atención impecable...»</span>
                 </div>
-                <div class="bg-amber-950/40 border border-amber-500/40 rounded-lg p-2.5">
-                  <div class="flex items-center justify-between font-bold text-amber-300 mb-1">
-                    <span>🛡️ Alerta 2★ detectada — Publicación Pausada</span>
-                    <span class="text-[9px] bg-amber-500/20 px-1.5 py-0.5 rounded">Requiere tu OK</span>
-                  </div>
-                  <p class="text-slate-300 mb-2">Borrador diplomático preparado (sin admitir culpa ni revelar datos privados). ¿Deseas publicarlo?</p>
-                  <div class="flex gap-2">
-                    <span class="bg-emerald-600/80 text-white font-bold px-2.5 py-1 rounded text-[10px]">✅ Aprobar en 1 toque</span>
-                    <span class="bg-white/10 text-slate-300 font-semibold px-2.5 py-1 rounded text-[10px]">✏️ Editar por voz</span>
-                  </div>
+                <div class="text-[10px] font-bold text-slate-300 mb-1.5">✏️ Elige entre los 4 tonos en tu Gestor antes de publicar:</div>
+                <div class="grid grid-cols-4 gap-1 text-center text-[9.5px] font-bold mb-2">
+                  <span class="bg-slate-800 border border-white/10 text-slate-300 py-1 rounded">Formal</span>
+                  <span class="bg-teal-500/30 border border-teal-400 text-teal-200 py-1 rounded">Semiformal ✓</span>
+                  <span class="bg-slate-800 border border-white/10 text-slate-300 py-1 rounded">Cercano</span>
+                  <span class="bg-slate-800 border border-white/10 text-slate-300 py-1 rounded">Directo</span>
+                </div>
+                <div class="flex items-center justify-between gap-1.5 pt-1 border-t border-white/10 text-[10px] font-bold">
+                  <span class="bg-blue-600/80 text-white px-2.5 py-1 rounded flex-1 text-center">👉 Abrir Gestor de Respuestas (4 Tonos)</span>
+                  <span class="bg-slate-800 text-teal-300 border border-teal-500/30 px-2 py-1 rounded">📊 Informe 360°</span>
                 </div>
               </div>
             </div>
 
             <ul class="space-y-2 text-xs text-slate-200 mb-6 bg-black/30 p-4 rounded-xl border border-white/5">
-              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Auto-respuesta multilingüe en valoraciones de 4 y 5★</li>
-              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Freno de emergencia y contención diplomática HEARD/RGPD (1 a 3★)</li>
-              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Bandeja móvil de aprobación en 1 toque + Informe mensual</li>
+              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Auto-publicación SEO multilingüe en valoraciones de 4 y 5★</li>
+              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Freno en 1 a 3★ con Gestor de 4 Tonos (Formal, Semiformal, Cercano, Directo)</li>
+              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Alertas por WhatsApp, Telegram y Email + Cuadro de Mando 360°</li>
             </ul>
           </div>
           
@@ -413,7 +412,7 @@
           </div>
         </div>
 
-        <!-- SERVICIO 2: FILTRADO Y CAPTACIÓN DE RESEÑAS (+ MOCKUP VISUAL WHATSAPP) -->
+        <!-- SERVICIO 2: FILTRADO Y CAPTACIÓN DE RESEÑAS (CON BOTÓN «BIEN» Y RETENCIÓN PRIVADA EN BIEN O MEJORABLE) -->
         <div class="glow-reputacion backdrop-blur-md border-2 border-teal-500/40 hover:border-teal-400 rounded-2xl p-6 sm:p-7 transition-all flex flex-col justify-between group h-full shadow-xl shadow-teal-950/20">
           <div>
             <div class="flex items-center justify-between gap-2 mb-4">
@@ -421,7 +420,7 @@
                 <span class="w-9 h-9 rounded-xl bg-teal-500 text-slate-950 font-black text-base flex items-center justify-center shadow">2</span>
                 <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-300 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-500/40">● Activo • Cortafuegos Preventivo</span>
               </div>
-              <span class="text-lg font-black text-teal-300">59 €<span class="text-xs font-normal text-slate-400">/mes</span></span>
+              <span class="text-lg font-black text-teal-300 whitespace-nowrap">59 €<span class="text-xs font-normal text-slate-400">/mes</span></span>
             </div>
             
             <h3 class="text-xl sm:text-2xl font-black mb-3 text-white">
@@ -431,23 +430,23 @@
               Cortafuegos proactivo por <strong>WhatsApp Oficial</strong> para negocios con cita previa, reservas, reparaciones o entregas (clínicas, salones, talleres, instaladores). Dos horas después de su visita, el cliente recibe un mensaje cercano con 3 botones interactivos:
             </p>
 
-            <!-- SOLUCIÓN FRICCIÓN 2: SIMULACIÓN VISUAL DEL CHAT DE WHATSAPP (MOCKUP SERVICIO 2) -->
+            <!-- SIMULACIÓN VISUAL DEL CHAT DE WHATSAPP (SERVICIO 2 CON «EXCELENTE», «BIEN», «MEJORABLE») -->
             <div class="bg-[#0b141a] border border-emerald-500/40 rounded-xl p-3.5 mb-5 shadow-inner">
               <div class="flex items-center justify-between text-[10px] font-bold text-emerald-400 border-b border-white/10 pb-1.5 mb-2.5">
                 <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> WhatsApp de tu Negocio (Vista del Cliente)</span>
                 <span class="text-slate-400">2h tras la visita</span>
               </div>
               <div class="bg-[#1f2c34] text-slate-100 text-[11px] rounded-lg rounded-tl-none p-2.5 leading-snug mb-2">
-                ¡Hola Marta! 😊 Gracias por confiar hoy en nosotros. Para seguir mejorando cada día, ¿cómo valorarías tu experiencia de hoy?
+                ¡Hola Marta! 😊 Gracias por confiar hoy en nosotros. Para seguir mejorando cada día, ¿cómo valorarías tu experiencia?
               </div>
               <div class="grid grid-cols-3 gap-1.5 text-center text-[10.5px] font-bold mb-2.5">
                 <div class="bg-[#1f2c34] border border-emerald-500/40 text-emerald-300 py-1.5 rounded-lg">🌟 Excelente</div>
-                <div class="bg-[#1f2c34] border border-teal-500/30 text-teal-300 py-1.5 rounded-lg">😊 Bueno</div>
+                <div class="bg-[#1f2c34] border border-teal-500/30 text-teal-300 py-1.5 rounded-lg">😊 Bien</div>
                 <div class="bg-[#1f2c34] border border-amber-500/50 text-amber-300 py-1.5 rounded-lg">🛡️ Mejorable</div>
               </div>
-              <div class="bg-emerald-950/60 border border-emerald-500/30 rounded-lg px-2.5 py-2 text-[10.5px] text-emerald-200 flex items-center justify-between gap-2">
+              <div class="bg-emerald-950/60 border border-emerald-500/30 rounded-lg px-2.5 py-2 text-[10.5px] text-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                 <span><strong>Si pulsa 🌟 Excelente:</strong> Va en 1 toque a Google Maps (5★).</span>
-                <span class="text-amber-300 font-bold"><strong>Si pulsa 🛡️ Mejorable:</strong> Queja detenida en privado.</span>
+                <span class="text-amber-300 font-bold"><strong>Si pulsa 😊 Bien o 🛡️ Mejorable:</strong> Sugerencia o queja retenida en privado.</span>
               </div>
             </div>
 
@@ -457,18 +456,18 @@
                 <span class="text-slate-300 text-[11px] leading-snug block">Enlace directo para publicar su 5★ en Google Maps en 1 toque.</span>
               </div>
               <div class="bg-black/40 border border-teal-500/30 rounded-xl p-3">
-                <strong class="text-teal-300 block mb-1">😊 «Bueno»</strong>
-                <span class="text-slate-300 text-[11px] leading-snug block">Agradece la visita y pregunta en privado qué detalle mejoraría.</span>
+                <strong class="text-teal-300 block mb-1">😊 «Bien»</strong>
+                <span class="text-slate-300 text-[11px] leading-snug block">Agradece la visita y pregunta en privado (texto o audio) qué detalle mejoraría.</span>
               </div>
               <div class="bg-black/40 border border-amber-500/40 rounded-xl p-3">
                 <strong class="text-amber-400 block mb-1">🛡️ «Mejorable»</strong>
-                <span class="text-slate-300 text-[11px] leading-snug block">Frena el envío a Google, abre chat privado y te avisa al móvil.</span>
+                <span class="text-slate-300 text-[11px] leading-snug block">Frena el envío a Google, abre chat privado (texto o nota de voz) y te avisa al móvil.</span>
               </div>
             </div>
 
             <ul class="space-y-2 text-xs text-slate-200 mb-6 bg-black/30 p-4 rounded-xl border border-white/5">
-              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Detiene el descontento en privado antes de manchar tu nota pública</li>
-              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Memoria inteligente anti-saturación para clientes recurrentes</li>
+              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Transcribe notas de voz con IA y te envía alerta inmediata a gerencia</li>
+              <li class="flex items-center gap-2"><span class="text-teal-400 font-bold">✔</span> Memoria inteligente anti-saturación (regla de 180 días) para recurrentes</li>
             </ul>
           </div>
           
@@ -484,10 +483,9 @@
 
       <!-- ========================================================================= -->
       <!-- BLOQUE DESTACADO EN VERDE CORPORATIVO: AUDITORÍA PREMIUM SEO + GEO (195€) -->
-      <!-- (SOLUCIÓN FRICCIÓN 1 Y 2: LENGUAJE CLARO + COMPARATIVA VISUAL CHATGPT + DESPLEGABLE TÉCNICO) -->
       <!-- ========================================================================= -->
-      <div id="auditoria-geo" class="pt-6 -mt-6">
-      <div class="mt-8 glow-reputacion backdrop-blur-md border-2 border-teal-400/70 rounded-3xl p-6 sm:p-8 lg:p-9 shadow-2xl shadow-teal-950/40 relative overflow-hidden">
+      <div id="auditoria-geo" class="scroll-mt-24 pt-10">
+      <div class="glow-reputacion backdrop-blur-md border-2 border-teal-400/70 rounded-3xl p-6 sm:p-8 lg:p-9 shadow-2xl shadow-teal-950/40 relative overflow-hidden">
         <div class="absolute -top-24 -right-24 w-72 h-72 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <!-- Cabecera + Píldora desglosada a la derecha -->
@@ -509,7 +507,7 @@
               Analizamos tu presencia digital con nuestro <strong>escáner de 16 parámetros</strong> y <strong>traducimos tu página web y tu ficha de Google Maps al idioma interno que leen ChatGPT, Gemini y Google</strong>. Así, cuando un vecino o turista pregunte cuál es el mejor negocio de tu sector en tu localidad, la IA entenderá tus servicios, horarios, valoraciones y tarifas y te recomendará en primer lugar frente a tu competencia.
             </p>
 
-            <!-- SOLUCIÓN FRICCIÓN 1: JERGA DE INGENIERO ENCAPSULADA EN DESPLEGABLE TÉCNICO -->
+            <!-- JERGA DE INGENIERO ENCAPSULADA EN DESPLEGABLE TÉCNICO -->
             <details class="group bg-black/30 border border-teal-500/30 rounded-xl px-4 py-2.5 text-xs text-slate-300 cursor-pointer transition-all">
               <summary class="font-bold text-teal-300 flex items-center justify-between select-none">
                 <span>🛠️ Ver especificaciones técnicas de ingeniería incluidas (Para informáticos y agencias)</span>
@@ -526,15 +524,15 @@
             <div class="text-[11px] font-extrabold uppercase tracking-wider text-teal-400 mb-2">Desglose Oficial (Pago Único)</div>
             <div class="flex items-center justify-between lg:justify-end gap-4 text-xs sm:text-sm text-slate-200 mb-1">
               <span>Paquete de Código a medida:</span>
-              <strong class="text-white font-black">200 €</strong>
+              <strong class="text-white font-black whitespace-nowrap">200 €</strong>
             </div>
             <div class="flex items-center justify-between lg:justify-end gap-4 text-xs sm:text-sm text-slate-300 border-b border-dashed border-teal-500/40 pb-2 mb-2">
               <span>Implantación técnica llave en mano:</span>
-              <strong class="text-teal-300 font-bold">+150 €</strong>
+              <strong class="text-teal-300 font-bold whitespace-nowrap">+150 €</strong>
             </div>
             <div class="flex items-center justify-between lg:justify-end gap-4 text-base sm:text-lg font-black text-emerald-400">
               <span>Total Llave en Mano:</span>
-              <span>350 €</span>
+              <span class="whitespace-nowrap">350 €</span>
             </div>
             <div class="mt-2 text-[11px] font-bold text-amber-300 bg-amber-950/60 border border-amber-500/30 rounded-lg px-2.5 py-1 text-center">
               ★ Bonificada a 195 € con Pack Escudo Total
@@ -578,7 +576,7 @@
               <div>
                 <div class="flex items-baseline justify-between gap-2 mb-2">
                   <span class="text-sm font-black text-white uppercase tracking-wide">1. Solo el Código</span>
-                  <span class="text-2xl font-black text-teal-300">200 €</span>
+                  <span class="text-2xl font-black text-teal-300 whitespace-nowrap">200 €</span>
                 </div>
                 <span class="inline-block text-[10px] font-bold uppercase tracking-wider text-slate-300 bg-white/10 px-2.5 py-0.5 rounded mb-3">
                   Paquete Técnico «Hazlo tú mismo»
@@ -597,7 +595,7 @@
               <div>
                 <div class="flex items-baseline justify-between gap-2 mb-2">
                   <span class="text-sm font-black text-white uppercase tracking-wide">2. Todo Incluido</span>
-                  <span class="text-2xl font-black text-teal-300">350 €</span>
+                  <span class="text-2xl font-black text-teal-300 whitespace-nowrap">350 €</span>
                 </div>
                 <span class="inline-block text-[10px] font-bold uppercase tracking-wider text-teal-200 bg-teal-950/90 border border-teal-500/40 px-2.5 py-0.5 rounded mb-3">
                   Suelta o con Plan Base (1 Servicio)
@@ -619,7 +617,7 @@
               <div>
                 <div class="flex items-baseline justify-between gap-2 mb-2">
                   <span class="text-sm font-black text-emerald-300 uppercase tracking-wide">3. Con Escudo Total ★</span>
-                  <span class="text-2xl font-black text-emerald-400">195 €</span>
+                  <span class="text-2xl font-black text-emerald-400 whitespace-nowrap">195 €</span>
                 </div>
                 <span class="inline-block text-[10px] font-extrabold uppercase tracking-wider text-emerald-200 bg-emerald-900/60 border border-emerald-500/40 px-2.5 py-0.5 rounded mb-3">
                   Ahorras 155 € (Implantación 150 € Gratis)
@@ -677,12 +675,12 @@
               <div class="bg-black/40 border border-white/10 rounded-xl p-3.5 mb-5 grid grid-cols-2 gap-3 text-center">
                 <div class="border-r border-white/10 pr-2">
                   <span class="text-[10px] uppercase font-bold text-slate-400 block">Cuota Mensual</span>
-                  <span class="text-2xl font-black text-white">99 €<span class="text-xs font-normal text-slate-400">/mes</span></span>
+                  <span class="text-2xl font-black text-white whitespace-nowrap">99 €<span class="text-xs font-normal text-slate-400">/mes</span></span>
                   <span class="text-[10px] text-teal-300 block">S1 (59€) + S2 (+40€)</span>
                 </div>
                 <div class="pl-2 flex flex-col justify-center">
                   <span class="text-[10px] uppercase font-bold text-slate-400 block">Puesta en Marcha</span>
-                  <span class="text-lg font-black text-slate-200 mt-0.5">225 € <span class="text-[10px] font-normal text-slate-400">Setup Dúo</span></span>
+                  <span class="text-lg font-black text-slate-200 mt-0.5 whitespace-nowrap">225 € <span class="text-[10px] font-normal text-slate-400">Setup Dúo</span></span>
                   <span class="text-[10px] text-teal-300/90 block">(Sin Auditoría GEO hoy)</span>
                 </div>
               </div>
@@ -713,13 +711,13 @@
               <div class="bg-black/50 border border-emerald-500/40 rounded-xl p-3.5 mb-5 grid grid-cols-2 gap-3 text-center">
                 <div class="border-r border-emerald-500/30 pr-2">
                   <span class="text-[10px] uppercase font-bold text-slate-300 block">Cuota Mensual</span>
-                  <span class="text-2xl font-black text-white">99 €<span class="text-xs font-normal text-slate-400">/mes</span></span>
+                  <span class="text-2xl font-black text-white whitespace-nowrap">99 €<span class="text-xs font-normal text-slate-400">/mes</span></span>
                   <span class="text-[10px] text-emerald-300 font-semibold block">S1 + S2 Activos 24/7</span>
                 </div>
                 <div class="pl-2">
                   <span class="text-[10px] uppercase font-bold text-amber-300 block">+ Auditoría GEO Fija</span>
                   <div>
-                    <span class="text-2xl font-black text-emerald-400">195 €</span>
+                    <span class="text-2xl font-black text-emerald-400 whitespace-nowrap">195 €</span>
                   </div>
                   <span class="text-[10px] text-emerald-200 font-semibold block">Ahorras 155 € (Setup Dúo: 225 €)</span>
                 </div>
@@ -739,9 +737,8 @@
 
   <!-- ======================================================================= -->
   <!-- SECCIÓN TARIFAS OFICIALES (SUBIDA AQUÍ PARA CIERRE DE VENTA EN CALIENTE) -->
-  <!-- SOLUCIÓN FRICCIÓN 3 Y 5: CONMUTADOR INTERACTIVO MENSUAL / ANUAL          -->
   <!-- ======================================================================= -->
-  <section id="tarifas" class="scroll-mt-24 py-16 md:py-24 bg-brand-dark relative border-t border-white/10">
+  <section id="tarifas" class="scroll-mt-24 pt-12 pb-16 md:pt-16 md:pb-24 bg-brand-dark relative border-t border-white/10">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       
       <div class="text-center max-w-3xl mx-auto mb-8">
@@ -754,7 +751,7 @@
         </p>
       </div>
 
-      <!-- SOLUCIÓN FRICCIÓN 5: CONMUTADOR INTERACTIVO MENSUAL / ANUAL (REDUCE A LA MITAD EL RUIDO NUMÉRICO) -->
+      <!-- CONMUTADOR INTERACTIVO MENSUAL / ANUAL -->
       <div class="flex flex-col items-center justify-center mb-12">
         <div class="bg-slate-950/90 p-1.5 rounded-2xl border border-teal-500/40 inline-flex items-center gap-1.5 shadow-xl">
           <button type="button" id="btnSwitchMensual" onclick="cambiarModoTarifas('mensual')" class="px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all bg-brand-teal text-white shadow-md">
@@ -782,11 +779,11 @@
             </div>
             <h3 class="text-xl font-black text-white mb-2">PYME <span class="text-slate-400">BASE</span></h3>
             <div class="flex items-center justify-between gap-2 mb-2.5">
-              <div class="flex items-baseline gap-1.5">
-                <span class="text-3xl font-black text-white leading-none" data-plan-price="base">59 €</span>
-                <span class="text-xs font-normal text-slate-400" data-plan-period="base">/ mes</span>
+              <div class="flex items-baseline gap-1.5 whitespace-nowrap">
+                <span class="text-3xl font-black text-white leading-none whitespace-nowrap" data-plan-price="base">59 €</span>
+                <span class="text-xs font-normal text-slate-400 whitespace-nowrap" data-plan-period="base">/ mes</span>
               </div>
-              <span data-plan-pill="base" class="text-[11px] font-bold bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-0.5 rounded whitespace-nowrap">Cuota Base</span>
+              <span data-plan-pill="base" class="text-[11px] font-bold bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-0.5 rounded whitespace-nowrap flex-shrink-0">Cuota Base</span>
             </div>
             <p class="text-xs text-slate-300 font-medium mb-4 min-h-[20px]" data-plan-sub="base">Puesta en marcha flexible mes a mes.</p>
             <ul class="text-xs text-slate-300 space-y-3 mb-6">
@@ -814,11 +811,11 @@
             </div>
             <h3 class="text-xl font-black text-white mb-2">PYME <span class="text-blue-400">DÚO</span></h3>
             <div class="flex items-center justify-between gap-2 mb-2.5">
-              <div class="flex items-baseline gap-1.5">
-                <span class="text-3xl font-black text-white leading-none" data-plan-price="duo">99 €</span>
-                <span class="text-xs font-normal text-slate-400" data-plan-period="duo">/ mes</span>
+              <div class="flex items-baseline gap-1.5 whitespace-nowrap">
+                <span class="text-3xl font-black text-white leading-none whitespace-nowrap" data-plan-price="duo">99 €</span>
+                <span class="text-xs font-normal text-slate-400 whitespace-nowrap" data-plan-period="duo">/ mes</span>
               </div>
-              <span data-plan-pill="duo" class="text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2.5 py-0.5 rounded whitespace-nowrap">Ahorras 19 €/m</span>
+              <span data-plan-pill="duo" class="text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2.5 py-0.5 rounded whitespace-nowrap flex-shrink-0">Ahorras 19 €/m</span>
             </div>
             <p class="text-xs text-blue-200 font-medium mb-4 min-h-[20px]" data-plan-sub="duo">Ideal para el <strong>Pack Escudo</strong> (S1 + S2).</p>
             <ul class="text-xs text-slate-300 space-y-3 mb-6">
@@ -849,11 +846,11 @@
             </div>
             <h3 class="text-xl font-black text-white mb-2">PYME <span class="text-emerald-400">TRINITY</span></h3>
             <div class="flex items-center justify-between gap-2 mb-2.5">
-              <div class="flex items-baseline gap-1.5">
-                <span class="text-3xl font-black text-teal-300 leading-none" data-plan-price="trinity">139 €</span>
-                <span class="text-xs font-normal text-slate-400" data-plan-period="trinity">/ mes</span>
+              <div class="flex items-baseline gap-1.5 whitespace-nowrap">
+                <span class="text-3xl font-black text-teal-300 leading-none whitespace-nowrap" data-plan-price="trinity">139 €</span>
+                <span class="text-xs font-normal text-slate-400 whitespace-nowrap" data-plan-period="trinity">/ mes</span>
               </div>
-              <span data-plan-pill="trinity" class="text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-500/50 px-2.5 py-0.5 rounded whitespace-nowrap">Ahorras 38 €/m</span>
+              <span data-plan-pill="trinity" class="text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-500/50 px-2.5 py-0.5 rounded whitespace-nowrap flex-shrink-0">Ahorras 38 €/m</span>
             </div>
             <p class="text-xs text-emerald-200 font-medium mb-4 min-h-[20px]" data-plan-sub="trinity">Equilibrio total: reputación, ventas y ahorro de tiempo.</p>
             <ul class="text-xs text-slate-200 space-y-3 mb-6">
@@ -881,11 +878,11 @@
             </div>
             <h3 class="text-xl font-black text-white mb-2">PYME <span class="text-indigo-400">QUATRO</span></h3>
             <div class="flex items-center justify-between gap-2 mb-2.5">
-              <div class="flex items-baseline gap-1.5">
-                <span class="text-3xl font-black text-white leading-none" data-plan-price="quatro">179 €</span>
-                <span class="text-xs font-normal text-slate-400" data-plan-period="quatro">/ mes</span>
+              <div class="flex items-baseline gap-1.5 whitespace-nowrap">
+                <span class="text-3xl font-black text-white leading-none whitespace-nowrap" data-plan-price="quatro">179 €</span>
+                <span class="text-xs font-normal text-slate-400 whitespace-nowrap" data-plan-period="quatro">/ mes</span>
               </div>
-              <span data-plan-pill="quatro" class="text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2.5 py-0.5 rounded whitespace-nowrap">Ahorras 57 €/m</span>
+              <span data-plan-pill="quatro" class="text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2.5 py-0.5 rounded whitespace-nowrap flex-shrink-0">Ahorras 57 €/m</span>
             </div>
             <p class="text-xs text-slate-300 font-medium mb-4 min-h-[20px]" data-plan-sub="quatro">Automatización avanzada de 4 áreas clave.</p>
             <ul class="text-xs text-slate-300 space-y-3 mb-6">
@@ -913,11 +910,11 @@
             </div>
             <h3 class="text-xl font-black text-white mb-2">PYME <span class="text-teal-400">PENTIUM</span></h3>
             <div class="flex items-center justify-between gap-2 mb-2.5">
-              <div class="flex items-baseline gap-1.5">
-                <span class="text-3xl font-black text-white leading-none" data-plan-price="pentium">219 €</span>
-                <span class="text-xs font-normal text-slate-400" data-plan-period="pentium">/ mes</span>
+              <div class="flex items-baseline gap-1.5 whitespace-nowrap">
+                <span class="text-3xl font-black text-white leading-none whitespace-nowrap" data-plan-price="pentium">219 €</span>
+                <span class="text-xs font-normal text-slate-400 whitespace-nowrap" data-plan-period="pentium">/ mes</span>
               </div>
-              <span data-plan-pill="pentium" class="text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2.5 py-0.5 rounded whitespace-nowrap">Ahorras 76 €/m</span>
+              <span data-plan-pill="pentium" class="text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2.5 py-0.5 rounded whitespace-nowrap flex-shrink-0">Ahorras 76 €/m</span>
             </div>
             <p class="text-xs text-slate-300 font-medium mb-4 min-h-[20px]" data-plan-sub="pentium">Cinco motores trabajando 24/7 para tu local.</p>
             <ul class="text-xs text-slate-300 space-y-3 mb-6">
@@ -945,11 +942,11 @@
             </div>
             <h3 class="text-xl font-black text-white mb-2">AUDITORÍA <span class="text-teal-300">SEO + GEO</span></h3>
             <div class="flex items-center justify-between gap-2 mb-2.5">
-              <div class="flex items-baseline gap-1.5">
-                <span class="text-2xl sm:text-3xl font-black text-emerald-400 leading-none" id="precioAuditoriaCard">195 €</span>
-                <span class="text-xs font-semibold text-slate-300" id="etiquetaAuditoriaCard">en Combo Dúo+</span>
+              <div class="flex items-baseline gap-1.5 whitespace-nowrap">
+                <span class="text-2xl sm:text-3xl font-black text-emerald-400 leading-none whitespace-nowrap" id="precioAuditoriaCard">195 €</span>
+                <span class="text-xs font-semibold text-slate-300 whitespace-nowrap" id="etiquetaAuditoriaCard">en Combo Dúo+</span>
               </div>
-              <span class="text-[10px] font-bold bg-teal-950 text-teal-200 border border-teal-500/40 px-2 py-0.5 rounded whitespace-nowrap">Suelta: 200€ / 350€</span>
+              <span class="text-[10px] font-bold bg-teal-950 text-teal-200 border border-teal-500/40 px-2 py-0.5 rounded whitespace-nowrap flex-shrink-0">Suelta: 200€ / 350€</span>
             </div>
             <p class="text-xs text-slate-300 mb-4">Optimización completa para ser recomendado por las IAs y dominar Google Maps.</p>
             <ul class="text-xs text-slate-200 space-y-2.5 mb-6">
@@ -1074,7 +1071,7 @@
   <!-- ======================================================================= -->
   <!-- SECCIÓN: PYME MAGAZINE & PODCAST MULTIMEDIA (AUTORIDAD MULTISENSORIAL)  -->
   <!-- ======================================================================= -->
-  <section id="magazine" class="scroll-mt-24 py-16 md:py-24 bg-gradient-to-b from-slate-950 via-brand-dark to-slate-950 border-t border-white/10 relative overflow-hidden">
+  <section id="magazine" class="scroll-mt-24 pt-12 pb-16 md:pt-16 md:pb-24 bg-gradient-to-b from-slate-950 via-brand-dark to-slate-950 border-t border-white/10 relative overflow-hidden">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
       
       <div class="text-center max-w-3xl mx-auto mb-14">
@@ -1363,9 +1360,8 @@
 
   <!-- ======================================================================= -->
   <!-- SECCIÓN II: HOJA DE RUTA DE EXPANSIÓN Y PRÓXIMO DESPLIEGUE (FASE 1)      -->
-  <!-- (REESTRUCTURADO DESPUÉS DE TARIFAS Y MAGAZINE PARA EVITAR LEY DE HICK)  -->
   <!-- ======================================================================= -->
-  <section id="despliegue" class="scroll-mt-24 py-16 md:py-24 bg-brand-dark/60 border-t border-white/5">
+  <section id="despliegue" class="scroll-mt-24 pt-12 pb-16 md:pt-16 md:pb-24 bg-brand-dark/60 border-t border-white/5">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       
       <div class="text-center max-w-3xl mx-auto mb-14">
@@ -1591,7 +1587,7 @@
   </section>
 
   <!-- CIERRE Y LLAMADA A LA ACCIÓN -->
-  <section id="contacto" class="pt-12 pb-28 md:pt-14 md:pb-44 bg-gradient-to-b from-brand-dark to-black text-center relative overflow-hidden">
+  <section id="contacto" class="scroll-mt-24 pt-12 pb-28 md:pt-14 md:pb-44 bg-gradient-to-b from-brand-dark to-black text-center relative overflow-hidden border-t border-white/10">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
       
       <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl bg-black border-2 border-teal-400/60 flex items-center justify-center mx-auto mb-7 shadow-[0_0_35px_rgba(0,216,150,0.32)] p-2.5 overflow-hidden hover:scale-105 transition-all">
@@ -1787,7 +1783,7 @@
       }
     }
 
-    // CONMUTADOR INTERACTIVO DE TARIFAS MENSUAL / ANUAL (SOLUCIÓN FRICCIÓN 5)
+    // CONMUTADOR INTERACTIVO DE TARIFAS MENSUAL / ANUAL
     function cambiarModoTarifas(modo) {
       const btnMensual = document.getElementById('btnSwitchMensual');
       const btnAnual = document.getElementById('btnSwitchAnual');
@@ -1840,7 +1836,12 @@
         const idCta = 'ctaPlan' + key.charAt(0).toUpperCase() + key.slice(1);
         const elCta = document.getElementById(idCta);
 
-        if (elPrice) elPrice.textContent = info.price;
+        if (elPrice) {
+          elPrice.textContent = info.price;
+          elPrice.className = (modo === 'anual' && info.price.length > 5)
+            ? 'text-2xl sm:text-[26px] font-black ' + (key === 'trinity' ? 'text-teal-300' : 'text-white') + ' leading-none whitespace-nowrap tracking-tight'
+            : 'text-3xl font-black ' + (key === 'trinity' ? 'text-teal-300' : 'text-white') + ' leading-none whitespace-nowrap';
+        }
         if (elPeriod) elPeriod.textContent = info.period;
         if (elPill) elPill.textContent = info.pill;
         if (elSub) elSub.innerHTML = info.sub;
@@ -2284,7 +2285,7 @@
     }
 
     function irSeccionLegal(idElemento) {
-      const el = document.getElementId ? document.getElementId(idElemento) : document.getElementById(idElemento);
+      const el = document.getElementId ? document.getElementById(idElemento) : document.getElementById(idElemento);
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
@@ -2292,7 +2293,9 @@
       if (e.key === 'Escape') cerrarModalLegal();
     });
 
-    // CONTROLADOR EXACTO DE SCROLL PARA ANCLAS DEL MENÚ (EVITA CORTES BAJO LA CABECERA FIJA)
+    // CONTROLADOR EXACTO DE SCROLL PARA ANCLAS DEL MENÚ
+    // Alinea el borde superior de cada sección principal exactamente al ras de la cabecera fija,
+    // ocultando al 100% cualquier resto de la categoría anterior.
     function irASeccionConOffset(hash, suave = true) {
       if (!hash || !hash.startsWith('#') || hash === '#') return false;
       const destino = document.querySelector(hash);
@@ -2300,15 +2303,17 @@
 
       const header = document.querySelector('header');
       const alturaHeader = header ? header.offsetHeight : 96;
-      const margenRespiro = 22;
 
-      const elementoObjetivo = (hash === '#auditoria-geo')
-        ? (destino.firstElementChild || destino)
-        : destino;
-
-      const rect = elementoObjetivo.getBoundingClientRect();
-      const topAbsoluto = rect.top + window.pageYOffset;
-      const posicionFinal = Math.max(0, topAbsoluto - alturaHeader - margenRespiro);
+      let posicionFinal = 0;
+      if (hash === '#auditoria-geo' || hash === '#atril-nfc') {
+        const tarjeta = (hash === '#auditoria-geo') ? (destino.firstElementChild || destino) : destino;
+        const rect = tarjeta.getBoundingClientRect();
+        posicionFinal = Math.max(0, rect.top + window.pageYOffset - alturaHeader - 18);
+      } else {
+        const rect = destino.getBoundingClientRect();
+        // Parada exacta en la línea divisoria (border-t) de la sección (+1px para ocultar la sección previa por completo)
+        posicionFinal = Math.max(0, rect.top + window.pageYOffset - alturaHeader + 1);
+      }
 
       window.scrollTo({
         top: posicionFinal,
