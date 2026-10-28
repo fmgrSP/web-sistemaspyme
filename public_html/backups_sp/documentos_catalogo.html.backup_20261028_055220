@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>9/9 • Dossier Servicios 4 Págs (A4) - Sistemas Pyme</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+  <style id="dynamic-page-size">@page { size: A4 portrait; margin: 0; }</style>
+<style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    :root {
+      --primary: #0b2545;
+      --primary-dark: #071930;
+      --logo-blue: #104070;
+      --teal: #0d7d74;
+      --teal-dark: #095852;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      
+      /* Planes */
+      --plan-base: #64748b;
+      --plan-duo: #2563eb;
+      --plan-trinity: #16a34a;
+      --plan-quatro: #4338ca;
+      --plan-pentium: #0f766e;
+      --plan-sixtina: #0284c7;
+      --plan-pleyades: #d97706;
+      --plan-octoplus: #0891b2;
+      --plan-novaria: #e11d48;
+      --plan-deca: #6d28d9;
+      
+      /* Satélites y Categorías */
+      --insta-pink: #be185d;
+      --track-blue: #0369a1;
+      --b2b-purple: #6d28d9;
+      --audit-gold: #b45309;
+      --audit-bg: #fffbeb;
+      --cat-reputacion: #0f766e; 
+      --cat-facturacion: #1e3a8a; 
+      --cat-eficiencia: #4338ca; 
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #0f172a;
+      color: #0f172a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 0 40px 0;
+    }
+
+    /* BARRA DE GESTIÓN, NAVEGACIÓN Y DESCARGA INDIVIDUAL */
+    .suite-toolbar {
+      background: #1e293b;
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 96%;
+      max-width: 1120px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.6);
+      border: 1px solid #334155;
+      position: sticky;
+      top: 8px;
+      z-index: 100;
+    }
+    .toolbar-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 8px;
+    }
+    .toolbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #f8fafc;
+    }
+    .toolbar-badge {
+      background: #0d7d74;
+      color: #ffffff;
+      font-size: 10.5px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .action-btn {
+      border: none;
+      padding: 7px 14px;
+      border-radius: 9999px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      transition: all 0.2s;
+    }
+    .btn-download-html {
+      background: #0ea5e9;
+      color: #0f172a;
+    }
+    .btn-download-html:hover { background: #38bdf8; }
+    .btn-print-pdf {
+      background: #f59e0b;
+      color: #0f172a;
+    }
+    .btn-print-pdf:hover { background: #fbbf24; }
+
+    .tabs-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .tab-btn {
+      background: #0f172a;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      padding: 5.5px 11px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.18s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .tab-btn:hover {
+      color: #ffffff;
+      border-color: #64748b;
+    }
+    .tab-btn.active {
+      background: #0d7d74;
+      color: #ffffff;
+      border-color: #14b8a6;
+      box-shadow: 0 0 12px rgba(20, 184, 166, 0.35);
+    }
+    .tab-format {
+      font-size: 9px;
+      font-weight: 800;
+      padding: 1px 4px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.15);
+      color: #e2e8f0;
+    }
+
+    .tarjeton-group {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+    .tarjeton-group.active {
+      display: flex;
+    }
+
+    /* HOJA A5 EXACTA */
+    .sheet {
+      width: 148mm;
+      height: 210mm;
+      min-height: 210mm;
+      max-height: 210mm;
+      background: #ffffff;
+      padding: 4.5mm 7.8mm 4mm 7.8mm;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+      page-break-after: always;
+      page-break-inside: avoid;
+    }
+
+    /* HOJA A4 EXACTA (PARA EL DOSSIER DE 4 PÁGINAS) */
+    .sheet-a4 {
+      width: 210mm;
+      height: 297mm;
+      min-height: 297mm;
+      max-height: 297mm;
+      background: #ffffff;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45);
+      page-break-after: always;
+      page-break-inside: avoid;
+    }
+
+    @media print {
+      body {
+        background: none;
+        padding: 0;
+        gap: 0;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .tarjeton-group {
+        display: none !important;
+      }
+      .tarjeton-group.active {
+        display: block !important;
+      }
+      .sheet {
+        box-shadow: none;
+        page-break-after: always;
+        height: 210mm !important;
+        max-height: 210mm !important;
+        margin: 0 !important;
+      }
+      .sheet-a4 {
+        box-shadow: none;
+        page-break-after: always;
+        width: 210mm !important;
+        height: 297mm !important;
+        min-height: 297mm !important;
+        max-height: 297mm !important;
+        margin: 0 !important;
+      }
+    }
+
+    /* CABECERA COMÚN */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 2px;
+      margin-bottom: 2px;
+    }
+    .brand-logo-img {
+      max-height: 44px;
+      width: auto;
+      max-width: 84mm;
+      object-fit: contain;
+      display: block;
+    }
+    .header-tagline {
+      text-align: right;
+      font-size: 7px;
+      color: var(--slate-600);
+      font-weight: 600;
+      line-height: 1.22;
+    }
+    .header-tagline strong {
+      color: var(--teal-dark);
+      font-size: 7.8px;
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    /* BANNERS DE SECCIÓN */
+    .section-banner {
+      background: var(--primary);
+      color: white;
+      padding: 3.5px 8px;
+      border-radius: 4.5px;
+      font-size: 8.6px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 3.5px;
+    }
+    .section-banner.green { background: linear-gradient(90deg, #095852 0%, #0d7d74 100%); }
+    .section-banner.purple { background: linear-gradient(90deg, #312e81 0%, #4338ca 100%); }
+    .section-banner.gold { background: linear-gradient(90deg, #78350f 0%, #d97706 100%); }
+    .section-banner.reputacion { background: linear-gradient(90deg, #0f766e 0%, #14b8a6 100%); }
+    .section-banner.facturacion { background: linear-gradient(90deg, #172554 0%, #1e3a8a 100%); }
+    .section-banner.eficiencia { background: linear-gradient(90deg, #3730a3 0%, #4f46e5 100%); }
+    .section-banner.insta { background: linear-gradient(90deg, #831843 0%, #db2777 100%); }
+
+    .section-banner .rule {
+      font-size: 7.2px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.22);
+      padding: 1px 5.5px;
+      border-radius: 3px;
+      text-align: right;
+      text-transform: none;
+    }
+
+    /* TABLAS DE PRECIOS (TARIFAS FASE 2) */
+    .price-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2.5px;
+      font-size: 8px;
+    }
+    .price-table th {
+      background: #e2e8f0;
+      color: var(--primary);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 7px;
+      padding: 2.6px 5px;
+      border-top: 1px solid #cbd5e1;
+      border-bottom: 1.2px solid #cbd5e1;
+      text-align: left;
+    }
+    .price-table td {
+      padding: 2.4px 5px;
+      border-bottom: 1px solid var(--slate-200);
+      color: var(--slate-800);
+      vertical-align: middle;
+      line-height: 1.16;
+    }
+    .price-table tr.row-star { background: #f0fdf4; }
+    .price-table tr.row-star td {
+      border-top: 1.2px solid #86efac !important;
+      border-bottom: 1.2px solid #86efac !important;
+      font-weight: 600;
+    }
+    .price-table tr.row-corp { background: #ecfeff; }
+    .price-table tr.row-corp td {
+      border-top: 1.2px solid #67e8f9 !important;
+      border-bottom: 1.2px solid #67e8f9 !important;
+      font-weight: 600;
+    }
+    .price-table tr.row-suite { background: #faf5ff; }
+    .price-table tr.row-suite td {
+      border-top: 1.2px solid #c4b5fd !important;
+      border-bottom: 1.2px solid #c4b5fd !important;
+      font-weight: 600;
+    }
+
+    .pack-col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .pack-name {
+      font-weight: 900;
+      font-size: 8.6px;
+      line-height: 1.1;
+      color: var(--primary);
+    }
+    .pack-subtext {
+      font-size: 6.2px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
+    }
+    .price-badge {
+      font-size: 9.5px;
+      font-weight: 900;
+      color: var(--teal-dark);
+      white-space: nowrap;
+    }
+    .price-badge.insta { color: var(--insta-pink); }
+    .price-badge.track { color: var(--track-blue); }
+    .price-badge.b2b { color: var(--b2b-purple); }
+    .price-badge.audit { color: var(--teal-dark); }
+
+    .save-pill {
+      font-size: 6.4px;
+      font-weight: 800;
+      color: #15803d;
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      padding: 0.5px 3.5px;
+      border-radius: 3px;
+      display: inline-block;
+      white-space: nowrap;
+      font-style: normal;
+    }
+
+    /* CAJA DE AUDITORÍA PREMIUM SEO + GEO (EN COLOR VERDE CORPORATIVO) */
+    .audit-hero-box {
+      background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+      border: 1.4px solid #5eead4;
+      border-left: 4px solid var(--teal);
+      border-radius: 4.5px;
+      padding: 4px 7px;
+      margin-bottom: 2.5px;
+    }
+    .audit-hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2px;
+    }
+    .audit-hero-title {
+      font-size: 8.5px;
+      font-weight: 900;
+      color: var(--teal-dark);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .audit-tag-pill {
+      font-size: 6.2px;
+      font-weight: 800;
+      background: var(--teal-dark);
+      color: #ffffff;
+      padding: 1px 5px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
+    }
+    .audit-options-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4.5px;
+      margin-top: 2.5px;
+    }
+    .audit-opt-card {
+      background: #ffffff;
+      border: 1px solid #99f6e4;
+      border-radius: 3.5px;
+      padding: 2.8px 5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .audit-opt-card.featured {
+      background: #f0fdf4;
+      border: 1.3px solid #16a34a;
+    }
+    .audit-opt-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1px;
+    }
+    .audit-opt-name {
+      font-size: 7px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .audit-opt-price {
+      font-size: 8.2px;
+      font-weight: 900;
+      color: var(--teal-dark);
+    }
+    .audit-opt-card.featured .audit-opt-price {
+      color: #15803d;
+    }
+    .audit-opt-desc {
+      font-size: 6.4px;
+      color: var(--slate-600);
+      line-height: 1.16;
+    }
+
+    /* CAJA DE REGALO BÓVEDA */
+    .gift-box {
+      background: #fffbeb;
+      border: 1.4px dashed #d97706;
+      border-radius: 4.5px;
+      padding: 3.5px 7px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 2.5px;
+    }
+
+    /* FILAS SATÉLITES */
+    .satellites-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5px;
+      margin-bottom: 2.2px;
+      width: 100%;
+    }
+    .satellite-row {
+      border-radius: 4px;
+      padding: 3px 6.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .satellite-row.insta {
+      border: 1.1px solid #f472b6;
+      background: linear-gradient(135deg, #ffffff 0%, #fdf2f8 100%);
+    }
+    .satellite-row.track {
+      border: 1.1px solid #7dd3fc;
+      background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+    }
+    .satellite-row.b2b {
+      border: 1.1px solid #c4b5fd;
+      background: linear-gradient(135deg, #ffffff 0%, #faf5ff 100%);
+    }
+    .sat-left { flex: 1; min-width: 0; }
+    .sat-row-header {
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+      margin-bottom: 1px;
+    }
+    .sat-row-title {
+      font-size: 7.8px;
+      font-weight: 900;
+      line-height: 1.12;
+      white-space: nowrap;
+    }
+    .sat-row-tag {
+      font-size: 6px;
+      font-weight: 700;
+      color: var(--slate-600);
+      text-transform: uppercase;
+    }
+    .sat-row-desc {
+      font-size: 6.6px;
+      color: var(--slate-700);
+      line-height: 1.16;
+    }
+    .sat-right {
+      flex-shrink: 0;
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 1px;
+      padding-left: 6px;
+      border-left: 1px dashed rgba(0, 0, 0, 0.15);
+    }
+    .sat-suelto-info {
+      font-size: 6.2px;
+      color: var(--slate-600);
+      white-space: nowrap;
+    }
+    .sat-combo-info {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .sat-combo-pill {
+      font-size: 6.1px;
+      font-weight: 800;
+      padding: 1px 4px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+    /* MODALIDADES Y TABLA MAESTRA CARA B TARIFAS */
+    .modalities-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+      margin-bottom: 3px;
+    }
+    .modality-col {
+      border: 1.2px solid #94a3b8;
+      border-radius: 4.5px;
+      padding: 4.5px 7px;
+      background: var(--slate-50);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .modality-col.best { border: 1.2px solid var(--plan-quatro); background: #faf5ff; }
+    .modality-tag {
+      font-size: 6.5px; 
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 1px 5px;
+      border-radius: 3px;
+      margin: 0 auto 2px auto; 
+      display: block;
+      width: fit-content;
+    }
+    .tag-free { background: #cbd5e1; color: #1e293b; border: 1px solid #94a3b8; }
+    .tag-best { background: #ddd6fe; color: #3730a3; border: 1px solid #8b5cf6; }
+    .modality-title {
+      font-size: 9.4px;
+      font-weight: 900;
+      color: var(--primary);
+      text-align: center;
+    }
+    .modality-sub {
+      font-size: 7px;
+      color: var(--slate-600);
+      font-style: italic;
+      margin-bottom: 2.5px;
+      text-align: center;
+    }
+    .modality-bullets {
+      list-style: none;
+      font-size: 7.2px;
+      color: var(--slate-800);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .modality-bullets li {
+      display: flex;
+      align-items: flex-start;
+      gap: 3.5px;
+      line-height: 1.15;
+    }
+    .modality-bullets li svg {
+      width: 9px;
+      height: 9px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .master-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 7.2px;
+      margin-bottom: 2.5px;
+    }
+    .master-table th {
+      background: var(--primary-dark);
+      color: white;
+      font-size: 6.6px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 2.8px 2px;
+      border: 1px solid #1e293b;
+      text-align: center; 
+      line-height: 1.12;
+    }
+    .master-table th .th-sub {
+      display: block;
+      font-size: 5.6px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-top: 0.5px;
+    }
+    .th-col1 { background: #57534e !important; }
+    .th-cuota { background: #1e293b !important; }
+    .th-setup { background: #334155 !important; }
+    .th-via1 { background: #475569 !important; }
+    .th-via2 { background: #4338ca !important; }
+
+    .master-table td {
+      padding: 2.1px 2.5px;
+      border: 1px solid var(--slate-200);
+      text-align: center;
+      color: var(--slate-800);
+      vertical-align: middle;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+    .master-table td.left {
+      text-align: left;
+      font-weight: 800;
+      color: var(--primary); 
+      padding-left: 4px;
+    }
+    .master-table tr.star-row { background: #f0fdf4; }
+    .master-table tr.star-row td { border: 1px solid #86efac; font-weight: 700; }
+    .master-table tr.corp-row { background: #ecfeff; }
+    .master-table tr.corp-row td { border: 1px solid #67e8f9; font-weight: 700; }
+    .master-table tr.insta-row { background: #fdf2f8; }
+    .master-table tr.insta-row td { border: 1px solid #f9a8d4; font-weight: 600; }
+    .master-table tr.insta-row-sep td { border-top: 1.8px solid #be185d !important; }
+    .master-table tr.audit-row { background: #f0fdfa; }
+    .master-table tr.audit-row td { border: 1px solid #99f6e4; font-weight: 700; }
+    .master-table tr.audit-row-sep td { border-top: 1.8px solid var(--teal) !important; }
+
+    .tag-day1 { font-weight: 800; color: var(--slate-800); font-size: 8px; }
+    .tag-annual { font-weight: 900; color: #4338ca; font-size: 7.9px; display: block; }
+    .tag-ahorro { font-size: 6px; color: #16a34a; font-weight: 800; display: block; }
+
+    .extras-box {
+      border: 1px solid var(--slate-200);
+      background: #f8fafc;
+      border-radius: 4px;
+      padding: 3.5px 6px;
+      margin-bottom: 2px;
+    }
+
+    .rule-box-lines {
+      border: 1.2px solid var(--slate-200);
+      background: #f8fafc;
+      border-radius: 4.5px;
+      padding: 3.2px 6.5px;
+      margin-bottom: 2px;
+    }
+    .rule-title {
+      font-size: 7px;
+      font-weight: 900;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
+      margin-bottom: 1.5px;
+      display: block;
+    }
+    .rule-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.4px;
+      font-size: 6.5px;
+      color: var(--slate-700);
+      line-height: 1.16;
+    }
+    .rule-list li {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+    .rule-list li .bullet {
+      color: var(--teal);
+      font-weight: 900;
+      font-size: 7.2px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    /* ESTILOS TARJETÓN LANZAMIENTO Y CATÁLOGO FASE 1 (MÁS AIRE Y LETRA MÁS GRANDE) */
+    .card-product {
+      width: 100%;
+      background: var(--slate-50);
+      border: 1.4px solid var(--slate-200);
+      border-radius: 5px;
+      padding: 5px 8.5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      margin-bottom: 4px;
+    }
+    .card-product.green-style {
+      background: #f0fdfa;
+      border-color: #99f6e4;
+      border-left: 4px solid var(--teal);
+    }
+    .service-num-badge {
+      background: var(--teal);
+      color: white;
+      font-weight: 800;
+      font-size: 8.5px;
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .service-num-badge.hardware { background: #f59e0b; font-size: 9.8px; }
+    .service-num-badge.audit { background: var(--teal-dark); font-size: 9px; }
+    .prod-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+    .prod-title {
+      font-size: 9.5px;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1.15;
+    }
+    .prod-badge {
+      font-size: 9.6px;
+      font-weight: 900;
+      color: var(--teal);
+      white-space: nowrap;
+    }
+    .prod-desc {
+      font-size: 7.7px;
+      color: var(--slate-700);
+      line-height: 1.26;
+    }
+    .prod-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5px;
+      margin-top: 2px;
+      font-size: 7.3px;
+      color: var(--slate-700);
+    }
+    .prod-bullets li::before {
+      content: "✔ ";
+      color: var(--teal);
+      font-weight: 800;
+    }
+
+    .pricing-table-box {
+      border: 1.3px solid var(--slate-200);
+      border-radius: 5px;
+      background: white;
+      overflow: hidden;
+      margin-bottom: 3px;
+    }
+    .pricing-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 7.5px;
+    }
+    .pricing-table th {
+      background: #e2e8f0;
+      color: var(--primary);
+      padding: 3px 5.5px;
+      text-align: left;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 6.8px;
+    }
+    .pricing-table td {
+      padding: 3px 5.5px;
+      border-top: 1px solid var(--slate-200);
+      color: var(--slate-800);
+      vertical-align: middle;
+      line-height: 1.18;
+    }
+    .pricing-table tr.highlight {
+      background: #f0fdf4;
+      font-weight: 700;
+    }
+    .pricing-table tr.highlight-teal {
+      background: #f0fdfa;
+      font-weight: 700;
+    }
+    .tag-pack {
+      display: inline-block;
+      background: #0f766e;
+      color: #fff;
+      font-size: 6.2px;
+      font-weight: 800;
+      padding: 1px 3.5px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      margin-left: 2px;
+    }
+
+    /* ROADMAP Y SERVICIOS FASE 1 (MÁS GRANDES Y ESPACIADOS) */
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4.5px;
+      margin-bottom: 3.5px;
+    }
+    .roadmap-item {
+      background: var(--slate-50);
+      border: 1.2px solid var(--slate-200);
+      border-radius: 4.5px;
+      padding: 4px 6.5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .roadmap-item strong {
+      display: block;
+      font-size: 7.8px;
+      color: var(--primary);
+      margin-bottom: 1.5px;
+      line-height: 1.16;
+    }
+    .roadmap-item span {
+      font-size: 7px;
+      color: var(--slate-600);
+      line-height: 1.22;
+      display: block;
+    }
+
+    .satellites-roadmap-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 3.5px;
+      margin-bottom: 3.5px;
+      width: 100%;
+    }
+    .sat-item {
+      border-radius: 4px;
+      padding: 3.8px 7px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 6px;
+      width: 100%;
+    }
+    .sat-item.sat-ig { background: linear-gradient(135deg, #ffffff 0%, #fdf2f8 100%); border: 1px solid #fbcfe8; }
+    .sat-item.sat-track { background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%); border: 1px solid #bae6fd; }
+    .sat-item.sat-b2b { background: linear-gradient(135deg, #ffffff 0%, #faf5ff 100%); border: 1px solid #ddd6fe; }
+    .sat-item strong { font-size: 7.6px; font-weight: 800; white-space: nowrap; flex-shrink: 0; }
+    .sat-item span { font-size: 7px; color: var(--slate-700); line-height: 1.2; }
+
+    /* ITEMS DE CATÁLOGO FASE 1 (CON MUCHO AIRE Y LETRA CÓMODA PARA MAYORES) */
+    .services-stack {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 5.5px;
+      margin-bottom: 4.5px;
+    }
+    .service-item {
+      width: 100%;
+      background: var(--slate-50);
+      border: 1.3px solid var(--slate-200);
+      border-radius: 5.5px;
+      padding: 6px 9px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .service-item.highlight-reputacion { background: #f0fdfa; border-color: #99f6e4; border-left: 4px solid var(--cat-reputacion); }
+    .service-item.highlight-facturacion { background: #eff6ff; border-color: #bfdbfe; border-left: 4px solid var(--cat-facturacion); }
+    .service-item.highlight-eficiencia { background: #eef2ff; border-color: #c7d2fe; border-left: 4px solid var(--cat-eficiencia); }
+
+    .service-num {
+      background: var(--primary);
+      color: white;
+      font-weight: 800;
+      font-size: 8.6px;
+      width: 19px;
+      height: 19px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .service-num.reputacion { background: var(--cat-reputacion); }
+    .service-num.facturacion { background: var(--cat-facturacion); }
+    .service-num.eficiencia { background: var(--cat-eficiencia); }
+    .service-num.hardware { background: #f59e0b; font-size: 10px; }
+
+    .service-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .service-title-row {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 2.5px;
+    }
+    .service-title {
+      font-size: 9.8px;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1.18;
+    }
+    .service-benefit {
+      font-size: 7.2px;
+      font-weight: 800;
+      color: #92400e; 
+      background: #fffbeb; 
+      border: 1px solid #fde68a; 
+      padding: 1.2px 5px;
+      border-radius: 3.5px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .service-text {
+      font-size: 8.1px;
+      color: var(--slate-700);
+      line-height: 1.32;
+    }
+    .service-text strong { color: var(--slate-800); font-weight: 800; }
+
+    .insta-box {
+      background: linear-gradient(135deg, #ffffff 0%, #fdf2f8 100%);
+      border: 1.3px solid #f9a8d4;
+      border-radius: 5px;
+      padding: 6px 8px;
+      margin-bottom: 4.5px;
+    }
+    .insta-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .insta-head-title {
+      font-size: 9.2px;
+      font-weight: 800;
+      color: #9d174d;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .insta-grid-pills {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+    .insta-pill {
+      background: white;
+      border: 1px solid #fbcfe8;
+      border-radius: 4px;
+      padding: 5px 6px;
+      font-size: 7.6px;
+      color: var(--slate-800);
+      line-height: 1.26;
+    }
+    .insta-pill strong {
+      color: #be185d;
+      display: block;
+      font-size: 8.2px;
+      margin-bottom: 2px;
+    }
+
+    /* ESTILOS CATÁLOGO FASE 2 (10 SERVICIOS + AUDITORÍA + 3 SATÉLITES EN 3 COLUMNAS) */
+    .f2-item {
+      width: 100%;
+      background: var(--slate-50);
+      border: 1.2px solid var(--slate-200);
+      border-radius: 4.5px;
+      padding: 3.4px 7px;
+      display: flex;
+      align-items: flex-start;
+      gap: 6.5px;
+      margin-bottom: 2.4px;
+    }
+    .f2-item.rep { background: #f0fdfa; border-color: #99f6e4; border-left: 3.5px solid var(--cat-reputacion); }
+    .f2-item.fac { background: #eff6ff; border-color: #bfdbfe; border-left: 3.5px solid var(--cat-facturacion); }
+    .f2-item.efi { background: #eef2ff; border-color: #c7d2fe; border-left: 3.5px solid var(--cat-eficiencia); }
+    .f2-title { font-size: 8.4px; font-weight: 900; color: var(--primary); line-height: 1.15; }
+    .f2-text { font-size: 7.05px; color: var(--slate-700); line-height: 1.2; margin: 0; }
+
+    .satellites-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4.5px;
+      margin-bottom: 2.5px;
+      width: 100%;
+    }
+    .sat-card-3 {
+      border-radius: 4px;
+      padding: 4px 5.5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .sat-card-3.insta { background: linear-gradient(145deg, #ffffff 0%, #fdf2f8 100%); border: 1.2px solid #f472b6; }
+    .sat-card-3.track { background: linear-gradient(145deg, #ffffff 0%, #f0f9ff 100%); border: 1.2px solid #7dd3fc; }
+    .sat-card-3.b2b { background: linear-gradient(145deg, #ffffff 0%, #faf5ff 100%); border: 1.2px solid #c4b5fd; }
+    .sat-card-title { font-size: 7.4px; font-weight: 900; line-height: 1.15; margin-bottom: 1px; }
+    .sat-card-tag { font-size: 5.9px; font-weight: 700; color: var(--slate-600); text-transform: uppercase; margin-bottom: 2px; display: block; }
+    .sat-card-bullets { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1.5px; font-size: 6.4px; color: var(--slate-700); line-height: 1.16; }
+
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 4.5px;
+    }
+    .pillar-card {
+      background: var(--slate-50);
+      border: 1.2px solid var(--slate-200);
+      border-radius: 4.5px;
+      padding: 5.5px 6.5px;
+      text-align: center;
+    }
+    .pillar-icon { font-size: 12px; margin-bottom: 2px; }
+    .pillar-title {
+      font-size: 8.2px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 2px;
+    }
+    .pillar-desc {
+      font-size: 7.3px;
+      color: var(--slate-600);
+      line-height: 1.24;
+    }
+
+    /* BANNER QR Y CONTACTO PIE DE PÁGINA */
+    .print-qr-banner {
+      background: #f0fdfa;
+      border: 1.5px dashed var(--teal);
+      border-radius: 5px;
+      padding: 4.5px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: auto;
+      margin-bottom: 2px;
+    }
+    .print-qr-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+    .print-qr-img {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      border-radius: 3.5px;
+      mix-blend-mode: multiply;
+    }
+    .print-qr-text {
+      font-size: 7.4px;
+      color: var(--slate-800);
+      line-height: 1.22;
+    }
+    .print-qr-text strong {
+      color: var(--teal-dark);
+      font-size: 8.4px;
+      display: block;
+      margin-bottom: 1px;
+    }
+    .contact-details-box {
+      border-left: 1.2px solid #99f6e4;
+      padding-left: 8px;
+      font-size: 7.1px;
+      line-height: 1.24;
+      color: var(--slate-800);
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .contact-details-box .name {
+      font-size: 8.5px;
+      font-weight: 800;
+      color: var(--primary);
+      display: block;
+    }
+    .contact-details-box .role {
+      font-size: 6.2px;
+      font-weight: 700;
+      color: var(--teal-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      display: block;
+    }
+    .contact-details-box .phone {
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .footer-bar {
+      border-top: 1px solid var(--slate-200);
+      padding-top: 2px;
+      font-size: 7px;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* ESTILOS ESPECÍFICOS PARA SETUP.HTML, DESEMBOLSO.HTML, TARIFAS FASE 1 Y DOSSIER A4 */
+    .logic-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 4.5px 8px;
+      border-radius: 4.5px;
+      font-size: 7.4px;
+      color: #1e3a8a;
+      margin-bottom: 3.5px;
+      line-height: 1.28;
+    }
+    .engineering-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+    .eng-card {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-left: 3px solid var(--teal);
+      border-radius: 4px;
+      padding: 3.5px 6px;
+    }
+    .eng-card strong {
+      display: block;
+      font-size: 7.3px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 1px;
+    }
+    .eng-card span {
+      display: block;
+      font-size: 6.5px;
+      color: var(--slate-600);
+      line-height: 1.18;
+    }
+    .col-calc { font-size: 7px; color: var(--slate-600); font-weight: 600; }
+    .col-setup { font-weight: 900; color: var(--primary); font-size: 8.8px; background: #f8fafc !important; }
+    .col-ahorro { font-weight: 800; color: #15803d; font-size: 6.9px; }
+    .strike-val { text-decoration: line-through; color: #94a3b8; font-size: 6.1px; font-weight: 600; display: block; }
+    .sub-left { display: block; font-size: 6px; color: var(--slate-600); font-weight: 600; text-transform: uppercase; }
+
+    .atril-card {
+      background-color: #f0f9ff !important;
+      border: 1.4px solid #7dd3fc;
+      border-left: 4px solid #0ea5e9;
+      border-radius: 4.5px;
+      padding: 3.5px 7px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.5px;
+    }
+    .instagram-card {
+      border: 1.4px solid #db2777;
+      background: linear-gradient(135deg, #ffffff 0%, #fdf2f8 100%);
+      border-radius: 4.5px;
+      padding: 3.5px 7px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 2.5px;
+    }
+
+    /* ESTILOS DOSSIER A4 (4 PÁGINAS) */
+    .cover-header {
+      background: #101e38;
+      color: white;
+      padding: 4.5mm 15mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 4px solid var(--cat-reputacion);
+    }
+    .cover-logo-wrap {
+      background: white;
+      padding: 7px 18px;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cover-logo { height: 50px; width: auto; display: block; }
+    .cover-contact { text-align: right; font-size: 10.5px; line-height: 1.25; color: #cbd5e1; }
+    .cover-contact .name { color: white; font-size: 14px; font-weight: 800; display: block; }
+    .cover-contact .role { color: #5eead4; font-weight: 800; text-transform: uppercase; font-size: 8.8px; display: block; }
+    .cover-body { padding: 6.5mm 15mm; flex: 1; display: flex; flex-direction: column; justify-content: flex-start; }
+    .cover-title { font-size: 29px; font-weight: 900; color: #101e38; line-height: 1.15; margin-bottom: 10px; }
+    .cover-subtitle { font-size: 13.5px; color: var(--slate-600); line-height: 1.42; font-weight: 500; margin-bottom: 15px; border-left: 4px solid var(--cat-reputacion); padding-left: 12px; }
+    .philosophy-box { background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 10px; padding: 13px 17px; }
+    .philosophy-box h3 { color: var(--cat-reputacion); font-size: 12px; text-transform: uppercase; font-weight: 800; margin-bottom: 6px; }
+    .philosophy-box p { font-size: 11.8px; color: var(--slate-800); line-height: 1.42; margin-bottom: 6px; }
+    .cover-pillars { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 14px; }
+    .c-pillar { border-radius: 10px; padding: 12px 14px; }
+    .c-pillar-1 { background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%); border: 1px solid #99f6e4; }
+    .c-pillar-2 { background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%); border: 1px solid #bfdbfe; }
+    .c-pillar h4 { font-size: 12.5px; font-weight: 800; color: #101e38; margin-bottom: 4px; }
+    .c-pillar p { font-size: 11px; color: var(--slate-600); line-height: 1.35; margin-bottom: 5px; }
+    .page-header-a4 { padding: 4mm 15mm 3mm 15mm; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--slate-200); }
+    .page-header-a4 img { height: 42px; }
+    .page-header-a4 .section-title { font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--slate-600); }
+    .page-content-a4 { padding: 4.5mm 15mm; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+    .service-block-a4 { display: flex; gap: 12px; border-radius: 10px; padding: 11px 14px; border: 1px solid; }
+    .service-block-a4.cat-rep { background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%); border-color: #99f6e4; }
+    .service-block-a4.cat-fac { background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%); border-color: #bfdbfe; }
+    .service-block-a4.cat-efi { background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%); border-color: #c7d2fe; }
+    .service-num-a4 { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; color: white; flex-shrink: 0; }
+    .service-details-a4 { flex: 1; min-width: 0; }
+    .service-details-a4 h3 { font-size: 14.5px; font-weight: 800; color: #101e38; margin-bottom: 2px; }
+    .service-tag-a4 { display: inline-block; font-size: 8.8px; font-weight: 800; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; margin-bottom: 5px; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+    .service-details-a4 p { font-size: 10.6px; color: var(--slate-600); line-height: 1.36; margin-bottom: 5px; }
+    .feature-list-a4 { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 5px; padding-top: 5px; border-top: 1px dashed rgba(0,0,0,0.1); }
+    .feature-list-a4 li { font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 6px; }
+    .page-footer-a4 { padding: 3.5mm 15mm; background: var(--slate-50); border-top: 1px solid var(--slate-200); display: flex; justify-content: space-between; align-items: center; font-size: 9.5px; color: var(--slate-600); font-weight: 600; }
+    .page-number-a4 { background: var(--slate-200); color: var(--slate-800); width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 800; }
+  </style>
+</head>
+<body>
+  <div class="tarjeton-group active">
+    
+
+    <!-- PÁGINA 1: PORTADA A4 -->
+    <main class="sheet-a4">
+      <header class="cover-header">
+        <div class="cover-logo-wrap">
+          <img src="logo.png" alt="Sistemas Pyme" class="cover-logo" onerror="this.onerror=null; this.src='logo.png';">
+        </div>
+        <div class="cover-contact">
+          <span class="name">Francisco M. Gallardo</span>
+          <span class="role">Consultor Tecnológico</span>
+          francisco@sistemaspyme.es • sistemaspyme.es<br>
+          <strong style="color:white; font-size: 13px;">711 54 75 61</strong> | Galicia
+        </div>
+      </header>
+
+      <div class="cover-body">
+        <h1 class="cover-title">Dossier de Servicios,<br>Automatización y Posicionamiento GEO IA</h1>
+        <p class="cover-subtitle">Sistemas tácticos de Inteligencia Artificial diseñados exclusivamente para escalar negocios a pie de calle, liderar las búsquedas en Google Maps y motores de IA (ChatGPT / Gemini), optimizar el mostrador y recuperar tu tiempo libre.</p>
+
+        <div class="philosophy-box">
+          <h3>Nuestra Filosofía de Trabajo</h3>
+          <p><strong>La digitalización real no va de instalar programas complejos.</strong> Va de identificar los cuellos de botella que te roban tiempo y dinero todos los días, y poner a trabajar a la tecnología para resolverlos de forma invisible.</p>
+          <p>La estadística real del mercado local en España es demoledora: <strong>el 80% del software complejo que compran las pymes se deja de usar al tercer mes.</strong> Por eso, en Sistemas Pyme no vendemos software genérico. Implementamos soluciones «llave en mano» que se integran directamente con el <strong>WhatsApp que tú y tus clientes ya utilizáis</strong> y con la estructura interna de tu Web y Google Maps. Sin aplicaciones raras, sin curvas de aprendizaje y con soporte técnico directo.</p>
+          <p>Nuestra misión es que tu negocio sea recomendado por los buscadores y las Inteligencias Artificiales, multipliques tus reseñas de 5 estrellas, atiendas en 10 segundos, llenes tu agenda sin plantones y reduzcas el papeleo contable a cero.</p>
+        </div>
+
+        <div class="cover-pillars">
+          <div class="c-pillar c-pillar-1">
+            <div style="font-size: 20px; margin-bottom: 6px;">💆‍♀️</div>
+            <h4>El coste de los «Plantones»</h4>
+            <p>Si a un profesional le fallan 3 clientes por semana (a 40 € la cita), pierde <strong>480 € al mes</strong> en horas muertas.</p>
+            <p>Si el sistema automático logra que solo 2 avisen con tiempo para reubicar su turno, salva 80 € directos.</p>
+            <p style="font-weight: 800; color: var(--cat-reputacion); margin-top: 4px;">👉 Tu cuota se paga sola salvando solo 2 citas. El resto es beneficio neto.</p>
+          </div>
+          <div class="c-pillar c-pillar-2">
+            <div style="font-size: 20px; margin-bottom: 6px;">🔍</div>
+            <h4>El valor de ser recomendado por la IA</h4>
+            <p>Hoy millones de clientes preguntan a ChatGPT, Gemini o Google Maps qué negocio elegir en su ciudad y atienden al primero que les responde.</p>
+            <p>Nuestra Auditoría SEO+GEO inyecta el código estructurado exacto para que las IAs elijan tu local y nuestro sistema atiende al lead en 10 segundos.</p>
+            <p style="font-weight: 800; color: var(--cat-facturacion); margin-top: 4px;">👉 Cerrar un solo cliente nuevo amortiza la inversión de todo el año.</p>
+          </div>
+        </div>
+      </div>
+
+      <footer class="page-footer-a4">
+        <span><strong>sistemaspyme.es</strong> — Dossier Corporativo de Soluciones Tácticas</span>
+        <span class="page-number-a4">1</span>
+      </footer>
+    </main>
+
+    <!-- PÁGINA 2: REPUTACIÓN, VISIBILIDAD Y AUDITORÍA SEO + GEO (ORDEN OFICIAL) -->
+    <main class="sheet-a4">
+      <header class="page-header-a4">
+        <img src="logo.png" alt="Sistemas Pyme" onerror="this.onerror=null; this.src='logo.png';">
+        <span class="section-title">I. Mejorar la Reputación y la Visibilidad en Google e IA</span>
+      </header>
+
+      <div class="page-content-a4">
+        
+        <!-- 1º HARDWARE: ATRIL INTELIGENTE NFC + QR -->
+        <article class="service-block-a4 cat-rep">
+          <div class="service-num-a4" style="background: #f59e0b;">★</div>
+          <div class="service-details-a4">
+            <div style="display:flex; justify-content:space-between; align-items:baseline;">
+              <h3>Atril Inteligente de Mostrador (NFC + QR)</h3>
+              <span style="font-size:10px; font-weight:900; color:#166534; background:#dcfce7; border:1px solid #86efac; padding:2px 8px; border-radius:4px;">Pago Único: 39 € • Sin Cuotas</span>
+            </div>
+            <p>Elegante soporte físico de metacrilato con chip inalámbrico integrado y código QR. El cliente solo tiene que acercar su móvil al pagar y se le abre tu pantalla oficial de valoración en Google Maps en <strong>1 segundo</strong>. Asegura que te deje su reseña en el acto antes de que salga por la puerta. Enlace 100% legal, directo y sin cuotas mensuales.</p>
+          </div>
+        </article>
+
+        <!-- 2º SERVICIO 1: GESTIÓN Y RESPUESTA DE RESEÑAS EN GOOGLE CON IA -->
+        <article class="service-block-a4 cat-rep">
+          <div class="service-num-a4" style="background: var(--cat-reputacion);">1</div>
+          <div class="service-details-a4">
+            <h3>Gestión y Respuesta de Reseñas en Google con IA</h3>
+            <span class="service-tag-a4">Blindaje de Reputación, SEO Local y Protección RGPD</span>
+            <p><strong>El 97% de los consumidores consulta Google Maps antes de decidir dónde comprar o reservar.</strong> Ante valoraciones positivas (4 y 5★), la IA responde automáticamente en el mismo idioma del cliente incluyendo palabras clave de tu negocio para impulsar tu posicionamiento SEO local, aplicando un escudo estricto de secreto profesional y RGPD.</p>
+            <p>Si detecta una queja (1 a 3★), <strong>frena la publicación automática</strong> y te envía una alerta inmediata al móvil con un borrador conciliador redactado bajo el método psicológico <em>HEARD</em>. <strong>Incluye informe ejecutivo mensual.</strong></p>
+            <ul class="feature-list-a4">
+              <li class="feat-cat1">✔ Auto-Respuesta SEO Multilingüe (4-5★)</li>
+              <li class="feat-cat1">✔ Contención Jurídica HEARD y RGPD (1-3★)</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- 3º SERVICIO 2: FILTRADO Y CAPTACIÓN DE RESEÑAS -->
+        <article class="service-block-a4 cat-rep">
+          <div class="service-num-a4" style="background: var(--cat-reputacion);">2</div>
+          <div class="service-details-a4">
+            <h3>Filtrado y Captación de Reseñas (Encuesta Inteligente)</h3>
+            <span class="service-tag-a4">Cortafuegos Preventivo por WhatsApp Oficial y Multiplicador de 5★</span>
+            <p>Un par de horas después de finalizar la visita o cita, el sistema envía al WhatsApp del cliente una breve encuesta interactiva. Si pulsa <strong>«Excelente»</strong>, le entrega el enlace directo para publicar su reseña de 5★ en Google Maps en un toque. Si pulsa <strong>«Mejorable»</strong>, activa el escudo: detiene la queja en un canal privado hacia tu móvil antes de que llegue a internet. Cuenta con memoria inteligente anti-saturación para clientes recurrentes.</p>
+            <ul class="feature-list-a4">
+              <li class="feat-cat1">✔ Detiene quejas antes de hacerse públicas</li>
+              <li class="feat-cat1">✔ Multiplica hasta x4 tus reseñas de 5★</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- 4º (ÚLTIMO DE LA CATEGORÍA I EN VERDE CORPORATIVO): AUDITORÍA E IMPLANTACIÓN PREMIUM SEO LOCAL + GEO IA -->
+        <article class="service-block-a4 cat-rep" style="border-left: 5px solid var(--cat-reputacion);">
+          <div class="service-num-a4" style="background: var(--teal-dark);">🔍</div>
+          <div class="service-details-a4">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:6px;">
+              <h3>Auditoría e Implantación Premium SEO Local + GEO (IA)</h3>
+              <span style="font-size:9.5px; font-weight:800; color:var(--teal-dark); background:#ccfbf1; border:1px solid #5eead4; padding:2px 8px; border-radius:4px;">Código: 200 € | Implantada: 350 € | Combo Dúo+: 195 €</span>
+            </div>
+            <p><strong style="color:var(--teal-dark);">Hace que tu negocio sea mucho más visible en las búsquedas de los navegadores y sea recomendado por las inteligencias artificiales (ChatGPT, Gemini, Google Maps, etc.).</strong></p>
+            <p>Realizamos un diagnóstico exhaustivo con nuestro escáner de 16 parámetros y programamos a medida el bloque de código estructurado <strong>Schema.org JSON-LD</strong> (<em>LocalBusiness</em>, <em>AggregateRating</em>, <em>FAQPage</em>), etiquetas <code>&lt;title&gt;</code>, <code>&lt;meta description&gt;</code>, jerarquía H1/H2 y descripciones optimizadas de Google Business Profile. Puedes contratar solo el paquete de código para tu informático (200 €), el servicio llave en mano instalado por nosotros (350 €) o bonificado a <strong>195 € al contratar el Pack Dúo o superior</strong> (y <strong>95 € Llave en Mano en Plan Anual Trinity+</strong>).</p>
+            <ul class="feature-list-a4">
+              <li class="feat-cat1">✔ Código Schema.org JSON-LD para ChatGPT/Gemini</li>
+              <li class="feat-cat1">✔ Inyección Llave en Mano en Web y Google Maps</li>
+            </ul>
+          </div>
+        </article>
+
+      </div>
+
+      <footer class="page-footer-a4">
+        <span><strong>sistemaspyme.es</strong> — Dossier Corporativo de Soluciones Tácticas</span>
+        <span class="page-number-a4">2</span>
+      </footer>
+    </main>
+
+    <!-- PÁGINA 3: FACTURACIÓN Y AGENDA (SERVICIOS 3 Y 4) -->
+    <main class="sheet-a4">
+      <header class="page-header-a4">
+        <img src="logo.png" alt="Sistemas Pyme" onerror="this.onerror=null; this.src='logo.png';">
+        <span class="section-title">II. Aumentar Facturación / III. Ahorro de Tiempo y Agenda</span>
+      </header>
+
+      <div class="page-content-a4" style="gap: 16px;">
+        
+        <article class="service-block-a4 cat-fac" style="padding: 16px 18px;">
+          <div class="service-num-a4" style="background: var(--cat-facturacion);">3</div>
+          <div class="service-details-a4">
+            <h3 style="font-size: 16.5px;">Leads en 10s + Extractor de Portales</h3>
+            <span class="service-tag-a4">Cierre de Ventas en Caliente y Captación Omnicanal</span>
+            <p style="font-size: 11.4px; line-height: 1.44;">Según los estudios de conversión comercial, <strong>responder a un potencial cliente en los primeros 5 minutos multiplica por 4 las probabilidades de cerrar la venta.</strong> Si tardas más de una hora porque estás atendiendo en el mostrador, en una obra o en consulta, el cliente ya ha buscado a tus competidores.</p>
+            <p style="font-size: 11.4px; line-height: 1.44;">En cuanto un interesado solicita presupuesto a través de tu <strong>página web, redes sociales (Instagram/Facebook Ads) o correos de portales especializados (Habitissimo, Bodas.net, Idealista...)</strong>, nuestro sistema intercepta la solicitud y <strong>le envía un WhatsApp hiperpersonalizado en menos de 10 segundos</strong> saludándole por su nombre, confirmando su consulta e iniciando la conversación.</p>
+            <p style="font-size: 11.4px; line-height: 1.44;">En ese mismo segundo, <strong>tú o tu encargado recibís una notificación prioritaria en el móvil</strong> con el resumen de lo que solicita y un botón directo para llamarle en caliente con el interés al 100%.</p>
+            <ul class="feature-list-a4">
+              <li class="feat-cat2">✔ Atención inmediata 24/7 en menos de 10s</li>
+              <li class="feat-cat2">✔ Extractor automático de portales y formularios</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="service-block-a4 cat-efi" style="padding: 16px 18px;">
+          <div class="service-num-a4" style="background: var(--cat-eficiencia);">4</div>
+          <div class="service-details-a4">
+            <h3 style="font-size: 16.5px;">Sistema Anti-Plantón + Campañas Flash</h3>
+            <span class="service-tag-a4">Reduce hasta un 85% las Ausencias y Reasigna Huecos Vacíos</span>
+            <p style="font-size: 11.4px; line-height: 1.44;">En los negocios que trabajan con agenda o reserva previa (clínicas, fisioterapia, peluquerías, centros de estética, talleres, asesorías), <strong>la tasa media de absentismo o «plantones» oscila entre el 15% y el 20%</strong>. Cada hora vacía por un cliente que olvidó su cita es facturación que se pierde para siempre.</p>
+            <p style="font-size: 11.4px; line-height: 1.44;">Este sistema se sincroniza con tu calendario y envía automáticamente un recordatorio interactivo por WhatsApp 24 horas antes de la cita con botones de acción rápida: <strong>[Confirmar Cita]</strong> o <strong>[Reubicar / Cambiar]</strong>.</p>
+            <p style="font-size: 11.4px; line-height: 1.44;">Si el cliente cancela con antelación, <strong>el sistema libera el hueco automáticamente y dispara una Campaña Flash a tu lista de espera</strong> para reasignar la hora vacía de inmediato sin llamadas manuales.</p>
+            <ul class="feature-list-a4">
+              <li class="feat-cat3">✔ Sincronización en vivo con tu Calendario</li>
+              <li class="feat-cat3">✔ Campañas Flash para cubrir cancelaciones</li>
+            </ul>
+          </div>
+        </article>
+
+      </div>
+
+      <footer class="page-footer-a4">
+        <span><strong>sistemaspyme.es</strong> — Dossier Corporativo de Soluciones Tácticas</span>
+        <span class="page-number-a4">3</span>
+      </footer>
+    </main>
+
+    <!-- PÁGINA 4: FACTURAS IA, SATÉLITE INSTAGRAM Y RESUMEN DE INVERSIÓN -->
+    <main class="sheet-a4">
+      <header class="page-header-a4">
+        <img src="logo.png" alt="Sistemas Pyme" onerror="this.onerror=null; this.src='logo.png';">
+        <span class="section-title">III. Automatización Contable, Satélite y Escalera de Inversión</span>
+      </header>
+
+      <div class="page-content-a4">
+        
+        <article class="service-block-a4 cat-efi">
+          <div class="service-num-a4" style="background: var(--cat-eficiencia);">5</div>
+          <div class="service-details-a4">
+            <h3>Facturas y Gastos al Gestor con IA (Cero Papeles)</h3>
+            <span class="service-tag-a4">Extracción Contable Instantánea y Paz Trimestral</span>
+            <p>Se acabó acumular tickets térmicos en la guantera que se borran con el calor o perder cientos de euros en IVA deducible. Haces una foto al ticket o reenvías el PDF por WhatsApp: <strong>en 5 segundos, la IA extrae fecha, proveedor, NIF, base imponible, cuota de IVA y total</strong>, archivando el documento en Google Drive y registrando el asiento en el Excel compartido con tu gestoría.</p>
+            <ul class="feature-list-a4">
+              <li class="feat-cat3">✔ Cero pérdida de IVA deducible</li>
+              <li class="feat-cat3">✔ Carpeta y Excel listos para tu Gestoría</li>
+            </ul>
+          </div>
+        </article>
+
+        <article style="background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%); border: 1px solid #fbcfe8; border-radius: 10px; padding: 12px 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+            <h3 style="font-size: 15px; font-weight: 900; color: #9d174d;">📱 Módulo Satélite Prémium: Instagram Inteligente 3 en 1</h3>
+            <span style="font-size: 10.5px; font-weight: 800; color: #be185d; background: #ffffff; border: 1px solid #fbcfe8; padding: 2px 8px; border-radius: 4px;">+40 € / mes con Troncal <span style="font-size: 9px; color: #64748b;">(69 € suelto)</span></span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+            <div style="background: white; padding: 8px 10px; border-radius: 6px; border: 1px solid #fce7f3;">
+              <div style="font-size: 10.5px; font-weight: 800; color: #9d174d; margin-bottom: 2px;">1. Envío al Comentar</div>
+              <p style="font-size: 9.8px; color: var(--slate-600); line-height: 1.25;">Escribe «CITA» o «CARTA». El bot responde al segundo por DM y dispara el alcance de tu Reel.</p>
+            </div>
+            <div style="background: white; padding: 8px 10px; border-radius: 6px; border: 1px solid #fce7f3;">
+              <div style="font-size: 10.5px; font-weight: 800; color: #9d174d; margin-bottom: 2px;">2. Recepcionista DMs 24/7</div>
+              <p style="font-size: 9.8px; color: var(--slate-600); line-height: 1.25;">Asistente interactivo que responde dudas (precios, horarios, carta) y guía hacia la reserva.</p>
+            </div>
+            <div style="background: white; padding: 8px 10px; border-radius: 6px; border: 1px solid #fce7f3;">
+              <div style="font-size: 10.5px; font-weight: 800; color: #9d174d; margin-bottom: 2px;">3. Regalo por Historias</div>
+              <p style="font-size: 9.8px; color: var(--slate-600); line-height: 1.25;">Si un cliente te menciona en sus Stories, recibe un mensaje privado con un detalle exclusivo.</p>
+            </div>
+          </div>
+        </article>
+
+        <div style="background: #fffbeb; border: 1.2px dashed #d97706; border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; gap: 12px;">
+          <div style="font-size: 22px;">🎁</div>
+          <div>
+            <div style="font-size: 10.8px; font-weight: 900; color: #b45309; text-transform: uppercase; margin-bottom: 2px;">
+              Doble Bono al combinar 3 o más servicios (Plan Trinity y Superiores)
+            </div>
+            <p style="font-size: 10.5px; color: #92400e; line-height: 1.3;">
+              Implantación gratuita de la <strong>Bóveda Segura de Contraseñas de Equipo</strong> (valorada en 150 €) + acceso a la <strong>Auditoría e Implantación Premium SEO Local + GEO IA</strong> por solo 195 € (o <strong>95 € Llave en Mano en Plan Anual Trinity+</strong>).
+            </p>
+          </div>
+        </div>
+
+        <div class="philosophy-box" style="text-align: center; border-color: var(--cat-reputacion); background: #f0fdfa; padding: 12px 18px; margin-top: auto;">
+          <h3 style="margin-bottom: 4px; color: var(--cat-reputacion); font-size: 12px;">Resumen de Escalera de Inversión Oficial</h3>
+          <p style="font-size: 11px; font-weight: 600; margin-bottom: 5px; color: var(--slate-800); line-height: 1.35;">
+            <strong>Plan Base (59 €/m)</strong> • <strong>Pack Dúo (99 €/m)</strong> • <strong>Plan Trinity ★ (139 €/m)</strong> • <strong>Plan Quatro (179 €/m)</strong> • <strong>Plan Pentium (219 €/m)</strong><br>
+            <span style="color: var(--teal-dark);"><strong>Auditoría SEO Local + GEO IA:</strong> Solo Código (200 €) | Llave en Mano (350 €) | En Combo Pack Dúo+ (<strong>195 €</strong>).</span>
+          </p>
+          <p style="font-size: 10.5px; margin-bottom: 0; color: var(--slate-600);">
+            Escríbenos por WhatsApp al <strong>711 54 75 61</strong> o visita <strong>sistemaspyme.es</strong> para solicitar tu diagnóstico y demostración en vivo.
+          </p>
+        </div>
+
+      </div>
+
+      <footer class="page-footer-a4">
+        <span><strong>sistemaspyme.es</strong> — Dossier Corporativo de Soluciones Tácticas</span>
+        <span class="page-number-a4">4</span>
+      </footer>
+    </main>
+
+  
+  </div>
+</body>
+</html>

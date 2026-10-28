@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>8/9 • Desembolso Día 1 (A5) - Sistemas Pyme</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=830, user-scalable=yes">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1295,6 +1295,89 @@
     .page-footer-a4 { padding: 3.5mm 15mm; background: var(--slate-50); border-top: 1px solid var(--slate-200); display: flex; justify-content: space-between; align-items: center; font-size: 9.5px; color: var(--slate-600); font-weight: 600; }
     .page-number-a4 { background: var(--slate-200); color: var(--slate-800); width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 800; }
   </style>
+<!-- [SP_AUTO_FIT_MOBILE_START] Motor de Autoencuadre Inteligente en Móvil para Tarjetones A5 y Dossiers A4 -->
+<script id="sp-auto-fit-mobile">
+(function() {
+  function ajustarViewportYEscalaTarjetones() {
+    if (window.matchMedia && window.matchMedia('print').matches) return;
+
+    var hojas = document.querySelectorAll('.sheet, .page, .a4-page, .a5-page, main.sheet, .hoja-a4, .hoja-a5');
+    if (!hojas.length) return;
+
+    // Medir el ancho real en píxeles de la primera hoja visible
+    var hojaRef = null;
+    for (var i = 0; i < hojas.length; i++) {
+      if (hojas[i].offsetWidth > 0) {
+        hojaRef = hojas[i];
+        break;
+      }
+    }
+    if (!hojaRef) hojaRef = hojas[0];
+
+    // Ancho natural de diseño: ~560px para A5 (148mm) o ~794px para A4 (210mm)
+    var anchoNatural = hojaRef.offsetWidth || 560;
+    var esA4 = anchoNatural > 680;
+    var anchoObjetivoViewport = esA4 ? 830 : 585;
+
+    // 1. Configurar el meta viewport dinámico para que el navegador móvil encuadre la hoja completa de lado a lado sin cortar
+    var metaVp = document.querySelector('meta[name="viewport"]');
+    if (!metaVp) {
+      metaVp = document.createElement('meta');
+      metaVp.name = 'viewport';
+      document.head.appendChild(metaVp);
+    }
+
+    var anchoPantallaFisica = Math.min(window.screen.width || 9999, window.innerWidth || 9999);
+    if (anchoPantallaFisica < anchoObjetivoViewport) {
+      metaVp.setAttribute('content', 'width=' + anchoObjetivoViewport + ', initial-scale=' + (anchoPantallaFisica / anchoObjetivoViewport).toFixed(4) + ', minimum-scale=0.25, maximum-scale=5.0, user-scalable=yes');
+    } else {
+      metaVp.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes');
+    }
+
+    // 2. Asegurar centrado perfecto y sin desbordamiento lateral en móvil
+    document.documentElement.style.overflowX = 'hidden';
+    document.body.style.overflowX = 'hidden';
+    document.body.style.margin = '0 auto';
+  }
+
+  window.addEventListener('DOMContentLoaded', ajustarViewportYEscalaTarjetones);
+  window.addEventListener('load', ajustarViewportYEscalaTarjetones);
+  window.addEventListener('resize', ajustarViewportYEscalaTarjetones);
+  window.addEventListener('orientationchange', function() {
+    setTimeout(ajustarViewportYEscalaTarjetones, 150);
+  });
+
+  // Re-ajustar también si el usuario cambia de pestaña dentro de una suite de tarjetones
+  document.addEventListener('click', function(e) {
+    if (e.target && e.target.closest && e.target.closest('.tab-btn, button')) {
+      setTimeout(ajustarViewportYEscalaTarjetones, 60);
+    }
+  });
+})();
+</script>
+<style id="sp-auto-fit-mobile-css">
+  @media screen and (max-width: 900px) {
+    html, body {
+      max-width: 100% !important;
+      overflow-x: hidden !important;
+      -webkit-text-size-adjust: 100%;
+    }
+    body {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      padding-left: 8px !important;
+      padding-right: 8px !important;
+    }
+    .sheet, .page, .a4-page, .a5-page {
+      margin-left: auto !important;
+      margin-right: auto !important;
+      flex-shrink: 0 !important;
+    }
+  }
+</style>
+<!-- [SP_AUTO_FIT_MOBILE_END] -->
 </head>
 <body>
   <div class="tarjeton-group active">
