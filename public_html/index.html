@@ -2617,8 +2617,7 @@
     /* APERTURA INTELIGENTE DEL ARTÍCULO */
     async function abrirArticuloMagazine(e, defaultHref) {
       if (e) e.preventDefault();
-      var esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 820;
-      var destino = esMovil ? 'articulos/Pyme_Magazine_N1_movil.html' : defaultHref;
+      const destino = defaultHref || 'articulos/Pyme_Magazine_N1.html';
       window.open(destino, '_blank', 'noopener');
     }
 
@@ -3110,8 +3109,7 @@
       'documentos/tarifas.html': 'documentos/tarifas_movil.html',
       'documentos/setup.html': 'documentos/setup_movil.html',
       'documentos/desembolso.html': 'documentos/desembolso_movil.html',
-      'articulos/Pyme_Magazine_N1.html': 'articulos/Pyme_Magazine_N1_movil.html'
-    };
+      };
     document.addEventListener('click', function(e) {
       const link = e.target.closest('a[href]');
       if (!link) return;

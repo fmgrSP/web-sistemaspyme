@@ -18,7 +18,6 @@
 
   <meta charset="UTF-8">
   <title>Pyme Magazine Nº 1: La Nueva Regla del Boca a Boca — Sistemas Pyme</title>
-  <meta name="viewport" content="width=820">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1021,6 +1020,101 @@
   }
 </style>
 <!-- [SP_PC_SCREEN_ZOOM_END] -->
+  <!-- [SP_MAGAZINE_AUTOFIT_START] -->
+  <style id="sp-magazine-autofit-bigfont">
+    @media screen {
+      html, body {
+        margin: 0 !important;
+        padding: 12px 0 36px 0 !important;
+        background-color: #0b1528 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+      }
+
+      /* Liberamos la altura fija de las hojas A4 en pantalla para que al agrandar la letra
+         se vea el 100% del artículo completo sin recortar ni ocultar una sola línea */
+      .sheet, .page, .a4-page, .magazine-page, main, article.sheet {
+        height: auto !important;
+        min-height: 297mm !important;
+        max-height: none !important;
+        overflow: visible !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+
+      /* Aumento real y nítido de la letra sobre el diseño original del artículo */
+      .sheet p, .page p, main p,
+      .sheet li, .page li, main li {
+        font-size: 13.8px !important;
+        line-height: 1.52 !important;
+      }
+
+      .sheet h1, .page h1, main h1 {
+        font-size: 26px !important;
+        line-height: 1.18 !important;
+      }
+
+      .sheet h2, .page h2, main h2 {
+        font-size: 18.5px !important;
+        line-height: 1.25 !important;
+      }
+
+      .sheet h3, .page h3, main h3 {
+        font-size: 15.5px !important;
+        line-height: 1.28 !important;
+      }
+
+      .sheet h4, .page h4, main h4 {
+        font-size: 14px !important;
+        line-height: 1.28 !important;
+      }
+
+      /* En pantallas grandes de ordenador también ampliamos el conjunto para lectura cómoda */
+      @media (min-width: 900px) {
+        body {
+          zoom: 1.22;
+        }
+      }
+    }
+
+    @media print {
+      body {
+        zoom: 1 !important;
+        background: none !important;
+        padding: 0 !important;
+      }
+    }
+  </style>
+  <script>
+    (function() {
+      function autoencuadrarMagazineOriginal() {
+        var esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.screen.width <= 860;
+        if (!esMovil) return;
+
+        // Buscamos la hoja del artículo para medir su ancho exacto (A4 ~ 794px)
+        var hoja = document.querySelector('.sheet, .page, .a4-page, .magazine-page, main') || document.body.firstElementChild;
+        var anchoHoja = 815;
+        if (hoja && hoja.offsetWidth > 320) {
+          anchoHoja = Math.max(hoja.offsetWidth, hoja.scrollWidth) + 20;
+        }
+
+        var metaVp = document.querySelector('meta[name="viewport"]');
+        if (!metaVp) {
+          metaVp = document.createElement('meta');
+          metaVp.name = 'viewport';
+          document.head.appendChild(metaVp);
+        }
+        // Fija el viewport al ancho exacto del documento original para que el móvil lo autoencuadre de borde a borde
+        metaVp.setAttribute('content', 'width=' + anchoHoja + ', user-scalable=yes, minimum-scale=0.25, maximum-scale=5.0');
+      }
+
+      autoencuadrarMagazineOriginal();
+      window.addEventListener('DOMContentLoaded', autoencuadrarMagazineOriginal);
+      window.addEventListener('load', autoencuadrarMagazineOriginal);
+    })();
+  </script>
+  <!-- [SP_MAGAZINE_AUTOFIT_END] -->
 </head>
 <body>
 
