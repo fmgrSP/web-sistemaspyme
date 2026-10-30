@@ -22,7 +22,7 @@ def localizar_directorio_public_html():
     return None
 
 
-HERO_AJUSTE_FINO = """  <!-- HERO SECTION -->
+HERO_CON_MULTI_ATRIL = """  <!-- HERO SECTION -->
   <section class="relative pt-6 pb-1 sm:pt-8 sm:pb-1.5 md:pt-9 lg:pt-10 md:pb-2 overflow-hidden hero-glow">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       
@@ -81,21 +81,24 @@ HERO_AJUSTE_FINO = """  <!-- HERO SECTION -->
               Elegante soporte físico de metacrilato con chip inalámbrico integrado y QR. El cliente solo tiene que acercar su móvil al pagar y se le abre tu pantalla oficial de valoración en Google Maps en <strong class="text-amber-300">1 segundo</strong>. Asegura que te deje su reseña en el acto antes de que salga por la puerta. Enlace 100% legal, directo y sin intermediarios.
             </p>
 
-            <div class="bg-black/40 rounded-xl p-3.5 border border-white/5 mb-4 flex items-center justify-between">
+            <div class="bg-black/40 rounded-xl p-3.5 border border-white/5 mb-4 flex items-center justify-between gap-2">
               <div>
                 <span class="text-[11px] text-slate-400 block font-medium">Pago único sin cuotas mensuales:</span>
-                <span class="text-2xl font-black text-amber-400 whitespace-nowrap">39 €</span>
-                <span class="text-[10.5px] text-slate-400 block">Equipo propio grabado de por vida</span>
+                <div class="flex items-baseline gap-2">
+                  <span class="text-2xl font-black text-amber-400 whitespace-nowrap">39 €</span>
+                  <span class="text-[10.5px] font-bold text-amber-200/90 whitespace-nowrap">• Ud. extra: 29 € (5+: 25 €)</span>
+                </div>
+                <span class="text-[10.5px] text-slate-400 block">Ideal para 1 mostrador o varios puestos/mesas</span>
               </div>
-              <div class="text-right">
+              <div class="text-right flex-shrink-0">
                 <span class="inline-block text-[11px] font-semibold text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded border border-emerald-800/40">
                   Entrega 24-48h
                 </span>
               </div>
             </div>
 
-            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20encargar%20un%20Atril%20Inteligente%20NFC%20%2839%20%E2%82%AC%29%20para%20mi%20mostrador" target="_blank" class="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white font-bold text-sm py-3 px-4 rounded-xl shadow-lg transition-all">
-              ⚡ Encargar Atril para mi Mostrador
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20encargar%20el%20Atril%20Inteligente%20NFC%20%2839%20%E2%82%AC%20o%20Pack%20Multi-Puesto%29%20para%20mi%20negocio" target="_blank" class="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white font-bold text-sm py-3 px-4 rounded-xl shadow-lg transition-all">
+              ⚡ Encargar Atril (1 o Varios Puestos)
             </a>
 
           </div>
@@ -107,101 +110,7 @@ HERO_AJUSTE_FINO = """  <!-- HERO SECTION -->
   </section>"""
 
 
-BLOQUE_CONSULTOR_AJUSTE_FINO = """  <!-- ======================================================================= -->
-  <!-- BLOQUE CONSULTOR PRESCRIPTOR (LÍNEA DIVISORIA VISIBLE CON AIRE)         -->
-  <!-- ======================================================================= -->
-  <section id="consultor-personal" class="relative z-20 mt-2.5 pb-10 sm:pb-14 px-4 sm:px-6">
-    <div class="max-w-6xl mx-auto relative">
-      <!-- Piquito centrado matemáticamente en X=36px (centro de la foto de 72px) -->
-      <div class="hidden lg:flex absolute -top-[9px] left-[36px] -translate-x-1/2 z-30 pointer-events-none items-center justify-center">
-        <div class="w-4 h-4 bg-slate-900 border-t-2 border-l-2 border-teal-400/80 rotate-45"></div>
-      </div>
-
-      <div class="rounded-3xl bg-gradient-to-br from-slate-900 via-teal-950/55 to-slate-950 border-2 border-teal-400/70 px-5 pt-4 pb-6 sm:px-7 sm:pt-4.5 sm:pb-7 shadow-2xl shadow-teal-950/50 relative overflow-hidden">
-        <div class="absolute -top-20 -right-20 w-64 h-64 bg-teal-400/10 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5 pb-3.5 border-b border-teal-500/35">
-          <div class="space-y-1.5 max-w-3xl">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-500/20 border border-teal-400/40 text-teal-300 text-[11px] font-extrabold uppercase tracking-wider">
-                🩺 Mensaje Directo de Francisco • Cero Agobios
-              </span>
-            </div>
-            <h2 class="text-xl sm:text-2xl lg:text-[26px] font-black text-white leading-snug">
-              Con total tranquilidad: no tienes que estudiarte toda esta web ni saber qué herramienta elegir.
-            </h2>
-            <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
-              Contamos con un catálogo muy completo porque resolvemos muchos problemas distintos, pero <strong>mi trabajo como tu consultor tecnológico es ponértelo fácil</strong>. Si te apetece, explora la web con calma; y si prefieres ir al grano, <strong>simplemente dime qué te pasa o qué te trae de cabeza en tu negocio</strong>. Yo analizo tu caso personalmente y de forma gratuita, te digo qué necesitas exactamente y me encargo de solucionarlo todo.
-            </p>
-          </div>
-
-          <div class="flex-shrink-0">
-            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20prefiero%20contarte%20directamente%20qu%C3%A9%20necesito%20mejorar%20en%20mi%20negocio%20para%20que%20me%20asesores%20t%C3%BA" target="_blank" class="w-full lg:w-auto inline-flex items-center justify-center gap-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm px-5 py-3.5 rounded-2xl shadow-lg shadow-emerald-950/60 transition-all hover:scale-[1.02]">
-              <span>💬 Cuéntame tu caso por WhatsApp</span>
-              <span>&rarr;</span>
-            </a>
-          </div>
-        </div>
-
-        <!-- 4 BOTONES RÁPIDOS DE "DOLORES REALES" DEL DUEÑO/A DE NEGOCIO -->
-        <div class="pt-5">
-          <p class="text-[11px] font-extrabold uppercase tracking-wider text-teal-300 mb-3">
-            👇 Pulsa directamente sobre lo que más te preocupa hoy en tu negocio y hablamos:
-          </p>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            
-            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20lo%20que%20m%C3%A1s%20me%20interesa%20es%20conseguir%20m%C3%A1s%20visibilidad%20en%20Google%20e%20IA%2C%20m%C3%A1s%20rese%C3%B1as%20de%205%20estrellas%20y%20frenar%20quejas.%20%C2%BFQu%C3%A9%20me%20recomiendas%3F" target="_blank" class="group text-left p-3.5 rounded-2xl bg-slate-950/85 hover:bg-teal-950/70 border border-teal-500/30 hover:border-teal-400 transition-all flex flex-col justify-between">
-              <div>
-                <div class="flex items-center justify-between mb-1">
-                  <span class="text-lg">⭐</span>
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-teal-400 group-hover:translate-x-0.5 transition-transform">Consultar &rarr;</span>
-                </div>
-                <div class="text-xs sm:text-sm font-black text-white mb-1">«Quiero salir primero en Google/IA y más 5★»</div>
-                <p class="text-[11px] text-slate-400 leading-snug">Que me recomienden antes que a mi competencia y frenar reseñas injustas.</p>
-              </div>
-            </a>
-
-            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20siento%20que%20entra%20gente%20a%20mi%20web%20o%20me%20piden%20presupuesto%20pero%20se%20escapan%20sin%20comprar.%20%C2%BFPuedes%20analizar%20d%C3%B3nde%20fallo%3F" target="_blank" class="group text-left p-3.5 rounded-2xl bg-slate-950/85 hover:bg-blue-950/70 border border-blue-500/30 hover:border-blue-400 transition-all flex flex-col justify-between">
-              <div>
-                <div class="flex items-center justify-between mb-1">
-                  <span class="text-lg">💸</span>
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-blue-400 group-hover:translate-x-0.5 transition-transform">Consultar &rarr;</span>
-                </div>
-                <div class="text-xs sm:text-sm font-black text-white mb-1">«Me entra gente a la web o llaman, pero se escapan»</div>
-                <p class="text-[11px] text-slate-400 leading-snug">Detectar por qué no terminan comprando y responder presupuestos al instante.</p>
-              </div>
-            </a>
-
-            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20pierdo%20demasiado%20tiempo%20con%20citas%2C%20plantones%2C%20llamadas%20o%20facturas%20para%20el%20gestor.%20%C2%BFC%C3%B3mo%20puedo%20automatizarlo%3F" target="_blank" class="group text-left p-3.5 rounded-2xl bg-slate-950/85 hover:bg-indigo-950/70 border border-indigo-500/30 hover:border-indigo-400 transition-all flex flex-col justify-between">
-              <div>
-                <div class="flex items-center justify-between mb-1">
-                  <span class="text-lg">⏳</span>
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-400 group-hover:translate-x-0.5 transition-transform">Consultar &rarr;</span>
-                </div>
-                <div class="text-xs sm:text-sm font-black text-white mb-1">«Pierdo horas en citas, plantones o papeles»</div>
-                <p class="text-[11px] text-slate-400 leading-snug">Quitarme tareas repetitivas de encima: agenda, teléfono, presupuestos o facturas.</p>
-              </div>
-            </a>
-
-            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20gustar%C3%ADa%20que%20le%20eches%20un%20vistazo%20profesional%20a%20mi%20negocio%20y%20a%20mi%20web%20y%20me%20digas%20honestamente%20qu%C3%A9%20mejorar%C3%ADas" target="_blank" class="group text-left p-3.5 rounded-2xl bg-gradient-to-br from-emerald-950/90 to-slate-950 hover:from-emerald-900/80 border-2 border-emerald-400/60 transition-all flex flex-col justify-between shadow-lg">
-              <div>
-                <div class="flex items-center justify-between mb-1">
-                  <span class="text-lg">🩺</span>
-                  <span class="text-[10px] font-black uppercase tracking-wider text-emerald-300 group-hover:translate-x-0.5 transition-transform">Diagnóstico Gratis &rarr;</span>
-                </div>
-                <div class="text-xs sm:text-sm font-black text-emerald-300 mb-1">«Francisco, revisa mi negocio y dime tú»</div>
-                <p class="text-[11px] text-slate-200 leading-snug">Pídeme un diagnóstico previo gratuito y yo te guío paso a paso sin compromiso.</p>
-              </div>
-            </a>
-
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>"""
-
-
-def aplicar_ajuste_fino_22px(dir_raiz):
+def actualizar_multi_atril(dir_raiz):
     ruta_index = os.path.join(dir_raiz, "index.html")
     if not os.path.isfile(ruta_index):
         print("❌ No se encontró index.html")
@@ -211,34 +120,25 @@ def aplicar_ajuste_fino_22px(dir_raiz):
         html = f.read()
 
     patron = re.compile(
-        r'<!-- HERO SECTION -->.*?<!-- SECCIÓN I: SERVICIOS ACTIVOS',
+        r'<!-- HERO SECTION -->.*?</section>',
         re.DOTALL
     )
-    nuevo_bloque = (
-        HERO_AJUSTE_FINO.strip()
-        + "\n\n"
-        + BLOQUE_CONSULTOR_AJUSTE_FINO.strip()
-        + "\n\n  <!-- SECCIÓN I: SERVICIOS ACTIVOS"
-    )
-
     if patron.search(html):
-        html = patron.sub(nuevo_bloque, html)
+        html = patron.sub(HERO_CON_MULTI_ATRIL.strip(), html, count=1)
+        with open(ruta_index, "w", encoding="utf-8") as f:
+            f.write(html)
+        print("   ✔ Precios por volumen de Atril NFC (39 € | Ud. extra: 29 € | 5+: 25 €) integrados sin alterar ni 1px la altura.")
     else:
-        print("⚠️ No se encontró el bloque Hero + Consultor.")
-
-    with open(ruta_index, "w", encoding="utf-8") as f:
-        f.write(html)
-
-    print("   ✔ Subido el conjunto ~22px para que la última frase respire y se vea la línea divisoria.")
+        print("⚠️ No se encontró el bloque Hero.")
 
 
 if __name__ == "__main__":
     print("=" * 85)
-    print("🚀 APLICANDO AJUSTE FINO DE 22PX (FRASE INFERIOR CON AIRE + LÍNEA DIVISORIA VISIBLE)")
+    print("🚀 INTEGRANDO ESCALA MULTI-PUESTO EN ATRIL NFC (MANTENIENDO ALTURA EXACTA)")
     print("=" * 85)
     d = localizar_directorio_public_html()
     if d:
-        aplicar_ajuste_fino_22px(d)
+        actualizar_multi_atril(d)
     print("=" * 85)
-    print("🎉 ¡LISTO! Recarga sistemaspyme.es para comprobarlo.")
+    print("🎉 ¡LISTO! Recarga sistemaspyme.es para verlo.")
     print("=" * 85)
