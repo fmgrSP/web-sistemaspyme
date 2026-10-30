@@ -108,12 +108,14 @@ HERO_LIMPIO_SIN_BANNER = """  <!-- HERO SECTION -->
 
 
 BLOQUE_CONSULTOR_SUPERIOR = """  <!-- ======================================================================= -->
-  <!-- BLOQUE CONSULTOR PRESCRIPTOR (PICO SIMÉTRICO + VISIBLE SIN HACER SCROLL) -->
+  <!-- BLOQUE CONSULTOR PRESCRIPTOR (PICO 100% SIMÉTRICO + TITULAR UNIGÉNERO)  -->
   <!-- ======================================================================= -->
   <section id="consultor-personal" class="relative z-20 mt-2.5 pb-10 sm:pb-14 px-4 sm:px-6">
     <div class="max-w-6xl mx-auto relative">
-      <!-- Puntero simétrico centrado exactamente bajo el eje central de la foto de 72px (left-[36px] -translate-x-1/2) -->
-      <div class="hidden lg:block absolute -top-[9px] left-[36px] -translate-x-1/2 w-4 h-4 bg-slate-900 border-t-2 border-l-2 border-teal-400/80 rotate-45 z-30"></div>
+      <!-- Contenedor separado para que translate-x-1/2 y rotate-45 no interfieran entre sí y el vértice quede clavado en X=36px (centro exacto de la foto de 72px) -->
+      <div class="hidden lg:flex absolute -top-[9px] left-[36px] -translate-x-1/2 z-30 pointer-events-none items-center justify-center">
+        <div class="w-4 h-4 bg-slate-900 border-t-2 border-l-2 border-teal-400/80 rotate-45"></div>
+      </div>
 
       <div class="rounded-3xl bg-gradient-to-br from-slate-900 via-teal-950/55 to-slate-950 border-2 border-teal-400/70 px-5 py-4 sm:px-7 sm:py-5 shadow-2xl shadow-teal-950/50 relative overflow-hidden">
         <div class="absolute -top-20 -right-20 w-64 h-64 bg-teal-400/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -126,7 +128,7 @@ BLOQUE_CONSULTOR_SUPERIOR = """  <!-- ==========================================
               </span>
             </div>
             <h2 class="text-xl sm:text-2xl lg:text-[26px] font-black text-white leading-snug">
-              Tranquilo: no tienes que estudiarte toda esta web ni saber qué herramienta elegir.
+              Con total tranquilidad: no tienes que estudiarte toda esta web ni saber qué herramienta elegir.
             </h2>
             <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
               Contamos con un catálogo muy completo porque resolvemos muchos problemas distintos, pero <strong>mi trabajo como tu consultor tecnológico es ponértelo fácil</strong>. Si te apetece, explora la web con calma; y si prefieres ir al grano, <strong>simplemente dime qué te pasa o qué te trae de cabeza en tu negocio</strong>. Yo analizo tu caso personalmente y de forma gratuita, te digo qué necesitas exactamente y me encargo de solucionarlo todo.
@@ -141,7 +143,7 @@ BLOQUE_CONSULTOR_SUPERIOR = """  <!-- ==========================================
           </div>
         </div>
 
-        <!-- 4 BOTONES RÁPIDOS DE "DOLORES REALES" DEL DUEÑO DE NEGOCIO -->
+        <!-- 4 BOTONES RÁPIDOS DE "DOLORES REALES" DEL DUEÑO/A DE NEGOCIO -->
         <div class="pt-3.5">
           <p class="text-[11px] font-extrabold uppercase tracking-wider text-teal-300 mb-2.5">
             👇 Pulsa directamente sobre lo que más te preocupa hoy en tu negocio y hablamos:
@@ -199,7 +201,7 @@ BLOQUE_CONSULTOR_SUPERIOR = """  <!-- ==========================================
   </section>"""
 
 
-def actualizar_hero_sin_banner(dir_raiz):
+def actualizar_hero_y_bocadillo(dir_raiz):
     ruta_index = os.path.join(dir_raiz, "index.html")
     if not os.path.isfile(ruta_index):
         print("❌ No se encontró index.html")
@@ -227,17 +229,17 @@ def actualizar_hero_sin_banner(dir_raiz):
     with open(ruta_index, "w", encoding="utf-8") as f:
         f.write(html)
 
-    print("   ✔ Píldora superior eliminada («Automatización Práctica + Posicionamiento GEO IA • Galicia»).")
-    print("   ✔ Aire superior restaurado bajo la barra principal manteniendo visible todo el mensaje de «Tranquilo...» abajo.")
+    print("   ✔ Piquito del bocadillo centrado matemáticamente con el eje vertical de tu foto (X=36px).")
+    print("   ✔ Frase unigénero aplicada: «Con total tranquilidad: no tienes que estudiarte toda esta web ni saber qué herramienta elegir.»")
 
 
 if __name__ == "__main__":
     print("=" * 85)
-    print("🚀 ELIMINANDO PÍLDORA SUPERIOR Y DANDO AIRE LIMPIO ARRIBA")
+    print("🚀 CENTRANDO PICO DEL BOCADILLO Y APLICANDO TEXTO UNIGÉNERO")
     print("=" * 85)
     d = localizar_directorio_public_html()
     if d:
-        actualizar_hero_sin_banner(d)
+        actualizar_hero_y_bocadillo(d)
     print("=" * 85)
-    print("🎉 ¡LISTO! Recarga sistemaspyme.es para ver la portada limpia.")
+    print("🎉 ¡LISTO! Recarga sistemaspyme.es para verlo.")
     print("=" * 85)
