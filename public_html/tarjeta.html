@@ -417,7 +417,7 @@
       color: var(--primary);
     }
   </style>
-        <!-- [SP_TELEMETRY_ENGINE_START] -->
+          <!-- [SP_TELEMETRY_ENGINE_START] -->
   <script>
     (function() {
       // 1. GESTIÓN DE MODO PROPIETARIO (FRANCISCO) POR URL (?soy=francisco / ?soy=cliente)
@@ -425,12 +425,27 @@
         var urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('soy') === 'francisco') {
           localStorage.setItem('sp_ignore_owner', '1');
-          alert('🛡️ MODO PROPIETARIO ACTIVADO en este navegador: Tus visitas desde este dispositivo ya NO se enviarán a Google Analytics ni a Clarity para no ensuciar tus estadísticas. (Si quieres volver a grabarte para una prueba, entra en ?soy=cliente)');
+          alert('🛡️ MODO PROPIETARIO ACTIVADO en este navegador: Tus visitas desde este dispositivo ya NO se enviarán a Google Analytics ni a Clarity.');
         } else if (urlParams.get('soy') === 'cliente') {
           localStorage.removeItem('sp_ignore_owner');
           alert('✅ MODO PRUEBA DE CLIENTE REACTIVADO: Ahora tus visitas sí se registrarán en Clarity y Google Analytics.');
         }
       } catch(e) {}
+
+      // Función global para activar/desactivar la exclusión de propietario desde cualquier botón
+      window.toggleExclusionPropietarioSP = function() {
+        try {
+          var actual = localStorage.getItem('sp_ignore_owner') === '1';
+          if (actual) {
+            localStorage.removeItem('sp_ignore_owner');
+            alert('✅ MODO PRUEBA REACTIVADO: Si recargas la página, tus visitas desde este dispositivo SÍ se grabarán en Clarity y Google Analytics.');
+          } else {
+            localStorage.setItem('sp_ignore_owner', '1');
+            alert('🛡️ DISPOSITIVO EXCLUIDO (SOY FRANCISCO): A partir de ahora, este navegador NO enviará datos a Google Analytics ni a Microsoft Clarity para mantener tus estadísticas 100% limpias.');
+          }
+          window.location.reload();
+        } catch(e) {}
+      };
 
       // 2. ESCUDO ANTI-BOTS DE SERVIDOR (Bloquea HeadlessChrome de EE.UU. y URLs temporales *.vercel.app)
       var ua = (navigator.userAgent || '').toLowerCase();
@@ -453,7 +468,8 @@
         ga4Id: 'G-J8Y61HLB7L',
         clarityId: 'z5k1bnidx3',
         streamId: '16232990358',
-        version: '3.5-FILTERED',
+        version: '3.6-OWNER-UI',
+        isOwnerIgnored: esPropietarioIgnorado,
         blockedReason: esBotServidor ? 'Bot_Servidor_Headless' : (esUrlTemporalVercel ? 'URL_Temporal_Vercel' : (esPropietarioIgnorado ? 'Dispositivo_Propietario_Francisco' : null))
       };
 
@@ -462,9 +478,7 @@
         localStorage.setItem('sp_custom_clarity_id', 'z5k1bnidx3');
       } catch(e) {}
 
-      // Si NO es un bot de servidor ni una URL temporal de Vercel ni el dueño en modo invisible, cargamos GA4 y Clarity
       if (!esBotServidor && !esUrlTemporalVercel && !esPropietarioIgnorado) {
-        // A. Carga dinámica oficial de Google Analytics 4 (G-J8Y61HLB7L)
         var sGa = document.createElement('script');
         sGa.async = true;
         sGa.src = 'https://www.googletagmanager.com/gtag/js?id=G-J8Y61HLB7L';
@@ -479,24 +493,51 @@
           anonymize_ip: true
         });
 
-        // B. Carga oficial de Microsoft Clarity (z5k1bnidx3)
         (function(c,l,a,r,i,t,y){
           c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
           t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
           y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
         })(window, document, "clarity", "script", "z5k1bnidx3");
-      } else {
-        console.log('🛡️ [SP-Telemetry] Sesión omitida de GA4/Clarity:', window.SP_ANALYTICS_CONFIG.blockedReason);
       }
 
-      // 3. Desenmascarar textos públicos de la web en Clarity para que los precios ("39 €", "99 €") no salgan como asteriscos
-      window.addEventListener('DOMContentLoaded', function() {
+      function renderizarControlesPropietario() {
         if (document.body) {
           document.body.setAttribute('data-clarity-unmask', 'true');
         }
-      });
+        var excluido = false;
+        try { excluido = (localStorage.getItem('sp_ignore_owner') === '1'); } catch(e) {}
 
-      // 4. Motor Central de Eventos Coordinados
+        // Actualizar botones en la página si existen
+        var btns = document.querySelectorAll('[data-sp-owner-btn]');
+        btns.forEach(function(b) {
+          if (excluido) {
+            b.innerHTML = '🛡️ Dispositivo Excluido (Soy Francisco) • Clic para reactivar';
+            b.style.background = 'rgba(16, 185, 129, 0.2)';
+            b.style.borderColor = '#10b981';
+            b.style.color = '#6ee7b7';
+          } else {
+            b.innerHTML = '🙈 Excluir mi dispositivo (Soy Francisco)';
+            b.style.background = 'rgba(245, 158, 11, 0.18)';
+            b.style.borderColor = '#f59e0b';
+            b.style.color = '#fcd34d';
+          }
+        });
+
+        // Si el propietario ya activó la exclusión, mostrar una discreta píldora flotante abajo a la izquierda
+        if (excluido && !document.getElementById('spOwnerBadgeFlotante')) {
+          var badge = document.createElement('button');
+          badge.id = 'spOwnerBadgeFlotante';
+          badge.type = 'button';
+          badge.onclick = window.toggleExclusionPropietarioSP;
+          badge.title = 'Pulsa aquí si quieres volver a activar el rastreo en este dispositivo';
+          badge.style.cssText = 'position:fixed;bottom:14px;left:14px;z-index:9999;background:rgba(6,78,59,0.92);color:#a7f3d0;border:1px solid #10b981;padding:6px 11px;border-radius:999px;font-family:Inter,sans-serif;font-size:11px;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,0.45);backdrop-filter:blur(6px);display:flex;align-items:center;gap:6px;';
+          badge.innerHTML = '<span>🛡️</span><span>Modo Francisco (Sin grabarme)</span>';
+          document.body.appendChild(badge);
+        }
+      }
+
+      window.addEventListener('DOMContentLoaded', renderizarControlesPropietario);
+
       function guardarEventoLocal(nombre, params) {
         try {
           var hist = JSON.parse(localStorage.getItem('sp_telemetry_log') || '[]');
@@ -538,7 +579,6 @@
         if (typeof window.gtag === 'function') {
           window.gtag('event', nombreEvento, p);
         }
-
         if (typeof window.clarity === 'function') {
           window.clarity('event', nombreEvento);
           Object.keys(p).forEach(function(k) {
@@ -547,7 +587,6 @@
             }
           });
         }
-
         guardarEventoLocal(nombreEvento, p);
       };
 

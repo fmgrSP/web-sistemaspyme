@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Francisco M. Gallardo | Sistemas Pyme</title>
+  <style>
+    :root {
+      --primary: #0B2545;
+      --accent: #0d7d74;
+      --accent-gradient: linear-gradient(135deg, #0B2545 0%, #0d7d74 100%);
+      --bg: #eef2f6;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 4px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 380px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(11, 37, 69, 0.12);
+      border: 1px solid var(--border);
+    }
+
+    .header-banner {
+      background: var(--accent-gradient);
+      height: 56px;
+      width: 100%;
+    }
+
+    .profile-section {
+      text-align: center;
+      margin-top: -36px;
+      padding: 0 12px;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      width: 72px;
+      height: 72px;
+      margin: 0 auto;
+      border-radius: 50%;
+      padding: 2.5px;
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+    }
+
+    .avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .name {
+      font-size: 1.12rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-top: 3px;
+      letter-spacing: -0.3px;
+    }
+
+    .role {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 1px;
+    }
+
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 5px auto 2px;
+      width: 100%;
+    }
+
+    .logo-img {
+      max-height: 44px;
+      width: auto;
+      max-width: 68%;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .save-action {
+      padding: 3px 14px;
+    }
+
+    .btn-save {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--accent-gradient);
+      color: #ffffff;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(13, 125, 116, 0.25);
+      transition: transform 0.1s ease;
+    }
+
+    .btn-save:active {
+      transform: scale(0.97);
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      padding: 5px 14px;
+    }
+
+    .action-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5.5px 3px;
+      text-decoration: none;
+      color: var(--primary);
+      font-size: 0.62rem;
+      font-weight: 700;
+      gap: 3px;
+      transition: background 0.15s;
+    }
+
+    .action-item:active {
+      background: #e2e8f0;
+    }
+
+    .action-item svg {
+      width: 17px;
+      height: 17px;
+      fill: var(--accent);
+    }
+
+    .section-title {
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.7px;
+      margin: 2px 14px 3px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-badge {
+      font-size: 0.55rem;
+      color: var(--accent);
+      background: #f0fdfa;
+      border: 1px solid #99f6e4;
+      padding: 1px 5px;
+      border-radius: 999px;
+      font-weight: 700;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .hero-product {
+      margin: 0 14px 4px;
+      background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
+      border: 1px solid #99f6e4;
+      border-radius: 8px;
+      padding: 6px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .hero-icon {
+      width: 30px;
+      height: 30px;
+      background: var(--accent);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .hero-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .hero-body h3 {
+      font-size: 0.73rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1.1;
+    }
+
+    .hero-body p {
+      font-size: 0.59rem;
+      color: var(--text-muted);
+      line-height: 1.2;
+      margin-top: 1px;
+    }
+    
+    .hero-stars {
+      display: flex;
+      align-items: center;
+      gap: 1.5px;
+      margin-top: 2px;
+    }
+    .hero-stars svg {
+      width: 8.5px;
+      height: 8.5px;
+      fill: #f59e0b;
+    }
+    .hero-price-pill {
+      font-size: 0.55rem;
+      font-weight: 800;
+      color: #166534;
+      background: #dcfce7;
+      border: 1px solid #bbf7d0;
+      padding: 0.5px 4px;
+      border-radius: 3px;
+      margin-left: 4px;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      background: var(--accent);
+      color: #ffffff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 4.5px 8px;
+      border-radius: 5px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .insta-module {
+      margin: 0 14px 5px;
+      border: 1px solid #f9a8d4;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #ffffff 0%, #fdf2f8 100%);
+      padding: 5px 8px;
+    }
+
+    .insta-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .insta-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .insta-title {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #9d174d;
+      letter-spacing: -0.2px;
+    }
+
+    .insta-tag {
+      font-size: 0.5rem;
+      color: #be185d;
+      font-weight: 700;
+      background: #fce7f3;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    .insta-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      background: #be185d;
+      color: #ffffff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 5px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .insta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+    }
+
+    .insta-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1px;
+      background: #ffffff;
+      border: 1px solid #fce7f3;
+      border-radius: 4px;
+      padding: 3.5px 4px;
+      font-size: 0.54rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.15;
+    }
+
+    .insta-dot {
+      color: #be185d;
+      font-weight: 800;
+      font-size: 0.62rem;
+    }
+
+    /* Parrilla de los 5 servicios de Fase 1 */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4.5px;
+      margin: 0 14px 6px;
+    }
+
+    .service-card {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5.5px 7px;
+      text-decoration: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .service-card:active {
+      background: #f0fdfa;
+      border-color: #99f6e4;
+    }
+
+    /* El 5º servicio ocupa el ancho completo para un balance visual perfecto */
+    .service-card.card-full {
+      grid-column: span 2;
+      justify-content: flex-start;
+    }
+
+    .service-num-pill {
+      width: 17px;
+      height: 17px;
+      border-radius: 4px;
+      background: #0d9488;
+      color: #ffffff !important;
+      font-size: 0.6rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .service-num-pill.blue { background: #2563eb; color: #ffffff !important; }
+    .service-num-pill.indigo { background: #4f46e5; color: #ffffff !important; }
+
+    .service-card span:not(.service-num-pill) {
+      font-size: 0.61rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.15;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 5.5px;
+      background: #f1f5f9;
+      border-top: 1px solid var(--border);
+      font-size: 0.58rem;
+      color: var(--text-muted);
+      line-height: 1.25;
+    }
+    .footer strong {
+      color: var(--primary);
+    }
+  </style>
+        <!-- [SP_TELEMETRY_ENGINE_START] -->
+  <script>
+    (function() {
+      // 1. GESTIÓN DE MODO PROPIETARIO (FRANCISCO) POR URL (?soy=francisco / ?soy=cliente)
+      try {
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('soy') === 'francisco') {
+          localStorage.setItem('sp_ignore_owner', '1');
+          alert('🛡️ MODO PROPIETARIO ACTIVADO en este navegador: Tus visitas desde este dispositivo ya NO se enviarán a Google Analytics ni a Clarity para no ensuciar tus estadísticas. (Si quieres volver a grabarte para una prueba, entra en ?soy=cliente)');
+        } else if (urlParams.get('soy') === 'cliente') {
+          localStorage.removeItem('sp_ignore_owner');
+          alert('✅ MODO PRUEBA DE CLIENTE REACTIVADO: Ahora tus visitas sí se registrarán en Clarity y Google Analytics.');
+        }
+      } catch(e) {}
+
+      // 2. ESCUDO ANTI-BOTS DE SERVIDOR (Bloquea HeadlessChrome de EE.UU. y URLs temporales *.vercel.app)
+      var ua = (navigator.userAgent || '').toLowerCase();
+      var host = (window.location.hostname || '').toLowerCase();
+      var esBotServidor = (
+        navigator.webdriver === true ||
+        ua.indexOf('headlesschrome') !== -1 ||
+        ua.indexOf('vercel') !== -1 ||
+        ua.indexOf('lighthouse') !== -1 ||
+        ua.indexOf('pagespeed') !== -1 ||
+        ua.indexOf('prerender') !== -1
+      );
+      var esUrlTemporalVercel = (host.indexOf('.vercel.app') !== -1);
+      var esPropietarioIgnorado = false;
+      try {
+        esPropietarioIgnorado = (localStorage.getItem('sp_ignore_owner') === '1');
+      } catch(e) {}
+
+      window.SP_ANALYTICS_CONFIG = {
+        ga4Id: 'G-J8Y61HLB7L',
+        clarityId: 'z5k1bnidx3',
+        streamId: '16232990358',
+        version: '3.5-FILTERED',
+        blockedReason: esBotServidor ? 'Bot_Servidor_Headless' : (esUrlTemporalVercel ? 'URL_Temporal_Vercel' : (esPropietarioIgnorado ? 'Dispositivo_Propietario_Francisco' : null))
+      };
+
+      try {
+        localStorage.setItem('sp_custom_ga4_id', 'G-J8Y61HLB7L');
+        localStorage.setItem('sp_custom_clarity_id', 'z5k1bnidx3');
+      } catch(e) {}
+
+      // Si NO es un bot de servidor ni una URL temporal de Vercel ni el dueño en modo invisible, cargamos GA4 y Clarity
+      if (!esBotServidor && !esUrlTemporalVercel && !esPropietarioIgnorado) {
+        // A. Carga dinámica oficial de Google Analytics 4 (G-J8Y61HLB7L)
+        var sGa = document.createElement('script');
+        sGa.async = true;
+        sGa.src = 'https://www.googletagmanager.com/gtag/js?id=G-J8Y61HLB7L';
+        document.head.appendChild(sGa);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-J8Y61HLB7L', {
+          send_page_view: true,
+          anonymize_ip: true
+        });
+
+        // B. Carga oficial de Microsoft Clarity (z5k1bnidx3)
+        (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "z5k1bnidx3");
+      } else {
+        console.log('🛡️ [SP-Telemetry] Sesión omitida de GA4/Clarity:', window.SP_ANALYTICS_CONFIG.blockedReason);
+      }
+
+      // 3. Desenmascarar textos públicos de la web en Clarity para que los precios ("39 €", "99 €") no salgan como asteriscos
+      window.addEventListener('DOMContentLoaded', function() {
+        if (document.body) {
+          document.body.setAttribute('data-clarity-unmask', 'true');
+        }
+      });
+
+      // 4. Motor Central de Eventos Coordinados
+      function guardarEventoLocal(nombre, params) {
+        try {
+          var hist = JSON.parse(localStorage.getItem('sp_telemetry_log') || '[]');
+          hist.unshift({
+            ts: new Date().toISOString(),
+            page: window.location.pathname.split('/').pop() || 'index.html',
+            event: nombre,
+            data: params || {}
+          });
+          if (hist.length > 250) hist = hist.slice(0, 250);
+          localStorage.setItem('sp_telemetry_log', JSON.stringify(hist));
+
+          var stats = JSON.parse(localStorage.getItem('sp_telemetry_stats') || '{}');
+          stats.total_events = (stats.total_events || 0) + 1;
+          stats.by_event = stats.by_event || {};
+          stats.by_event[nombre] = (stats.by_event[nombre] || 0) + 1;
+
+          if (nombre === 'sp_section_attention' && params && params.seccion) {
+            stats.section_seconds = stats.section_seconds || {};
+            stats.section_seconds[params.seccion] = (stats.section_seconds[params.seccion] || 0) + (params.segundos || 0);
+          }
+          if (nombre === 'sp_whatsapp_conversion' && params && params.producto) {
+            stats.wa_clicks = stats.wa_clicks || {};
+            stats.wa_clicks[params.producto] = (stats.wa_clicks[params.producto] || 0) + 1;
+          }
+          if (nombre === 'sp_simulator_interaction' && params && params.detalle) {
+            stats.sim_clicks = stats.sim_clicks || {};
+            stats.sim_clicks[params.detalle] = (stats.sim_clicks[params.detalle] || 0) + 1;
+          }
+          localStorage.setItem('sp_telemetry_stats', JSON.stringify(stats));
+        } catch(e) {}
+      }
+
+      window.spTrack = function(nombreEvento, parametros) {
+        var p = parametros || {};
+        p.dispositivo = (window.innerWidth <= 820) ? 'Movil' : 'Ordenador';
+        p.pagina = window.location.pathname.split('/').pop() || 'index.html';
+
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', nombreEvento, p);
+        }
+
+        if (typeof window.clarity === 'function') {
+          window.clarity('event', nombreEvento);
+          Object.keys(p).forEach(function(k) {
+            if (p[k] !== undefined && p[k] !== null) {
+              window.clarity('set', k, String(p[k]));
+            }
+          });
+        }
+
+        guardarEventoLocal(nombreEvento, p);
+      };
+
+      function detectarOrigenTrafico() {
+        var ref = (document.referrer || '').toLowerCase();
+        var urlParams = new URLSearchParams(window.location.search);
+        var utmSource = (urlParams.get('utm_source') || '').toLowerCase();
+        var origen = 'Directo / QR / WhatsApp';
+        var tipoCanal = 'directo';
+
+        if (ref.indexOf('chatgpt.com') !== -1 || ref.indexOf('openai.com') !== -1 || utmSource.indexOf('chatgpt') !== -1) {
+          origen = 'ChatGPT / SearchGPT (IA)';
+          tipoCanal = 'ia_generativa';
+        } else if (ref.indexOf('perplexity.ai') !== -1 || utmSource.indexOf('perplexity') !== -1) {
+          origen = 'Perplexity AI';
+          tipoCanal = 'ia_generativa';
+        } else if (ref.indexOf('gemini.google') !== -1 || utmSource.indexOf('gemini') !== -1) {
+          origen = 'Google Gemini (IA)';
+          tipoCanal = 'ia_generativa';
+        } else if (ref.indexOf('claude.ai') !== -1) {
+          origen = 'Claude AI';
+          tipoCanal = 'ia_generativa';
+        } else if (ref.indexOf('google.') !== -1) {
+          origen = 'Google Buscador / Maps';
+          tipoCanal = 'buscador_organico';
+        } else if (ref.indexOf('bing.com') !== -1) {
+          origen = 'Bing Buscador';
+          tipoCanal = 'buscador_organico';
+        } else if (ref.indexOf('instagram.com') !== -1 || ref.indexOf('facebook.com') !== -1) {
+          origen = 'Instagram / Meta';
+          tipoCanal = 'redes_sociales';
+        } else if (urlParams.get('qr') || utmSource.indexOf('qr') !== -1) {
+          origen = 'Escaneo QR Tarjetón Físico';
+          tipoCanal = 'qr_fisico';
+        }
+
+        window.spTrack('sp_session_start', {
+          origen_detectado: origen,
+          canal: tipoCanal,
+          resolucion: window.innerWidth + 'x' + window.innerHeight
+        });
+      }
+
+      function iniciarRadarAtencionSecciones() {
+        var secciones = [
+          { id: 'atril-nfc', nombre: '01. Atril NFC Mostrador (39€)' },
+          { id: 'disponibles', nombre: '02. Servicios Activos (S1 Reseñas + S2 Encuesta)' },
+          { id: 'auditoria-geo', nombre: '03. Auditoría Premium SEO + GEO (195€)' },
+          { id: 'tarifas', nombre: '04. Parrilla de Tarifas Oficiales' },
+          { id: 'magazine', nombre: '05. Pyme Magazine, Podcast y Vídeo' },
+          { id: 'despliegue', nombre: '06. Próximo Despliegue (S3, S4, S5 + Instagram)' },
+          { id: 'documentacion', nombre: '07. Documentación Oficial y Dossiers' },
+          { id: 'pilares-ia-geo', nombre: '08. Los 4 Pilares IA y Preguntas Frecuentes' },
+          { id: 'contacto', nombre: '09. Cierre y Contacto Final' }
+        ];
+
+        var tiemposActivos = {};
+        setInterval(function() {
+          if (document.hidden) return;
+          Object.keys(tiemposActivos).forEach(function(secNombre) {
+            if (tiemposActivos[secNombre]) {
+              guardarEventoLocal('sp_section_attention', { seccion: secNombre, segundos: 2 });
+            }
+          });
+        }, 2000);
+
+        if ('IntersectionObserver' in window) {
+          var obs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              var meta = entry.target.getAttribute('data-sp-sec-name');
+              if (!meta) return;
+              if (entry.isIntersecting && entry.intersectionRatio >= 0.25) {
+                tiemposActivos[meta] = true;
+                if (!entry.target.getAttribute('data-sp-seen')) {
+                  entry.target.setAttribute('data-sp-seen', '1');
+                  window.spTrack('sp_section_view', { seccion: meta });
+                }
+              } else {
+                tiemposActivos[meta] = false;
+              }
+            });
+          }, { threshold: [0.25] });
+
+          secciones.forEach(function(s) {
+            var el = document.getElementById(s.id);
+            if (el) {
+              el.setAttribute('data-sp-sec-name', s.nombre);
+              obs.observe(el);
+            }
+          });
+        }
+      }
+
+      function iniciarRadarInteracciones() {
+        document.addEventListener('click', function(e) {
+          var link = e.target.closest('a, button, summary');
+          if (!link) return;
+
+          var href = (link.getAttribute('href') || '').trim();
+          var texto = (link.innerText || link.textContent || '').replace(/\s+/g, ' ').trim().substring(0, 80);
+          var onclickAttr = (link.getAttribute('onclick') || '');
+
+          if (href.indexOf('wa.me') !== -1) {
+            var producto = 'Consulta General WhatsApp';
+            var hLow = decodeURIComponent(href).toLowerCase();
+            if (hLow.indexOf('atril') !== -1) producto = 'Atril NFC (39€)';
+            else if (hLow.indexOf('servicio 1') !== -1) producto = 'Servicio 1: Reseñas IA (59€/m)';
+            else if (hLow.indexOf('servicio 2') !== -1) producto = 'Servicio 2: Encuesta WhatsApp (59€/m)';
+            else if (hLow.indexOf('escudo total') !== -1) producto = '★ Pack Escudo Total (99€/m + 195€ GEO)';
+            else if (hLow.indexOf('escudo básico') !== -1 || hLow.indexOf('escudo basico') !== -1) producto = 'Pack Escudo Básico (99€/m)';
+            else if (hLow.indexOf('opción 1') !== -1 || hLow.indexOf('200') !== -1) producto = 'Auditoría GEO: Solo Código (200€)';
+            else if (hLow.indexOf('350') !== -1) producto = 'Auditoría GEO: Llave en Mano (350€)';
+            else if (hLow.indexOf('pyme base') !== -1) producto = 'Plan PYME Base';
+            else if (hLow.indexOf('pyme dúo') !== -1 || hLow.indexOf('pyme duo') !== -1) producto = 'Plan PYME Dúo';
+            else if (hLow.indexOf('trinity') !== -1) producto = 'Plan PYME Trinity';
+            else if (hLow.indexOf('quatro') !== -1) producto = 'Plan PYME Quatro';
+            else if (hLow.indexOf('pentium') !== -1) producto = 'Plan PYME Pentium';
+            else if (hLow.indexOf('instagram') !== -1) producto = 'Satélite Instagram 3 en 1';
+            else if (hLow.indexOf('magazine') !== -1) producto = 'Consulta desde Pyme Magazine';
+
+            window.spTrack('sp_whatsapp_conversion', {
+              producto: producto,
+              boton_texto: texto
+            });
+          }
+          else if (href.indexOf('tel:') === 0) {
+            window.spTrack('sp_phone_call_click', { telefono: href.replace('tel:', '') });
+          }
+          else if (href.indexOf('documentos/') !== -1 || href.indexOf('articulos/') !== -1) {
+            window.spTrack('sp_document_open', { documento: href, boton: texto });
+          }
+          else if (onclickAttr.indexOf('cambiarTonoDemoS1') !== -1) {
+            window.spTrack('sp_simulator_interaction', { simulador: 'Servicio 1 (4 Tonos IA)', detalle: 'Tono: ' + texto });
+          }
+          else if (onclickAttr.indexOf('cambiarBotonDemoS2') !== -1) {
+            window.spTrack('sp_simulator_interaction', { simulador: 'Servicio 2 (Encuesta WhatsApp)', detalle: 'Botón: ' + texto });
+          }
+          else if (onclickAttr.indexOf('cambiarModoTarifas') !== -1) {
+            window.spTrack('sp_pricing_toggle', { modalidad: texto });
+          }
+          else if (onclickAttr.indexOf('cambiarModoPilaresIA') !== -1) {
+            window.spTrack('sp_audience_profile_toggle', { perfil_elegido: texto });
+          }
+          else if (onclickAttr.indexOf('toggleAudio') !== -1 || onclickAttr.indexOf('activarPodcast') !== -1) {
+            window.spTrack('sp_multimedia_play', { medio: 'Podcast Audio Episodio 1' });
+          }
+          else if (onclickAttr.indexOf('activarVideo') !== -1 || onclickAttr.indexOf("cambiarMedioMagazine('video')") !== -1) {
+            window.spTrack('sp_multimedia_play', { medio: 'Píldora en Vídeo HD' });
+          }
+          else if (link.tagName.toLowerCase() === 'summary') {
+            window.spTrack('sp_technical_specs_expand', { bloque: texto });
+          }
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', function() {
+        detectarOrigenTrafico();
+        iniciarRadarAtencionSecciones();
+        iniciarRadarInteracciones();
+      });
+    })();
+  </script>
+  <!-- [SP_TELEMETRY_ENGINE_END] -->
+</head>
+<body>
+
+  <div class="card">
+    <div class="header-banner"></div>
+
+    <!-- Perfil e identidad con autodetección de cualquier extensión (.jpeg, .jpg, .png, .webp) -->
+    <div class="profile-section">
+      <div class="avatar-wrapper">
+        <img src="perfil.jpeg" data-img-base="perfil,foto,avatar" data-img-fallback="https://placehold.co/150x150/0b2545/ffffff?text=FMG" alt="Francisco M. Gallardo" class="avatar" onerror="cargarSiguienteExtension(this)" />
+      </div>
+      <div class="name">Francisco M. Gallardo</div>
+      <div class="role">Consultor Tecnológico</div>
+      <div class="logo-container">
+        <img src="logo.png" data-img-base="logo,Sistemas Pyme Logo" data-img-fallback="https://placehold.co/200x60/ffffff/0d7d74?text=Sistemas+Pyme" alt="Sistemas Pyme" class="logo-img" onerror="cargarSiguienteExtension(this)" />
+      </div>
+    </div>
+
+    <!-- Botón Descargar Contacto -->
+    <div class="save-action">
+      <button class="btn-save" onclick="downloadVCard()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        Guardar en Contactos
+      </button>
+    </div>
+
+    <!-- Accesos rápidos (Llamar, WhatsApp, Email y Web/Tarifas) -->
+    <div class="action-grid">
+      <a href="tel:+34711547561" class="action-item">
+        <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        <span>Llamar</span>
+      </a>
+      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quisiera%20solicitar%20una%20demostraci%C3%B3n%20personalizada%20sin%20compromiso%20de%20los%20servicios%20del%20cat%C3%A1logo" class="action-item" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 012.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 01-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.66c-.19-.09-1.1-.54-1.27-.6-.17-.06-.29-.1-.41.09-.12.19-.47.6-.58.72-.11.12-.22.14-.4.05-.19-.09-.79-.29-1.51-.93-.56-.5-.94-1.11-1.05-1.3-.11-.19-.01-.29.08-.38.08-.09.19-.22.28-.33.09-.11.12-.19.19-.31.06-.12.03-.23-.02-.33-.04-.09-.41-1-.57-1.37-.15-.36-.31-.31-.41-.31h-.35c-.12 0-.32.05-.49.23-.17.19-.65.64-.65 1.56 0 .93.67 1.82.77 1.95.09.12 1.33 2.03 3.22 2.85.45.19.8.31 1.08.4.46.15.87.13 1.2.08.37-.05 1.1-.45 1.25-.89.16-.44.16-.81.11-.89-.04-.09-.17-.14-.36-.24z"/></svg>
+        <span>WhatsApp</span>
+      </a>
+      <a href="mailto:francisco@sistemaspyme.es" class="action-item">
+        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        <span>Email</span>
+      </a>
+      <a href="https://sistemaspyme.es" target="_blank" class="action-item">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+        <span>Web</span>
+      </a>
+    </div>
+
+    <!-- Producto Estrella: Hardware -->
+    <div class="section-title">
+      <span>Implantación Inmediata</span>
+      <span class="section-badge">Sin cuotas mensuales</span>
+    </div>
+    <div class="hero-product">
+      <div class="hero-icon">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 22h10" stroke-width="2"/>
+          <path d="M12 17v5" stroke-width="2"/>
+          <rect x="5" y="2" width="14" height="15" rx="2" fill="rgba(255,255,255,0.2)" stroke="#ffffff"/>
+          <path d="M9 7.5a5 5 0 0 1 6 0"/>
+          <path d="M10.5 10.5a2.5 2.5 0 0 1 3 0"/>
+          <circle cx="12" cy="13.5" r="1.5" fill="#ffffff" stroke="none"/>
+        </svg>
+      </div>
+      <div class="hero-body">
+        <h3>Atril Inteligente NFC + QR</h3>
+        <p>Multiplica tus reseñas 5★ en mostrador.</p>
+        <div class="hero-stars">
+          <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          <span class="hero-price-pill">Pago Único: 39 €</span>
+        </div>
+      </div>
+      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20encargar%20el%20Atril%20Inteligente%20NFC%20%2839%20%E2%82%AC%29" class="hero-cta" target="_blank">
+        ⚡ Pedir
+      </a>
+    </div>
+
+    <!-- Módulo Satélite Instagram -->
+    <div class="insta-module">
+      <div class="insta-head">
+        <div class="insta-title-wrap">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#be185d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+          <span class="insta-title">Instagram Inteligente 3 en 1</span>
+          <span class="insta-tag">+49 €/m combo</span>
+        </div>
+        <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20ver%20una%20demo%20del%20M%C3%B3dulo%20Instagram%20Inteligente" class="insta-cta" target="_blank">
+          ⚡ Demo
+        </a>
+      </div>
+      <div class="insta-grid">
+        <div class="insta-item">
+          <span class="insta-dot">1</span>
+          <span>Auto-envío al comentar</span>
+        </div>
+        <div class="insta-item">
+          <span class="insta-dot">2</span>
+          <span>Recepcionista DM 24/7</span>
+        </div>
+        <div class="insta-item">
+          <span class="insta-dot">3</span>
+          <span>Regalo en historias</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Catálogo de las 5 soluciones troncales de Fase 1 -->
+    <div class="section-title">
+      <span>5 Servicios de Automatización</span>
+      <span class="section-badge">Desde 59 €/mes</span>
+    </div>
+    <div class="services-grid">
+      
+      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20el%20Servicio%201%3A%20Gesti%C3%B3n%20y%20Respuesta%20de%20Rese%C3%B1as%20en%20Google%20con%20IA" target="_blank" class="service-card">
+        <span class="service-num-pill">1</span>
+        <span>Gestión Reseñas Google IA</span>
+      </a>
+
+      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20el%20Servicio%202%3A%20Filtrado%20y%20Captaci%C3%B3n%20de%20Rese%C3%B1as%20%28Encuesta%20Inteligente%29" target="_blank" class="service-card">
+        <span class="service-num-pill">2</span>
+        <span>Encuesta Filtro Reseñas WA</span>
+      </a>
+
+      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20el%20Servicio%203%3A%20Leads%20en%2010s%20%2B%20Extractor%20de%20Portales" target="_blank" class="service-card">
+        <span class="service-num-pill blue">3</span>
+        <span>Leads en 10s + Portales</span>
+      </a>
+
+      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20el%20Servicio%204%3A%20Sistema%20Anti-Plant%C3%B3n%20%2B%20Campa%C3%B1as%20Flash" target="_blank" class="service-card">
+        <span class="service-num-pill indigo">4</span>
+        <span>Anti-Plantón + Campañas Flash</span>
+      </a>
+
+      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20el%20Servicio%205%3A%20Facturas%20y%20Gastos%20al%20Gestor%20con%20IA" target="_blank" class="service-card card-full">
+        <span class="service-num-pill indigo">5</span>
+        <span>Facturas y Gastos al Gestor con IA</span>
+      </a>
+
+    </div>
+
+    <!-- Pie -->
+    <div class="footer">
+      <strong>Sistemas Pyme</strong> &copy; 2026 — <span>sistemaspyme.es</span><br>
+      Soluciones y Automatización para Negocios Locales • Galicia
+    </div>
+  </div>
+
+  <script>
+    function cargarSiguienteExtension(img) {
+      const bases = (img.getAttribute('data-img-base') || 'imagen').split(',');
+      const extensiones = ['jpeg', 'jpg', 'png', 'webp', 'svg', 'JPG', 'JPEG', 'PNG'];
+      let candidatos = [];
+      bases.forEach(b => {
+        const baseLimpia = b.trim();
+        extensiones.forEach(ext => candidatos.push(`${baseLimpia}.${ext}`));
+      });
+
+      let idx = parseInt(img.getAttribute('data-try-idx') || '0', 10);
+      while (idx < candidatos.length && img.getAttribute('src') === candidatos[idx]) {
+        idx++;
+      }
+
+      if (idx < candidatos.length) {
+        img.setAttribute('data-try-idx', (idx + 1).toString());
+        img.src = candidatos[idx];
+      } else {
+        img.onerror = null;
+        img.src = img.getAttribute('data-img-fallback') || 'https://placehold.co/150x150/0b2545/ffffff?text=FMG';
+      }
+    }
+
+    function downloadVCard() {
+      const contact = {
+        name: "Francisco M. Gallardo",
+        org: "Sistemas Pyme",
+        title: "Consultor Tecnológico",
+        phone: "+34711547561",
+        email: "francisco@sistemaspyme.es",
+        url: "https://sistemaspyme.es"
+      };
+
+      const vcard = `BEGIN:VCARD
+VERSION:3.0
+N:Gallardo;Francisco M.;;;
+FN:${contact.name}
+ORG:${contact.org}
+TITLE:${contact.title}
+TEL;TYPE=CELL:${contact.phone}
+EMAIL;TYPE=WORK:${contact.email}
+URL:${contact.url}
+NOTE:Sistemas Pyme - Automatización para Negocios Locales (Atriles NFC, Gestión de Reseñas IA, Encuesta Inteligente WhatsApp, Leads en 10s, Anti-Plantón Citas y Facturas IA)
+END:VCARD`;
+
+      const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Francisco_M_Gallardo_SistemasPyme.vcf";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  </script>
+</body>
+</html>

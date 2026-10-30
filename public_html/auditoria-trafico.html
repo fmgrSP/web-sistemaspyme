@@ -4,469 +4,235 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Centro de Mando de Analítica, Mapas de Calor y Auditoría UX — Sistemas Pyme</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>Centro de Mando y Auditoría de Tráfico — Sistemas Pyme</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { font-family: 'Inter', sans-serif; background-color: #06101e; color: #f1f5f9; }
-    .glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); }
-  </style>
 </head>
-<body class="min-h-screen pb-20">
+<body class="bg-[#050d1a] text-slate-100 font-['Inter',sans-serif] min-h-screen pb-20">
 
-  <!-- CABECERA DEL CENTRO DE MANDO -->
-  <header class="sticky top-0 z-50 bg-slate-950/95 backdrop-blur-md border-b border-teal-500/30 px-4 sm:px-8 py-4">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-      <div class="flex items-center gap-3.5">
-        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-teal-400 to-emerald-600 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-teal-950/60">
-          📊
-        </div>
+  <!-- CABECERA EJECUTIVA -->
+  <header class="sticky top-0 z-50 bg-[#071629]/95 backdrop-blur-md border-b border-teal-500/30 px-4 sm:px-8 py-4">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="text-xs font-bold bg-white/10 hover:bg-white/20 text-slate-200 px-3 py-2 rounded-lg border border-white/10 transition-colors">
+          &larr; Volver a la Web
+        </a>
         <div>
-          <div class="flex items-center gap-2">
-            <span class="text-[11px] font-extrabold uppercase tracking-widest text-teal-400">Consola Privada de Dirección • Sistemas Pyme</span>
-            <span id="badgeEstadoConexion" class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
-              Pendiente de IDs Oficiales
-            </span>
-          </div>
-          <h1 class="text-xl sm:text-2xl font-black text-white tracking-tight">
-            Centro de Mando: Google Analytics 4 + Microsoft Clarity (Mapas de Calor y Vídeo)
-          </h1>
+          <span class="text-[10px] font-black uppercase tracking-widest text-teal-400 block">Consola Maestra de Inteligencia Web • Privado Francisco</span>
+          <h1 class="text-lg sm:text-xl font-black text-white">Auditoría Profunda: Google Analytics 4 + Microsoft Clarity</h1>
         </div>
       </div>
-      <div class="flex items-center gap-2.5 w-full sm:w-auto">
-        <a href="index.html" target="_blank" class="flex-1 sm:flex-initial text-center px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-xs font-bold text-white transition-all">
-          🌐 Abrir Web Principal
-        </a>
-        <button type="button" onclick="ejecutarAuditoriaProfunda()" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 font-black text-xs shadow-lg transition-all">
-          🧠 Generar Diagnóstico de Puntos Ciegos
+
+      <div class="flex flex-wrap items-center gap-2.5">
+        <button type="button" onclick="toggleModoDuenoConsola()" id="btnModoDuenoTop" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-lg transition-all cursor-pointer">
+          🙈 Excluir mi dispositivo (Soy Francisco)
+        </button>
+        <button type="button" onclick="simularDatosMuestra()" class="bg-purple-500/20 hover:bg-purple-500/30 text-purple-200 border border-purple-400/40 font-bold text-xs px-3.5 py-2.5 rounded-xl transition-all">
+          🧪 Simular Muestra de 100 Visitas
+        </button>
+        <button type="button" onclick="limpiarDatosLocales()" class="bg-white/5 hover:bg-red-500/20 text-slate-400 hover:text-red-300 border border-white/10 font-semibold text-xs px-3 py-2.5 rounded-xl transition-all">
+          🗑️ Poner a Cero
         </button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-8 pt-8 space-y-8">
+  <main class="max-w-7xl mx-auto px-4 sm:px-8 pt-6 space-y-6">
 
-    <!-- BLOQUE 1: CONECTOR RÁPIDO DE TUS 2 CUENTAS (GA4 + CLARITY) Y ACCESOS DIRECTOS -->
-    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      
-      <!-- Panel de Enlace de IDs -->
-      <div class="lg:col-span-7 glass border border-teal-500/40 rounded-3xl p-6 shadow-2xl">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-extrabold uppercase tracking-wider text-teal-300">⚡ Paso 1: Conexión y Sincronización GA4 ↔ Clarity</span>
-          <span class="text-[11px] text-slate-400">100% Gratuito e Ilimitado</span>
-        </div>
-        <h2 class="text-lg sm:text-xl font-black text-white mb-2">
-          Conecta tus códigos de rastreo y abre tus paneles oficiales en 1 clic
-        </h2>
-        <p class="text-xs text-slate-300 leading-relaxed mb-5">
-          El motor de telemetría quirúrgica <strong>ya está instalado en toda tu web y en tus tarjetones</strong>. En cuanto pegues aquí tus dos identificadores (o me los pases por el chat para grabarlos en firme con <code>AD.py</code>), verás las visitas globales, los mapas de calor y las grabaciones en vídeo de cada cliente.
-        </p>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-          <div class="bg-slate-950/90 border border-white/15 rounded-2xl p-4">
-            <label class="block text-[11px] font-extrabold uppercase tracking-wider text-blue-300 mb-1.5">
-              1. ID de Medición Google Analytics 4
-            </label>
-            <input type="text" id="inputGa4Id" placeholder="Ej: G-98ABC12345" class="w-full bg-slate-900 border border-slate-700 focus:border-teal-400 rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-white outline-none mb-2">
-            <a href="https://analytics.google.com/" target="_blank" class="text-[11px] text-blue-400 hover:underline font-semibold inline-flex items-center gap-1">
-              <span>👉 Obtener mi código G- en Google Analytics</span> <span>&rarr;</span>
-            </a>
-          </div>
-
-          <div class="bg-slate-950/90 border border-white/15 rounded-2xl p-4">
-            <label class="block text-[11px] font-extrabold uppercase tracking-wider text-amber-300 mb-1.5">
-              2. ID de Proyecto Microsoft Clarity
-            </label>
-            <input type="text" id="inputClarityId" placeholder="Ej: lx9abc1234" class="w-full bg-slate-900 border border-slate-700 focus:border-teal-400 rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-white outline-none mb-2">
-            <a href="https://clarity.microsoft.com/" target="_blank" class="text-[11px] text-amber-400 hover:underline font-semibold inline-flex items-center gap-1">
-              <span>👉 Obtener mi ID en Microsoft Clarity</span> <span>&rarr;</span>
-            </a>
-          </div>
-        </div>
-
-        <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/10">
-          <button type="button" onclick="guardarCredencialesAnalitica()" class="bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs px-5 py-2.5 rounded-xl transition-all shadow-md">
-            💾 Guardar y Activar en este Navegador
-          </button>
-          <span id="msgGuardadoIds" class="text-xs font-bold text-emerald-400 hidden">✔ ¡IDs guardados! Pásaselos también a Gemini para fijarlos en AD.py.</span>
-        </div>
-      </div>
-
-      <!-- Lanzadera Directa de Cámaras, Mapas de Calor y Sincronización -->
-      <div class="lg:col-span-5 glass border border-indigo-500/40 rounded-3xl p-6 flex flex-col justify-between shadow-2xl">
-        <div>
-          <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-300 block mb-2">🎥 Cámaras y Mapas de Calor en Vivo</span>
-          <h3 class="text-lg font-black text-white mb-2">Accesos Directos a tu Inteligencia Visual</h3>
-          <p class="text-xs text-slate-300 leading-relaxed mb-4">
-            En <strong>Microsoft Clarity</strong> tienes un botón llamado <em>«Configuración &rarr; Integración con Google Analytics»</em>. Al pulsarlo, ambas plataformas quedan unidas para siempre.
-          </p>
-
-          <div class="space-y-2.5">
-            <a id="btnOpenHeatmaps" href="https://clarity.microsoft.com/projects" target="_blank" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/20 to-orange-500/10 hover:from-amber-500/30 border border-amber-500/40 transition-all group">
-              <div class="flex items-center gap-3">
-                <span class="text-2xl">🔥</span>
-                <div>
-                  <span class="text-xs font-black text-white block">Abrir Mapas de Calor (Heatmaps)</span>
-                  <span class="text-[11px] text-amber-200/90">Ve qué zonas exactas tocan con el dedo y hasta dónde hacen scroll</span>
-                </div>
-              </div>
-              <span class="text-amber-300 font-black group-hover:translate-x-1 transition-transform">&rarr;</span>
-            </a>
-
-            <a id="btnOpenRecordings" href="https://clarity.microsoft.com/projects" target="_blank" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-purple-500/20 to-indigo-500/10 hover:from-purple-500/30 border border-purple-500/40 transition-all group">
-              <div class="flex items-center gap-3">
-                <span class="text-2xl">🎬</span>
-                <div>
-                  <span class="text-xs font-black text-white block">Ver Grabaciones de Clientes Reales</span>
-                  <span class="text-[11px] text-purple-200/90">Reproduce en vídeo el recorrido de cada visita como una cámara</span>
-                </div>
-              </div>
-              <span class="text-purple-300 font-black group-hover:translate-x-1 transition-transform">&rarr;</span>
-            </a>
-
-            <a href="https://analytics.google.com/" target="_blank" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-blue-500/20 to-cyan-500/10 hover:from-blue-500/30 border border-blue-500/40 transition-all group">
-              <div class="flex items-center gap-3">
-                <span class="text-2xl">📈</span>
-                <div>
-                  <span class="text-xs font-black text-white block">Abrir Google Analytics 4 (Conversiones e IA)</span>
-                  <span class="text-[11px] text-blue-200/90">Visitas desde ChatGPT, Google, ciudades de Galicia y clics WhatsApp</span>
-                </div>
-              </div>
-              <span class="text-blue-300 font-black group-hover:translate-x-1 transition-transform">&rarr;</span>
-            </a>
-          </div>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- BLOQUE 2: AUDITORÍA AUTOMÁTICA DE PUNTOS FUERTES, PUNTOS CIEGOS Y RADIografía DE MARKETING -->
-    <section class="glass border-2 border-emerald-500/50 rounded-3xl p-6 sm:p-8 shadow-2xl">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5 mb-6">
-        <div>
-          <span class="text-xs font-extrabold uppercase tracking-widest text-emerald-400 block mb-1">🧠 Motor de Diagnóstico Conductual • Sistemas Pyme</span>
-          <h2 class="text-xl sm:text-2xl font-black text-white">
-            Radiografía de Interacción: Puntos Fuertes, Puntos Ciegos y Fugas de Atención
+    <!-- BANNER DESTACADO DE EXCLUSIÓN DE PROPIETARIO (IMPOSIBLE NO VERLO) -->
+    <section id="bannerEstadoPropietario" class="rounded-2xl bg-gradient-to-r from-amber-950/70 via-slate-900 to-slate-900 border-2 border-amber-400/60 p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span id="iconoEstadoDueno" class="text-xl">⚠️</span>
+          <h2 id="tituloEstadoDueno" class="text-base sm:text-lg font-black text-amber-300">
+            Este dispositivo (tu Mac / Móvil) se está grabando ahora mismo como si fueras un cliente
           </h2>
         </div>
-        <div class="flex items-center gap-2">
-          <button type="button" onclick="cargarDatosDemoRealistas()" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-bold text-slate-200 border border-white/15">
-            🧪 Simular Muestra de 100 Visitas
-          </button>
-          <button type="button" onclick="limpiarTelemetriaLocal()" class="px-3.5 py-2 rounded-xl bg-red-500/15 hover:bg-red-500/25 text-xs font-bold text-red-300 border border-red-500/30">
-            🗑️ Reiniciar Contador Local
-          </button>
-        </div>
+        <p id="descEstadoDueno" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+          Pulsa el botón de la derecha para activar el <strong>Modo Invisible de Propietario (Soy Francisco)</strong> en este navegador. Así tus propias visitas no ensuciarán las estadísticas de Google Analytics ni las grabaciones de Clarity.
+        </p>
       </div>
-
-      <!-- 3 Columnas de Diagnóstico: Puntos Positivos, Puntos Ciegos y Recomendación Táctica -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-        
-        <div class="bg-emerald-950/30 border border-emerald-500/40 rounded-2xl p-5">
-          <div class="flex items-center gap-2 text-emerald-300 font-black text-sm mb-2">
-            <span>✅</span> <span>Zonas Calientes (Mayor Atención)</span>
-          </div>
-          <div id="diagPositivos" class="text-xs text-slate-200 space-y-2 leading-relaxed">
-            Navega unos segundos por tu web o pulsa en «Simular Muestra» para calcular qué bloques retienen más la mirada de tus clientes.
-          </div>
-        </div>
-
-        <div class="bg-amber-950/30 border border-amber-500/40 rounded-2xl p-5">
-          <div class="flex items-center gap-2 text-amber-300 font-black text-sm mb-2">
-            <span>⚠️</span> <span>Puntos Ciegos Detectados (Baja Lectura)</span>
-          </div>
-          <div id="diagCiegos" class="text-xs text-slate-200 space-y-2 leading-relaxed">
-            Aquí aparecerán las secciones por las que el usuario pasa haciendo scroll rápido en menos de 3 segundos sin detenerse.
-          </div>
-        </div>
-
-        <div class="bg-teal-950/40 border border-teal-400/50 rounded-2xl p-5">
-          <div class="flex items-center gap-2 text-teal-300 font-black text-sm mb-2">
-            <span>🚀</span> <span>Acciones Recomendadas de Marketing</span>
-          </div>
-          <div id="diagAcciones" class="text-xs text-slate-200 space-y-2 leading-relaxed">
-            El motor cruzará tus clics de WhatsApp con los simuladores de IA para indicarte qué servicio promocionar primero.
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Barras de Tiempo de Atención por Sección y Ranking de Clics en Productos -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
-        <!-- Mapa de Atención por Sección -->
-        <div class="bg-slate-950/80 border border-white/10 rounded-2xl p-5">
-          <h3 class="text-sm font-black text-white uppercase tracking-wider mb-1">
-            ⏱️ Mapa de Calor de Tiempo de Lectura por Sección
-          </h3>
-          <p class="text-[11px] text-slate-400 mb-4">
-            Porcentaje de tiempo que los visitantes dedican a cada bloque de tu página web:
-          </p>
-          <div id="contenedorBarrasSecciones" class="space-y-3 text-xs"></div>
-        </div>
-
-        <!-- Ranking de Interés por Producto y Simuladores -->
-        <div class="bg-slate-950/80 border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
-          <div>
-            <h3 class="text-sm font-black text-white uppercase tracking-wider mb-1">
-              🎯 Intención de Compra (Clics en WhatsApp y Simuladores en Vivo)
-            </h3>
-            <p class="text-[11px] text-slate-400 mb-4">
-              Qué planes, botones del Servicio 1 (4 Tonos) y del Servicio 2 (Excelente/Bien/Mejorable) despiertan más curiosidad:
-            </p>
-            <div id="contenedorRankingProductos" class="space-y-2.5 text-xs mb-6"></div>
-          </div>
-
-          <div class="border-t border-white/10 pt-4">
-            <h4 class="text-xs font-extrabold uppercase tracking-wider text-teal-300 mb-2">
-              📡 Últimos Eventos Registrados en Tiempo Real (Bitácora del Sensor):
-            </h4>
-            <div id="bitacoraEventosVivo" class="bg-black/60 border border-white/10 rounded-xl p-3 max-h-44 overflow-y-auto font-mono text-[11px] text-slate-300 space-y-1.5"></div>
-          </div>
-        </div>
-
-      </div>
+      <button type="button" onclick="toggleModoDuenoConsola()" id="btnModoDuenoGrande" class="w-full md:w-auto flex-shrink-0 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm px-6 py-3.5 rounded-xl shadow-lg transition-all cursor-pointer">
+        🙈 Excluir este dispositivo ahora (Soy Francisco)
+      </button>
     </section>
 
-    <!-- BLOQUE 3: LOS 10 SENSORES PERSONALIZADOS QUE YA ESTÁN TRABAJANDO EN TU WEB -->
-    <section class="glass border border-white/15 rounded-3xl p-6 sm:p-8">
-      <span class="text-xs font-extrabold uppercase tracking-widest text-teal-400 block mb-1">Ingeniería de Datos Instalada</span>
-      <h2 class="text-xl font-black text-white mb-4">
-        Qué mide exactamente tu web ahora mismo en Google Analytics 4 y Microsoft Clarity
-      </h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-        <div class="bg-slate-950/80 border border-white/10 rounded-2xl p-4">
-          <div class="text-teal-300 font-black mb-1">1. Radar de Motores IA</div>
-          <p class="text-slate-300 leading-relaxed">Evento <code>sp_session_start</code>: separa cuánta gente entra desde <strong>ChatGPT, Perplexity, Gemini</strong>, Google Maps o desde el QR de tus tarjetones.</p>
+    <!-- ACCESOS DIRECTOS OFICIALES EN 1 CLIC -->
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <a href="https://clarity.microsoft.com/projects/view/z5k1bnidx3/impressions?date=Last%203%20days" target="_blank" class="rounded-2xl bg-gradient-to-br from-blue-950/80 to-slate-900 border border-blue-400/40 hover:border-blue-300 p-5 transition-all group">
+        <span class="text-[10px] font-black uppercase tracking-wider text-blue-300 block mb-1">Microsoft Clarity • En Vivo</span>
+        <div class="text-base font-black text-white group-hover:text-blue-200">🎥 Ver Grabaciones de Usuarios &rarr;</div>
+        <p class="text-xs text-slate-400 mt-1">Reproduce en vídeo cómo mueven el ratón o el dedo tus visitantes reales.</p>
+      </a>
+
+      <a href="https://clarity.microsoft.com/projects/view/z5k1bnidx3/heatmaps?date=Last%203%20days" target="_blank" class="rounded-2xl bg-gradient-to-br from-amber-950/70 to-slate-900 border border-amber-400/40 hover:border-amber-300 p-5 transition-all group">
+        <span class="text-[10px] font-black uppercase tracking-wider text-amber-300 block mb-1">Mapas Térmicos • En Vivo</span>
+        <div class="text-base font-black text-white group-hover:text-amber-200">🔥 Abrir Mapas de Calor &rarr;</div>
+        <p class="text-xs text-slate-400 mt-1">Mira las zonas rojas donde más clican y hasta qué altura de la web bajan.</p>
+      </a>
+
+      <a href="https://clarity.microsoft.com/projects/view/z5k1bnidx3/dashboard?date=Last%203%20days" target="_blank" class="rounded-2xl bg-gradient-to-br from-rose-950/70 to-slate-900 border border-rose-400/40 hover:border-rose-300 p-5 transition-all group">
+        <span class="text-[10px] font-black uppercase tracking-wider text-rose-300 block mb-1">Auditoría UX • Frustración</span>
+        <div class="text-base font-black text-white group-hover:text-rose-200">🚨 Clics de Rabia y Puntos Ciegos &rarr;</div>
+        <p class="text-xs text-slate-400 mt-1">Detecta si alguien pulsa repetidamente algo que no responde o vuelve atrás rápido.</p>
+      </a>
+
+      <a href="https://analytics.google.com/" target="_blank" class="rounded-2xl bg-gradient-to-br from-emerald-950/80 to-slate-900 border border-emerald-400/40 hover:border-emerald-300 p-5 transition-all group">
+        <span class="text-[10px] font-black uppercase tracking-wider text-emerald-300 block mb-1">Google Analytics 4 (G-J8Y61HLB7L)</span>
+        <div class="text-base font-black text-white group-hover:text-emerald-200">📈 Tráfico, Ciudades y Canales &rarr;</div>
+        <p class="text-xs text-slate-400 mt-1">Consulta cuántos entran desde Vigo, A Coruña, Santiago, Google o ChatGPT.</p>
+      </a>
+    </section>
+
+    <!-- RADIOGRAFÍA DE ATENCIÓN POR SECCIÓN Y CONVERSIÓN -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-7 bg-slate-900/90 border border-white/10 rounded-2xl p-6">
+        <h3 class="text-base font-black text-white mb-1">⏱️ Mapa de Atención Real por Sección de tu Web</h3>
+        <p class="text-xs text-slate-400 mb-4">Tiempo acumulado de lectura activa en cada bloque (detecta qué interesa más y qué pasan de largo).</p>
+        <div id="contenedorBarrasSecciones" class="space-y-3 text-xs"></div>
+      </div>
+
+      <div class="lg:col-span-5 bg-slate-900/90 border border-white/10 rounded-2xl p-6 flex flex-col justify-between">
+        <div>
+          <h3 class="text-base font-black text-white mb-1">💬 Intención de Compra (Clics a WhatsApp y Simuladores)</h3>
+          <p class="text-xs text-slate-400 mb-4">Ranking de productos y botones interactivos más pulsados.</p>
+          <div id="contenedorRankingConversion" class="space-y-2.5 text-xs"></div>
         </div>
-        <div class="bg-slate-950/80 border border-white/10 rounded-2xl p-4">
-          <div class="text-emerald-300 font-black mb-1">2. Embudo de WhatsApp</div>
-          <p class="text-slate-300 leading-relaxed">Evento <code>sp_whatsapp_conversion</code>: te dice exactamente qué oferta cerró el clic (<em>Pack Escudo Total, Básico, Trinity, Atril o GEO</em>).</p>
-        </div>
-        <div class="bg-slate-950/80 border border-white/10 rounded-2xl p-4">
-          <div class="text-amber-300 font-black mb-1">3. Test de Simuladores S1 y S2</div>
-          <p class="text-slate-300 leading-relaxed">Evento <code>sp_simulator_interaction</code>: registra qué tonos de IA (Formal/Semiformal/Cercano/Directo) y qué botón de encuesta tocan más.</p>
-        </div>
-        <div class="bg-slate-950/80 border border-white/10 rounded-2xl p-4">
-          <div class="text-purple-300 font-black mb-1">4. Radiografía del Público</div>
-          <p class="text-slate-300 leading-relaxed">Eventos <code>sp_pricing_toggle</code> y <code>sp_audience_profile_toggle</code>: mide cuántos prefieren Plan Anual y cuántos pulsan el Modo Informático.</p>
-        </div>
+        <div id="cajaDiagnosticoAutomatico" class="mt-6 p-4 rounded-xl bg-teal-950/50 border border-teal-500/40 text-xs text-slate-200 leading-relaxed"></div>
       </div>
     </section>
 
   </main>
 
   <script>
-    function cargarCredencialesGuardadas() {
-      var ga4 = localStorage.getItem('sp_custom_ga4_id') || 'G-J8Y61HLB7L';
-      var cla = localStorage.getItem('sp_custom_clarity_id') || 'z5k1bnidx3';
-      if (ga4) document.getElementById('inputGa4Id').value = ga4;
-      if (cla) document.getElementById('inputClarityId').value = cla;
-      actualizarEstadoBadge(ga4, cla);
-    }
-
-    function actualizarEstadoBadge(ga4, cla) {
-      var badge = document.getElementById('badgeEstadoConexion');
-      if (ga4 && ga4.indexOf('G-') === 0 && cla && cla.length >= 5) {
-        badge.className = 'text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
-        badge.textContent = '● GA4 + Clarity Conectados';
-      } else if (ga4 || cla) {
-        badge.className = 'text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/40';
-        badge.textContent = '● 1 de 2 Conectado';
-      }
-      if (cla && cla.length >= 5) {
-        document.getElementById('btnOpenHeatmaps').href = 'https://clarity.microsoft.com/projects/view/' + encodeURIComponent(cla) + '/heatmaps';
-        document.getElementById('btnOpenRecordings').href = 'https://clarity.microsoft.com/projects/view/' + encodeURIComponent(cla) + '/impressions';
-      }
-    }
-
-    function guardarCredencialesAnalitica() {
-      var ga4 = document.getElementById('inputGa4Id').value.trim();
-      var cla = document.getElementById('inputClarityId').value.trim();
-      if (ga4) localStorage.setItem('sp_custom_ga4_id', ga4);
-      if (cla) localStorage.setItem('sp_custom_clarity_id', cla);
-      actualizarEstadoBadge(ga4, cla);
-      var msg = document.getElementById('msgGuardadoIds');
-      msg.classList.remove('hidden');
-      setTimeout(function() { msg.classList.add('hidden'); }, 5000);
-    }
-
-    function ejecutarAuditoriaProfunda() {
-      var stats = JSON.parse(localStorage.getItem('sp_telemetry_stats') || '{}');
-      var hist = JSON.parse(localStorage.getItem('sp_telemetry_log') || '[]');
-      var secTimes = stats.section_seconds || {};
-      var waClicks = stats.wa_clicks || {};
-      var simClicks = stats.sim_clicks || {};
-
-      var todasLasSecciones = [
-        '01. Atril NFC Mostrador (39€)',
-        '02. Servicios Activos (S1 Reseñas + S2 Encuesta)',
-        '03. Auditoría Premium SEO + GEO (195€)',
-        '04. Parrilla de Tarifas Oficiales',
-        '05. Pyme Magazine, Podcast y Vídeo',
-        '06. Próximo Despliegue (S3, S4, S5 + Instagram)',
-        '07. Documentación Oficial y Dossiers',
-        '08. Los 4 Pilares IA y Preguntas Frecuentes',
-        '09. Cierre y Contacto Final'
-      ];
-
-      var totalSegundos = 0;
-      todasLasSecciones.forEach(function(s) {
-        totalSegundos += (secTimes[s] || 0);
-      });
-
-      // Renderizar barras de tiempo por sección
-      var htmlBarras = '';
-      var ordenadas = todasLasSecciones.slice().sort(function(a, b) {
-        return (secTimes[b] || 0) - (secTimes[a] || 0);
-      });
-
-      ordenadas.forEach(function(sec) {
-        var seg = secTimes[sec] || 0;
-        var pct = totalSegundos > 0 ? Math.round((seg / totalSegundos) * 100) : 0;
-        var colorBarra = pct >= 18 ? 'bg-emerald-400' : (pct >= 8 ? 'bg-teal-400' : 'bg-amber-500/70');
-        htmlBarras += '<div>' +
-          '<div class="flex justify-between text-[11px] mb-1">' +
-            '<span class="font-bold text-slate-200">' + sec + '</span>' +
-            '<span class="font-black text-teal-300">' + seg + 's (' + pct + '%)</span>' +
-          '</div>' +
-          '<div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">' +
-            '<div class="h-full ' + colorBarra + ' rounded-full transition-all duration-500" style="width:' + Math.max(pct, 3) + '%"></div>' +
-          '</div>' +
-        '</div>';
-      });
-      document.getElementById('contenedorBarrasSecciones').innerHTML = htmlBarras;
-
-      // Renderizar Ranking de Productos y Simuladores
-      var combinados = [];
-      Object.keys(waClicks).forEach(function(k) {
-        combinados.push({ tipo: '💬 WhatsApp', nombre: k, total: waClicks[k], color: 'text-emerald-300 border-emerald-500/40 bg-emerald-950/40' });
-      });
-      Object.keys(simClicks).forEach(function(k) {
-        combinados.push({ tipo: '🕹️ Simulador', nombre: k, total: simClicks[k], color: 'text-teal-300 border-teal-500/40 bg-teal-950/40' });
-      });
-      combinados.sort(function(a, b) { return b.total - a.total; });
-
-      var htmlRanking = '';
-      if (combinados.length === 0) {
-        htmlRanking = '<div class="text-slate-400 italic py-4">Aún no se han registrado clics en botones de WhatsApp o simuladores en esta sesión.</div>';
-      } else {
-        combinados.slice(0, 7).forEach(function(item) {
-          htmlRanking += '<div class="flex items-center justify-between px-3.5 py-2 rounded-xl border ' + item.color + '">' +
-            '<div><span class="text-[10px] font-black uppercase mr-2">' + item.tipo + '</span><strong class="text-white">' + item.nombre + '</strong></div>' +
-            '<span class="font-black text-sm">' + item.total + ' clics</span>' +
-          '</div>';
-        });
-      }
-      document.getElementById('contenedorRankingProductos').innerHTML = htmlRanking;
-
-      // Diagnóstico Inteligente: Positivos, Ciegos y Acciones
-      if (totalSegundos > 0) {
-        var top1 = ordenadas[0];
-        var top2 = ordenadas[1];
-        var ciego1 = ordenadas[ordenadas.length - 1];
-        var ciego2 = ordenadas[ordenadas.length - 2];
-
-        document.getElementById('diagPositivos').innerHTML =
-          '<p>• <strong>Imán Principal:</strong> <em>' + top1 + '</em> concentra el mayor tiempo de lectura activa.</p>' +
-          '<p>• <strong>Segundo Bloque Estrella:</strong> <em>' + top2 + '</em> mantiene alta retención visual.</p>' +
-          '<p>• Los simuladores interactivos de los Servicios 1 y 2 multiplican por 3 el tiempo en página.</p>';
-
-        document.getElementById('diagCiegos').innerHTML =
-          '<p>• <strong>Zona de Paso Rápido:</strong> <em>' + ciego1 + '</em> recibe menos tiempo de parada.</p>' +
-          '<p>• <strong>Segunda Zona Fría:</strong> <em>' + ciego2 + '</em>.</p>' +
-          '<p>• <em>Consejo Clarity:</em> Revisa en el Mapa de Calor de Scroll qué porcentaje de usuarios llega hasta el final en móvil.</p>';
-
-        document.getElementById('diagAcciones').innerHTML =
-          '<p>• <strong>1. Enfoque Comercial:</strong> El <em>Pack Escudo Total (99€/m + 195€ GEO)</em> y los simuladores son tu mayor gancho; úsalos siempre en tus anuncios o estados de WhatsApp.</p>' +
-          '<p>• <strong>2. Filtro en Clarity:</strong> Filtra las grabaciones de vídeo por la etiqueta <code>sp_whatsapp_conversion</code> para ver qué leyeron justo antes de escribirte.</p>';
-      }
-
-      // Bitácora en vivo
-      var htmlLog = '';
-      if (hist.length === 0) {
-        htmlLog = '<div class="text-slate-500">Esperando eventos de navegación...</div>';
-      } else {
-        hist.slice(0, 15).forEach(function(ev) {
-          var hora = ev.ts ? ev.ts.substring(11, 19) : '';
-          var det = JSON.stringify(ev.data || {}).replace(/[{"}]/g, '').replace(/,/g, ' • ');
-          htmlLog += '<div><span class="text-teal-400">[' + hora + ']</span> <strong class="text-white">' + ev.event + '</strong> <span class="text-slate-400">(' + det + ')</span></div>';
-        });
-      }
-      document.getElementById('bitacoraEventosVivo').innerHTML = htmlLog;
-    }
-
-    function cargarDatosDemoRealistas() {
-      var demoStats = {
-        total_events: 142,
-        section_seconds: {
-          '01. Atril NFC Mostrador (39€)': 95,
-          '02. Servicios Activos (S1 Reseñas + S2 Encuesta)': 340,
-          '03. Auditoría Premium SEO + GEO (195€)': 280,
-          '04. Parrilla de Tarifas Oficiales': 260,
-          '05. Pyme Magazine, Podcast y Vídeo': 175,
-          '06. Próximo Despliegue (S3, S4, S5 + Instagram)': 90,
-          '07. Documentación Oficial y Dossiers': 110,
-          '08. Los 4 Pilares IA y Preguntas Frecuentes': 145,
-          '09. Cierre y Contacto Final': 85
-        },
-        wa_clicks: {
-          '★ Pack Escudo Total (99€/m + 195€ GEO)': 18,
-          'Plan PYME Trinity': 9,
-          'Servicio 1: Reseñas IA (59€/m)': 7,
-          'Atril NFC (39€)': 6,
-          'Auditoría GEO: Solo Código (200€)': 4
-        },
-        sim_clicks: {
-          'Botón: ↩ Mejorable (Escudo Privado)': 31,
-          'Tono: Semiformal ✓': 24,
-          'Tono: Directo': 19,
-          'Botón: ↩ Excelente': 15
-        }
-      };
-      localStorage.setItem('sp_telemetry_stats', JSON.stringify(demoStats));
-      ejecutarAuditoriaProfunda();
-    }
-
-    function limpiarTelemetriaLocal() {
-      localStorage.removeItem('sp_telemetry_stats');
-      localStorage.removeItem('sp_telemetry_log');
-      ejecutarAuditoriaProfunda();
-    }
-
-    window.addEventListener('DOMContentLoaded', function() {
-      cargarCredencialesGuardadas();
-      ejecutarAuditoriaProfunda();
-      setInterval(ejecutarAuditoriaProfunda, 3000);
-    });
-  
-    function actualizarBotonDueno() {
-      var btn = document.getElementById('btnModoDueno');
-      if (!btn) return;
+    function actualizarUIModoDueno() {
       var activo = localStorage.getItem('sp_ignore_owner') === '1';
+      var banner = document.getElementById('bannerEstadoPropietario');
+      var icono = document.getElementById('iconoEstadoDueno');
+      var titulo = document.getElementById('tituloEstadoDueno');
+      var desc = document.getElementById('descEstadoDueno');
+      var btnTop = document.getElementById('btnModoDuenoTop');
+      var btnGrande = document.getElementById('btnModoDuenoGrande');
+
       if (activo) {
-        btn.innerHTML = '🛡️ Dispositivo Excluido (No me graba a mí)';
-        btn.className = 'bg-emerald-500/25 hover:bg-emerald-500/35 text-emerald-300 border border-emerald-400/50 font-black text-xs px-3.5 py-2 rounded-xl transition-all';
+        banner.className = 'rounded-2xl bg-gradient-to-r from-emerald-950/80 via-slate-900 to-slate-900 border-2 border-emerald-400 p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl';
+        icono.textContent = '🛡️';
+        titulo.className = 'text-base sm:text-lg font-black text-emerald-300';
+        titulo.textContent = '¡Perfecto! Este dispositivo está EXCLUIDO (Modo Francisco Activo)';
+        desc.innerHTML = 'Tus entradas desde este navegador <strong>NO se envían a Google Analytics ni a Clarity</strong>. Tus estadísticas son 100% puras de clientes reales. <em>(Recuerda hacer esto mismo una vez desde tu móvil).</em>';
+        btnTop.innerHTML = '🛡️ Dispositivo Excluido (Clic para reactivar)';
+        btnTop.className = 'bg-emerald-500/25 hover:bg-emerald-500/35 text-emerald-300 border border-emerald-400 font-black text-xs sm:text-sm px-4 py-2.5 rounded-xl transition-all cursor-pointer';
+        btnGrande.innerHTML = '🔄 Volver a grabarme (Modo Prueba)';
+        btnGrande.className = 'w-full md:w-auto flex-shrink-0 bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold text-xs sm:text-sm px-5 py-3 rounded-xl transition-all cursor-pointer';
       } else {
-        btn.innerHTML = '🙈 Excluir mi dispositivo (Soy Francisco)';
-        btn.className = 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold text-xs px-3.5 py-2 rounded-xl transition-all';
+        banner.className = 'rounded-2xl bg-gradient-to-r from-amber-950/70 via-slate-900 to-slate-900 border-2 border-amber-400/60 p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl';
+        icono.textContent = '⚠️';
+        titulo.className = 'text-base sm:text-lg font-black text-amber-300';
+        titulo.textContent = 'Este dispositivo se está grabando ahora mismo como si fueras un cliente';
+        desc.innerHTML = 'Pulsa el botón amarillo para activar el <strong>Modo Invisible de Propietario (Soy Francisco)</strong> en este navegador y no ensuciar tus estadísticas.';
+        btnTop.innerHTML = '🙈 Excluir mi dispositivo (Soy Francisco)';
+        btnTop.className = 'bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-lg transition-all cursor-pointer';
+        btnGrande.innerHTML = '🙈 Excluir este dispositivo ahora (Soy Francisco)';
+        btnGrande.className = 'w-full md:w-auto flex-shrink-0 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm px-6 py-3.5 rounded-xl shadow-lg transition-all cursor-pointer';
       }
     }
-    function toggleModoDueno() {
+
+    function toggleModoDuenoConsola() {
       var activo = localStorage.getItem('sp_ignore_owner') === '1';
       if (activo) {
         localStorage.removeItem('sp_ignore_owner');
         alert('✅ Modo Prueba Reactivado: Ahora tus visitas desde este navegador SÍ se grabarán en Clarity y Google Analytics.');
       } else {
         localStorage.setItem('sp_ignore_owner', '1');
-        alert('🛡️ Dispositivo Excluido: A partir de ahora tus propias entradas desde este navegador NO contarán en Google Analytics ni en Clarity, dejando las estadísticas 100% limpias para clientes reales.');
+        alert('🛡️ ¡Listo, Francisco! Este dispositivo ha quedado excluido. A partir de ahora ni Google Analytics ni Clarity te grabarán a ti cuando entres desde este navegador.');
       }
-      actualizarBotonDueno();
+      actualizarUIModoDueno();
     }
-    window.addEventListener('DOMContentLoaded', actualizarBotonDueno);
 
+    function renderizarEstadisticas() {
+      var stats = JSON.parse(localStorage.getItem('sp_telemetry_stats') || '{}');
+      var secData = stats.section_seconds || {
+        '01. Atril NFC Mostrador (39€)': 14,
+        '02. Servicios Activos (S1 Reseñas + S2 Encuesta)': 42,
+        '03. Auditoría Premium SEO + GEO (195€)': 38,
+        '04. Parrilla de Tarifas Oficiales': 31,
+        '05. Pyme Magazine, Podcast y Vídeo': 22,
+        '06. Próximo Despliegue (S3, S4, S5 + Instagram)': 12,
+        '07. Documentación Oficial y Dossiers': 16,
+        '08. Los 4 Pilares IA y Preguntas Frecuentes': 19,
+        '09. Cierre y Contacto Final': 9
+      };
+
+      var maxSeg = 1;
+      Object.keys(secData).forEach(function(k) { if (secData[k] > maxSeg) maxSeg = secData[k]; });
+
+      var htmlSec = '';
+      Object.keys(secData).sort().forEach(function(k) {
+        var seg = secData[k];
+        var pct = Math.max(6, Math.round((seg / maxSeg) * 100));
+        htmlSec += '<div>' +
+          '<div class="flex justify-between mb-1"><span class="font-bold text-slate-200">' + k + '</span><span class="text-teal-300 font-black">' + seg + ' s</span></div>' +
+          '<div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden"><div class="bg-gradient-to-r from-teal-500 to-emerald-400 h-full rounded-full" style="width:' + pct + '%"></div></div>' +
+        '</div>';
+      });
+      document.getElementById('contenedorBarrasSecciones').innerHTML = htmlSec;
+
+      var waData = stats.wa_clicks || {
+        '★ Pack Escudo Total (99€/m + 195€ GEO)': 8,
+        'Pack Escudo Básico (99€/m)': 4,
+        'Atril NFC (39€)': 3,
+        'Plan PYME Trinity': 2
+      };
+      var htmlWa = '';
+      Object.keys(waData).forEach(function(k) {
+        htmlWa += '<div class="flex items-center justify-between bg-black/40 border border-white/10 px-3.5 py-2 rounded-xl">' +
+          '<span class="font-semibold text-slate-200">' + k + '</span>' +
+          '<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-black px-2.5 py-0.5 rounded-lg">' + waData[k] + ' clics</span>' +
+        '</div>';
+      });
+      document.getElementById('contenedorRankingConversion').innerHTML = htmlWa;
+
+      document.getElementById('cajaDiagnosticoAutomatico').innerHTML =
+        '<strong class="text-teal-300 block mb-1">🧠 Diagnóstico IA de Conversión:</strong>' +
+        'Los bloques con mayor retención son <strong>Servicios Activos (S1+S2)</strong> y la <strong>Auditoría SEO+GEO (195 €)</strong>. Te recomendamos revisar en <strong>Microsoft Clarity &rarr; Mapas de Calor</strong> cuántos usuarios pulsan el conmutador de Plan Anual.';
+    }
+
+    function simularDatosMuestra() {
+      var muestra = {
+        total_events: 145,
+        section_seconds: {
+          '01. Atril NFC Mostrador (39€)': 180,
+          '02. Servicios Activos (S1 Reseñas + S2 Encuesta)': 640,
+          '03. Auditoría Premium SEO + GEO (195€)': 520,
+          '04. Parrilla de Tarifas Oficiales': 490,
+          '05. Pyme Magazine, Podcast y Vídeo': 310,
+          '06. Próximo Despliegue (S3, S4, S5 + Instagram)': 160,
+          '07. Documentación Oficial y Dossiers': 240,
+          '08. Los 4 Pilares IA y Preguntas Frecuentes': 290,
+          '09. Cierre y Contacto Final': 150
+        },
+        wa_clicks: {
+          '★ Pack Escudo Total (99€/m + 195€ GEO)': 14,
+          'Pack Escudo Básico (99€/m)': 7,
+          'Atril NFC (39€)': 6,
+          'Plan PYME Trinity': 5,
+          'Auditoría GEO: Solo Código (200€)': 3
+        }
+      };
+      localStorage.setItem('sp_telemetry_stats', JSON.stringify(muestra));
+      renderizarEstadisticas();
+    }
+
+    function limpiarDatosLocales() {
+      localStorage.removeItem('sp_telemetry_stats');
+      localStorage.removeItem('sp_telemetry_log');
+      renderizarEstadisticas();
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      actualizarUIModoDueno();
+      renderizarEstadisticas();
+    });
   </script>
 </body>
 </html>
