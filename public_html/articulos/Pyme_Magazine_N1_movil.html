@@ -2,386 +2,442 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>Pyme Magazine Nº 1: La Nueva Regla del «Boca a Boca» (Versión Móvil Lectura Cómoda) — Sistemas Pyme</title>
+  <title>Pyme Magazine Nº 1 — La Nueva Regla del «Boca a Boca» | Sistemas Pyme</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,800;1,600&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      width: 100%;
-      max-width: 100%;
-      overflow-x: hidden;
-      background-color: #071629;
-      color: #f1f5f9;
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    :root {
+      --navy: #0b2545;
+      --dark: #071629;
+      --teal: #0d7d74;
+      --teal-light: #f0fdfa;
+      --emerald: #10b981;
+      --amber: #d97706;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+    }
+    body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 16.5px;
-      line-height: 1.58;
-      -webkit-text-size-adjust: 100%;
-    }
-    body.font-xl {
-      font-size: 19px;
-      line-height: 1.65;
-    }
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(7, 22, 41, 0.96);
-      backdrop-filter: blur(12px);
-      border-bottom: 2px solid #14b8a6;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-    }
-    .btn-back {
-      background: #1e293b;
-      color: #5eead4;
-      border: 1px solid rgba(20,184,166,0.45);
-      text-decoration: none;
-      font-weight: 800;
-      font-size: 13px;
-      padding: 8px 12px;
-      border-radius: 10px;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      white-space: nowrap;
-      cursor: pointer;
-    }
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .btn-action {
-      background: #0d7d74;
-      color: #ffffff;
-      border: 1px solid #14b8a6;
-      font-weight: 800;
-      font-size: 12.5px;
-      padding: 8px 11px;
-      border-radius: 10px;
-      cursor: pointer;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-    .btn-action.secondary {
-      background: #1e293b;
-      color: #cbd5e1;
-      border-color: #475569;
-    }
-    .container {
-      max-width: 660px;
-      margin: 0 auto;
-      padding: 18px 16px 48px 16px;
+      background-color: #071629;
+      color: #0f172a;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      padding: 14px 8px 48px 8px;
       gap: 18px;
     }
-    .hero-box {
-      background: linear-gradient(145deg, #0b2545 0%, #0f172a 100%);
-      border: 1.5px solid rgba(20, 184, 166, 0.45);
-      border-radius: 18px;
-      padding: 18px 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
-    }
-    .badge {
-      display: inline-block;
-      background: rgba(20, 184, 166, 0.18);
-      color: #5eead4;
-      border: 1px solid rgba(20, 184, 166, 0.4);
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 4px 10px;
-      border-radius: 99px;
-      margin-bottom: 8px;
-    }
-    .hero-title {
-      font-size: 1.42em;
-      font-weight: 900;
-      color: #ffffff;
-      line-height: 1.24;
-      margin-bottom: 6px;
-    }
-    .hero-sub {
-      font-size: 0.92em;
-      color: #cbd5e1;
-    }
-    .section-head {
-      background: linear-gradient(90deg, #0f766e 0%, #115e59 100%);
-      color: #ffffff;
-      padding: 11px 14px;
-      border-radius: 12px;
-      font-weight: 900;
-      font-size: 0.95em;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      margin-top: 6px;
-    }
-    .section-head.blue { background: linear-gradient(90deg, #1e3a8a 0%, #1d4ed8 100%); }
-    .section-head.indigo { background: linear-gradient(90deg, #3730a3 0%, #4f46e5 100%); }
-    .section-head.amber { background: linear-gradient(90deg, #b45309 0%, #d97706 100%); }
-    .section-head.pink { background: linear-gradient(90deg, #831843 0%, #be185d 100%); }
-    .card {
-      background: #0f172a;
-      border: 1.5px solid rgba(255,255,255,0.12);
-      border-left: 5px solid #14b8a6;
-      border-radius: 16px;
-      padding: 16px;
+    .top-bar {
+      position: sticky;
+      top: 10px;
+      z-index: 999;
+      width: 100%;
+      max-width: 210mm;
+      background: rgba(11, 37, 69, 0.96);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(20, 184, 166, 0.45);
+      border-radius: 14px;
+      padding: 10px 16px;
       display: flex;
-      flex-direction: column;
-      gap: 11px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-    }
-    .card.amber { border-left-color: #f59e0b; background: linear-gradient(145deg, #1c1917 0%, #0f172a 100%); }
-    .card.emerald { border-left-color: #10b981; border-color: rgba(16,185,129,0.45); background: linear-gradient(145deg, rgba(6,78,59,0.45) 0%, #0f172a 100%); }
-    .card.blue { border-left-color: #3b82f6; }
-    .card.indigo { border-left-color: #6366f1; }
-    .card.pink { border-left-color: #ec4899; background: linear-gradient(145deg, rgba(131,24,67,0.3) 0%, #0f172a 100%); }
-    .card-top {
-      display: flex;
-      align-items: flex-start;
+      flex-wrap: wrap;
+      align-items: center;
       justify-content: space-between;
       gap: 10px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+      color: #fff;
     }
-    .card-title-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-    .card-title {
-      font-size: 1.12em;
-      font-weight: 900;
-      color: #ffffff;
-      line-height: 1.25;
-      display: block;
-    }
-    .card-subtitle {
-      display: inline-block;
-      font-size: 0.84em;
-      font-weight: 800;
-      color: #5eead4;
-      background: rgba(20, 184, 166, 0.14);
-      border: 1px solid rgba(20, 184, 166, 0.35);
-      padding: 2px 9px;
-      border-radius: 8px;
-      width: fit-content;
-      white-space: nowrap;
-    }
-    .card-subtitle.amber {
-      color: #fcd34d;
-      background: rgba(245, 158, 11, 0.16);
-      border-color: rgba(245, 158, 11, 0.4);
-    }
-    .card-subtitle.blue {
-      color: #93c5fd;
-      background: rgba(59, 130, 246, 0.16);
-      border-color: rgba(59, 130, 246, 0.4);
-    }
-    .card-subtitle.indigo {
-      color: #c7d2fe;
-      background: rgba(99, 102, 241, 0.16);
-      border-color: rgba(99, 102, 241, 0.4);
-    }
-    .price-tag {
-      background: rgba(20, 184, 166, 0.18);
-      color: #5eead4;
-      border: 1px solid rgba(20, 184, 166, 0.4);
-      font-weight: 900;
-      font-size: 0.98em;
-      padding: 4px 10px;
-      border-radius: 10px;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .price-tag.amber {
-      background: rgba(245, 158, 11, 0.2);
-      color: #fcd34d;
-      border-color: rgba(245, 158, 11, 0.45);
-    }
-    .card p {
-      font-size: 0.95em;
-      color: #e2e8f0;
-    }
-    .deep-box {
-      background: rgba(0, 0, 0, 0.32);
-      border: 1px solid rgba(255, 255, 255, 0.09);
-      border-radius: 12px;
-      padding: 12px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .deep-title {
-      font-size: 0.84em;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      color: #5eead4;
-    }
-    .deep-title.amber { color: #fcd34d; }
-    .deep-title.blue { color: #93c5fd; }
-    .data-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-      background: rgba(0,0,0,0.35);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px;
-      padding: 12px;
-    }
-    .data-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 10px;
-      padding-bottom: 6px;
-      border-bottom: 1px dashed rgba(255,255,255,0.1);
-      font-size: 0.92em;
-    }
-    .data-row:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-    .data-label {
-      color: #94a3b8;
-      font-weight: 600;
-    }
-    .data-val {
-      color: #ffffff;
-      font-weight: 800;
-      text-align: right;
-    }
-    .data-val.highlight {
-      color: #34d399;
-      font-size: 1.04em;
-    }
-    .list-check {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      font-size: 0.94em;
-      color: #e2e8f0;
-    }
-    .list-check li {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-    }
-    .list-check li span.chk {
-      color: #2dd4bf;
-      font-weight: 900;
-      flex-shrink: 0;
-    }
-    .cta-box {
-      background: linear-gradient(145deg, #064e3b 0%, #0f172a 100%);
-      border: 2px solid #10b981;
-      border-radius: 18px;
-      padding: 20px 16px;
-      text-align: center;
-      margin-top: 8px;
-    }
-    .btn-wa {
+    .top-bar-left {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      background: #10b981;
-      color: #052e16;
-      font-weight: 900;
-      font-size: 1.02em;
-      padding: 14px 18px;
-      border-radius: 14px;
+      gap: 10px;
+    }
+    .btn-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
       text-decoration: none;
-      margin-top: 12px;
-      box-shadow: 0 6px 20px rgba(16,185,129,0.35);
+      font-weight: 700;
+      font-size: 13px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .btn-nav:hover {
+      background: #0d7d74;
+      border-color: #14b8a6;
+    }
+    .btn-nav.primary {
+      background: #0d7d74;
+      border-color: #2dd4bf;
+    }
+    .btn-nav.amber {
+      background: #d97706;
+      border-color: #fbbf24;
+    }
+    .a4-page {
+      width: 100%;
+      max-width: 210mm;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 12mm 14mm;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    @media (max-width: 768px) {
+      body {
+        padding: 8px 4px 36px 4px;
+        gap: 14px;
+      }
+      .a4-page {
+        padding: 20px 16px;
+        border-radius: 12px;
+      }
+    }
+    @media print {
+      body {
+        background: none !important;
+        padding: 0 !important;
+        gap: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .a4-page {
+        width: 210mm !important;
+        min-height: 297mm !important;
+        max-height: 297mm !important;
+        padding: 11mm 14mm !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        page-break-after: always !important;
+      }
+    }
+    .mag-header {
+      border-bottom: 3px solid var(--navy);
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .mag-brand {
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--teal);
+    }
+    .mag-issue {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--slate-600);
+      background: var(--slate-100);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--slate-200);
+    }
+    .hero-article {
+      background: linear-gradient(135deg, #0b2545 0%, #0d7d74 100%);
+      color: #ffffff;
+      border-radius: 12px;
+      padding: 22px 24px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 20px rgba(11, 37, 69, 0.2);
+    }
+    .hero-kicker {
+      display: inline-block;
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: rgba(255, 255, 255, 0.16);
+      color: #5eead4;
+      padding: 4px 10px;
+      border-radius: 99px;
+      margin-bottom: 10px;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 28px;
+      line-height: 1.18;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .hero-lead {
+      font-size: 15px;
+      line-height: 1.5;
+      color: #e2e8f0;
+      font-weight: 500;
+    }
+    .editorial-section {
+      margin-bottom: 16px;
+    }
+    .sec-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--navy);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-left: 4px solid var(--teal);
+      padding-left: 10px;
+      line-height: 1.25;
+    }
+    .editorial-p {
+      font-size: 14.5px;
+      line-height: 1.62;
+      color: var(--slate-800);
+      margin-bottom: 10px;
+    }
+    .highlight-box {
+      background: #f0fdfa;
+      border: 1.5px solid #99f6e4;
+      border-left: 5px solid var(--teal);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin: 12px 0;
+    }
+    .highlight-box h4 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 5px;
+    }
+    .highlight-box p {
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--slate-700);
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin: 12px 0;
+    }
+    @media (max-width: 640px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .hero-title {
+        font-size: 24px;
+      }
+      .editorial-p {
+        font-size: 15.5px;
+        line-height: 1.65;
+      }
+      .sec-title {
+        font-size: 18.5px;
+      }
+    }
+    .card-box {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .card-box strong {
+      display: block;
+      font-size: 15px;
+      color: var(--navy);
+      margin-bottom: 5px;
+    }
+    .card-box p {
+      font-size: 13.8px;
+      line-height: 1.52;
+      color: var(--slate-700);
+    }
+    .page-footer {
+      border-top: 1.5px solid var(--slate-200);
+      padding-top: 10px;
+      margin-top: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--slate-600);
+      font-weight: 600;
+      flex-wrap: wrap;
+      gap: 6px;
     }
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <a href="../index.html#magazine" onclick="volverACerrarPestana(event, '../index.html#magazine')" class="btn-back">⬅ Volver a la Web</a>
-    <div class="topbar-actions">
-      <button type="button" id="btnToggleFont" onclick="toggleFont()" class="btn-action">🔎 Letra A+</button>
-      <a href="Pyme_Magazine_N1.html?modo=impreso" class="btn-action secondary">📄 Original A4/A5</a>
+
+  <nav class="top-bar no-print">
+    <div class="top-bar-left">
+      <a href="../index.html#magazine" class="btn-nav">← Volver a la Web</a>
+      <a href="../index.html#play-podcast" class="btn-nav amber">🎧 Escuchar en Podcast</a>
     </div>
-  </header>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button type="button" onclick="window.print()" class="btn-nav primary">🖨️ Imprimir / Guardar PDF A4</button>
+    </div>
+  </nav>
 
-  <main class="container">
-    <div class="hero-box">
-      <span class="badge">Pyme Magazine • Fascículo Nº 1</span>
-      <h1 class="hero-title">Pyme Magazine Nº 1: La Nueva Regla del «Boca a Boca»</h1>
-      <p class="hero-sub">Informe Ejecutivo: Psicología de las reseñas en Google Maps, Regla Anti-Efecto Loro, Blindaje RGPD y Cortafuegos de WhatsApp.</p>
+  <!-- PÁGINA 1 -->
+  <article class="a4-page">
+    <div>
+      <header class="mag-header">
+        <div>
+          <div class="mag-brand">📖 PYME MAGAZINE • PUBLICACIÓN EJECUTIVA DE SISTEMAS PYME</div>
+          <div style="font-size: 12.5px; color: #475569; font-weight: 600; margin-top: 2px;">Ingeniería de Reputación, Automatización e Inteligencia Artificial para Negocios Locales</div>
+        </div>
+        <span class="mag-issue">FASCÍCULO Nº 1 • EDICIÓN OFICIAL</span>
+      </header>
+
+      <div class="hero-article">
+        <span class="hero-kicker">Informe Especial • Psicología del Consumidor y Google Maps</span>
+        <h1 class="hero-title">La Nueva Regla del «Boca a Boca»: Por qué 10 clientes felices callan mientras 1 enfadado hunde tu nota media</h1>
+        <p class="hero-lead">
+          El 97% de los clientes mira tus estrellas en Google Maps y pregunta a ChatGPT o Gemini antes de cruzar tu puerta. Descubre el «Efecto Umbral», el juego oculto de los Google Local Guides y cómo blindar tu negocio en piloto automático.
+        </p>
+      </div>
+
+      <section class="editorial-section">
+        <h2 class="sec-title">01. El «Efecto Umbral» (Doorway Effect) y la Asimetría del Silencio</h2>
+        <p class="editorial-p">
+          Piensa en lo que ocurre todos los días en cualquier clínica, taller mecánico, restaurante o comercio: atiendes de diez a un cliente, te da las gracias con una sonrisa y le pides amablemente si puede dejarte una reseña en Google cuando llegue a casa. El cliente te dice que sí con total sinceridad. Sin embargo, <strong>en cuanto cruza la puerta de tu local, se sube al coche y entra al tráfico, su cerebro borra la tarea</strong>.
+        </p>
+        <p class="editorial-p">
+          La neurociencia denomina a este fenómeno <strong>«Efecto Umbral»</strong>: al cambiar de escenario físico, la memoria de trabajo archiva lo anterior. ¿El resultado? <strong>Más del 90% de tus clientes encantados jamás llegan a escribir su reseña</strong>, mientras que el único cliente que sufrió un malentendido mantiene el cortisol alto durante dos horas y escribe una crítica de 1 estrella que leen miles de vecinos.
+        </p>
+
+        <div class="highlight-box">
+          <h4>💡 La Solución en Mostrador o Mesas: Captura en 1 Segundo antes de cruzar la puerta</h4>
+          <p>
+            Con el <strong>Atril Inteligente de Mostrador (NFC + QR)</strong> (39 € la 1ª unidad, o 29 €/ud. adicional y 25 €/ud. en packs de 5+ para negocios con varias mesas, gabinetes o tocadores), el cliente acerca su móvil al pagar y se le abre tu pantalla oficial de 5★ en <strong>1 segundo</strong>, antes de salir por la puerta.
+          </p>
+        </div>
+      </section>
+
+      <section class="editorial-section">
+        <h2 class="sec-title">02. El Secreto de los «Google Local Guides» y la Trampa del «Efecto Loro»</h2>
+        <p class="editorial-p">
+          Google premia con puntos e insignias a millones de usuarios llamados <strong>Local Guides</strong> por escribir reseñas largas. Para el algoritmo de Google Maps, una reseña de un Local Guide pesa hasta 10 veces más y se clava arriba del todo en tu ficha durante meses.
+        </p>
+        <div class="grid-2">
+          <div class="card-box">
+            <strong>❌ El Error Fatal: El «Efecto Loro» en SEO</strong>
+            <p>
+              Cuando un dueño enfadado responde diciendo: <em>«No es verdad que seamos caros ni que el trato en nuestra clínica fuera lento»</em>, está repitiendo las palabras clave negativas (<strong>caro, lento</strong>). El robot de Google indexa tus propias palabras y hunde tu posicionamiento.
+            </p>
+          </div>
+          <div class="card-box">
+            <strong>✅ La Respuesta Inteligente con IA (Servicio 1)</strong>
+            <p>
+              En valoraciones de <strong>4 y 5★</strong>, nuestra IA publica al instante en el idioma del cliente inyectando tus servicios y ciudad para subirte en Google. Si entra una crítica (1 a 3★), <strong>pausa la publicación</strong> y te avisa al WhatsApp con tu <strong>Gestor de 4 Tonos</strong>.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
 
-    
-    <div class="section-head">01. El Juego Oculto de los Google Local Guides</div>
-    <article class="card">
-      <p>En Google Maps no todas las reseñas pesan igual. La reseña de un <strong>Google Local Guide</strong> (usuarios con insignia de estrella naranja que escriben reseñas detalladas y suben fotos) tiene hasta <strong>10 veces más impacto en el posicionamiento de tu ficha</strong> que una puntuación vacía.</p>
-      <p>Con el <strong>Atril NFC de mostrador</strong> y la <strong>Encuesta Post-Visita por WhatsApp</strong> logras que ningún cliente satisfecho se marche sin dejar su valoración.</p>
-    </article>
+    <footer class="page-footer">
+      <span><strong>Sistemas Pyme</strong> — Francisco M. Gallardo (Consultor Tecnológico • Tel: 711 54 75 61)</span>
+      <span>sistemaspyme.es • Página 1 de 2</span>
+    </footer>
+  </article>
 
-    <div class="section-head amber">02. La Trampa del «Efecto Loro» en el SEO</div>
-    <article class="card amber">
-      <p>Cuando un cliente enfadado escribe palabras tóxicas en una reseña (como <em>«estafa», «caro», «sucio» o «mal trato»</em>) y el dueño responde repitiendo esas mismas palabras para defenderse (<em>«No somos ninguna estafa...»</em>), el algoritmo de Google indexa por partida doble ese término negativo asociado a tu local.</p>
-      <p>Nuestro motor de IA aplica la <strong>Regla Anti-Efecto Loro</strong>: jamás repite términos dañinos y los sustituye por lenguaje diplomático de alta autoridad.</p>
-    </article>
+  <!-- PÁGINA 2 -->
+  <article class="a4-page">
+    <div>
+      <header class="mag-header">
+        <div>
+          <div class="mag-brand">📖 PYME MAGAZINE • FASCÍCULO Nº 1</div>
+          <div style="font-size: 12.5px; color: #475569; font-weight: 600; margin-top: 2px;">Protocolo HEARD, Blindaje RGPD, Cortafuegos de WhatsApp y las 2 Auditorías Gemelas</div>
+        </div>
+        <span class="mag-issue">CONTINUACIÓN • PÁG. 2</span>
+      </header>
 
-    <div class="section-head blue">03. Método Psicológico HEARD y Blindaje RGPD</div>
-    <article class="card blue">
-      <p>Desarrollado originalmente por Disney para la recuperación de clientes, el protocolo <strong>HEARD (Hear, Empathize, Apologize, Resolve, Diagnose)</strong> desactiva la hostilidad del lector futuro en 4 párrafos estructurados.</p>
-      <p>Además, en clínicas médicas, dentales, fisioterapia o despachos jurídicos, nuestro sistema aplica <strong>Blindaje RGPD estricto</strong>: nunca confirma públicamente qué tratamiento o patología tuvo el paciente aunque él mismo lo mencione, evitando sanciones de la AEPD.</p>
-    </article>
+      <section class="editorial-section">
+        <h2 class="sec-title">03. Protocolo Psicológico HEARD y Blindaje Médico/Legal RGPD</h2>
+        <p class="editorial-p">
+          Una respuesta a una reseña de 1 estrella <strong>no se escribe para convencer a quien puso la queja, sino para seducir a los 5.000 clientes futuros que la van a leer</strong>. Nuestro motor aplica el protocolo de Disney <strong>HEARD</strong> (Escuchar, Empatizar, Disculpar sin admitir falsedades, Resolver en privado y Diagnosticar) junto con un <strong>Escudo RGPD estricto</strong>: jamás confirma que el autor sea paciente o cliente (evitando multas de la AEPD de hasta 10.000 € en clínicas, asesorías y despachos).
+        </p>
+      </section>
 
-    <div class="section-head indigo">04. El Cortafuegos Privado de WhatsApp</div>
-    <article class="card emerald">
-      <p>La mejor reseña negativa es la que nunca llega a publicarse en Google Maps. Al enviar la encuesta interactiva 2 horas después de la cita:</p>
-      <ul class="list-check">
-        <li><span class="chk">🌟</span><span><strong>Si pulsa «Excelente»:</strong> Va directo en 1 toque a publicar sus 5★ en Google Maps.</span></li>
-        <li><span class="chk">🛡️</span><span><strong>Si pulsa «Bien» o «Mejorable»:</strong> Se abre un canal privado en WhatsApp (texto o nota de voz transcrita por IA) y recibes una alerta urgente para solucionarlo en persona antes de que toque internet.</span></li>
-      </ul>
-    </article>
-    
+      <section class="editorial-section">
+        <h2 class="sec-title">04. El Cortafuegos Preventivo por WhatsApp (Servicio 2)</h2>
+        <p class="editorial-p">
+          La mejor reseña de 1 estrella es la que jamás llega a escribirse en Google. Con el <strong>Servicio 2: Filtrado y Captación de Reseñas (Encuesta Inteligente)</strong>, dos horas después de su cita o visita el cliente recibe un WhatsApp cercano con tres botones:
+        </p>
+        <div class="grid-2">
+          <div class="card-box" style="background:#f0fdf4; border-color:#86efac;">
+            <strong style="color:#166534;">🌟 Si pulsa «Excelente» → Directo a Google Maps</strong>
+            <p>
+              Le abrimos tu pantalla oficial de valoración en Google Maps en un solo toque desde el sofá de su casa, multiplicando hasta por 4 tu ritmo mensual de reseñas de 5 estrellas reales.
+            </p>
+          </div>
+          <div class="card-box" style="background:#fffbeb; border-color:#fcd34d;">
+            <strong style="color:#b45309;">🛡️ Si pulsa «Bien» o «Mejorable» → Retención Privada</strong>
+            <p>
+              Frena el envío a Google y le invita a contarte qué ocurrió por texto o <strong>nota de voz en privado</strong>. Nuestra IA transcribe el audio y te avisa al móvil al instante para solucionarlo en casa.
+            </p>
+          </div>
+        </div>
+      </section>
 
-    <div class="cta-box">
-      <div style="font-size: 0.85em; font-weight: 800; color: #6ee7b7; text-transform: uppercase;">Atención Directa • Galicia</div>
-      <div style="font-size: 1.2em; font-weight: 900; color: #ffffff; margin-top: 4px;">Francisco M. Gallardo</div>
-      <div style="font-size: 0.92em; color: #cbd5e1; margin-top: 2px;">Tel: <strong>711 54 75 61</strong> • francisco@sistemaspyme.es</div>
-      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20estoy%20viendo%20la%20documentaci%C3%B3n%20en%20el%20m%C3%B3vil%20y%20quiero%20informaci%C3%B3n%20para%20mi%20negocio" target="_blank" class="btn-wa">
-        💬 Hablar con Francisco por WhatsApp
-      </a>
+      <section class="editorial-section">
+        <h2 class="sec-title">05. El Doble Escáner: Auditoría 1 (SEO+GEO IA) y Auditoría 2 (Neuromarketing CRO)</h2>
+        <p class="editorial-p">
+          Tener una reputación impecable se multiplica cuando tu web domina los dos lados de la moneda comercial:
+        </p>
+        <div class="grid-2">
+          <div class="card-box">
+            <strong>🔍 Auditoría 1: SEO Local + GEO (IA) — «Que te encuentren»</strong>
+            <p>
+              Escáner de 16 parámetros e inyección de código <code>Schema.org JSON-LD</code>, <code>llms.txt</code> y optimización de Google Maps para que <strong>ChatGPT, Gemini, Perplexity y Google</strong> recomienden tu negocio el primero.
+            </p>
+          </div>
+          <div class="card-box">
+            <strong>🧠 Auditoría 2: Neuromarketing y CRO — «Que te compren»</strong>
+            <p>
+              Radiografía psicológica (Kahneman, Ley de Hick) y mapas térmicos para detectar por qué se escapan las visitas de tu web, eliminar fricciones en formularios y disparar los contactos por WhatsApp.
+            </p>
+          </div>
+        </div>
+
+        <div class="highlight-box" style="background: linear-gradient(135deg, #0b2545 0%, #095852 100%); border-color:#14b8a6; color:#fff;">
+          <h4 style="color:#5eead4; font-size:16px;">🚀 Oferta Estrella: Pack Escudo (99 €/mes) + Auditorías Bonificadas (195 € c/u)</h4>
+          <p style="color:#f1f5f9; font-size:13.8px;">
+            • <strong>Pack Escudo Básico (S1 + S2):</strong> <strong>99 €/mes</strong> (+225 € Setup Dúo).<br>
+            • <strong>Ventaja en cualquiera de las 2 Auditorías:</strong> Sueltas cuestan 200 € (solo diagnóstico/código) o 350 € (llave en mano), pero al activar tu Pack Escudo o Plan Dúo+ te regalamos los 150 € de implantación y cada auditoría se queda en solo <strong>195 € pago único</strong> (o <strong>95 € c/u</strong> en Plan Anual Trinity+).
+          </p>
+        </div>
+      </section>
     </div>
-  </main>
 
-  <script>
-    function toggleFont() {
-      document.body.classList.toggle('font-xl');
-      const btn = document.getElementById('btnToggleFont');
-      if (document.body.classList.contains('font-xl')) {
-        btn.textContent = '🔎 Letra Normal';
-        btn.style.background = '#f59e0b';
-        btn.style.color = '#0f172a';
-      } else {
-        btn.textContent = '🔎 Letra A+';
-        btn.style.background = '#0d7d74';
-        btn.style.color = '#ffffff';
-      }
-    }
-    function volverACerrarPestana(e, fallbackUrl) {
-      if (window.opener && !window.opener.closed) {
-        e.preventDefault();
-        window.close();
-      }
-    }
-  </script>
+    <footer class="page-footer">
+      <span>📞 Solicita tu diagnóstico gratuito por WhatsApp: <strong>711 54 75 61</strong> • francisco@sistemaspyme.es</span>
+      <span>sistemaspyme.es • Página 2 de 2</span>
+    </footer>
+  </article>
+
 </body>
 </html>
