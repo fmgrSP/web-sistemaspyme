@@ -78,8 +78,8 @@ BLOQUE_ASISTENTE_FLOTANTE = """  <!-- ==========================================
               El 90% de los negocios empieza por el <strong>Pack Escudo Básico (99 €/mes)</strong> + <strong>1 Atril para el mostrador (39 €)</strong>. Con eso ya tienes las reseñas y las quejas 100% bajo control.
             </div>
 
-            <button type="button" onclick="toggleDetalleProfundoConsejo(1)" id="btnVerMasConsejo1" class="text-[11px] font-extrabold text-amber-300 hover:text-amber-200 flex items-center gap-1 py-0.5">
-              <span>➕ Desplegar explicación completa (como para niños)</span>
+            <button type="button" onclick="toggleDetalleProfundoConsejo(1, event)" id="btnVerMasConsejo1" class="text-[11px] font-extrabold text-amber-300 hover:text-amber-200 flex items-center gap-1 py-0.5">
+              <span>➕ Desplegar explicación sencilla paso a paso</span>
             </button>
 
             <div id="detalleProfundoConsejo1" class="hidden space-y-1.5 text-[11px] text-slate-300 bg-black/40 p-2.5 rounded-lg border border-white/5">
@@ -111,8 +111,8 @@ BLOQUE_ASISTENTE_FLOTANTE = """  <!-- ==========================================
               Sale <strong>80 € más barato de entrada</strong> coger 2 servicios + 1 Auditoría (<strong>Pack Escudo Total: 420 €</strong>) que coger 1 solo servicio + 1 Auditoría suelta (<strong>500 €</strong>).
             </div>
 
-            <button type="button" onclick="toggleDetalleProfundoConsejo(2)" id="btnVerMasConsejo2" class="text-[11px] font-extrabold text-amber-300 hover:text-amber-200 flex items-center gap-1 py-0.5">
-              <span>➕ Desplegar las cuentas claras paso a paso</span>
+            <button type="button" onclick="toggleDetalleProfundoConsejo(2, event)" id="btnVerMasConsejo2" class="text-[11px] font-extrabold text-amber-300 hover:text-amber-200 flex items-center gap-1 py-0.5">
+              <span>➕ Desplegar explicación sencilla de las cuentas</span>
             </button>
 
             <div id="detalleProfundoConsejo2" class="hidden space-y-1.5 text-[11px] text-slate-300 bg-black/40 p-2.5 rounded-lg border border-white/5">
@@ -143,7 +143,7 @@ BLOQUE_ASISTENTE_FLOTANTE = """  <!-- ==========================================
               La <strong>Auditoría 1 (SEO+GEO)</strong> sirve para <strong>que la gente te encuentre</strong> en Google y ChatGPT; la <strong>Auditoría 2 (Neuro CRO)</strong> sirve para <strong>que los que entran en tu web te compren</strong> y no se escapen.
             </div>
 
-            <button type="button" onclick="toggleDetalleProfundoConsejo(3)" id="btnVerMasConsejo3" class="text-[11px] font-extrabold text-amber-300 hover:text-amber-200 flex items-center gap-1 py-0.5">
+            <button type="button" onclick="toggleDetalleProfundoConsejo(3, event)" id="btnVerMasConsejo3" class="text-[11px] font-extrabold text-amber-300 hover:text-amber-200 flex items-center gap-1 py-0.5">
               <span>➕ Desplegar diferencia sencilla y precios de cada una</span>
             </button>
 
@@ -175,8 +175,8 @@ BLOQUE_ASISTENTE_FLOTANTE = """  <!-- ==========================================
               En <strong>Mensual</strong> vas mes a mes por domiciliación bancaria (tras 3 meses de rodaje inicial); en <strong>Anual</strong> pagas 10 meses y <strong>disfrutas 12 meses completos (2 gratis)</strong>.
             </div>
 
-            <button type="button" onclick="toggleDetalleProfundoConsejo(4)" id="btnVerMasConsejo4" class="text-[11px] font-extrabold text-amber-300 hover:text-amber-200 flex items-center gap-1 py-0.5">
-              <span>➕ Desplegar todos los detalles de pago sin letra pequeña</span>
+            <button type="button" onclick="toggleDetalleProfundoConsejo(4, event)" id="btnVerMasConsejo4" class="text-[11px] font-extrabold text-amber-300 hover:text-amber-200 flex items-center gap-1 py-0.5">
+              <span>➕ Desplegar explicación sencilla de pagos y plazos</span>
             </button>
 
             <div id="detalleProfundoConsejo4" class="hidden space-y-1.5 text-[11px] text-slate-300 bg-black/40 p-2.5 rounded-lg border border-white/5">
@@ -221,8 +221,9 @@ BLOQUE_ASISTENTE_FLOTANTE = """  <!-- ==========================================
 """
 
 JS_ASISTENTE_FLOTANTE = """
-    // CONTROL DEL ASISTENTE FLOTANTE NIVEL 2 (ACORDEÓN DE RESPUESTAS + DESPLEGABLE COMPLETO)
-    function togglePanelConsejo(forzarEstado) {
+    // CONTROL DEL ASISTENTE FLOTANTE NIVEL 2 (SOLO SE CIERRA CON LA X O EL BOTÓN FLOTANTE)
+    function togglePanelConsejo(forzarEstado, ev) {
+      if (ev && ev.stopPropagation) ev.stopPropagation();
       const panel = document.getElementById('spPanelConsejo');
       if (!panel) return;
       if (typeof forzarEstado === 'boolean') {
@@ -233,7 +234,8 @@ JS_ASISTENTE_FLOTANTE = """
       }
     }
 
-    function toggleAcordeonConsejo(num) {
+    function toggleAcordeonConsejo(num, ev) {
+      if (ev && ev.stopPropagation) ev.stopPropagation();
       for (let i = 1; i <= 4; i++) {
         const cuerpo = document.getElementById('cuerpoAcordeonConsejo' + i);
         const icono = document.getElementById('iconoAcordeonConsejo' + i);
@@ -254,26 +256,19 @@ JS_ASISTENTE_FLOTANTE = """
       }
     }
 
-    function toggleDetalleProfundoConsejo(num) {
+    function toggleDetalleProfundoConsejo(num, ev) {
+      if (ev && ev.stopPropagation) ev.stopPropagation();
       const det = document.getElementById('detalleProfundoConsejo' + num);
       const btn = document.getElementById('btnVerMasConsejo' + num);
       if (!det || !btn) return;
       if (det.classList.contains('hidden')) {
         det.classList.remove('hidden');
-        btn.innerHTML = '<span>➖ Compactar explicación detallada</span>';
+        btn.textContent = '➖ Compactar explicación detallada';
       } else {
         det.classList.add('hidden');
-        btn.innerHTML = '<span>➕ Desplegar explicación completa (paso a paso)</span>';
+        btn.textContent = '➕ Desplegar explicación sencilla paso a paso';
       }
     }
-
-    document.addEventListener('click', (e) => {
-      const wrap = document.getElementById('spAsistenteConsejo');
-      const panel = document.getElementById('spPanelConsejo');
-      if (wrap && panel && !panel.classList.contains('hidden') && !wrap.contains(e.target)) {
-        panel.classList.add('hidden');
-      }
-    });
 """
 
 
@@ -288,14 +283,8 @@ def inyectar_asistente_y_regla_inpost(dir_raiz):
 
     # 1. Eliminar cualquier versión previa del asistente flotante si existiera
     html = re.sub(
-        r'<!-- ======================================================================= -->\s*<!-- ASISTENTE FLOTANTE.*?</div>\s*</div>\s*</button>\s*</div>',
+        r'<!-- ======================================================================= -->\s*<!-- ASISTENTE FLOTANTE.*?(?=<!-- MODAL DE AVISO LEGAL -->|<div id="modalLegal"|</body>)',
         '',
-        html,
-        flags=re.DOTALL
-    )
-    html = re.sub(
-        r'<!-- ASISTENTE FLOTANTE NIVEL 2.*?<!-- MODAL DE AVISO LEGAL -->',
-        '<!-- MODAL DE AVISO LEGAL -->',
         html,
         flags=re.DOTALL
     )
