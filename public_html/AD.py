@@ -24,12 +24,12 @@ def localizar_directorio_public_html():
 
 BLOQUE_CONSULTOR_SUPERIOR = """
   <!-- ======================================================================= -->
-  <!-- BLOQUE CONSULTOR PRESCRIPTOR (BOCADILLO PEGADO A FRANCISCO)             -->
+  <!-- BLOQUE CONSULTOR PRESCRIPTOR (BOCADILLO CON AIRE LIMPIO BAJO LA FOTO)   -->
   <!-- ======================================================================= -->
-  <section id="consultor-personal" class="relative z-20 -mt-2 sm:-mt-3 pb-10 sm:pb-14 px-4 sm:px-6">
+  <section id="consultor-personal" class="relative z-20 mt-3 sm:mt-4 pb-10 sm:pb-14 px-4 sm:px-6">
     <div class="max-w-6xl mx-auto relative">
-      <!-- Triángulo conector tipo bocadillo de diálogo apuntando hacia la foto y nombre de Francisco -->
-      <div class="hidden lg:block absolute -top-3 left-14 w-6 h-6 bg-slate-900 border-t-2 border-l-2 border-teal-400/70 rotate-45 z-30"></div>
+      <!-- Triángulo conector tipo bocadillo: queda justo debajo de la foto de Francisco a 8px sin morderla -->
+      <div class="hidden lg:block absolute -top-2.5 left-9 w-5 h-5 bg-slate-900 border-t-2 border-l-2 border-teal-400/70 rotate-45 z-30"></div>
 
       <div class="rounded-3xl bg-gradient-to-br from-slate-900 via-teal-950/50 to-slate-950 border-2 border-teal-400/60 p-6 sm:p-7 shadow-2xl shadow-teal-950/50 relative overflow-hidden">
         <div class="absolute -top-20 -right-20 w-64 h-64 bg-teal-400/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -114,7 +114,7 @@ BLOQUE_CONSULTOR_SUPERIOR = """
 """
 
 
-def aplicar_ajustes_visuales_hero_y_consultor(dir_raiz):
+def ajustar_pico_bocadillo(dir_raiz):
     ruta_index = os.path.join(dir_raiz, "index.html")
     if not os.path.isfile(ruta_index):
         print("❌ No se encontró index.html")
@@ -123,62 +123,14 @@ def aplicar_ajustes_visuales_hero_y_consultor(dir_raiz):
     with open(ruta_index, "r", encoding="utf-8") as f:
         html = f.read()
 
-    # 1. Subir el bloque HERO más cerca de la barra superior y reducir el hueco inferior para acercar el bocadillo a la foto de Francisco
+    # Asegurar que el Hero tenga un pb-3 md:pb-4 limpio para que el pico quede a ~8px por debajo del borde inferior de la foto sin morderla
     html = re.sub(
         r'<!-- HERO SECTION -->\s*<section class="relative [^"]*hero-glow">',
-        '<!-- HERO SECTION -->\n  <section class="relative pt-2 pb-4 sm:pt-4 sm:pb-5 md:pt-5 md:pb-6 overflow-hidden hero-glow">',
+        '<!-- HERO SECTION -->\n  <section class="relative pt-2 pb-2 sm:pt-4 sm:pb-3 md:pt-5 md:pb-3 overflow-hidden hero-glow">',
         html,
     )
 
-    # Compactar ligeramente los márgenes internos del Hero para que la foto de Francisco suba y tenga aire por abajo en el primer pantallazo
-    html = html.replace(
-        'text-teal-300 text-xs font-semibold mb-4 sm:mb-6">',
-        'text-teal-300 text-xs font-semibold mb-3 sm:mb-4">',
-    )
-    html = html.replace(
-        'font-black tracking-tight leading-[1.20] sm:leading-[1.20] lg:leading-[1.20] mb-4 sm:mb-6">',
-        'font-black tracking-tight leading-[1.18] sm:leading-[1.18] lg:leading-[1.18] mb-3 sm:mb-4">',
-    )
-    html = html.replace(
-        'font-medium leading-relaxed mb-6 sm:mb-8 max-w-2xl mx-auto lg:mx-0">',
-        'font-medium leading-relaxed mb-4 sm:mb-5 max-w-2xl mx-auto lg:mx-0">',
-    )
-    html = html.replace(
-        'mt-6 pt-5 sm:mt-8 sm:pt-6 border-t border-white/10 flex items-center justify-center lg:justify-start gap-5 text-left group/profile">',
-        'mt-5 pt-4 sm:mt-6 sm:pt-5 border-t border-white/10 flex items-center justify-center lg:justify-start gap-5 text-left group/profile">',
-    )
-
-    # 2. Formatear el botón "Ver las 2 Auditorías" en dos líneas exactas:
-    #    Línea 1: 🔍🧠 Ver las 2 Auditorías
-    #    Línea 2: (SEO+GEO y Neuro CRO)
-    patron_btn_auditorias = re.compile(
-        r'<a href="#auditoria-geo" class="w-full sm:w-auto inline-flex[^"]*">\s*🔍🧠 Ver las 2 Auditorías \(SEO\+GEO y Neuro CRO\)\s*</a>',
-        re.DOTALL,
-    )
-    nuevo_btn_auditorias = """<a href="#auditoria-geo" class="w-full sm:w-auto inline-flex flex-col items-center justify-center bg-teal-500/15 hover:bg-teal-500/25 text-teal-200 font-bold px-6 py-2.5 rounded-xl border border-teal-400/40 transition-colors leading-tight text-center">
-              <span class="text-sm sm:text-base font-extrabold whitespace-nowrap">🔍🧠 Ver las 2 Auditorías</span>
-              <span class="text-xs font-semibold text-teal-300/95 whitespace-nowrap mt-0.5">(SEO+GEO y Neuro CRO)</span>
-            </a>"""
-
-    if patron_btn_auditorias.search(html):
-        html = patron_btn_auditorias.sub(nuevo_btn_auditorias, html)
-    else:
-        # Si ya estaba modificado o con otra variante, reemplazar cualquier enlace a #auditoria-geo dentro del Hero
-        html = re.sub(
-            r'<a href="#auditoria-geo" class="w-full sm:w-auto inline-flex[^"]*">.*?</a>',
-            nuevo_btn_auditorias,
-            html,
-            count=1,
-            flags=re.DOTALL,
-        )
-
-    # 3. También asegurar que el botón de al lado (Pedir Demostración en Vivo) quede en 1 sola línea limpia y de la misma altura visual
-    html = html.replace(
-        'class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-brand-teal hover:bg-brand-tealDark text-white font-bold text-base px-7 py-3.5 rounded-xl shadow-lg shadow-teal-900/40 transition-all hover:scale-[1.02]"',
-        'class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-brand-teal hover:bg-brand-tealDark text-white font-bold text-sm sm:text-base px-6 py-3.5 rounded-xl shadow-lg shadow-teal-900/40 transition-all hover:scale-[1.02] whitespace-nowrap"',
-    )
-
-    # 4. Actualizar el bloque #consultor-personal para que quede pegado a la foto de Francisco con el triángulo de diálogo
+    # Reemplazar el bloque consultor con el nuevo margen mt-3 sm:mt-4 y pico calibrado en left-9 -top-2.5
     html = re.sub(
         r'<!-- ======================================================================= -->\s*<!-- BLOQUE CONSULTOR PRESCRIPTOR.*?<!-- SECCIÓN I: SERVICIOS ACTIVOS',
         BLOQUE_CONSULTOR_SUPERIOR.strip() + "\n\n  <!-- SECCIÓN I: SERVICIOS ACTIVOS",
@@ -189,19 +141,16 @@ def aplicar_ajustes_visuales_hero_y_consultor(dir_raiz):
     with open(ruta_index, "w", encoding="utf-8") as f:
         f.write(html)
 
-    print("   ✔ Ajustes visuales aplicados en index.html:")
-    print("     1. Hero subido más cerca de la barra principal -> Tu foto y nombre tienen ahora mucho más aire por abajo.")
-    print("     2. Recuadro 'Tranquilo...' pegado a tu perfil con puntero de diálogo apuntando a tu foto y nombre.")
-    print("     3. Botón 'Ver las 2 Auditorías' en 2 filas exactas: '🔍🧠 Ver las 2 Auditorías' arriba y '(SEO+GEO y Neuro CRO)' debajo.")
+    print("   ✔ Pico del bocadillo ajustado en index.html: ahora queda justo debajo de tu foto a ~8px de distancia sin morder el círculo.")
 
 
 if __name__ == "__main__":
     print("=" * 85)
-    print("🚀 APLICANDO AJUSTES VISUALES EN PORTADA Y BOCADILLO DE CONSULTOR")
+    print("🚀 AJUSTANDO EL PICO DEL BOCADILLO PARA NO MORDER LA FOTO DE PERFIL")
     print("=" * 85)
     d = localizar_directorio_public_html()
     if d:
-        aplicar_ajustes_visuales_hero_y_consultor(d)
+        ajustar_pico_bocadillo(d)
     print("=" * 85)
-    print("🎉 ¡LISTO! Recarga sistemaspyme.es para ver el nuevo encuadre.")
+    print("🎉 ¡LISTO! Recarga sistemaspyme.es para verlo.")
     print("=" * 85)
