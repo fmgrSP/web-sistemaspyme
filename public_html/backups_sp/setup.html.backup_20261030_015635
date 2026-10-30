@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Anexo Técnico de Implantación (Setup + SEO/GEO) — Sistemas Pyme</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- [SP_SMART_REDIRECT_START] -->
+  <script>
+    (function() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('modo') === 'impreso') return;
+        var esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth > 0 && window.innerWidth <= 820);
+        if (esMovil) {
+          window.location.replace('setup_movil.html');
+        }
+      } catch(e) {}
+    })();
+  </script>
+  <!-- [SP_SMART_REDIRECT_END] -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+  <style>
+    @page { size: A5 portrait; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #0b192c;
+      color: #0f172a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 0 48px 0;
+    }
+    .sheet {
+      width: 148mm;
+      height: 210mm;
+      min-height: 210mm;
+      max-height: 210mm;
+      background: #ffffff;
+      padding: 5.5mm 8mm 4.8mm 8mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.55);
+      overflow: hidden;
+    }
+    /* En pantalla de Ordenador ampliamos la hoja un 28% para lectura cómoda y grande */
+    @media screen and (min-width: 821px) {
+      .sheet {
+        zoom: 1.28;
+      }
+    }
+    @media print {
+      body { background: none !important; padding: 0 !important; }
+      .sheet { box-shadow: none !important; zoom: 1 !important; margin: 0 !important; }
+      .no-print { display: none !important; }
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2.2px solid #0b2545;
+      padding-bottom: 3.5px;
+    }
+    .brand-logo-img {
+      max-height: 44px;
+      width: auto;
+      object-fit: contain;
+    }
+    .header-tagline {
+      text-align: right;
+      font-size: 7.8px;
+      color: #475569;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+    .header-tagline strong {
+      color: #0f766e;
+      font-size: 8.8px;
+      font-weight: 900;
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .section-banner {
+      background: linear-gradient(90deg, #0f766e 0%, #14b8a6 100%);
+      color: #ffffff;
+      padding: 4px 8px;
+      border-radius: 4.5px;
+      font-size: 8.6px;
+      font-weight: 900;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .section-banner.dark {
+      background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
+    }
+    .section-banner .rule {
+      font-size: 7.2px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.22);
+      padding: 1.5px 6px;
+      border-radius: 3.5px;
+      text-transform: none;
+    }
+    .intro-box {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 4.5px;
+      padding: 4.5px 7.5px;
+      font-size: 7.7px;
+      color: #1e293b;
+      line-height: 1.3;
+    }
+    .phases-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4.5px;
+    }
+    .phase-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 3.5px solid #0f766e;
+      border-radius: 4.5px;
+      padding: 4.5px 7px;
+    }
+    .phase-card strong {
+      display: block;
+      font-size: 8px;
+      font-weight: 900;
+      color: #0b2545;
+      margin-bottom: 1.5px;
+    }
+    .phase-card span {
+      display: block;
+      font-size: 7.1px;
+      color: #334155;
+      line-height: 1.24;
+    }
+    .setup-table-wrap {
+      border: 1.5px solid #cbd5e1;
+      border-radius: 5px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+    .setup-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 7.8px;
+    }
+    .setup-table th {
+      background: #1e293b;
+      color: #ffffff;
+      font-size: 6.9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      padding: 4.2px 6px;
+      text-align: center;
+    }
+    .setup-table th:first-child {
+      text-align: left;
+    }
+    .setup-table td {
+      padding: 4.4px 6px;
+      border-top: 1px solid #e2e8f0;
+      vertical-align: middle;
+      text-align: center;
+      line-height: 1.22;
+      color: #1e293b;
+    }
+    .setup-table td:first-child {
+      text-align: left;
+    }
+    .plan-name {
+      font-size: 8.5px;
+      font-weight: 900;
+      color: #0b2545;
+      display: block;
+      line-height: 1.15;
+    }
+    .plan-sub {
+      font-size: 6.4px;
+      font-weight: 800;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.25px;
+      display: block;
+      margin-top: 1px;
+    }
+    .price-main {
+      font-size: 9.4px;
+      font-weight: 900;
+      color: #0b2545;
+    }
+    .old-strike {
+      font-size: 6.4px;
+      color: #94a3b8;
+      text-decoration: line-through;
+      display: block;
+    }
+    .save-badge {
+      font-size: 7.3px;
+      font-weight: 800;
+      color: #0f766e;
+      display: block;
+    }
+    .guarantee-box {
+      background: #fffbeb;
+      border: 1.4px solid #fcd34d;
+      border-left: 4px solid #d97706;
+      border-radius: 4.5px;
+      padding: 5px 8px;
+      font-size: 7.4px;
+      color: #78350f;
+      line-height: 1.28;
+    }
+    .print-qr-banner {
+      background: #f0fdfa;
+      border: 1.4px dashed #0f766e;
+      border-radius: 5px;
+      padding: 4.5px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .print-qr-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+    .print-qr-img {
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+      border-radius: 4px;
+    }
+    .print-qr-text {
+      font-size: 7.4px;
+      color: #1e293b;
+      line-height: 1.25;
+    }
+    .print-qr-text strong {
+      color: #115e59;
+      font-size: 8.3px;
+      display: block;
+      margin-bottom: 1px;
+    }
+    .contact-details-box {
+      border-left: 1.4px solid #99f6e4;
+      padding-left: 8px;
+      font-size: 7.1px;
+      line-height: 1.25;
+      color: #1e293b;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .contact-details-box .name {
+      font-size: 8.5px;
+      font-weight: 900;
+      color: #0b2545;
+      display: block;
+    }
+    .contact-details-box .role {
+      font-size: 6.2px;
+      font-weight: 800;
+      color: #0f766e;
+      text-transform: uppercase;
+      display: block;
+    }
+    .footer-bar {
+      border-top: 1px solid #cbd5e1;
+      padding-top: 2.5px;
+      font-size: 7px;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+      <!-- [SP_TELEMETRY_ENGINE_START] -->
+  <!-- Google tag (gtag.js) Oficial Sistemas Pyme -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-J8Y61HLB7L"></script>
+  <script>
+    window.SP_ANALYTICS_CONFIG = {
+      ga4Id: 'G-J8Y61HLB7L',
+      clarityId: 'z5k1bnidx3',
+      streamId: '16232990358',
+      version: '3.0-OFFICIAL'
+    };
+
+    // 1. Inicialización Oficial de Google Analytics 4 (ID: G-J8Y61HLB7L)
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', 'G-J8Y61HLB7L', {
+      send_page_view: true,
+      anonymize_ip: true
+    });
+
+    // 2. Inicialización Oficial de Microsoft Clarity (ID: z5k1bnidx3)
+    (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "z5k1bnidx3");
+
+    // 3. Motor Central de Eventos Coordinados (GA4 + Clarity + Consola Maestra Local)
+    (function() {
+      try {
+        localStorage.setItem('sp_custom_ga4_id', 'G-J8Y61HLB7L');
+        localStorage.setItem('sp_custom_clarity_id', 'z5k1bnidx3');
+      } catch(e) {}
+
+      function guardarEventoLocal(nombre, params) {
+        try {
+          var hist = JSON.parse(localStorage.getItem('sp_telemetry_log') || '[]');
+          hist.unshift({
+            ts: new Date().toISOString(),
+            page: window.location.pathname.split('/').pop() || 'index.html',
+            event: nombre,
+            data: params || {}
+          });
+          if (hist.length > 250) hist = hist.slice(0, 250);
+          localStorage.setItem('sp_telemetry_log', JSON.stringify(hist));
+
+          var stats = JSON.parse(localStorage.getItem('sp_telemetry_stats') || '{}');
+          stats.total_events = (stats.total_events || 0) + 1;
+          stats.by_event = stats.by_event || {};
+          stats.by_event[nombre] = (stats.by_event[nombre] || 0) + 1;
+
+          if (nombre === 'sp_section_attention' && params && params.seccion) {
+            stats.section_seconds = stats.section_seconds || {};
+            stats.section_seconds[params.seccion] = (stats.section_seconds[params.seccion] || 0) + (params.segundos || 0);
+          }
+          if (nombre === 'sp_whatsapp_conversion' && params && params.producto) {
+            stats.wa_clicks = stats.wa_clicks || {};
+            stats.wa_clicks[params.producto] = (stats.wa_clicks[params.producto] || 0) + 1;
+          }
+          if (nombre === 'sp_simulator_interaction' && params && params.detalle) {
+            stats.sim_clicks = stats.sim_clicks || {};
+            stats.sim_clicks[params.detalle] = (stats.sim_clicks[params.detalle] || 0) + 1;
+          }
+          localStorage.setItem('sp_telemetry_stats', JSON.stringify(stats));
+        } catch(e) {}
+      }
+
+      window.spTrack = function(nombreEvento, parametros) {
+        var p = parametros || {};
+        p.dispositivo = (window.innerWidth <= 820) ? 'Movil' : 'Ordenador';
+        p.pagina = window.location.pathname.split('/').pop() || 'index.html';
+
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', nombreEvento, p);
+        }
+
+        if (typeof window.clarity === 'function') {
+          window.clarity('event', nombreEvento);
+          Object.keys(p).forEach(function(k) {
+            if (p[k] !== undefined && p[k] !== null) {
+              window.clarity('set', k, String(p[k]));
+            }
+          });
+        }
+
+        guardarEventoLocal(nombreEvento, p);
+      };
+
+      function detectarOrigenTrafico() {
+        var ref = (document.referrer || '').toLowerCase();
+        var urlParams = new URLSearchParams(window.location.search);
+        var utmSource = (urlParams.get('utm_source') || '').toLowerCase();
+        var origen = 'Directo / QR / WhatsApp';
+        var tipoCanal = 'directo';
+
+        if (ref.indexOf('chatgpt.com') !== -1 || ref.indexOf('openai.com') !== -1 || utmSource.indexOf('chatgpt') !== -1) {
+          origen = 'ChatGPT / SearchGPT (IA)';
+          tipoCanal = 'ia_generativa';
+        } else if (ref.indexOf('perplexity.ai') !== -1 || utmSource.indexOf('perplexity') !== -1) {
+          origen = 'Perplexity AI';
+          tipoCanal = 'ia_generativa';
+        } else if (ref.indexOf('gemini.google') !== -1 || utmSource.indexOf('gemini') !== -1) {
+          origen = 'Google Gemini (IA)';
+          tipoCanal = 'ia_generativa';
+        } else if (ref.indexOf('claude.ai') !== -1) {
+          origen = 'Claude AI';
+          tipoCanal = 'ia_generativa';
+        } else if (ref.indexOf('google.') !== -1) {
+          origen = 'Google Buscador / Maps';
+          tipoCanal = 'buscador_organico';
+        } else if (ref.indexOf('bing.com') !== -1) {
+          origen = 'Bing Buscador';
+          tipoCanal = 'buscador_organico';
+        } else if (ref.indexOf('instagram.com') !== -1 || ref.indexOf('facebook.com') !== -1) {
+          origen = 'Instagram / Meta';
+          tipoCanal = 'redes_sociales';
+        } else if (urlParams.get('qr') || utmSource.indexOf('qr') !== -1) {
+          origen = 'Escaneo QR Tarjetón Físico';
+          tipoCanal = 'qr_fisico';
+        }
+
+        window.spTrack('sp_session_start', {
+          origen_detectado: origen,
+          canal: tipoCanal,
+          resolucion: window.innerWidth + 'x' + window.innerHeight
+        });
+      }
+
+      function iniciarRadarAtencionSecciones() {
+        var secciones = [
+          { id: 'atril-nfc', nombre: '01. Atril NFC Mostrador (39€)' },
+          { id: 'disponibles', nombre: '02. Servicios Activos (S1 Reseñas + S2 Encuesta)' },
+          { id: 'auditoria-geo', nombre: '03. Auditoría Premium SEO + GEO (195€)' },
+          { id: 'tarifas', nombre: '04. Parrilla de Tarifas Oficiales' },
+          { id: 'magazine', nombre: '05. Pyme Magazine, Podcast y Vídeo' },
+          { id: 'despliegue', nombre: '06. Próximo Despliegue (S3, S4, S5 + Instagram)' },
+          { id: 'documentacion', nombre: '07. Documentación Oficial y Dossiers' },
+          { id: 'pilares-ia-geo', nombre: '08. Los 4 Pilares IA y Preguntas Frecuentes' },
+          { id: 'contacto', nombre: '09. Cierre y Contacto Final' }
+        ];
+
+        var tiemposActivos = {};
+        setInterval(function() {
+          if (document.hidden) return;
+          Object.keys(tiemposActivos).forEach(function(secNombre) {
+            if (tiemposActivos[secNombre]) {
+              guardarEventoLocal('sp_section_attention', { seccion: secNombre, segundos: 2 });
+            }
+          });
+        }, 2000);
+
+        if ('IntersectionObserver' in window) {
+          var obs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              var meta = entry.target.getAttribute('data-sp-sec-name');
+              if (!meta) return;
+              if (entry.isIntersecting && entry.intersectionRatio >= 0.25) {
+                tiemposActivos[meta] = true;
+                if (!entry.target.getAttribute('data-sp-seen')) {
+                  entry.target.setAttribute('data-sp-seen', '1');
+                  window.spTrack('sp_section_view', { seccion: meta });
+                }
+              } else {
+                tiemposActivos[meta] = false;
+              }
+            });
+          }, { threshold: [0.25] });
+
+          secciones.forEach(function(s) {
+            var el = document.getElementById(s.id);
+            if (el) {
+              el.setAttribute('data-sp-sec-name', s.nombre);
+              obs.observe(el);
+            }
+          });
+        }
+      }
+
+      function iniciarRadarInteracciones() {
+        document.addEventListener('click', function(e) {
+          var link = e.target.closest('a, button, summary');
+          if (!link) return;
+
+          var href = (link.getAttribute('href') || '').trim();
+          var texto = (link.innerText || link.textContent || '').replace(/\s+/g, ' ').trim().substring(0, 80);
+          var onclickAttr = (link.getAttribute('onclick') || '');
+
+          if (href.indexOf('wa.me') !== -1) {
+            var producto = 'Consulta General WhatsApp';
+            var hLow = decodeURIComponent(href).toLowerCase();
+            if (hLow.indexOf('atril') !== -1) producto = 'Atril NFC (39€)';
+            else if (hLow.indexOf('servicio 1') !== -1) producto = 'Servicio 1: Reseñas IA (59€/m)';
+            else if (hLow.indexOf('servicio 2') !== -1) producto = 'Servicio 2: Encuesta WhatsApp (59€/m)';
+            else if (hLow.indexOf('escudo total') !== -1) producto = '★ Pack Escudo Total (99€/m + 195€ GEO)';
+            else if (hLow.indexOf('escudo básico') !== -1 || hLow.indexOf('escudo basico') !== -1) producto = 'Pack Escudo Básico (99€/m)';
+            else if (hLow.indexOf('opción 1') !== -1 || hLow.indexOf('200') !== -1) producto = 'Auditoría GEO: Solo Código (200€)';
+            else if (hLow.indexOf('350') !== -1) producto = 'Auditoría GEO: Llave en Mano (350€)';
+            else if (hLow.indexOf('pyme base') !== -1) producto = 'Plan PYME Base';
+            else if (hLow.indexOf('pyme dúo') !== -1 || hLow.indexOf('pyme duo') !== -1) producto = 'Plan PYME Dúo';
+            else if (hLow.indexOf('trinity') !== -1) producto = 'Plan PYME Trinity';
+            else if (hLow.indexOf('quatro') !== -1) producto = 'Plan PYME Quatro';
+            else if (hLow.indexOf('pentium') !== -1) producto = 'Plan PYME Pentium';
+            else if (hLow.indexOf('instagram') !== -1) producto = 'Satélite Instagram 3 en 1';
+            else if (hLow.indexOf('magazine') !== -1) producto = 'Consulta desde Pyme Magazine';
+
+            window.spTrack('sp_whatsapp_conversion', {
+              producto: producto,
+              boton_texto: texto
+            });
+          }
+          else if (href.indexOf('tel:') === 0) {
+            window.spTrack('sp_phone_call_click', { telefono: href.replace('tel:', '') });
+          }
+          else if (href.indexOf('documentos/') !== -1 || href.indexOf('articulos/') !== -1) {
+            window.spTrack('sp_document_open', { documento: href, boton: texto });
+          }
+          else if (onclickAttr.indexOf('cambiarTonoDemoS1') !== -1) {
+            window.spTrack('sp_simulator_interaction', { simulador: 'Servicio 1 (4 Tonos IA)', detalle: 'Tono: ' + texto });
+          }
+          else if (onclickAttr.indexOf('cambiarBotonDemoS2') !== -1) {
+            window.spTrack('sp_simulator_interaction', { simulador: 'Servicio 2 (Encuesta WhatsApp)', detalle: 'Botón: ' + texto });
+          }
+          else if (onclickAttr.indexOf('cambiarModoTarifas') !== -1) {
+            window.spTrack('sp_pricing_toggle', { modalidad: texto });
+          }
+          else if (onclickAttr.indexOf('cambiarModoPilaresIA') !== -1) {
+            window.spTrack('sp_audience_profile_toggle', { perfil_elegido: texto });
+          }
+          else if (onclickAttr.indexOf('toggleAudio') !== -1 || onclickAttr.indexOf('activarPodcast') !== -1) {
+            window.spTrack('sp_multimedia_play', { medio: 'Podcast Audio Episodio 1' });
+          }
+          else if (onclickAttr.indexOf('activarVideo') !== -1 || onclickAttr.indexOf("cambiarMedioMagazine('video')") !== -1) {
+            window.spTrack('sp_multimedia_play', { medio: 'Píldora en Vídeo HD' });
+          }
+          else if (link.tagName.toLowerCase() === 'summary') {
+            window.spTrack('sp_technical_specs_expand', { bloque: texto });
+          }
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', function() {
+        detectarOrigenTrafico();
+        iniciarRadarAtencionSecciones();
+        iniciarRadarInteracciones();
+      });
+    })();
+  </script>
+  <!-- [SP_TELEMETRY_ENGINE_END] -->
+</head>
+<body>
+  <main class="sheet">
+    <header class="header">
+      <div>
+        <img src="../logo.png" alt="Sistemas Pyme" class="brand-logo-img" onerror="this.onerror=null; this.src='logo.png';">
+      </div>
+      <div class="header-tagline">
+        <strong>Anexo Técnico de Implantación</strong>
+        Setup de Automatización e Ingeniería SEO + GEO
+      </div>
+    </header>
+
+    <div class="section-banner">
+      <span>¿Qué es la Puesta en Marcha (Setup) y la Implantación SEO+GEO?</span>
+      <span class="rule">Pago único de ingeniería inicial</span>
+    </div>
+
+    <div class="intro-box">
+      El <strong>Setup Técnico</strong> y la <strong>Implantación SEO+GEO</strong> cubren las horas de <strong>ingeniería llave en mano</strong> necesarias para construir, conectar e inyectar el código estructurado a medida de tu negocio. Se abona <strong>una sola vez al inicio</strong> y comprende 4 fases críticas:
+    </div>
+
+    <div class="phases-grid">
+      <div class="phase-card">
+        <strong>🔌 1. Conexión Oficial de APIs y Meta/Google</strong>
+        <span>Alta en Meta Cloud API (WhatsApp Oficial), vinculación con Google Business Profile, calendarios y carpetas de gestoría.</span>
+      </div>
+      <div class="phase-card" style="border-left-color: #2563eb;">
+        <strong>🧠 2. Entrenamiento de IA a Medida y RGPD</strong>
+        <span>Personalización del motor de IA con el tono de tu local, reglas de secreto profesional (RGPD) y aprobación de plantillas.</span>
+      </div>
+      <div class="phase-card" style="border-left-color: #d97706;">
+        <strong>🔍 3. Ingeniería de Código SEO Local + GEO IA</strong>
+        <span>Auditoría de 16 parámetros e inyección de Schema.org JSON-LD, etiquetas Meta/H1 y textos para que te recomienden ChatGPT y Gemini.</span>
+      </div>
+      <div class="phase-card" style="border-left-color: #16a34a;">
+        <strong>✅ 4. Testeo en Vivo, AnyDesk y Entrega</strong>
+        <span>Simulaciones reales de extremo a extremo, implantación remota (AnyDesk / Delegado GBP) o presencial sin parar tu negocio.</span>
+      </div>
+    </div>
+
+    <div class="section-banner dark">
+      <span>Tabla Oficial de Tarifas de Setup y Auditoría SEO + GEO</span>
+      <span class="rule">1º a 150 € | Módulos extra al 50% (+75 €)</span>
+    </div>
+
+    <div class="setup-table-wrap">
+      <table class="setup-table">
+        <thead>
+          <tr>
+            <th style="width: 31%;">Plan / Servicio Técnico</th>
+            <th style="width: 27%;">Desglose de Ingeniería</th>
+            <th style="width: 17%;">Importe Pago Único</th>
+            <th style="width: 25%;">Bonificación Aplicada</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <span class="plan-name">Pyme <span style="color:#64748b;">BASE</span></span>
+              <span class="plan-sub">1 Servicio Troncal</span>
+            </td>
+            <td>1er módulo base (100%)</td>
+            <td><span class="price-main">150 €</span></td>
+            <td><span style="font-size:7.2px; font-weight:700; color:#475569;">Tarifa Estándar Base</span></td>
+          </tr>
+          <tr>
+            <td>
+              <span class="plan-name">Pyme <span style="color:#0284c7;">DÚO</span></span>
+              <span class="plan-sub" style="color:#0369a1;">2 Servicios Combinados</span>
+            </td>
+            <td>150 € base + <strong>1 módulo al 50%</strong></td>
+            <td><span class="price-main">225 €</span></td>
+            <td>
+              <span class="old-strike">Sueltos: 300 €</span>
+              <span class="save-badge">Ahorras 75 € en Setup</span>
+            </td>
+          </tr>
+          <tr style="background:#f0fdf4;">
+            <td>
+              <span class="plan-name" style="color:#15803d;">Pyme TRINITY ★</span>
+              <span class="plan-sub" style="color:#16a34a;">3 Servicios Combinados</span>
+            </td>
+            <td>150 € base + <strong>2 módulos al 50%</strong></td>
+            <td><span class="price-main" style="color:#15803d;">300 €</span></td>
+            <td>
+              <span class="old-strike">Sueltos: 450 €</span>
+              <span class="save-badge" style="color:#15803d;">Ahorras 150 € + Bóveda Gratis</span>
+            </td>
+          </tr>
+          <tr style="background:#f5f3ff;">
+            <td>
+              <span class="plan-name">Pyme <span style="color:#4f46e5;">QUATRO</span></span>
+              <span class="plan-sub" style="color:#4338ca;">4 Servicios Combinados</span>
+            </td>
+            <td>150 € base + <strong>3 módulos al 50%</strong></td>
+            <td><span class="price-main" style="color:#4338ca;">375 €</span></td>
+            <td>
+              <span class="old-strike">Sueltos: 600 €</span>
+              <span class="save-badge" style="color:#4338ca;">Ahorras 225 € + Bóveda Gratis</span>
+            </td>
+          </tr>
+          <tr style="background:#f0fdfa;">
+            <td>
+              <span class="plan-name">Pyme <span style="color:#0d9488;">PENTIUM</span></span>
+              <span class="plan-sub" style="color:#0f766e;">5 Servicios Combinados</span>
+            </td>
+            <td>150 € base + <strong>4 módulos al 50%</strong></td>
+            <td><span class="price-main" style="color:#0f766e;">450 €</span></td>
+            <td>
+              <span class="old-strike">Sueltos: 750 €</span>
+              <span class="save-badge" style="color:#0f766e;">Ahorras 300 € + Bóveda Gratis</span>
+            </td>
+          </tr>
+          <tr style="background:#fdf2f8;">
+            <td>
+              <span class="plan-name" style="color:#9d174d;">Módulos Satélite (IG / Log. / B2B)</span>
+              <span class="plan-sub" style="color:#be185d;">Con Troncal vs. Suelto</span>
+            </td>
+            <td>50% dto. al unirlo a un Pack</td>
+            <td>
+              <span style="font-size:8.4px; font-weight:900; color:#9d174d; display:block;">+75 € (Combo)</span>
+              <span style="font-size:6.6px; color:#64748b;">150 € (Suelto)</span>
+            </td>
+            <td><span class="save-badge" style="color:#9d174d;">Ahorras 75 € en Setup</span></td>
+          </tr>
+          <tr style="background:#ecfdf5;">
+            <td>
+              <span class="plan-name" style="color:#0f766e;">🔍 Auditoría SEO Local + GEO IA</span>
+              <span class="plan-sub" style="color:#0d9488;">Paquete Código vs. Llave en Mano</span>
+            </td>
+            <td>
+              Código: <strong>200 €</strong><br>
+              Implantación técnica: <strong>+150 €</strong>
+            </td>
+            <td>
+              <span style="font-size:8.2px; font-weight:900; color:#0b2545; display:block;">200 € <span style="font-size:6.5px; font-weight:600;">(Código)</span></span>
+              <span style="font-size:8.2px; font-weight:900; color:#0f766e; display:block;">350 € <span style="font-size:6.5px; font-weight:600;">(Total)</span></span>
+            </td>
+            <td>
+              <span class="save-badge" style="color:#15803d;">195 € en Combo Dúo+</span>
+              <span style="font-size:6.5px; font-weight:800; color:#0f766e;">(95 € Llave en Mano en Anual Trinity+)</span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span class="plan-name">Atril Inteligente NFC + QR</span>
+              <span class="plan-sub" style="color:#d97706;">Hardware Mostrador</span>
+            </td>
+            <td>Grabación chip + Enlace oficial</td>
+            <td><span class="price-main" style="color:#b45309;">39 €</span></td>
+            <td><span style="font-size:7.2px; font-weight:800; color:#b45309;">Pago único • Sin cuotas</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="guarantee-box">
+      <strong style="color:#b45309;">Garantía de Escalabilidad sin Penalización:</strong> Si hoy empiezas con 1 solo servicio (Setup 150 €) y más adelante amplías tu plan, <strong>te respetamos el 50% de bonificación (+75 € de Setup por nuevo módulo)</strong>. Si ya compraste el Paquete de Código SEO+GEO (200 €) y decides que te lo implantemos nosotros después, solo abonas la diferencia (+150 €).
+    </div>
+
+    <div class="print-qr-banner">
+      <div class="print-qr-left">
+        <img src="../qr-code.png" data-qr-url="https://wa.me/34711547561?text=Hola%20Francisco%2C%20estoy%20viendo%20el%20Anexo%20T%C3%A9cnico%20de%20Setup%20y%20quiero%20programar%20la%20puesta%20en%20marcha" alt="QR Contacto" class="print-qr-img" onerror="this.style.display='none'">
+        <div class="print-qr-text">
+          <strong>¿Listo para programar la puesta en marcha en tu negocio?</strong>
+          Escanea este código con tu móvil para hablar por WhatsApp con Francisco y agendar tu implantación técnica.
+        </div>
+      </div>
+      <div class="contact-details-box">
+        <span class="name">Francisco M. Gallardo</span>
+        <span class="role">Consultor Tecnológico</span>
+        <strong>711 54 75 61</strong><br>
+        francisco@sistemaspyme.es<br>
+        <span style="color:#64748b;">sistemaspyme.es • Galicia</span>
+      </div>
+    </div>
+
+    <footer class="footer-bar">
+      <span><strong>Sistemas Pyme</strong> — Documento Anexo de Tarifas Técnicas de Inicio</span>
+      <span>Precios netos sin IVA (21%)</span>
+      <span><strong>Anexo I (Setup + SEO/GEO)</strong></span>
+    </footer>
+  </main>
+</body>
+</html>

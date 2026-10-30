@@ -312,41 +312,86 @@
       box-shadow: 0 6px 20px rgba(16,185,129,0.35);
     }
   </style>
-      <!-- [SP_TELEMETRY_ENGINE_START] -->
-  <!-- Google tag (gtag.js) Oficial Sistemas Pyme -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-J8Y61HLB7L"></script>
+        <!-- [SP_TELEMETRY_ENGINE_START] -->
   <script>
-    window.SP_ANALYTICS_CONFIG = {
-      ga4Id: 'G-J8Y61HLB7L',
-      clarityId: 'z5k1bnidx3',
-      streamId: '16232990358',
-      version: '3.0-OFFICIAL'
-    };
-
-    // 1. Inicialización Oficial de Google Analytics 4 (ID: G-J8Y61HLB7L)
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    window.gtag = gtag;
-    gtag('js', new Date());
-    gtag('config', 'G-J8Y61HLB7L', {
-      send_page_view: true,
-      anonymize_ip: true
-    });
-
-    // 2. Inicialización Oficial de Microsoft Clarity (ID: z5k1bnidx3)
-    (function(c,l,a,r,i,t,y){
-      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "z5k1bnidx3");
-
-    // 3. Motor Central de Eventos Coordinados (GA4 + Clarity + Consola Maestra Local)
     (function() {
+      // 1. GESTIÓN DE MODO PROPIETARIO (FRANCISCO) POR URL (?soy=francisco / ?soy=cliente)
+      try {
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('soy') === 'francisco') {
+          localStorage.setItem('sp_ignore_owner', '1');
+          alert('🛡️ MODO PROPIETARIO ACTIVADO en este navegador: Tus visitas desde este dispositivo ya NO se enviarán a Google Analytics ni a Clarity para no ensuciar tus estadísticas. (Si quieres volver a grabarte para una prueba, entra en ?soy=cliente)');
+        } else if (urlParams.get('soy') === 'cliente') {
+          localStorage.removeItem('sp_ignore_owner');
+          alert('✅ MODO PRUEBA DE CLIENTE REACTIVADO: Ahora tus visitas sí se registrarán en Clarity y Google Analytics.');
+        }
+      } catch(e) {}
+
+      // 2. ESCUDO ANTI-BOTS DE SERVIDOR (Bloquea HeadlessChrome de EE.UU. y URLs temporales *.vercel.app)
+      var ua = (navigator.userAgent || '').toLowerCase();
+      var host = (window.location.hostname || '').toLowerCase();
+      var esBotServidor = (
+        navigator.webdriver === true ||
+        ua.indexOf('headlesschrome') !== -1 ||
+        ua.indexOf('vercel') !== -1 ||
+        ua.indexOf('lighthouse') !== -1 ||
+        ua.indexOf('pagespeed') !== -1 ||
+        ua.indexOf('prerender') !== -1
+      );
+      var esUrlTemporalVercel = (host.indexOf('.vercel.app') !== -1);
+      var esPropietarioIgnorado = false;
+      try {
+        esPropietarioIgnorado = (localStorage.getItem('sp_ignore_owner') === '1');
+      } catch(e) {}
+
+      window.SP_ANALYTICS_CONFIG = {
+        ga4Id: 'G-J8Y61HLB7L',
+        clarityId: 'z5k1bnidx3',
+        streamId: '16232990358',
+        version: '3.5-FILTERED',
+        blockedReason: esBotServidor ? 'Bot_Servidor_Headless' : (esUrlTemporalVercel ? 'URL_Temporal_Vercel' : (esPropietarioIgnorado ? 'Dispositivo_Propietario_Francisco' : null))
+      };
+
       try {
         localStorage.setItem('sp_custom_ga4_id', 'G-J8Y61HLB7L');
         localStorage.setItem('sp_custom_clarity_id', 'z5k1bnidx3');
       } catch(e) {}
 
+      // Si NO es un bot de servidor ni una URL temporal de Vercel ni el dueño en modo invisible, cargamos GA4 y Clarity
+      if (!esBotServidor && !esUrlTemporalVercel && !esPropietarioIgnorado) {
+        // A. Carga dinámica oficial de Google Analytics 4 (G-J8Y61HLB7L)
+        var sGa = document.createElement('script');
+        sGa.async = true;
+        sGa.src = 'https://www.googletagmanager.com/gtag/js?id=G-J8Y61HLB7L';
+        document.head.appendChild(sGa);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-J8Y61HLB7L', {
+          send_page_view: true,
+          anonymize_ip: true
+        });
+
+        // B. Carga oficial de Microsoft Clarity (z5k1bnidx3)
+        (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "z5k1bnidx3");
+      } else {
+        console.log('🛡️ [SP-Telemetry] Sesión omitida de GA4/Clarity:', window.SP_ANALYTICS_CONFIG.blockedReason);
+      }
+
+      // 3. Desenmascarar textos públicos de la web en Clarity para que los precios ("39 €", "99 €") no salgan como asteriscos
+      window.addEventListener('DOMContentLoaded', function() {
+        if (document.body) {
+          document.body.setAttribute('data-clarity-unmask', 'true');
+        }
+      });
+
+      // 4. Motor Central de Eventos Coordinados
       function guardarEventoLocal(nombre, params) {
         try {
           var hist = JSON.parse(localStorage.getItem('sp_telemetry_log') || '[]');

@@ -441,6 +441,32 @@
       ejecutarAuditoriaProfunda();
       setInterval(ejecutarAuditoriaProfunda, 3000);
     });
+  
+    function actualizarBotonDueno() {
+      var btn = document.getElementById('btnModoDueno');
+      if (!btn) return;
+      var activo = localStorage.getItem('sp_ignore_owner') === '1';
+      if (activo) {
+        btn.innerHTML = '🛡️ Dispositivo Excluido (No me graba a mí)';
+        btn.className = 'bg-emerald-500/25 hover:bg-emerald-500/35 text-emerald-300 border border-emerald-400/50 font-black text-xs px-3.5 py-2 rounded-xl transition-all';
+      } else {
+        btn.innerHTML = '🙈 Excluir mi dispositivo (Soy Francisco)';
+        btn.className = 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold text-xs px-3.5 py-2 rounded-xl transition-all';
+      }
+    }
+    function toggleModoDueno() {
+      var activo = localStorage.getItem('sp_ignore_owner') === '1';
+      if (activo) {
+        localStorage.removeItem('sp_ignore_owner');
+        alert('✅ Modo Prueba Reactivado: Ahora tus visitas desde este navegador SÍ se grabarán en Clarity y Google Analytics.');
+      } else {
+        localStorage.setItem('sp_ignore_owner', '1');
+        alert('🛡️ Dispositivo Excluido: A partir de ahora tus propias entradas desde este navegador NO contarán en Google Analytics ni en Clarity, dejando las estadísticas 100% limpias para clientes reales.');
+      }
+      actualizarBotonDueno();
+    }
+    window.addEventListener('DOMContentLoaded', actualizarBotonDueno);
+
   </script>
 </body>
 </html>
