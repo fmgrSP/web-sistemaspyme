@@ -22,21 +22,21 @@ def localizar_directorio_public_html():
     return None
 
 
-HERO_CON_AIRE_SUPERIOR = """  <!-- HERO SECTION -->
-  <section class="relative pt-8 pb-1.5 sm:pt-10 sm:pb-2 md:pt-12 lg:pt-14 md:pb-2.5 overflow-hidden hero-glow">
+HERO_AJUSTE_FINO = """  <!-- HERO SECTION -->
+  <section class="relative pt-6 pb-1 sm:pt-8 sm:pb-1.5 md:pt-9 lg:pt-10 md:pb-2 overflow-hidden hero-glow">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
         
         <div class="lg:col-span-7 text-center lg:text-left">
 
-          <h1 style="line-height: 1.15;" class="text-3xl sm:text-4xl lg:text-[40px] font-black tracking-tight mb-3.5 sm:mb-4">
+          <h1 style="line-height: 1.15;" class="text-3xl sm:text-4xl lg:text-[40px] font-black tracking-tight mb-3 sm:mb-3.5">
             <span class="text-white">Sistemas de Automatización e Inteligencia Artificial para</span><br />
             <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-emerald-400">Blindar, Posicionar y Escalar</span> 
             <span class="text-white">tu Negocio Local</span>
           </h1>
 
-          <p class="text-base sm:text-[17px] text-slate-200 font-medium leading-snug mb-4 sm:mb-5 max-w-2xl mx-auto lg:mx-0">
+          <p class="text-base sm:text-[17px] text-slate-200 font-medium leading-snug mb-3.5 sm:mb-4 max-w-2xl mx-auto lg:mx-0">
             Haz que tu negocio sea recomendado por <strong>Google, ChatGPT y Gemini</strong>, multiplica tus reseñas de 5★, frena las quejas en privado y automatiza citas, ventas y facturas desde el WhatsApp que ya utilizas.
           </p>
 
@@ -51,7 +51,7 @@ HERO_CON_AIRE_SUPERIOR = """  <!-- HERO SECTION -->
             </a>
           </div>
 
-          <div class="mt-4 pt-3.5 border-t border-white/10 flex items-center justify-center lg:justify-start gap-4 text-left group/profile">
+          <div class="mt-3.5 pt-3 border-t border-white/10 flex items-center justify-center lg:justify-start gap-4 text-left group/profile">
             <a href="tarjeta.html" class="w-16 h-16 sm:w-[72px] sm:h-[72px] rounded-full overflow-hidden border-[3px] border-teal-500/50 shadow-xl shadow-teal-900/30 flex-shrink-0 group-hover/profile:scale-105 group-hover/profile:border-teal-400 transition-all cursor-pointer block relative">
               <img src="perfil.jpeg" data-img-base="perfil,foto,avatar" data-img-fallback="https://placehold.co/100x100/0d7d74/ffffff?text=FG" alt="Francisco M. Gallardo" class="w-full h-full object-cover relative z-0" onerror="cargarSiguienteExtension(this)">
             </a>
@@ -107,21 +107,21 @@ HERO_CON_AIRE_SUPERIOR = """  <!-- HERO SECTION -->
   </section>"""
 
 
-BLOQUE_CONSULTOR_CORTE_EN_LINEA = """  <!-- ======================================================================= -->
-  <!-- BLOQUE CONSULTOR PRESCRIPTOR (CORTE EXACTO EN LÍNEA DIVISORIA)          -->
+BLOQUE_CONSULTOR_AJUSTE_FINO = """  <!-- ======================================================================= -->
+  <!-- BLOQUE CONSULTOR PRESCRIPTOR (LÍNEA DIVISORIA VISIBLE CON AIRE)         -->
   <!-- ======================================================================= -->
-  <section id="consultor-personal" class="relative z-20 mt-3 pb-10 sm:pb-14 px-4 sm:px-6">
+  <section id="consultor-personal" class="relative z-20 mt-2.5 pb-10 sm:pb-14 px-4 sm:px-6">
     <div class="max-w-6xl mx-auto relative">
-      <!-- Contenedor separado para que translate-x-1/2 y rotate-45 no interfieran entre sí y el vértice quede clavado en X=36px (centro exacto de la foto de 72px) -->
+      <!-- Piquito centrado matemáticamente en X=36px (centro de la foto de 72px) -->
       <div class="hidden lg:flex absolute -top-[9px] left-[36px] -translate-x-1/2 z-30 pointer-events-none items-center justify-center">
         <div class="w-4 h-4 bg-slate-900 border-t-2 border-l-2 border-teal-400/80 rotate-45"></div>
       </div>
 
-      <div class="rounded-3xl bg-gradient-to-br from-slate-900 via-teal-950/55 to-slate-950 border-2 border-teal-400/70 px-5 pt-5 pb-6 sm:px-7 sm:pt-6 sm:pb-7 shadow-2xl shadow-teal-950/50 relative overflow-hidden">
+      <div class="rounded-3xl bg-gradient-to-br from-slate-900 via-teal-950/55 to-slate-950 border-2 border-teal-400/70 px-5 pt-4 pb-6 sm:px-7 sm:pt-4.5 sm:pb-7 shadow-2xl shadow-teal-950/50 relative overflow-hidden">
         <div class="absolute -top-20 -right-20 w-64 h-64 bg-teal-400/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5 pb-5 border-b border-teal-500/30">
-          <div class="space-y-2 max-w-3xl">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5 pb-3.5 border-b border-teal-500/35">
+          <div class="space-y-1.5 max-w-3xl">
             <div class="flex flex-wrap items-center gap-2">
               <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-500/20 border border-teal-400/40 text-teal-300 text-[11px] font-extrabold uppercase tracking-wider">
                 🩺 Mensaje Directo de Francisco • Cero Agobios
@@ -201,7 +201,7 @@ BLOQUE_CONSULTOR_CORTE_EN_LINEA = """  <!-- ====================================
   </section>"""
 
 
-def ajustar_aire_superior_y_corte_inferior(dir_raiz):
+def aplicar_ajuste_fino_22px(dir_raiz):
     ruta_index = os.path.join(dir_raiz, "index.html")
     if not os.path.isfile(ruta_index):
         print("❌ No se encontró index.html")
@@ -215,9 +215,9 @@ def ajustar_aire_superior_y_corte_inferior(dir_raiz):
         re.DOTALL
     )
     nuevo_bloque = (
-        HERO_CON_AIRE_SUPERIOR.strip()
+        HERO_AJUSTE_FINO.strip()
         + "\n\n"
-        + BLOQUE_CONSULTOR_CORTE_EN_LINEA.strip()
+        + BLOQUE_CONSULTOR_AJUSTE_FINO.strip()
         + "\n\n  <!-- SECCIÓN I: SERVICIOS ACTIVOS"
     )
 
@@ -229,17 +229,16 @@ def ajustar_aire_superior_y_corte_inferior(dir_raiz):
     with open(ruta_index, "w", encoding="utf-8") as f:
         f.write(html)
 
-    print("   ✔ Añadido más aire arriba antes del titular y encima del recuadro del Atril.")
-    print("   ✔ Encuadre inferior ajustado para que se vea hasta la línea divisoria y no asome cortada la frase de abajo.")
+    print("   ✔ Subido el conjunto ~22px para que la última frase respire y se vea la línea divisoria.")
 
 
 if __name__ == "__main__":
     print("=" * 85)
-    print("🚀 AJUSTANDO AIRE SUPERIOR DEL HERO Y CORTE LIMPIO EN LÍNEA DIVISORIA")
+    print("🚀 APLICANDO AJUSTE FINO DE 22PX (FRASE INFERIOR CON AIRE + LÍNEA DIVISORIA VISIBLE)")
     print("=" * 85)
     d = localizar_directorio_public_html()
     if d:
-        ajustar_aire_superior_y_corte_inferior(d)
+        aplicar_ajuste_fino_22px(d)
     print("=" * 85)
-    print("🎉 ¡LISTO! Recarga sistemaspyme.es para comprobar el encuadre.")
+    print("🎉 ¡LISTO! Recarga sistemaspyme.es para comprobarlo.")
     print("=" * 85)
