@@ -22,20 +22,15 @@ def localizar_directorio_public_html():
     return None
 
 
-HERO_COMPACTO_CON_AIRE = """  <!-- HERO SECTION -->
-  <section class="relative pt-2 pb-1 sm:pt-3 sm:pb-1.5 md:pt-3.5 md:pb-2 overflow-hidden hero-glow">
+HERO_LIMPIO_SIN_BANNER = """  <!-- HERO SECTION -->
+  <section class="relative pt-4 pb-1 sm:pt-5 sm:pb-1.5 md:pt-6 md:pb-2 overflow-hidden hero-glow">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
         
         <div class="lg:col-span-7 text-center lg:text-left">
-          
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-300 text-xs font-semibold mb-2.5 sm:mb-3">
-            <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
-            Automatización Práctica + Posicionamiento GEO IA • Galicia
-          </div>
 
-          <h1 style="line-height: 1.15;" class="text-3xl sm:text-4xl lg:text-[40px] font-black tracking-tight mb-3 sm:mb-3.5">
+          <h1 style="line-height: 1.15;" class="text-3xl sm:text-4xl lg:text-[40px] font-black tracking-tight mb-3.5 sm:mb-4">
             <span class="text-white">Sistemas de Automatización e Inteligencia Artificial para</span><br />
             <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-emerald-400">Blindar, Posicionar y Escalar</span> 
             <span class="text-white">tu Negocio Local</span>
@@ -204,7 +199,7 @@ BLOQUE_CONSULTOR_SUPERIOR = """  <!-- ==========================================
   </section>"""
 
 
-def actualizar_encuadre_primer_pantallazo(dir_raiz):
+def actualizar_hero_sin_banner(dir_raiz):
     ruta_index = os.path.join(dir_raiz, "index.html")
     if not os.path.isfile(ruta_index):
         print("❌ No se encontró index.html")
@@ -213,17 +208,12 @@ def actualizar_encuadre_primer_pantallazo(dir_raiz):
     with open(ruta_index, "r", encoding="utf-8") as f:
         html = f.read()
 
-    # 1. Hacer la barra superior ligeramente más estilizada (de h-24 / pt-24 a h-20 / pt-20) para ganar 16px extra en el primer pantallazo
-    html = html.replace('relative pt-24 w-full">', 'relative pt-20 w-full">')
-    html = html.replace('lg:px-8 h-24 flex items-center', 'lg:px-8 h-20 flex items-center')
-
-    # 2. Reemplazar desde <!-- HERO SECTION --> hasta <!-- SECCIÓN I: SERVICIOS ACTIVOS
     patron = re.compile(
         r'<!-- HERO SECTION -->.*?<!-- SECCIÓN I: SERVICIOS ACTIVOS',
         re.DOTALL
     )
     nuevo_bloque = (
-        HERO_COMPACTO_CON_AIRE.strip()
+        HERO_LIMPIO_SIN_BANNER.strip()
         + "\n\n"
         + BLOQUE_CONSULTOR_SUPERIOR.strip()
         + "\n\n  <!-- SECCIÓN I: SERVICIOS ACTIVOS"
@@ -232,23 +222,22 @@ def actualizar_encuadre_primer_pantallazo(dir_raiz):
     if patron.search(html):
         html = patron.sub(nuevo_bloque, html)
     else:
-        print("⚠️ No se encontró el patrón completo del Hero + Consultor.")
+        print("⚠️ No se encontró el bloque Hero + Consultor.")
 
     with open(ruta_index, "w", encoding="utf-8") as f:
         f.write(html)
 
-    print("   ✔ Primer pantallazo rediseñado:")
-    print("     1. Piquito del bocadillo centrado de forma 100% simétrica debajo de tu foto (left-[36px] -translate-x-1/2) sin morderla.")
-    print("     2. Ganados ~55px verticales para que la frase «Tranquilo: no tienes que estudiarte toda esta web ni saber qué herramienta elegir.» se lea completa nada más entrar sin tocar el ratón.")
+    print("   ✔ Píldora superior eliminada («Automatización Práctica + Posicionamiento GEO IA • Galicia»).")
+    print("   ✔ Aire superior restaurado bajo la barra principal manteniendo visible todo el mensaje de «Tranquilo...» abajo.")
 
 
 if __name__ == "__main__":
     print("=" * 85)
-    print("🚀 REDISEÑANDO EL PRIMER PANTALLAZO (FRASE 'TRANQUILO...' VISIBLE SIN SCROLL + PICO SIMÉTRICO)")
+    print("🚀 ELIMINANDO PÍLDORA SUPERIOR Y DANDO AIRE LIMPIO ARRIBA")
     print("=" * 85)
     d = localizar_directorio_public_html()
     if d:
-        actualizar_encuadre_primer_pantallazo(d)
+        actualizar_hero_sin_banner(d)
     print("=" * 85)
-    print("🎉 ¡LISTO! Recarga sistemaspyme.es para comprobar el encuadre.")
+    print("🎉 ¡LISTO! Recarga sistemaspyme.es para ver la portada limpia.")
     print("=" * 85)
