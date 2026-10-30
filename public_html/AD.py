@@ -22,8 +22,8 @@ def localizar_directorio_public_html():
     return None
 
 
-HERO_LIMPIO_SIN_BANNER = """  <!-- HERO SECTION -->
-  <section class="relative pt-4 pb-1 sm:pt-5 sm:pb-1.5 md:pt-6 md:pb-2 overflow-hidden hero-glow">
+HERO_CON_AIRE_SUPERIOR = """  <!-- HERO SECTION -->
+  <section class="relative pt-8 pb-1.5 sm:pt-10 sm:pb-2 md:pt-12 lg:pt-14 md:pb-2.5 overflow-hidden hero-glow">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
@@ -107,21 +107,21 @@ HERO_LIMPIO_SIN_BANNER = """  <!-- HERO SECTION -->
   </section>"""
 
 
-BLOQUE_CONSULTOR_SUPERIOR = """  <!-- ======================================================================= -->
-  <!-- BLOQUE CONSULTOR PRESCRIPTOR (PICO 100% SIMÉTRICO + TITULAR UNIGÉNERO)  -->
+BLOQUE_CONSULTOR_CORTE_EN_LINEA = """  <!-- ======================================================================= -->
+  <!-- BLOQUE CONSULTOR PRESCRIPTOR (CORTE EXACTO EN LÍNEA DIVISORIA)          -->
   <!-- ======================================================================= -->
-  <section id="consultor-personal" class="relative z-20 mt-2.5 pb-10 sm:pb-14 px-4 sm:px-6">
+  <section id="consultor-personal" class="relative z-20 mt-3 pb-10 sm:pb-14 px-4 sm:px-6">
     <div class="max-w-6xl mx-auto relative">
       <!-- Contenedor separado para que translate-x-1/2 y rotate-45 no interfieran entre sí y el vértice quede clavado en X=36px (centro exacto de la foto de 72px) -->
       <div class="hidden lg:flex absolute -top-[9px] left-[36px] -translate-x-1/2 z-30 pointer-events-none items-center justify-center">
         <div class="w-4 h-4 bg-slate-900 border-t-2 border-l-2 border-teal-400/80 rotate-45"></div>
       </div>
 
-      <div class="rounded-3xl bg-gradient-to-br from-slate-900 via-teal-950/55 to-slate-950 border-2 border-teal-400/70 px-5 py-4 sm:px-7 sm:py-5 shadow-2xl shadow-teal-950/50 relative overflow-hidden">
+      <div class="rounded-3xl bg-gradient-to-br from-slate-900 via-teal-950/55 to-slate-950 border-2 border-teal-400/70 px-5 pt-5 pb-6 sm:px-7 sm:pt-6 sm:pb-7 shadow-2xl shadow-teal-950/50 relative overflow-hidden">
         <div class="absolute -top-20 -right-20 w-64 h-64 bg-teal-400/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5 pb-4 border-b border-teal-500/30">
-          <div class="space-y-1.5 max-w-3xl">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5 pb-5 border-b border-teal-500/30">
+          <div class="space-y-2 max-w-3xl">
             <div class="flex flex-wrap items-center gap-2">
               <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-500/20 border border-teal-400/40 text-teal-300 text-[11px] font-extrabold uppercase tracking-wider">
                 🩺 Mensaje Directo de Francisco • Cero Agobios
@@ -144,8 +144,8 @@ BLOQUE_CONSULTOR_SUPERIOR = """  <!-- ==========================================
         </div>
 
         <!-- 4 BOTONES RÁPIDOS DE "DOLORES REALES" DEL DUEÑO/A DE NEGOCIO -->
-        <div class="pt-3.5">
-          <p class="text-[11px] font-extrabold uppercase tracking-wider text-teal-300 mb-2.5">
+        <div class="pt-5">
+          <p class="text-[11px] font-extrabold uppercase tracking-wider text-teal-300 mb-3">
             👇 Pulsa directamente sobre lo que más te preocupa hoy en tu negocio y hablamos:
           </p>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -201,7 +201,7 @@ BLOQUE_CONSULTOR_SUPERIOR = """  <!-- ==========================================
   </section>"""
 
 
-def actualizar_hero_y_bocadillo(dir_raiz):
+def ajustar_aire_superior_y_corte_inferior(dir_raiz):
     ruta_index = os.path.join(dir_raiz, "index.html")
     if not os.path.isfile(ruta_index):
         print("❌ No se encontró index.html")
@@ -215,9 +215,9 @@ def actualizar_hero_y_bocadillo(dir_raiz):
         re.DOTALL
     )
     nuevo_bloque = (
-        HERO_LIMPIO_SIN_BANNER.strip()
+        HERO_CON_AIRE_SUPERIOR.strip()
         + "\n\n"
-        + BLOQUE_CONSULTOR_SUPERIOR.strip()
+        + BLOQUE_CONSULTOR_CORTE_EN_LINEA.strip()
         + "\n\n  <!-- SECCIÓN I: SERVICIOS ACTIVOS"
     )
 
@@ -229,17 +229,17 @@ def actualizar_hero_y_bocadillo(dir_raiz):
     with open(ruta_index, "w", encoding="utf-8") as f:
         f.write(html)
 
-    print("   ✔ Piquito del bocadillo centrado matemáticamente con el eje vertical de tu foto (X=36px).")
-    print("   ✔ Frase unigénero aplicada: «Con total tranquilidad: no tienes que estudiarte toda esta web ni saber qué herramienta elegir.»")
+    print("   ✔ Añadido más aire arriba antes del titular y encima del recuadro del Atril.")
+    print("   ✔ Encuadre inferior ajustado para que se vea hasta la línea divisoria y no asome cortada la frase de abajo.")
 
 
 if __name__ == "__main__":
     print("=" * 85)
-    print("🚀 CENTRANDO PICO DEL BOCADILLO Y APLICANDO TEXTO UNIGÉNERO")
+    print("🚀 AJUSTANDO AIRE SUPERIOR DEL HERO Y CORTE LIMPIO EN LÍNEA DIVISORIA")
     print("=" * 85)
     d = localizar_directorio_public_html()
     if d:
-        actualizar_hero_y_bocadillo(d)
+        ajustar_aire_superior_y_corte_inferior(d)
     print("=" * 85)
-    print("🎉 ¡LISTO! Recarga sistemaspyme.es para verlo.")
+    print("🎉 ¡LISTO! Recarga sistemaspyme.es para comprobar el encuadre.")
     print("=" * 85)
