@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Tarifas Oficiales y Planes Modulares (Versión Móvil Lectura Cómoda) — Sistemas Pyme</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      background-color: #071629;
+      color: #f1f5f9;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 16.5px;
+      line-height: 1.58;
+      -webkit-text-size-adjust: 100%;
+    }
+    body.font-xl {
+      font-size: 19px;
+      line-height: 1.65;
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(7, 22, 41, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid #14b8a6;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    }
+    .btn-back {
+      background: #1e293b;
+      color: #5eead4;
+      border: 1px solid rgba(20,184,166,0.45);
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-action {
+      background: #0d7d74;
+      color: #ffffff;
+      border: 1px solid #14b8a6;
+      font-weight: 800;
+      font-size: 12.5px;
+      padding: 8px 11px;
+      border-radius: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-action.secondary {
+      background: #1e293b;
+      color: #cbd5e1;
+      border-color: #475569;
+    }
+    .container {
+      max-width: 660px;
+      margin: 0 auto;
+      padding: 18px 16px 48px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .hero-box {
+      background: linear-gradient(145deg, #0b2545 0%, #0f172a 100%);
+      border: 1.5px solid rgba(20, 184, 166, 0.45);
+      border-radius: 18px;
+      padding: 18px 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(20, 184, 166, 0.18);
+      color: #5eead4;
+      border: 1px solid rgba(20, 184, 166, 0.4);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 4px 10px;
+      border-radius: 99px;
+      margin-bottom: 8px;
+    }
+    .hero-title {
+      font-size: 1.42em;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.24;
+      margin-bottom: 6px;
+    }
+    .hero-sub {
+      font-size: 0.92em;
+      color: #cbd5e1;
+    }
+    .section-head {
+      background: linear-gradient(90deg, #0f766e 0%, #115e59 100%);
+      color: #ffffff;
+      padding: 11px 14px;
+      border-radius: 12px;
+      font-weight: 900;
+      font-size: 0.95em;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-top: 6px;
+    }
+    .section-head.blue { background: linear-gradient(90deg, #1e3a8a 0%, #1d4ed8 100%); }
+    .section-head.indigo { background: linear-gradient(90deg, #3730a3 0%, #4f46e5 100%); }
+    .section-head.amber { background: linear-gradient(90deg, #b45309 0%, #d97706 100%); }
+    .section-head.pink { background: linear-gradient(90deg, #831843 0%, #be185d 100%); }
+    .card {
+      background: #0f172a;
+      border: 1.5px solid rgba(255,255,255,0.12);
+      border-left: 5px solid #14b8a6;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    }
+    .card.amber { border-left-color: #f59e0b; background: linear-gradient(145deg, #1c1917 0%, #0f172a 100%); }
+    .card.emerald { border-left-color: #10b981; border-color: rgba(16,185,129,0.45); background: linear-gradient(145deg, rgba(6,78,59,0.45) 0%, #0f172a 100%); }
+    .card.blue { border-left-color: #3b82f6; }
+    .card.indigo { border-left-color: #6366f1; }
+    .card.pink { border-left-color: #ec4899; background: linear-gradient(145deg, rgba(131,24,67,0.3) 0%, #0f172a 100%); }
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .card-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .card-title {
+      font-size: 1.12em;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.25;
+      display: block;
+    }
+    .card-subtitle {
+      display: inline-block;
+      font-size: 0.84em;
+      font-weight: 800;
+      color: #5eead4;
+      background: rgba(20, 184, 166, 0.14);
+      border: 1px solid rgba(20, 184, 166, 0.35);
+      padding: 2px 9px;
+      border-radius: 8px;
+      width: fit-content;
+      white-space: nowrap;
+    }
+    .card-subtitle.amber {
+      color: #fcd34d;
+      background: rgba(245, 158, 11, 0.16);
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+    .card-subtitle.blue {
+      color: #93c5fd;
+      background: rgba(59, 130, 246, 0.16);
+      border-color: rgba(59, 130, 246, 0.4);
+    }
+    .card-subtitle.indigo {
+      color: #c7d2fe;
+      background: rgba(99, 102, 241, 0.16);
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+    .price-tag {
+      background: rgba(20, 184, 166, 0.18);
+      color: #5eead4;
+      border: 1px solid rgba(20, 184, 166, 0.4);
+      font-weight: 900;
+      font-size: 0.98em;
+      padding: 4px 10px;
+      border-radius: 10px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .price-tag.amber {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fcd34d;
+      border-color: rgba(245, 158, 11, 0.45);
+    }
+    .card p {
+      font-size: 0.95em;
+      color: #e2e8f0;
+    }
+    .deep-box {
+      background: rgba(0, 0, 0, 0.32);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .deep-title {
+      font-size: 0.84em;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #5eead4;
+    }
+    .deep-title.amber { color: #fcd34d; }
+    .deep-title.blue { color: #93c5fd; }
+    .data-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px dashed rgba(255,255,255,0.1);
+      font-size: 0.92em;
+    }
+    .data-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .data-label {
+      color: #94a3b8;
+      font-weight: 600;
+    }
+    .data-val {
+      color: #ffffff;
+      font-weight: 800;
+      text-align: right;
+    }
+    .data-val.highlight {
+      color: #34d399;
+      font-size: 1.04em;
+    }
+    .list-check {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.94em;
+      color: #e2e8f0;
+    }
+    .list-check li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .list-check li span.chk {
+      color: #2dd4bf;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    .cta-box {
+      background: linear-gradient(145deg, #064e3b 0%, #0f172a 100%);
+      border: 2px solid #10b981;
+      border-radius: 18px;
+      padding: 20px 16px;
+      text-align: center;
+      margin-top: 8px;
+    }
+    .btn-wa {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      background: #10b981;
+      color: #052e16;
+      font-weight: 900;
+      font-size: 1.02em;
+      padding: 14px 18px;
+      border-radius: 14px;
+      text-decoration: none;
+      margin-top: 12px;
+      box-shadow: 0 6px 20px rgba(16,185,129,0.35);
+    }
+  </style>
+    <!-- [SP_TELEMETRY_ENGINE_START] -->
+  <script>
+    window.SP_ANALYTICS_CONFIG = {
+      ga4Id: localStorage.getItem('sp_custom_ga4_id') || 'G-PENDIENTE',
+      clarityId: 'z5k1bnidx3',
+      version: '2.1-PRO'
+    };
+
+    // 1. Inicialización dinámica de Google Analytics 4 (GA4)
+    (function() {
+      var gid = window.SP_ANALYTICS_CONFIG.ga4Id;
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function(){ dataLayer.push(arguments); };
+      gtag('js', new Date());
+
+      if (gid && gid !== 'G-PENDIENTE' && gid.indexOf('G-') === 0) {
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gid);
+        document.head.appendChild(s);
+        gtag('config', gid, {
+          send_page_view: true,
+          anonymize_ip: true,
+          cookie_flags: 'SameSite=None;Secure'
+        });
+      }
+    })();
+
+    // 2. Inicialización Oficial de Microsoft Clarity (ID: z5k1bnidx3)
+    (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "z5k1bnidx3");
+
+    // 3. Motor Central de Eventos Coordinados (GA4 + Clarity + Bitácora Local de Auditoría)
+    (function() {
+      function guardarEventoLocal(nombre, params) {
+        try {
+          var hist = JSON.parse(localStorage.getItem('sp_telemetry_log') || '[]');
+          hist.unshift({
+            ts: new Date().toISOString(),
+            page: window.location.pathname.split('/').pop() || 'index.html',
+            event: nombre,
+            data: params || {}
+          });
+          if (hist.length > 250) hist = hist.slice(0, 250);
+          localStorage.setItem('sp_telemetry_log', JSON.stringify(hist));
+
+          var stats = JSON.parse(localStorage.getItem('sp_telemetry_stats') || '{}');
+          stats.total_events = (stats.total_events || 0) + 1;
+          stats.by_event = stats.by_event || {};
+          stats.by_event[nombre] = (stats.by_event[nombre] || 0) + 1;
+
+          if (nombre === 'sp_section_attention' && params && params.seccion) {
+            stats.section_seconds = stats.section_seconds || {};
+            stats.section_seconds[params.seccion] = (stats.section_seconds[params.seccion] || 0) + (params.segundos || 0);
+          }
+          if (nombre === 'sp_whatsapp_conversion' && params && params.producto) {
+            stats.wa_clicks = stats.wa_clicks || {};
+            stats.wa_clicks[params.producto] = (stats.wa_clicks[params.producto] || 0) + 1;
+          }
+          if (nombre === 'sp_simulator_interaction' && params && params.detalle) {
+            stats.sim_clicks = stats.sim_clicks || {};
+            stats.sim_clicks[params.detalle] = (stats.sim_clicks[params.detalle] || 0) + 1;
+          }
+          localStorage.setItem('sp_telemetry_stats', JSON.stringify(stats));
+        } catch(e) {}
+      }
+
+      window.spTrack = function(nombreEvento, parametros) {
+        var p = parametros || {};
+        p.dispositivo = (window.innerWidth <= 820) ? 'Movil' : 'Ordenador';
+        p.pagina = window.location.pathname.split('/').pop() || 'index.html';
+
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', nombreEvento, p);
+        }
+
+        if (typeof window.clarity === 'function') {
+          window.clarity('event', nombreEvento);
+          Object.keys(p).forEach(function(k) {
+            if (p[k] !== undefined && p[k] !== null) {
+              window.clarity('set', k, String(p[k]));
+            }
+          });
+        }
+
+        guardarEventoLocal(nombreEvento, p);
+      };
+
+      function detectarOrigenTrafico() {
+        var ref = (document.referrer || '').toLowerCase();
+        var urlParams = new URLSearchParams(window.location.search);
+        var utmSource = (urlParams.get('utm_source') || '').toLowerCase();
+        var origen = 'Directo / QR / WhatsApp';
+        var tipoCanal = 'directo';
+
+        if (ref.indexOf('chatgpt.com') !== -1 || ref.indexOf('openai.com') !== -1 || utmSource.indexOf('chatgpt') !== -1) {
+          origen = 'ChatGPT / SearchGPT (IA)';
+          tipoCanal = 'ia_generativa';
+        } else if (ref.indexOf('perplexity.ai') !== -1 || utmSource.indexOf('perplexity') !== -1) {
+          origen = 'Perplexity AI';
+          tipoCanal = 'ia_generativa';
+        } else if (ref.indexOf('gemini.google') !== -1 || utmSource.indexOf('gemini') !== -1) {
+          origen = 'Google Gemini (IA)';
+          tipoCanal = 'ia_generativa';
+        } else if (ref.indexOf('claude.ai') !== -1) {
+          origen = 'Claude AI';
+          tipoCanal = 'ia_generativa';
+        } else if (ref.indexOf('google.') !== -1) {
+          origen = 'Google Buscador / Maps';
+          tipoCanal = 'buscador_organico';
+        } else if (ref.indexOf('bing.com') !== -1) {
+          origen = 'Bing Buscador';
+          tipoCanal = 'buscador_organico';
+        } else if (ref.indexOf('instagram.com') !== -1 || ref.indexOf('facebook.com') !== -1) {
+          origen = 'Instagram / Meta';
+          tipoCanal = 'redes_sociales';
+        } else if (urlParams.get('qr') || utmSource.indexOf('qr') !== -1) {
+          origen = 'Escaneo QR Tarjetón Físico';
+          tipoCanal = 'qr_fisico';
+        }
+
+        window.spTrack('sp_session_start', {
+          origen_detectado: origen,
+          canal: tipoCanal,
+          resolucion: window.innerWidth + 'x' + window.innerHeight
+        });
+      }
+
+      function iniciarRadarAtencionSecciones() {
+        var secciones = [
+          { id: 'atril-nfc', nombre: '01. Atril NFC Mostrador (39€)' },
+          { id: 'disponibles', nombre: '02. Servicios Activos (S1 Reseñas + S2 Encuesta)' },
+          { id: 'auditoria-geo', nombre: '03. Auditoría Premium SEO + GEO (195€)' },
+          { id: 'tarifas', nombre: '04. Parrilla de Tarifas Oficiales' },
+          { id: 'magazine', nombre: '05. Pyme Magazine, Podcast y Vídeo' },
+          { id: 'despliegue', nombre: '06. Próximo Despliegue (S3, S4, S5 + Instagram)' },
+          { id: 'documentacion', nombre: '07. Documentación Oficial y Dossiers' },
+          { id: 'pilares-ia-geo', nombre: '08. Los 4 Pilares IA y Preguntas Frecuentes' },
+          { id: 'contacto', nombre: '09. Cierre y Contacto Final' }
+        ];
+
+        var tiemposActivos = {};
+        setInterval(function() {
+          if (document.hidden) return;
+          Object.keys(tiemposActivos).forEach(function(secNombre) {
+            if (tiemposActivos[secNombre]) {
+              guardarEventoLocal('sp_section_attention', { seccion: secNombre, segundos: 2 });
+            }
+          });
+        }, 2000);
+
+        if ('IntersectionObserver' in window) {
+          var obs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              var meta = entry.target.getAttribute('data-sp-sec-name');
+              if (!meta) return;
+              if (entry.isIntersecting && entry.intersectionRatio >= 0.25) {
+                tiemposActivos[meta] = true;
+                if (!entry.target.getAttribute('data-sp-seen')) {
+                  entry.target.setAttribute('data-sp-seen', '1');
+                  window.spTrack('sp_section_view', { seccion: meta });
+                }
+              } else {
+                tiemposActivos[meta] = false;
+              }
+            });
+          }, { threshold: [0.25] });
+
+          secciones.forEach(function(s) {
+            var el = document.getElementById(s.id);
+            if (el) {
+              el.setAttribute('data-sp-sec-name', s.nombre);
+              obs.observe(el);
+            }
+          });
+        }
+      }
+
+      function iniciarRadarInteracciones() {
+        document.addEventListener('click', function(e) {
+          var link = e.target.closest('a, button, summary');
+          if (!link) return;
+
+          var href = (link.getAttribute('href') || '').trim();
+          var texto = (link.innerText || link.textContent || '').replace(/\s+/g, ' ').trim().substring(0, 80);
+          var onclickAttr = (link.getAttribute('onclick') || '');
+
+          if (href.indexOf('wa.me') !== -1) {
+            var producto = 'Consulta General WhatsApp';
+            var hLow = decodeURIComponent(href).toLowerCase();
+            if (hLow.indexOf('atril') !== -1) producto = 'Atril NFC (39€)';
+            else if (hLow.indexOf('servicio 1') !== -1) producto = 'Servicio 1: Reseñas IA (59€/m)';
+            else if (hLow.indexOf('servicio 2') !== -1) producto = 'Servicio 2: Encuesta WhatsApp (59€/m)';
+            else if (hLow.indexOf('escudo total') !== -1) producto = '★ Pack Escudo Total (99€/m + 195€ GEO)';
+            else if (hLow.indexOf('escudo básico') !== -1 || hLow.indexOf('escudo basico') !== -1) producto = 'Pack Escudo Básico (99€/m)';
+            else if (hLow.indexOf('opción 1') !== -1 || hLow.indexOf('200') !== -1) producto = 'Auditoría GEO: Solo Código (200€)';
+            else if (hLow.indexOf('350') !== -1) producto = 'Auditoría GEO: Llave en Mano (350€)';
+            else if (hLow.indexOf('pyme base') !== -1) producto = 'Plan PYME Base';
+            else if (hLow.indexOf('pyme dúo') !== -1 || hLow.indexOf('pyme duo') !== -1) producto = 'Plan PYME Dúo';
+            else if (hLow.indexOf('trinity') !== -1) producto = 'Plan PYME Trinity';
+            else if (hLow.indexOf('quatro') !== -1) producto = 'Plan PYME Quatro';
+            else if (hLow.indexOf('pentium') !== -1) producto = 'Plan PYME Pentium';
+            else if (hLow.indexOf('instagram') !== -1) producto = 'Satélite Instagram 3 en 1';
+            else if (hLow.indexOf('magazine') !== -1) producto = 'Consulta desde Pyme Magazine';
+
+            window.spTrack('sp_whatsapp_conversion', {
+              producto: producto,
+              boton_texto: texto
+            });
+          }
+          else if (href.indexOf('tel:') === 0) {
+            window.spTrack('sp_phone_call_click', { telefono: href.replace('tel:', '') });
+          }
+          else if (href.indexOf('documentos/') !== -1 || href.indexOf('articulos/') !== -1) {
+            window.spTrack('sp_document_open', { documento: href, boton: texto });
+          }
+          else if (onclickAttr.indexOf('cambiarTonoDemoS1') !== -1) {
+            window.spTrack('sp_simulator_interaction', { simulador: 'Servicio 1 (4 Tonos IA)', detalle: 'Tono: ' + texto });
+          }
+          else if (onclickAttr.indexOf('cambiarBotonDemoS2') !== -1) {
+            window.spTrack('sp_simulator_interaction', { simulador: 'Servicio 2 (Encuesta WhatsApp)', detalle: 'Botón: ' + texto });
+          }
+          else if (onclickAttr.indexOf('cambiarModoTarifas') !== -1) {
+            window.spTrack('sp_pricing_toggle', { modalidad: texto });
+          }
+          else if (onclickAttr.indexOf('cambiarModoPilaresIA') !== -1) {
+            window.spTrack('sp_audience_profile_toggle', { perfil_elegido: texto });
+          }
+          else if (onclickAttr.indexOf('toggleAudio') !== -1 || onclickAttr.indexOf('activarPodcast') !== -1) {
+            window.spTrack('sp_multimedia_play', { medio: 'Podcast Audio Episodio 1' });
+          }
+          else if (onclickAttr.indexOf('activarVideo') !== -1 || onclickAttr.indexOf("cambiarMedioMagazine('video')") !== -1) {
+            window.spTrack('sp_multimedia_play', { medio: 'Píldora en Vídeo HD' });
+          }
+          else if (link.tagName.toLowerCase() === 'summary') {
+            window.spTrack('sp_technical_specs_expand', { bloque: texto });
+          }
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', function() {
+        detectarOrigenTrafico();
+        iniciarRadarAtencionSecciones();
+        iniciarRadarInteracciones();
+      });
+    })();
+  </script>
+  <!-- [SP_TELEMETRY_ENGINE_END] -->
+</head>
+<body>
+  <header class="topbar">
+    <a href="../index.html#tarifas" onclick="volverACerrarPestana(event, '../index.html#tarifas')" class="btn-back">⬅ Volver a la Web</a>
+    <div class="topbar-actions">
+      <button type="button" id="btnToggleFont" onclick="toggleFont()" class="btn-action">🔎 Letra A+</button>
+      <a href="tarifas.html?modo=impreso" class="btn-action secondary">📄 Original A4/A5</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="hero-box">
+      <span class="badge">Tarjetón Oficial de Tarifas</span>
+      <h1 class="hero-title">Tarifas Oficiales y Planes Modulares</h1>
+      <p class="hero-sub">Versión adaptada a lectura móvil con letra grande y desglose completo de Vía 1 (Mensual) y Vía 2 (Plan Anual).</p>
+    </div>
+
+    
+    <div class="section-head">I. Planes Modulares (Cara A)</div>
+
+    <article class="card">
+      <div class="card-top">
+        <div class="card-title-wrap">
+          <span class="card-title">1. Plan PYME BASE</span>
+          <span class="card-subtitle">1 Servicio Activo</span>
+        </div>
+        <span class="price-tag">59 € / mes</span>
+      </div>
+      <p>1 servicio troncal activo a libre elección (Gestión de Reseñas IA o Encuesta WhatsApp).</p>
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">Cuota Mensual (Vía 1):</span><span class="data-val">59 € / mes</span></div>
+        <div class="data-row"><span class="data-label">Setup Único de Ingeniería:</span><span class="data-val">150 €</span></div>
+        <div class="data-row"><span class="data-label">Plan Anual (Vía 2 - 10 meses):</span><span class="data-val highlight">590 € / año (Ahorras 118 €)</span></div>
+      </div>
+    </article>
+
+    <article class="card emerald">
+      <div class="card-top">
+        <div class="card-title-wrap">
+          <span class="card-title">2. Plan PYME DÚO / Pack Escudo</span>
+          <span class="card-subtitle">2 Servicios Activos</span>
+        </div>
+        <span class="price-tag">99 € / mes</span>
+      </div>
+      <p>Combina <strong>Servicio 1 (Reseñas IA) + Servicio 2 (Encuesta WhatsApp)</strong>. El 2º servicio suma solo +40 €/mes y su Setup lleva un 50% de descuento (+75 €).</p>
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">Cuota Mensual (Vía 1):</span><span class="data-val">99 € / mes (Ahorras 19 €/m)</span></div>
+        <div class="data-row"><span class="data-label">Setup Dúo Bonificado:</span><span class="data-val">225 € (150 € + 75 €)</span></div>
+        <div class="data-row"><span class="data-label">Plan Anual (Vía 2 - 10 meses):</span><span class="data-val highlight">990 € / año (Ahorras 198 €)</span></div>
+        <div class="data-row"><span class="data-label">Ventaja Auditoría SEO+GEO:</span><span class="data-val highlight">Bonificada a 195 € (Ahorras 155 €)</span></div>
+      </div>
+    </article>
+
+    <article class="card emerald">
+      <div class="card-top">
+        <div class="card-title-wrap">
+          <span class="card-title">3. Plan PYME TRINITY ★</span>
+          <span class="card-subtitle amber">3 Servicios Activos</span>
+        </div>
+        <span class="price-tag amber">139 € / mes</span>
+      </div>
+      <p>3 servicios combinados activos a libre elección. <strong>Incluye GRATIS la Bóveda Segura de Contraseñas (valorada en 150 €).</strong></p>
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">Cuota Mensual (Vía 1):</span><span class="data-val">139 € / mes (Ahorras 38 €/m)</span></div>
+        <div class="data-row"><span class="data-label">Setup Trinity Bonificado:</span><span class="data-val">300 €</span></div>
+        <div class="data-row"><span class="data-label">Plan Anual (Vía 2 - 10 meses):</span><span class="data-val highlight">1.390 € / año (Ahorras 278 €)</span></div>
+        <div class="data-row"><span class="data-label">Auditoría SEO+GEO en Anual:</span><span class="data-val highlight">Por solo 95 € Llave en Mano</span></div>
+      </div>
+    </article>
+
+    <article class="card blue">
+      <div class="card-top">
+        <div class="card-title-wrap">
+          <span class="card-title">4. Plan PYME QUATRO</span>
+          <span class="card-subtitle blue">4 Servicios Activos</span>
+        </div>
+        <span class="price-tag">179 € / mes</span>
+      </div>
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">Cuota Mensual (Vía 1):</span><span class="data-val">179 € / mes (Ahorras 57 €/m)</span></div>
+        <div class="data-row"><span class="data-label">Setup Quatro:</span><span class="data-val">375 €</span></div>
+        <div class="data-row"><span class="data-label">Plan Anual (Vía 2 - 10 meses):</span><span class="data-val highlight">1.790 € / año (Ahorras 358 €)</span></div>
+        <div class="data-row"><span class="data-label">Incluye:</span><span class="data-val">Bóveda Gratis + GEO a 95 € en Anual</span></div>
+      </div>
+    </article>
+
+    <article class="card indigo">
+      <div class="card-top">
+        <div class="card-title-wrap">
+          <span class="card-title">5. Plan PYME PENTIUM</span>
+          <span class="card-subtitle indigo">5 Servicios Activos</span>
+        </div>
+        <span class="price-tag">219 € / mes</span>
+      </div>
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">Cuota Mensual (Vía 1):</span><span class="data-val">219 € / mes (Ahorras 76 €/m)</span></div>
+        <div class="data-row"><span class="data-label">Setup Pentium:</span><span class="data-val">450 €</span></div>
+        <div class="data-row"><span class="data-label">Plan Anual (Vía 2 - 10 meses):</span><span class="data-val highlight">2.190 € / año (Ahorras 438 €)</span></div>
+        <div class="data-row"><span class="data-label">Del 6º al 10º servicio:</span><span class="data-val">+30 € / mes (+75 € Setup)</span></div>
+      </div>
+    </article>
+
+    <div class="section-head amber">II. Auditoría e Implantación Premium SEO + GEO IA</div>
+    <article class="card amber">
+      <div class="card-top">
+        <div class="card-title-wrap">
+          <span class="card-title">🔍 Posicionamiento en Google, ChatGPT y Gemini</span>
+          <span class="card-subtitle amber">Pago Único • Sin Cuotas</span>
+        </div>
+        <span class="price-tag amber">195 € en Dúo+</span>
+      </div>
+      <p>Escáner de 16 parámetros + código estructurado e implantación en tu Web y Google Maps para que las IAs recomienden tu negocio.</p>
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">1. Solo Paquete Código:</span><span class="data-val">200 € (Para tu informático)</span></div>
+        <div class="data-row"><span class="data-label">2. Todo Incluido (Suelta / Base):</span><span class="data-val">350 € (Código 200€ + Mano obra 150€)</span></div>
+        <div class="data-row"><span class="data-label">3. Con Pack Escudo / Dúo+:</span><span class="data-val highlight">195 € Llave en Mano (Ahorras 155 €)</span></div>
+        <div class="data-row"><span class="data-label">4. Con Plan Anual Trinity+:</span><span class="data-val highlight">95 € Llave en Mano (Ahorras 255 €)</span></div>
+      </div>
+    </article>
+
+    <div class="section-head indigo">III. Las 2 Vías de Contratación (Cara B)</div>
+    <article class="card">
+      <div class="card-top">
+        <div class="card-title-wrap">
+          <span class="card-title">🔄 Vía 1: Modalidad Mensual Flexible</span>
+          <span class="card-subtitle">Domiciliación SEPA Mes a Mes</span>
+        </div>
+      </div>
+      <ul class="list-check">
+        <li><span class="chk">✔</span><span><strong>Compromiso inicial de solo 3 meses</strong> de rodaje; después cancelable o ajustable con 30 días de preaviso.</span></li>
+        <li><span class="chk">✔</span><span><strong>Setup Nominal:</strong> 150 € el 1er servicio y <strong>+75 € (50% dto.)</strong> por cada servicio adicional.</span></li>
+        <li><span class="chk">✔</span><span><strong>Desembolso Día 1:</strong> Setup Nominal + Cuota del Mes 1.</span></li>
+      </ul>
+    </article>
+
+    <article class="card emerald">
+      <div class="card-top">
+        <div class="card-title-wrap">
+          <span class="card-title">⭐ Vía 2: Plan Anual (Pagas 10 Meses y Disfrutas 12)</span>
+          <span class="card-subtitle amber">2 Mensualidades Gratis (-16,6%)</span>
+        </div>
+      </div>
+      <ul class="list-check">
+        <li><span class="chk">✔</span><span><strong>Te regalamos 2 mensualidades completas</strong> (16,6% de descuento directo sobre todo el año).</span></li>
+        <li><span class="chk">✔</span><span><strong>Auditoría SEO+GEO Llave en Mano:</strong> a <strong>195 €</strong> en Plan Dúo Anual y a solo <strong>95 €</strong> desde Plan Anual Trinity+.</span></li>
+        <li><span class="chk">✔</span><span><strong>Desembolso Día 1:</strong> Setup Nominal + 10 Mensualidades (con 12 meses de servicio garantizado).</span></li>
+      </ul>
+    </article>
+    
+
+    <div class="cta-box">
+      <div style="font-size: 0.85em; font-weight: 800; color: #6ee7b7; text-transform: uppercase;">Atención Directa • Galicia</div>
+      <div style="font-size: 1.2em; font-weight: 900; color: #ffffff; margin-top: 4px;">Francisco M. Gallardo</div>
+      <div style="font-size: 0.92em; color: #cbd5e1; margin-top: 2px;">Tel: <strong>711 54 75 61</strong> • francisco@sistemaspyme.es</div>
+      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20estoy%20viendo%20la%20documentaci%C3%B3n%20en%20el%20m%C3%B3vil%20y%20quiero%20informaci%C3%B3n%20para%20mi%20negocio" target="_blank" class="btn-wa">
+        💬 Hablar con Francisco por WhatsApp
+      </a>
+    </div>
+  </main>
+
+  <script>
+    function toggleFont() {
+      document.body.classList.toggle('font-xl');
+      const btn = document.getElementById('btnToggleFont');
+      if (document.body.classList.contains('font-xl')) {
+        btn.textContent = '🔎 Letra Normal';
+        btn.style.background = '#f59e0b';
+        btn.style.color = '#0f172a';
+      } else {
+        btn.textContent = '🔎 Letra A+';
+        btn.style.background = '#0d7d74';
+        btn.style.color = '#ffffff';
+      }
+    }
+    function volverACerrarPestana(e, fallbackUrl) {
+      if (window.opener && !window.opener.closed) {
+        e.preventDefault();
+        window.close();
+      }
+    }
+  </script>
+</body>
+</html>

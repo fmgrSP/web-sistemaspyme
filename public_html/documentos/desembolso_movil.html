@@ -306,33 +306,26 @@
       box-shadow: 0 6px 20px rgba(16,185,129,0.35);
     }
   </style>
-    <!-- [SP_TELEMETRY_ENGINE_START] -->
+      <!-- [SP_TELEMETRY_ENGINE_START] -->
+  <!-- Google tag (gtag.js) Oficial Sistemas Pyme -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-J8Y61HLB7L"></script>
   <script>
     window.SP_ANALYTICS_CONFIG = {
-      ga4Id: localStorage.getItem('sp_custom_ga4_id') || 'G-PENDIENTE',
+      ga4Id: 'G-J8Y61HLB7L',
       clarityId: 'z5k1bnidx3',
-      version: '2.1-PRO'
+      streamId: '16232990358',
+      version: '3.0-OFFICIAL'
     };
 
-    // 1. Inicialización dinámica de Google Analytics 4 (GA4)
-    (function() {
-      var gid = window.SP_ANALYTICS_CONFIG.ga4Id;
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function(){ dataLayer.push(arguments); };
-      gtag('js', new Date());
-
-      if (gid && gid !== 'G-PENDIENTE' && gid.indexOf('G-') === 0) {
-        var s = document.createElement('script');
-        s.async = true;
-        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gid);
-        document.head.appendChild(s);
-        gtag('config', gid, {
-          send_page_view: true,
-          anonymize_ip: true,
-          cookie_flags: 'SameSite=None;Secure'
-        });
-      }
-    })();
+    // 1. Inicialización Oficial de Google Analytics 4 (ID: G-J8Y61HLB7L)
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', 'G-J8Y61HLB7L', {
+      send_page_view: true,
+      anonymize_ip: true
+    });
 
     // 2. Inicialización Oficial de Microsoft Clarity (ID: z5k1bnidx3)
     (function(c,l,a,r,i,t,y){
@@ -341,8 +334,13 @@
       y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "z5k1bnidx3");
 
-    // 3. Motor Central de Eventos Coordinados (GA4 + Clarity + Bitácora Local de Auditoría)
+    // 3. Motor Central de Eventos Coordinados (GA4 + Clarity + Consola Maestra Local)
     (function() {
+      try {
+        localStorage.setItem('sp_custom_ga4_id', 'G-J8Y61HLB7L');
+        localStorage.setItem('sp_custom_clarity_id', 'z5k1bnidx3');
+      } catch(e) {}
+
       function guardarEventoLocal(nombre, params) {
         try {
           var hist = JSON.parse(localStorage.getItem('sp_telemetry_log') || '[]');

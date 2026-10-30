@@ -1,14 +1,13 @@
 import os
 import shutil
 import re
-import glob
 from datetime import datetime
 
 # ==============================================================================
-# CONFIGURACIÓN DE CREDENCIALES DE ANALÍTICA OFICIALES DE SISTEMAS PYME
+# CREDENCIALES OFICIALES DE ANALÍTICA DE SISTEMAS PYME (100% ACTIVAS)
 # ==============================================================================
-GA4_MEASUREMENT_ID = "G-PENDIENTE"   # Cuando tengas el de Google Analytics (G-...), lo pondremos aquí
-CLARITY_PROJECT_ID = "z5k1bnidx3"    # ✅ ID Oficial de Microsoft Clarity ya detectado en tu captura
+GA4_MEASUREMENT_ID = "G-J8Y61HLB7L"  # ✅ ID Oficial Google Analytics 4 (Flujo: 16232990358)
+CLARITY_PROJECT_ID = "z5k1bnidx3"    # ✅ ID Oficial Microsoft Clarity
 
 
 def localizar_directorio_public_html():
@@ -33,34 +32,101 @@ def localizar_directorio_public_html():
     return None
 
 
+def ajustar_barra_superior_index(ruta_index):
+    """
+    Compacta la barra de navegación superior y reduce el ancho del botón de contacto
+    derecho para que jamás se corte en pantallas de portátil / Mac (1280px - 1440px).
+    """
+    if not os.path.isfile(ruta_index):
+        return
+
+    with open(ruta_index, "r", encoding="utf-8") as f:
+        html = f.read()
+
+    # 1. Reducir tamaño del logo y paddings del contenedor del header para ganar espacio horizontal
+    html = re.sub(
+        r'<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-24 flex items-center justify-between gap-2 lg:gap-4">',
+        '<div class="max-w-7xl mx-auto px-3 sm:px-5 lg:px-6 h-24 flex items-center justify-between gap-1.5 lg:gap-2.5">',
+        html
+    )
+
+    html = re.sub(
+        r'class="h-10 sm:h-11 lg:h-12 w-auto object-contain"',
+        'class="h-9 sm:h-10 lg:h-10 w-auto object-contain"',
+        html
+    )
+
+    # 2. Compactar el <nav> de escritorio para que los 7 ítems respiren sin empujar al botón derecho
+    patron_nav = re.compile(
+        r'<nav class="hidden md:flex[^"]*">.*?</nav>',
+        re.DOTALL
+    )
+    nuevo_nav = """<nav class="hidden md:flex flex-1 items-center justify-center gap-1 lg:gap-1.5 xl:gap-2 text-[11px] lg:text-[12px] xl:text-[12.5px] font-semibold text-slate-200 whitespace-nowrap min-w-0">
+        <a href="#disponibles" class="text-emerald-300 hover:text-white font-extrabold transition-all flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-500/15 border border-emerald-400/50 hover:bg-emerald-500/25 shadow-[0_0_15px_rgba(16,185,129,0.22)]">
+          <span class="relative flex h-2 w-2 flex-shrink-0">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+          </span>
+          <span>Activación Inmediata</span>
+        </a>
+        <a href="#auditoria-geo" class="text-teal-300 hover:text-teal-200 transition-colors flex items-center gap-1 px-2 py-1 rounded-lg bg-teal-500/10 border border-teal-500/30 hover:bg-teal-500/20">
+          <span>🔍</span>
+          <span>Auditoría SEO + GEO</span>
+        </a>
+        <a href="#tarifas" class="hover:text-teal-400 transition-colors px-1.5 py-1 rounded-md hover:bg-white/5">Tarifas Oficiales</a>
+        <a href="#magazine" class="hover:text-amber-300 text-amber-400 transition-colors flex items-center gap-1 px-1.5 py-1 rounded-md hover:bg-white/5">
+          <span>📖</span>
+          <span>Pyme Magazine</span>
+        </a>
+        <a href="#despliegue" class="hover:text-teal-400 transition-colors px-1.5 py-1 rounded-md hover:bg-white/5">Próximo Despliegue</a>
+        <a href="#documentacion" class="hover:text-teal-400 transition-colors px-1.5 py-1 rounded-md hover:bg-white/5">Documentación</a>
+        <a href="#contacto" class="hover:text-teal-400 transition-colors px-1.5 py-1 rounded-md hover:bg-white/5">Contacto</a>
+      </nav>"""
+
+    if patron_nav.search(html):
+        html = patron_nav.sub(nuevo_nav, html, count=1)
+
+    # 3. Reducir el ancho del botón de contacto de arriba a la derecha para que nunca se corte
+    patron_btn_header = re.compile(
+        r'<a href="https://wa\.me/34711547561\?text=Hola%20Francisco%2C%20quisiera%20solicitar%20una%20demostraci%C3%B3n%20personalizada%20sin%20compromiso%20de%20los%20servicios%20del%20cat%C3%A1logo"[^>]*>.*?</a>',
+        re.DOTALL
+    )
+    nuevo_btn_header = """<a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quisiera%20solicitar%20una%20demostraci%C3%B3n%20personalizada%20sin%20compromiso%20de%20los%20servicios%20del%20cat%C3%A1logo" target="_blank" class="inline-flex items-center gap-1.5 bg-brand-teal hover:bg-brand-tealDark text-white text-[11.5px] lg:text-xs font-extrabold px-3 py-2 rounded-lg shadow-md shadow-teal-950/50 hover:shadow-teal-800/50 transition-all whitespace-nowrap">
+            <svg class="w-3.5 h-3.5 fill-current flex-shrink-0" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+            <span class="hidden 2xl:inline">Hablar con Francisco</span>
+            <span class="hidden sm:inline 2xl:hidden">WhatsApp</span>
+            <span class="sm:hidden">WhatsApp</span>
+          </a>"""
+
+    if patron_btn_header.search(html):
+        html = patron_btn_header.sub(nuevo_btn_header, html, count=1)
+
+    with open(ruta_index, "w", encoding="utf-8") as f:
+        f.write(html)
+    print("   ✔ Barra superior ajustada: botón de contacto compacto y 100% visible dentro de pantalla.")
+
+
 def construir_bloque_telemetria_avanzada(ga4_id, clarity_id):
     return f"""  <!-- [SP_TELEMETRY_ENGINE_START] -->
+  <!-- Google tag (gtag.js) Oficial Sistemas Pyme -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id={ga4_id}"></script>
   <script>
     window.SP_ANALYTICS_CONFIG = {{
-      ga4Id: localStorage.getItem('sp_custom_ga4_id') || '{ga4_id}',
+      ga4Id: '{ga4_id}',
       clarityId: '{clarity_id}',
-      version: '2.1-PRO'
+      streamId: '16232990358',
+      version: '3.0-OFFICIAL'
     }};
 
-    // 1. Inicialización dinámica de Google Analytics 4 (GA4)
-    (function() {{
-      var gid = window.SP_ANALYTICS_CONFIG.ga4Id;
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function(){{ dataLayer.push(arguments); }};
-      gtag('js', new Date());
-
-      if (gid && gid !== 'G-PENDIENTE' && gid.indexOf('G-') === 0) {{
-        var s = document.createElement('script');
-        s.async = true;
-        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gid);
-        document.head.appendChild(s);
-        gtag('config', gid, {{
-          send_page_view: true,
-          anonymize_ip: true,
-          cookie_flags: 'SameSite=None;Secure'
-        }});
-      }}
-    }})();
+    // 1. Inicialización Oficial de Google Analytics 4 (ID: {ga4_id})
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){{dataLayer.push(arguments);}}
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', '{ga4_id}', {{
+      send_page_view: true,
+      anonymize_ip: true
+    }});
 
     // 2. Inicialización Oficial de Microsoft Clarity (ID: {clarity_id})
     (function(c,l,a,r,i,t,y){{
@@ -69,8 +135,13 @@ def construir_bloque_telemetria_avanzada(ga4_id, clarity_id):
       y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     }})(window, document, "clarity", "script", "{clarity_id}");
 
-    // 3. Motor Central de Eventos Coordinados (GA4 + Clarity + Bitácora Local de Auditoría)
+    // 3. Motor Central de Eventos Coordinados (GA4 + Clarity + Consola Maestra Local)
     (function() {{
+      try {{
+        localStorage.setItem('sp_custom_ga4_id', '{ga4_id}');
+        localStorage.setItem('sp_custom_clarity_id', '{clarity_id}');
+      }} catch(e) {{}}
+
       function guardarEventoLocal(nombre, params) {{
         try {{
           var hist = JSON.parse(localStorage.getItem('sp_telemetry_log') || '[]');
@@ -287,27 +358,27 @@ def construir_bloque_telemetria_avanzada(ga4_id, clarity_id):
   <!-- [SP_TELEMETRY_ENGINE_END] -->"""
 
 
-def actualizar_consola_con_clarity(dir_raiz, clarity_id, ga4_id):
+def actualizar_consola_maestra(dir_raiz, clarity_id, ga4_id):
     ruta_consola = os.path.join(dir_raiz, "auditoria-trafico.html")
     if not os.path.isfile(ruta_consola):
         return
     with open(ruta_consola, "r", encoding="utf-8") as f:
         html = f.read()
 
-    # Pre-cargar el ID oficial z5k1bnidx3 en la consola maestra
-    html = html.replace(
-        "var cla = localStorage.getItem('sp_custom_clarity_id') || '';",
-        f"var cla = localStorage.getItem('sp_custom_clarity_id') || '{clarity_id}';"
+    html = re.sub(
+        r"var ga4 = localStorage\.getItem\('sp_custom_ga4_id'\) \|\| '[^']*';",
+        f"var ga4 = localStorage.getItem('sp_custom_ga4_id') || '{ga4_id}';",
+        html
     )
-    if ga4_id != "G-PENDIENTE":
-        html = html.replace(
-            "var ga4 = localStorage.getItem('sp_custom_ga4_id') || '';",
-            f"var ga4 = localStorage.getItem('sp_custom_ga4_id') || '{ga4_id}';"
-        )
+    html = re.sub(
+        r"var cla = localStorage\.getItem\('sp_custom_clarity_id'\) \|\| '[^']*';",
+        f"var cla = localStorage.getItem('sp_custom_clarity_id') || '{clarity_id}';",
+        html
+    )
 
     with open(ruta_consola, "w", encoding="utf-8") as f:
         f.write(html)
-    print(f"   ✔ Consola Maestra 'auditoria-trafico.html' vinculada directamente al proyecto Clarity '{clarity_id}'.")
+    print(f"   ✔ Consola Maestra 'auditoria-trafico.html' sincronizada con GA4 ({ga4_id}) y Clarity ({clarity_id}).")
 
 
 def inyectar_telemetria_en_archivo(ruta_archivo, carpeta_backups, marca, bloque_telemetria):
@@ -337,9 +408,9 @@ def inyectar_telemetria_en_archivo(ruta_archivo, carpeta_backups, marca, bloque_
 
 
 def ejecutar_actualizacion():
-    print("=" * 88)
-    print(f"🚀 ACTIVANDO MICROSOFT CLARITY OFICIAL ({CLARITY_PROJECT_ID}) EN TODA LA WEB")
-    print("=" * 88)
+    print("=" * 90)
+    print(f"🚀 AJUSTANDO CABECERA + ACTIVANDO GA4 ({GA4_MEASUREMENT_ID}) Y CLARITY ({CLARITY_PROJECT_ID})")
+    print("=" * 90)
 
     dir_raiz = localizar_directorio_public_html()
     if not dir_raiz:
@@ -350,10 +421,13 @@ def ejecutar_actualizacion():
     os.makedirs(carpeta_backups, exist_ok=True)
     marca = datetime.now().strftime("%Y%m%d_%H%M%S")
 
+    ruta_index = os.path.join(dir_raiz, "index.html")
+    ajustar_barra_superior_index(ruta_index)
+
     bloque_telemetria = construir_bloque_telemetria_avanzada(GA4_MEASUREMENT_ID, CLARITY_PROJECT_ID)
 
     archivos_objetivo = [
-        os.path.join(dir_raiz, "index.html"),
+        ruta_index,
         os.path.join(dir_raiz, "tarjeta.html"),
         os.path.join(dir_raiz, "articulos", "Pyme_Magazine_N1.html"),
         os.path.join(dir_raiz, "documentos", "catalogo.html"),
@@ -370,13 +444,13 @@ def ejecutar_actualizacion():
     for ruta in archivos_objetivo:
         if inyectar_telemetria_en_archivo(ruta, carpeta_backups, marca, bloque_telemetria):
             total += 1
-            print(f"   ✔ Clarity ({CLARITY_PROJECT_ID}) + Sensores activos en: {os.path.relpath(ruta, dir_raiz)}")
+            print(f"   ✔ GA4 ({GA4_MEASUREMENT_ID}) + Clarity ({CLARITY_PROJECT_ID}) activos en: {os.path.relpath(ruta, dir_raiz)}")
 
-    actualizar_consola_con_clarity(dir_raiz, CLARITY_PROJECT_ID, GA4_MEASUREMENT_ID)
+    actualizar_consola_maestra(dir_raiz, CLARITY_PROJECT_ID, GA4_MEASUREMENT_ID)
 
-    print("=" * 88)
-    print(f"🎉 ¡LISTO! Microsoft Clarity ({CLARITY_PROJECT_ID}) instalado en {total} páginas.")
-    print("=" * 88)
+    print("=" * 90)
+    print(f"🎉 ¡COMPLETADO! Cabecera ajustada y doble motor de analítica activo en {total} páginas.")
+    print("=" * 90)
 
 
 if __name__ == "__main__":
