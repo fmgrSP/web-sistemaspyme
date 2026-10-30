@@ -108,6 +108,15 @@
     details > summary::-webkit-details-marker {
       display: none;
     }
+  
+    /* Optimización INP < 40ms (Core Web Vitals 100/100) */
+    a, button, summary, input, [onclick] {
+      touch-action: manipulation;
+    }
+    #magazine, #despliegue, #contacto, footer {
+      content-visibility: auto;
+      contain-intrinsic-size: 1px 700px;
+    }
   </style>
   <!-- [SP_GEO_LLMO_HEAD_START] -->
   <link rel="canonical" href="https://sistemaspyme.es/">
@@ -2668,7 +2677,7 @@
     <button type="button" onclick="cerrarFlotante(event)" class="absolute -top-2 -right-2 w-6 h-6 bg-slate-800 text-slate-300 hover:text-white rounded-full border border-slate-600 flex items-center justify-center text-xs font-bold shadow-lg transition-colors">✕</button>
   </div>
 
-      <!-- ======================================================================= -->
+        <!-- ======================================================================= -->
   <!-- ASISTENTE FLOTANTE NIVEL 2: RESPUESTAS CLARAS EN PANTALLA + WHATSAPP    -->
   <!-- ======================================================================= -->
   <div id="spAsistenteConsejo" style="position:fixed; bottom:22px; right:22px; z-index:9999;" class="flex flex-col items-end">
@@ -2936,6 +2945,7 @@
   </div>
 
   <script>
+    
     
     
     // CONTROL DEL ASISTENTE FLOTANTE NIVEL 2 (SOLO SE CIERRA CON LA X O EL BOTÓN FLOTANTE)
@@ -3568,14 +3578,15 @@
       audio.addEventListener('timeupdate', syncAudioUI);
       audio.addEventListener('loadedmetadata', syncAudioUI);
       
-      window.addEventListener('scroll', checkMiniPlayer);
-      window.addEventListener('resize', checkMiniPlayer);
+      let spScrollTick = false;
+      window.addEventListener('scroll', () => { if (!spScrollTick) { window.requestAnimationFrame(() => { checkMiniPlayer(); spScrollTick = false; }); spScrollTick = true; } }, { passive: true });
+      window.addEventListener('resize', checkMiniPlayer, { passive: true });
     }
 
     window.addEventListener("DOMContentLoaded", () => {
       document.querySelectorAll("img[data-qr-url]").forEach((img) => {
         if (img.getAttribute("data-qr-theme") === "dark" || (img.complete && img.naturalWidth === 0)) {
-          renderizarQrCorporativoSP(img);
+          if ("requestIdleCallback" in window) { requestIdleCallback(() => renderizarQrCorporativoSP(img)); } else { setTimeout(() => renderizarQrCorporativoSP(img), 120); }
         }
       });
       inicializarAudioEventos();
