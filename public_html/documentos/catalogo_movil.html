@@ -312,10 +312,9 @@
       box-shadow: 0 6px 20px rgba(16,185,129,0.35);
     }
   </style>
-          <!-- [SP_TELEMETRY_ENGINE_START] -->
+                <!-- [SP_TELEMETRY_ENGINE_START] -->
   <script>
     (function() {
-      // 1. GESTIÓN DE MODO PROPIETARIO (FRANCISCO) POR URL (?soy=francisco / ?soy=cliente)
       try {
         var urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('soy') === 'francisco') {
@@ -327,7 +326,6 @@
         }
       } catch(e) {}
 
-      // Función global para activar/desactivar la exclusión de propietario desde cualquier botón
       window.toggleExclusionPropietarioSP = function() {
         try {
           var actual = localStorage.getItem('sp_ignore_owner') === '1';
@@ -342,7 +340,6 @@
         } catch(e) {}
       };
 
-      // 2. ESCUDO ANTI-BOTS DE SERVIDOR (Bloquea HeadlessChrome de EE.UU. y URLs temporales *.vercel.app)
       var ua = (navigator.userAgent || '').toLowerCase();
       var host = (window.location.hostname || '').toLowerCase();
       var esBotServidor = (
@@ -363,7 +360,7 @@
         ga4Id: 'G-J8Y61HLB7L',
         clarityId: 'z5k1bnidx3',
         streamId: '16232990358',
-        version: '3.6-OWNER-UI',
+        version: '3.9-SAFE-GIT',
         isOwnerIgnored: esPropietarioIgnorado,
         blockedReason: esBotServidor ? 'Bot_Servidor_Headless' : (esUrlTemporalVercel ? 'URL_Temporal_Vercel' : (esPropietarioIgnorado ? 'Dispositivo_Propietario_Francisco' : null))
       };
@@ -395,43 +392,11 @@
         })(window, document, "clarity", "script", "z5k1bnidx3");
       }
 
-      function renderizarControlesPropietario() {
+      window.addEventListener('DOMContentLoaded', function() {
         if (document.body) {
           document.body.setAttribute('data-clarity-unmask', 'true');
         }
-        var excluido = false;
-        try { excluido = (localStorage.getItem('sp_ignore_owner') === '1'); } catch(e) {}
-
-        // Actualizar botones en la página si existen
-        var btns = document.querySelectorAll('[data-sp-owner-btn]');
-        btns.forEach(function(b) {
-          if (excluido) {
-            b.innerHTML = '🛡️ Dispositivo Excluido (Soy Francisco) • Clic para reactivar';
-            b.style.background = 'rgba(16, 185, 129, 0.2)';
-            b.style.borderColor = '#10b981';
-            b.style.color = '#6ee7b7';
-          } else {
-            b.innerHTML = '🙈 Excluir mi dispositivo (Soy Francisco)';
-            b.style.background = 'rgba(245, 158, 11, 0.18)';
-            b.style.borderColor = '#f59e0b';
-            b.style.color = '#fcd34d';
-          }
-        });
-
-        // Si el propietario ya activó la exclusión, mostrar una discreta píldora flotante abajo a la izquierda
-        if (excluido && !document.getElementById('spOwnerBadgeFlotante')) {
-          var badge = document.createElement('button');
-          badge.id = 'spOwnerBadgeFlotante';
-          badge.type = 'button';
-          badge.onclick = window.toggleExclusionPropietarioSP;
-          badge.title = 'Pulsa aquí si quieres volver a activar el rastreo en este dispositivo';
-          badge.style.cssText = 'position:fixed;bottom:14px;left:14px;z-index:9999;background:rgba(6,78,59,0.92);color:#a7f3d0;border:1px solid #10b981;padding:6px 11px;border-radius:999px;font-family:Inter,sans-serif;font-size:11px;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,0.45);backdrop-filter:blur(6px);display:flex;align-items:center;gap:6px;';
-          badge.innerHTML = '<span>🛡️</span><span>Modo Francisco (Sin grabarme)</span>';
-          document.body.appendChild(badge);
-        }
-      }
-
-      window.addEventListener('DOMContentLoaded', renderizarControlesPropietario);
+      });
 
       function guardarEventoLocal(nombre, params) {
         try {
