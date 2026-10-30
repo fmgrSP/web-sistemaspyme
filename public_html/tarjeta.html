@@ -417,6 +417,274 @@
       color: var(--primary);
     }
   </style>
+  <!-- [SP_TELEMETRY_ENGINE_START] -->
+  <script>
+    window.SP_ANALYTICS_CONFIG = {
+      ga4Id: localStorage.getItem('sp_custom_ga4_id') || 'G-PENDIENTE',
+      clarityId: localStorage.getItem('sp_custom_clarity_id') || 'CLARITY_PENDIENTE',
+      version: '2.0-PRO'
+    };
+
+    // 1. Inicialización dinámica de Google Analytics 4 (GA4)
+    (function() {
+      var gid = window.SP_ANALYTICS_CONFIG.ga4Id;
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function(){ dataLayer.push(arguments); };
+      gtag('js', new Date());
+
+      if (gid && gid !== 'G-PENDIENTE' && gid.indexOf('G-') === 0) {
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gid);
+        document.head.appendChild(s);
+        gtag('config', gid, {
+          send_page_view: true,
+          anonymize_ip: true,
+          cookie_flags: 'SameSite=None;Secure'
+        });
+      }
+    })();
+
+    // 2. Inicialización dinámica de Microsoft Clarity (Mapas de Calor + Grabación de Sesiones)
+    (function(c,l,a,r,i,t,y){
+      var cid = window.SP_ANALYTICS_CONFIG.clarityId;
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      if (cid && cid !== 'CLARITY_PENDIENTE' && cid.length >= 5) {
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+cid;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      }
+    })(window, document, "clarity", "script");
+
+    // 3. Motor Central de Eventos Coordinados (GA4 + Clarity + Bitácora Local de Auditoría)
+    (function() {
+      function guardarEventoLocal(nombre, params) {
+        try {
+          var hist = JSON.parse(localStorage.getItem('sp_telemetry_log') || '[]');
+          hist.unshift({
+            ts: new Date().toISOString(),
+            page: window.location.pathname.split('/').pop() || 'index.html',
+            event: nombre,
+            data: params || {}
+          });
+          if (hist.length > 250) hist = hist.slice(0, 250);
+          localStorage.setItem('sp_telemetry_log', JSON.stringify(hist));
+
+          // Acumuladores estadísticos locales para pruebas y diagnóstico inmediato
+          var stats = JSON.parse(localStorage.getItem('sp_telemetry_stats') || '{}');
+          stats.total_events = (stats.total_events || 0) + 1;
+          stats.by_event = stats.by_event || {};
+          stats.by_event[nombre] = (stats.by_event[nombre] || 0) + 1;
+
+          if (nombre === 'sp_section_attention' && params && params.seccion) {
+            stats.section_seconds = stats.section_seconds || {};
+            stats.section_seconds[params.seccion] = (stats.section_seconds[params.seccion] || 0) + (params.segundos || 0);
+          }
+          if (nombre === 'sp_whatsapp_conversion' && params && params.producto) {
+            stats.wa_clicks = stats.wa_clicks || {};
+            stats.wa_clicks[params.producto] = (stats.wa_clicks[params.producto] || 0) + 1;
+          }
+          if (nombre === 'sp_simulator_interaction' && params && params.detalle) {
+            stats.sim_clicks = stats.sim_clicks || {};
+            stats.sim_clicks[params.detalle] = (stats.sim_clicks[params.detalle] || 0) + 1;
+          }
+          localStorage.setItem('sp_telemetry_stats', JSON.stringify(stats));
+        } catch(e) {}
+      }
+
+      window.spTrack = function(nombreEvento, parametros) {
+        var p = parametros || {};
+        p.dispositivo = (window.innerWidth <= 820) ? 'Movil' : 'Ordenador';
+        p.pagina = window.location.pathname.split('/').pop() || 'index.html';
+
+        // Enviar a Google Analytics 4
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', nombreEvento, p);
+        }
+
+        // Enviar etiquetas inteligentes a Microsoft Clarity para filtrar grabaciones de vídeo
+        if (typeof window.clarity === 'function') {
+          window.clarity('event', nombreEvento);
+          Object.keys(p).forEach(function(k) {
+            if (p[k] !== undefined && p[k] !== null) {
+              window.clarity('set', k, String(p[k]));
+            }
+          });
+        }
+
+        guardarEventoLocal(nombreEvento, p);
+      };
+
+      // 4. Detección de Origen del Tráfico (Especial Motores de IA, Códigos QR y Buscadores)
+      function detectarOrigenTrafico() {
+        var ref = (document.referrer || '').toLowerCase();
+        var urlParams = new URLSearchParams(window.location.search);
+        var utmSource = (urlParams.get('utm_source') || '').toLowerCase();
+        var origen = 'Directo / QR / WhatsApp';
+        var tipoCanal = 'directo';
+
+        if (ref.indexOf('chatgpt.com') !== -1 || ref.indexOf('openai.com') !== -1 || utmSource.indexOf('chatgpt') !== -1) {
+          origen = 'ChatGPT / SearchGPT (IA)';
+          tipoCanal = 'ia_generativa';
+        } else if (ref.indexOf('perplexity.ai') !== -1 || utmSource.indexOf('perplexity') !== -1) {
+          origen = 'Perplexity AI';
+          tipoCanal = 'ia_generativa';
+        } else if (ref.indexOf('gemini.google') !== -1 || utmSource.indexOf('gemini') !== -1) {
+          origen = 'Google Gemini (IA)';
+          tipoCanal = 'ia_generativa';
+        } else if (ref.indexOf('claude.ai') !== -1) {
+          origen = 'Claude AI';
+          tipoCanal = 'ia_generativa';
+        } else if (ref.indexOf('google.') !== -1) {
+          origen = 'Google Buscador / Maps';
+          tipoCanal = 'buscador_organico';
+        } else if (ref.indexOf('bing.com') !== -1) {
+          origen = 'Bing Buscador';
+          tipoCanal = 'buscador_organico';
+        } else if (ref.indexOf('instagram.com') !== -1 || ref.indexOf('facebook.com') !== -1) {
+          origen = 'Instagram / Meta';
+          tipoCanal = 'redes_sociales';
+        } else if (urlParams.get('qr') || utmSource.indexOf('qr') !== -1) {
+          origen = 'Escaneo QR Tarjetón Físico';
+          tipoCanal = 'qr_fisico';
+        }
+
+        window.spTrack('sp_session_start', {
+          origen_detectado: origen,
+          canal: tipoCanal,
+          resolucion: window.innerWidth + 'x' + window.innerHeight
+        });
+      }
+
+      // 5. Medidor de Tiempo Real de Atención por Sección y Detección de Puntos Ciegos
+      function iniciarRadarAtencionSecciones() {
+        var secciones = [
+          { id: 'atril-nfc', nombre: '01. Atril NFC Mostrador (39€)' },
+          { id: 'disponibles', nombre: '02. Servicios Activos (S1 Reseñas + S2 Encuesta)' },
+          { id: 'auditoria-geo', nombre: '03. Auditoría Premium SEO + GEO (195€)' },
+          { id: 'tarifas', nombre: '04. Parrilla de Tarifas Oficiales' },
+          { id: 'magazine', nombre: '05. Pyme Magazine, Podcast y Vídeo' },
+          { id: 'despliegue', nombre: '06. Próximo Despliegue (S3, S4, S5 + Instagram)' },
+          { id: 'documentacion', nombre: '07. Documentación Oficial y Dossiers' },
+          { id: 'pilares-ia-geo', nombre: '08. Los 4 Pilares IA y Preguntas Frecuentes' },
+          { id: 'contacto', nombre: '09. Cierre y Contacto Final' }
+        ];
+
+        var tiemposActivos = {};
+        setInterval(function() {
+          if (document.hidden) return;
+          Object.keys(tiemposActivos).forEach(function(secNombre) {
+            if (tiemposActivos[secNombre]) {
+              guardarEventoLocal('sp_section_attention', { seccion: secNombre, segundos: 2 });
+            }
+          });
+        }, 2000);
+
+        if ('IntersectionObserver' in window) {
+          var obs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              var meta = entry.target.getAttribute('data-sp-sec-name');
+              if (!meta) return;
+              if (entry.isIntersecting && entry.intersectionRatio >= 0.25) {
+                tiemposActivos[meta] = true;
+                if (!entry.target.getAttribute('data-sp-seen')) {
+                  entry.target.setAttribute('data-sp-seen', '1');
+                  window.spTrack('sp_section_view', { seccion: meta });
+                }
+              } else {
+                tiemposActivos[meta] = false;
+              }
+            });
+          }, { threshold: [0.25] });
+
+          secciones.forEach(function(s) {
+            var el = document.getElementById(s.id);
+            if (el) {
+              el.setAttribute('data-sp-sec-name', s.nombre);
+              obs.observe(el);
+            }
+          });
+        }
+      }
+
+      // 6. Escáner de Clics de Alta Intención de Compra (WhatsApp, Teléfono, Simuladores, Tarifas, Dossiers)
+      function iniciarRadarInteracciones() {
+        document.addEventListener('click', function(e) {
+          var link = e.target.closest('a, button, summary');
+          if (!link) return;
+
+          var href = (link.getAttribute('href') || '').trim();
+          var texto = (link.innerText || link.textContent || '').replace(/\s+/g, ' ').trim().substring(0, 80);
+          var onclickAttr = (link.getAttribute('onclick') || '');
+
+          // A. Clic en WhatsApp (Conversión Principal)
+          if (href.indexOf('wa.me') !== -1) {
+            var producto = 'Consulta General WhatsApp';
+            var hLow = decodeURIComponent(href).toLowerCase();
+            if (hLow.indexOf('atril') !== -1) producto = 'Atril NFC (39€)';
+            else if (hLow.indexOf('servicio 1') !== -1) producto = 'Servicio 1: Reseñas IA (59€/m)';
+            else if (hLow.indexOf('servicio 2') !== -1) producto = 'Servicio 2: Encuesta WhatsApp (59€/m)';
+            else if (hLow.indexOf('escudo total') !== -1) producto = '★ Pack Escudo Total (99€/m + 195€ GEO)';
+            else if (hLow.indexOf('escudo básico') !== -1 || hLow.indexOf('escudo basico') !== -1) producto = 'Pack Escudo Básico (99€/m)';
+            else if (hLow.indexOf('opción 1') !== -1 || hLow.indexOf('200') !== -1) producto = 'Auditoría GEO: Solo Código (200€)';
+            else if (hLow.indexOf('350') !== -1) producto = 'Auditoría GEO: Llave en Mano (350€)';
+            else if (hLow.indexOf('pyme base') !== -1) producto = 'Plan PYME Base';
+            else if (hLow.indexOf('pyme dúo') !== -1 || hLow.indexOf('pyme duo') !== -1) producto = 'Plan PYME Dúo';
+            else if (hLow.indexOf('trinity') !== -1) producto = 'Plan PYME Trinity';
+            else if (hLow.indexOf('quatro') !== -1) producto = 'Plan PYME Quatro';
+            else if (hLow.indexOf('pentium') !== -1) producto = 'Plan PYME Pentium';
+            else if (hLow.indexOf('instagram') !== -1) producto = 'Satélite Instagram 3 en 1';
+            else if (hLow.indexOf('magazine') !== -1) producto = 'Consulta desde Pyme Magazine';
+
+            window.spTrack('sp_whatsapp_conversion', {
+              producto: producto,
+              boton_texto: texto
+            });
+          }
+          // B. Clic en llamada telefónica
+          else if (href.indexOf('tel:') === 0) {
+            window.spTrack('sp_phone_call_click', { telefono: href.replace('tel:', '') });
+          }
+          // C. Apertura de Documentos / Tarjetones / Magazine
+          else if (href.indexOf('documentos/') !== -1 || href.indexOf('articulos/') !== -1) {
+            window.spTrack('sp_document_open', { documento: href, boton: texto });
+          }
+          // D. Interacción con Simuladores (S1 4 Tonos / S2 Botones WhatsApp)
+          else if (onclickAttr.indexOf('cambiarTonoDemoS1') !== -1) {
+            window.spTrack('sp_simulator_interaction', { simulador: 'Servicio 1 (4 Tonos IA)', detalle: 'Tono: ' + texto });
+          }
+          else if (onclickAttr.indexOf('cambiarBotonDemoS2') !== -1) {
+            window.spTrack('sp_simulator_interaction', { simulador: 'Servicio 2 (Encuesta WhatsApp)', detalle: 'Botón: ' + texto });
+          }
+          // E. Conmutador Mensual vs Anual
+          else if (onclickAttr.indexOf('cambiarModoTarifas') !== -1) {
+            window.spTrack('sp_pricing_toggle', { modalidad: texto });
+          }
+          // F. Conmutador Modo Dueño vs Modo Informático (Pilares IA)
+          else if (onclickAttr.indexOf('cambiarModoPilaresIA') !== -1) {
+            window.spTrack('sp_audience_profile_toggle', { perfil_elegido: texto });
+          }
+          // G. Podcast y Vídeo
+          else if (onclickAttr.indexOf('toggleAudio') !== -1 || onclickAttr.indexOf('activarPodcast') !== -1) {
+            window.spTrack('sp_multimedia_play', { medio: 'Podcast Audio Episodio 1' });
+          }
+          else if (onclickAttr.indexOf('activarVideo') !== -1 || onclickAttr.indexOf("cambiarMedioMagazine('video')") !== -1) {
+            window.spTrack('sp_multimedia_play', { medio: 'Píldora en Vídeo HD' });
+          }
+          // H. Desplegable Técnico de Ingeniería
+          else if (link.tagName.toLowerCase() === 'summary') {
+            window.spTrack('sp_technical_specs_expand', { bloque: texto });
+          }
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', function() {
+        detectarOrigenTrafico();
+        iniciarRadarAtencionSecciones();
+        iniciarRadarInteracciones();
+      });
+    })();
+  </script>
+  <!-- [SP_TELEMETRY_ENGINE_END] -->
 </head>
 <body>
 
