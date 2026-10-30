@@ -118,7 +118,7 @@ BLOQUE_ASISTENTE_FLOTANTE = """  <!-- ==========================================
             <div id="detalleProfundoConsejo2" class="hidden space-y-1.5 text-[11px] text-slate-300 bg-black/40 p-2.5 rounded-lg border border-white/5">
               <p><strong>• Regla 1 (Cuota mensual):</strong> El 1er servicio cuesta <strong>59 €/mes</strong>, pero a partir del 2º cada servicio que sumes cuesta solo <strong>+40 €/mes</strong> (te ahorras 19 €/mes en cada uno).</p>
               <p><strong>• Regla 2 (Instalación inicial al 50%):</strong> Instalar 1 servicio cuesta 150 €, pero el 2º servicio se instala a mitad de precio (<strong>+75 €</strong> = 225 € en total los dos).</p>
-              <p><strong>• Regla 3 (El gran ahorro en las Auditorías):</strong> Si pides una Auditoría suelta (o con 1 solo servicio) cuesta <strong>350 €</strong> instalada. Pero si tienes 2 servicios (Pack Escudo / Dúo), <strong>te regalamos los 150 € de mano de obra de la auditoría y se te queda en 195 €</strong>. ¡Por eso pagas 80 € menos el primer día llevándote el doble!</p>
+              <p><strong>• Regla 3 (Doble Bonificación en las 2 Auditorías):</strong> Si pides una Auditoría suelta (o con 1 solo servicio) cuesta <strong>350 €</strong> instalada. Pero al activar 2 servicios (Pack Escudo / Dúo), <strong>desbloqueas el descuento en AMBAS auditorías (195 € c/u en vez de 350 €, ahorrándote 155 € en cada una = ¡310 € de ahorro si haces las dos!)</strong>. Por eso el Día 1 pagas 80 € menos llevándote el doble de servicios.</p>
             </div>
 
             <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20he%20visto%20el%20truco%20de%20ahorro%20del%20Pack%20Escudo%20en%20tu%20asistente%20y%20quiero%20que%20me%20hagas%20el%20presupuesto%20m%C3%A1s%20econ%C3%B3mico%20para%20mi%20caso." target="_blank" class="w-full py-2 px-3 rounded-lg bg-brand-teal hover:bg-brand-tealDark text-white font-bold text-[11px] text-center block shadow transition-colors">
@@ -132,7 +132,7 @@ BLOQUE_ASISTENTE_FLOTANTE = """  <!-- ==========================================
           <button type="button" onclick="toggleAcordeonConsejo(3)" class="w-full text-left p-3 hover:bg-teal-950/40 transition-colors flex items-center justify-between gap-2">
             <div>
               <span class="text-xs font-extrabold text-white block">🔍🧠 3. Dudas entre las 2 Auditorías (SEO+GEO vs Neuro CRO)</span>
-              <span class="text-[10.5px] text-teal-300 font-semibold">¿Para qué sirve cada una y cuál necesito?</span>
+              <span class="text-[10.5px] text-teal-300 font-semibold">¿Para qué sirve cada una y cómo se bonifican?</span>
             </div>
             <span id="iconoAcordeonConsejo3" class="text-teal-400 font-black text-xs transition-transform">▼</span>
           </button>
@@ -150,7 +150,7 @@ BLOQUE_ASISTENTE_FLOTANTE = """  <!-- ==========================================
             <div id="detalleProfundoConsejo3" class="hidden space-y-1.5 text-[11px] text-slate-300 bg-black/40 p-2.5 rounded-lg border border-white/5">
               <p><strong>🔍 Auditoría 1 (SEO Local + GEO IA):</strong> Si un cliente busca hoy en Google o pregunta a ChatGPT <em>«¿Qué clínica/taller/empresa me recomiendas en mi ciudad?»</em>, ¿sales tú el primero? Si no sales, necesitas esta. Metemos en tu web y Google Maps el código interno que leen las IAs para recomendarte.</p>
               <p><strong>🧠 Auditoría 2 (Neuromarketing y Conversión CRO):</strong> Si ya tienes web y entra gente, pero casi nadie te llama ni rellena el formulario, necesitas esta. Ponemos sensores térmicos y analizamos tu web con psicología de ventas para quitar atascos y hacer que te escriban por WhatsApp.</p>
-              <p><strong>💰 Valen exactamente lo mismo (sin cuotas mensuales):</strong> 200 € (si la instala tu informático), 350 € (instalada por nosotros suelta), <strong>195 € cada una</strong> si tienes Pack Escudo/Dúo+, o <strong>95 € cada una</strong> en Plan Anual Trinity+.</p>
+              <p><strong>💰 Descuento activado para una o para las dos (sin cuotas):</strong> Sueltas cuestan 200 € (solo código/informe) o 350 € (instaladas por nosotros). Pero con tu <strong>Pack Escudo / Plan Dúo+</strong> tienes <strong>155 € de descuento en CADA una (195 € c/u)</strong>, o <strong>95 € c/u</strong> desde Plan Anual Trinity+.</p>
             </div>
 
             <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20he%20le%C3%ADdo%20la%20diferencia%20entre%20las%202%20Auditor%C3%ADas%20en%20tu%20asistente%20y%20quiero%20que%20mires%20mi%20web%20para%20decirme%20cu%C3%A1l%20me%20hace%20m%C3%A1s%20falta." target="_blank" class="w-full py-2 px-3 rounded-lg bg-brand-teal hover:bg-brand-tealDark text-white font-bold text-[11px] text-center block shadow transition-colors">
@@ -280,41 +280,83 @@ JS_ASISTENTE_FLOTANTE = """
 def inyectar_asistente_y_regla_inpost(dir_raiz):
     ruta_index = os.path.join(dir_raiz, "index.html")
     if not os.path.isfile(ruta_index):
+        print("❌ No se encontró index.html en:", ruta_index)
         return
 
     with open(ruta_index, "r", encoding="utf-8") as f:
         html = f.read()
 
-    # 1. Eliminar versión previa del asistente flotante si existiera
+    # 1. Eliminar cualquier versión previa del asistente flotante si existiera
     html = re.sub(
-        r'  <!-- ======================================================================= -->\s*<!-- ASISTENTE FLOTANTE.*?<!-- MODAL DE AVISO LEGAL -->',
-        '  <!-- MODAL DE AVISO LEGAL -->',
+        r'<!-- ======================================================================= -->\s*<!-- ASISTENTE FLOTANTE.*?</div>\s*</div>\s*</button>\s*</div>',
+        '',
+        html,
+        flags=re.DOTALL
+    )
+    html = re.sub(
+        r'<!-- ASISTENTE FLOTANTE NIVEL 2.*?<!-- MODAL DE AVISO LEGAL -->',
+        '<!-- MODAL DE AVISO LEGAL -->',
         html,
         flags=re.DOTALL
     )
 
-    # 2. Insertar el nuevo Asistente Flotante Nivel 2 justo antes del Modal Legal
-    if 'id="spAsistenteConsejo"' not in html:
-        html = html.replace(
-            '  <!-- MODAL DE AVISO LEGAL -->',
-            BLOQUE_ASISTENTE_FLOTANTE + '\n  <!-- MODAL DE AVISO LEGAL -->',
-            1
-        )
+    # Asegurar posición visible (z-[9999] y separado de cualquier icono de extensión en la esquina)
+    bloque_limpio = BLOQUE_ASISTENTE_FLOTANTE.replace(
+        'class="fixed bottom-5 right-4 sm:right-6 z-[95] flex flex-col items-end"',
+        'style="position:fixed; bottom:22px; right:22px; z-index:9999;" class="flex flex-col items-end"'
+    )
 
-    # 3. Reemplazar o insertar las funciones JS del asistente
+    # 2. Insertar el Asistente Flotante (con fallback directo antes de </body> si el comentario cambió)
+    if 'id="spAsistenteConsejo"' not in html:
+        if '<!-- MODAL DE AVISO LEGAL -->' in html:
+            html = html.replace(
+                '<!-- MODAL DE AVISO LEGAL -->',
+                bloque_limpio + '\n\n  <!-- MODAL DE AVISO LEGAL -->',
+                1
+            )
+        elif '<div id="modalLegal"' in html:
+            html = html.replace(
+                '<div id="modalLegal"',
+                bloque_limpio + '\n\n  <div id="modalLegal"',
+                1
+            )
+        else:
+            html = html.replace('</body>', bloque_limpio + '\n</body>', 1)
+
+    # 3. Insertar las funciones JS del asistente (con fallback antes de </script>)
     html = re.sub(
-        r'    // CONTROL DEL ASISTENTE FLOTANTE.*?(?=    // CONTROL DEL MENÚ MÓVIL)',
+        r'// CONTROL DEL ASISTENTE FLOTANTE.*?(?=// CONTROL DEL MENÚ MÓVIL)',
         '',
         html,
         flags=re.DOTALL
     )
     if 'function toggleAcordeonConsejo' not in html:
-        html = html.replace(
-            '    // CONTROL DEL MENÚ MÓVIL (Hamburguesa)',
-            JS_ASISTENTE_FLOTANTE + '\n    // CONTROL DEL MENÚ MÓVIL (Hamburguesa)',
-            1
-        )
+        if '// CONTROL DEL MENÚ MÓVIL' in html:
+            html = html.replace(
+                '// CONTROL DEL MENÚ MÓVIL',
+                JS_ASISTENTE_FLOTANTE + '\n    // CONTROL DEL MENÚ MÓVIL',
+                1
+            )
+        else:
+            # Insertar antes del último </script>
+            pos_script = html.rfind('</script>')
+            if pos_script != -1:
+                html = html[:pos_script] + '\n' + JS_ASISTENTE_FLOTANTE + '\n  </script>' + html[pos_script + 9:]
 
     with open(ruta_index, "w", encoding="utf-8") as f:
         f.write(html)
-    print("   ✔ Asistente Flotante Nivel 2 (con respuestas en pantalla + desplegables + WhatsApp) actualizado en index.html.")
+    print("   ✔ Asistente Flotante Nivel 2 inyectado y verificado en index.html.")
+
+
+if __name__ == "__main__":
+    print("======================================================================")
+    print("🚀 ACTIVANDO ASISTENTE FLOTANTE NIVEL 2 EN SISTEMASPYME.ES")
+    print("======================================================================")
+    raiz = localizar_directorio_public_html()
+    if not raiz:
+        print("❌ No se pudo localizar la carpeta public_html.")
+    else:
+        inyectar_asistente_y_regla_inpost(raiz)
+        print("======================================================================")
+        print("🎉 ¡LISTO! El asistente flotante ya está visible abajo a la derecha.")
+        print("======================================================================")
