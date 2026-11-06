@@ -44,7 +44,7 @@ RUTA_SCRAPER = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Scrape
 RUTA_PROGRAMAR = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Programar"
 
 STAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
-VERSION_ACTUAL = "V143"
+VERSION_ACTUAL = "V144"
 
 # =============================================================================
 # 2. UTILIDADES DE BACKUP, VALIDACIÓN Y AUTO-REPLICACIÓN DE AD.py
@@ -940,26 +940,42 @@ NUEVO_JS_TARIFAS_INDEX = r"""var _spModoTarifasActual = 'mensual';
 
 ESTILOS_CARRITO_LUMINOSO_CRO = r"""    /* =========================================================================
        MODAL CARRITO CONFIGURADOR EN MODO CRISTAL LUMINOSO CRO (NEUROMARKETING)
-       OPTIMIZADO PARA PRESBICIA: MÁS ANCHO, ESCALA PROPORCIONAL GRANDE Y ALTO CONTRASTE
+       PUNTO INTERMEDIO EXACTO: APTO PARA PRESBICIA + CERO SCROLL EN PANTALLA
        ========================================================================= */
+    #spModalCarritoCarta {
+      padding: 0.5rem 1rem !important;
+      overflow: hidden !important;
+    }
     #spModalCarritoCarta > div {
-      max-width: 72rem !important; /* 1152px: más ancho para que todo respire y quepa letra grande */
-      padding: 1.5rem 2rem !important;
+      max-width: 74rem !important; /* 1184px: ancho panorámico para que nada salte de línea */
+      max-height: 96vh !important;
+      overflow: hidden !important;
+      padding: 0.9rem 1.4rem !important;
       background: linear-gradient(160deg, #f8fafc 0%, #ffffff 55%, #f0fdfa 100%) !important;
       color: #0b2239 !important;
       border: 2.5px solid #0d9488 !important;
-      box-shadow: 0 32px 75px -12px rgba(11, 34, 57, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.95) !important;
+      box-shadow: 0 28px 65px -12px rgba(11, 34, 57, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.95) !important;
+    }
+    /* Cabecera compacta en 1 sola línea sin el banner superior de ruido */
+    #spModalCarritoCarta > div > div:first-child {
+      padding-bottom: 0.45rem !important;
+      margin-bottom: 0.55rem !important;
+      border-bottom: 1.5px solid #cbd5e1 !important;
+    }
+    /* Ocultar el banner superior "CONFIGURADOR A LA CARTA • IMPLANTACIÓN RÁPIDA 24-48H" */
+    #spModalCarritoCarta > div > div:first-child span.bg-amber-950\/90 {
+      display: none !important;
     }
     /* Botón X de cerrar bien visible sobre fondo blanco */
     #spModalCarritoCarta button[onclick*="spCerrarCarritoConfigurador"] {
-      width: 2.5rem !important;
-      height: 2.5rem !important;
+      width: 2.15rem !important;
+      height: 2.15rem !important;
       background: #e2e8f0 !important;
       color: #0b2239 !important;
       border: 1.5px solid #94a3b8 !important;
-      font-size: 1.1rem !important;
+      font-size: 1rem !important;
       font-weight: 900 !important;
-      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12) !important;
+      box-shadow: 0 2px 5px rgba(15, 23, 42, 0.10) !important;
     }
     #spModalCarritoCarta button[onclick*="spCerrarCarritoConfigurador"]:hover {
       background: #e11d48 !important;
@@ -968,62 +984,69 @@ ESTILOS_CARRITO_LUMINOSO_CRO = r"""    /* ======================================
     }
     /* Títulos principales del Carrito */
     #spModalCarritoCarta h3 {
-      font-size: 1.45rem !important;
-      line-height: 1.25 !important;
+      font-size: 1.24rem !important; /* ~20px: claro y en 1 sola línea */
+      line-height: 1.2 !important;
       color: #0b2239 !important;
+      margin-top: 0 !important;
     }
     #spModalCarritoCarta h4 {
-      font-size: 0.98rem !important;
+      font-size: 0.88rem !important;
       color: #0b2239 !important;
       letter-spacing: 0.02em !important;
     }
-    /* Etiquetas de los pasos 1, 2, 3, 4 y 5 */
+    /* Espaciado vertical compacto entre bloques de las columnas */
+    #spModalCarritoCarta .lg\:col-span-7 {
+      gap: 0.45rem !important;
+    }
+    #spModalCarritoCarta .lg\:col-span-7.space-y-3 > * + * {
+      margin-top: 0.45rem !important;
+    }
+    /* Etiquetas de los pasos 1, 2, 3, 4 y 5 (punto intermedio nítido 12.5px) */
     #spModalCarritoCarta label {
-      font-size: 0.86rem !important; /* ~13.8px */
+      font-size: 0.78rem !important; /* ~12.5px */
       font-weight: 900 !important;
       color: #065f46 !important;
       letter-spacing: 0.02em !important;
-      margin-bottom: 0.45rem !important;
+      margin-bottom: 0.22rem !important;
     }
-    /* Botones de selección (Pasos 1, 2 y 3) con escala jerárquica ampliada para presbicia */
+    /* Botones de selección (Pasos 1, 2 y 3) con altura contenida y letra intermedia clara */
     #spModalCarritoCarta .sp-cart-item-btn {
       border: 2px solid #cbd5e1 !important;
       background: #ffffff !important;
-      border-radius: 1rem !important;
-      padding: 0.8rem 1rem !important;
+      border-radius: 0.8rem !important;
+      padding: 0.48rem 0.75rem !important;
       text-align: left;
-      transition: all 0.2s ease;
+      transition: all 0.18s ease;
       cursor: pointer;
       color: #0f172a !important;
-      box-shadow: 0 4px 12px -2px rgba(11, 34, 57, 0.07) !important;
+      box-shadow: 0 2px 8px -2px rgba(11, 34, 57, 0.06) !important;
     }
-    /* Título principal dentro de cada tarjeta seleccionable */
+    /* Título principal dentro de cada tarjeta seleccionable (~14.5px) */
     #spModalCarritoCarta .sp-cart-item-btn > span:first-child {
-      font-size: 1.02rem !important; /* ~16.3px */
+      font-size: 0.91rem !important; /* ~14.5px */
       font-weight: 900 !important;
       color: #0b2239 !important;
-      line-height: 1.25 !important;
-      margin-bottom: 0.2rem !important;
+      line-height: 1.2 !important;
+      margin-bottom: 0.1rem !important;
     }
-    /* Subtítulos y precios dentro de cada tarjeta seleccionable */
+    /* Subtítulos y precios dentro de cada tarjeta seleccionable (~12.4px) */
     #spModalCarritoCarta .sp-cart-item-btn > span:not(:first-child) {
-      font-size: 0.85rem !important; /* ~13.6px (nunca 10px) */
+      font-size: 0.775rem !important; /* ~12.4px */
       font-weight: 600 !important;
       color: #334155 !important;
-      line-height: 1.32 !important;
+      line-height: 1.24 !important;
       display: block !important;
-      margin-top: 0.12rem !important;
+      margin-top: 0.06rem !important;
     }
     #spModalCarritoCarta .sp-cart-item-btn:hover {
       border-color: #0d9488 !important;
       background: #f0fdfa !important;
-      transform: translateY(-1px);
     }
     /* Estado seleccionado: Verde Esmeralda Luminoso con texto ultra-nítido */
     #spModalCarritoCarta .sp-cart-item-btn.sp-cart-selected {
-      border: 2.5px solid #059669 !important;
+      border: 2px solid #059669 !important;
       background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
-      box-shadow: 0 10px 22px -4px rgba(5, 150, 105, 0.25), inset 0 1px 0 #ffffff !important;
+      box-shadow: 0 6px 16px -4px rgba(5, 150, 105, 0.22), inset 0 1px 0 #ffffff !important;
       color: #064e3b !important;
     }
     #spModalCarritoCarta .sp-cart-item-btn.sp-cart-selected > span:first-child {
@@ -1033,24 +1056,25 @@ ESTILOS_CARRITO_LUMINOSO_CRO = r"""    /* ======================================
       color: #065f46 !important;
       font-weight: 700 !important;
     }
-    /* Campos de formulario y desplegables grandes y legibles */
+    /* Campos de formulario y desplegables compactos de alto contraste (13.8px) */
     #spModalCarritoCarta select,
     #spModalCarritoCarta input[type="text"],
     #spModalCarritoCarta input[type="tel"],
     #spModalCarritoCarta input[type="datetime-local"] {
       background: #ffffff !important;
       color: #0b2239 !important;
-      border: 2px solid #94a3b8 !important;
-      font-size: 0.94rem !important; /* 15px */
+      border: 1.5px solid #94a3b8 !important;
+      font-size: 0.86rem !important; /* ~13.8px */
       font-weight: 700 !important;
-      padding: 0.58rem 0.85rem !important;
-      border-radius: 0.85rem !important;
-      box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.05) !important;
+      padding: 0.38rem 0.68rem !important;
+      height: 2.25rem !important; /* 36px fijo para ahorrar altura vertical */
+      border-radius: 0.65rem !important;
+      box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04) !important;
     }
     #spModalCarritoCarta select:focus,
     #spModalCarritoCarta input:focus {
       border-color: #0d9488 !important;
-      box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2) !important;
+      box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2) !important;
     }
     #spModalCarritoCarta input::placeholder {
       color: #475569 !important;
@@ -1065,27 +1089,31 @@ ESTILOS_CARRITO_LUMINOSO_CRO = r"""    /* ======================================
       border: 1.5px solid #cbd5e1 !important;
       color: #0b2239 !important;
     }
+    #spModalCarritoCarta .lg\:col-span-5 {
+      padding: 0.7rem 0.95rem !important;
+    }
     /* Píldora superior derecha "2 servicios mensuales" con alto contraste */
     #spModalCarritoCarta #spCartCountModulosBadge {
       background: #065f46 !important;
       color: #ffffff !important;
       border: 1px solid #047857 !important;
-      font-size: 0.8rem !important; /* 12.8px */
+      font-size: 0.74rem !important;
       font-weight: 800 !important;
-      padding: 0.25rem 0.7rem !important;
+      padding: 0.15rem 0.55rem !important;
     }
     /* Líneas del Resumen de tu Pedido (sin partir "324 €" en dos renglones) */
     #spModalCarritoCarta #spCartSummaryLines {
-      font-size: 0.92rem !important; /* ~14.7px */
-      line-height: 1.45 !important;
+      font-size: 0.83rem !important; /* ~13.3px */
+      line-height: 1.32 !important;
       color: #0b2239 !important;
+      margin-bottom: 0.35rem !important;
     }
     #spModalCarritoCarta #spCartSummaryLines > div {
       display: flex !important;
       align-items: baseline !important;
       justify-content: space-between !important;
-      gap: 0.75rem !important;
-      padding: 0.15rem 0 !important;
+      gap: 0.5rem !important;
+      padding: 0.06rem 0 !important;
     }
     #spModalCarritoCarta #spCartSummaryLines span {
       color: #1e293b !important;
@@ -1094,57 +1122,52 @@ ESTILOS_CARRITO_LUMINOSO_CRO = r"""    /* ======================================
     #spModalCarritoCarta #spCartSummaryLines strong {
       color: #0b2239 !important;
       font-weight: 900 !important;
-      font-size: 1rem !important;
+      font-size: 0.9rem !important;
       white-space: nowrap !important;
       flex-shrink: 0 !important;
     }
-    /* Caja de Total Desembolso Día 1 */
+    /* Caja de Total Desembolso Día 1 compacta */
     #spModalCarritoCarta .bg-emerald-950\/60 {
       background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
       border: 2px solid #059669 !important;
-      padding: 0.85rem 1rem !important;
+      padding: 0.45rem 0.75rem !important;
+      margin-bottom: 0.45rem !important;
     }
     #spModalCarritoCarta .bg-emerald-950\/60 span {
       color: #064e3b !important;
-      font-size: 0.86rem !important;
+      font-size: 0.78rem !important;
+      line-height: 1.25 !important;
     }
     #spModalCarritoCarta #spCartTotalDia1 {
       color: #064e3b !important;
-      font-size: 1.65rem !important; /* ~26.5px */
+      font-size: 1.35rem !important; /* ~21.6px rotundo y sin comer altura */
       font-weight: 900 !important;
       white-space: nowrap !important;
     }
     #spModalCarritoCarta #spCartCuotaMensual {
       color: #0f766e !important;
-      font-size: 0.92rem !important;
+      font-size: 0.82rem !important;
       font-weight: 900 !important;
     }
-    /* CORRECCIÓN CRÍTICA DE CONTRASTE: Todos los textos que eran amarillos pálidos (amber-200 / amber-300) sobre fondo claro pasan a Cobre/Ámbar Oscuro (#92400e) */
+    /* Todos los textos que eran amarillos pálidos pasan a Cobre/Ámbar Oscuro (#92400e) */
     #spModalCarritoCarta .text-amber-300,
     #spModalCarritoCarta .text-amber-200,
     #spModalCarritoCarta .text-amber-200\/95 {
       color: #92400e !important;
       font-weight: 800 !important;
     }
-    #spModalCarritoCarta .bg-amber-950\/90 {
-      background: #fef3c7 !important;
-      color: #92400e !important;
-      border-color: #f59e0b !important;
-      font-size: 0.78rem !important;
-    }
-    /* Caja de Cita de Alta y Horario Especial Gerentes con fondo crema suave y letra oscura grande */
     #spModalCarritoCarta #spCartSelectDiaLV,
     #spModalCarritoCarta #spCartSelectHoraManana {
-      font-size: 0.88rem !important; /* 14px */
+      font-size: 0.82rem !important; /* ~13.1px */
       color: #0b2239 !important;
       font-weight: 800 !important;
     }
     #spModalCarritoCarta #spCartSyncCalBadge {
       color: #047857 !important;
       background: #d1fae5 !important;
-      padding: 0.15rem 0.5rem !important;
+      padding: 0.1rem 0.45rem !important;
       border-radius: 9999px !important;
-      font-size: 0.76rem !important;
+      font-size: 0.72rem !important;
       font-weight: 800 !important;
     }
     #spModalCarritoCarta .text-slate-400,
@@ -1153,28 +1176,30 @@ ESTILOS_CARRITO_LUMINOSO_CRO = r"""    /* ======================================
     #spModalCarritoCarta .text-emerald-200,
     #spModalCarritoCarta .text-sky-300 {
       color: #1e293b !important;
-      font-size: 0.83rem !important;
-      line-height: 1.38 !important;
+      font-size: 0.78rem !important;
+      line-height: 1.28 !important;
     }
-    /* Subselector de Plan Base (S1 vs S2) en modo luminoso de alto contraste */
+    /* Subselector de Plan Base (S1 vs S2) en modo luminoso compacto */
     #spModalCarritoCarta #spSubSelectorBaseS1S2 {
       background: #f0fdfa !important;
-      border: 2px solid #0d9488 !important;
-      padding: 0.75rem !important;
+      border: 1.5px solid #0d9488 !important;
+      padding: 0.45rem 0.65rem !important;
+      margin-top: 0.35rem !important;
     }
     #spModalCarritoCarta #spSubSelectorBaseS1S2 button {
       background: #ffffff !important;
       color: #0b2239 !important;
-      font-size: 0.9rem !important;
+      font-size: 0.82rem !important;
+      padding: 0.35rem 0.6rem !important;
     }
     #spModalCarritoCarta #spSubSelectorBaseS1S2 button span {
       color: #334155 !important;
-      font-size: 0.82rem !important;
+      font-size: 0.75rem !important;
     }
-    /* Botón principal de Confirmar Pedido más grande y rotundo */
+    /* Botón principal de Confirmar Pedido siempre visible sin scroll */
     #spModalCarritoCarta #spBtnSubmitCarrito {
-      font-size: 1.02rem !important;
-      padding: 0.85rem 1.25rem !important;
+      font-size: 0.95rem !important;
+      padding: 0.62rem 1rem !important;
     }"""
 
 JS_PUENTE_TEST_A_CARRITO = r"""window.spAbrirCarritoConDiagnosticoPreseleccionado = function() {
@@ -1352,6 +1377,50 @@ def actualizar_index_html_completo(ruta_index):
         re.DOTALL
     )
     html = patron_btn_trinity_carrito.sub("", html)
+
+    # 12. Quitar el banner superior de ruido en el Carrito y poner "(listo en 24-48h)" al lado del título
+    html = re.sub(
+        r'<span class="text-\[10\.5px\] font-extrabold uppercase tracking-wider text-amber-300 bg-amber-950/90[^>]*>\s*🛒 Configurador a la Carta • Implantación Rápida 24-48h\s*</span>\s*',
+        '',
+        html
+    )
+    html = html.replace(
+        "Configura tu Plan a Medida y Agenda tu Videollamada de Alta",
+        'Configura tu Plan a Medida y Agenda tu Videollamada de Alta <span class="text-teal-700 font-extrabold text-base sm:text-lg">(listo en 24-48h)</span>'
+    )
+
+    # 13. Compactar los campos de Nombre + Teléfono en una misma fila (2 columnas) para ahorrar altura y evitar cualquier scroll
+    patron_inputs_carrito = re.compile(
+        r'var inpNom = document\.getElementById\(\'spCartInputNombre\'\);\s*if \(inpNom && inpNom\.parentNode && !document\.getElementById\(\'spCartInputNegocioCiudad\'\)\) \{.*?inpNom\.parentNode\.insertBefore\(inpNeg, inpNom\.nextSibling\);\s*\}',
+        re.DOTALL
+    )
+    nuevo_js_inputs_compactos = r"""var inpNom = document.getElementById('spCartInputNombre');
+    var inpTel = document.getElementById('spCartInputTelefono');
+    if (inpNom && inpTel && inpNom.parentNode && !document.getElementById('spCartInputNegocioCiudad')) {
+      var parentForm = inpNom.parentNode;
+      parentForm.className = 'space-y-1.5 text-xs';
+      inpNom.placeholder = '1. Tu Nombre (Ej: Carlos) *';
+      inpTel.placeholder = '2. Tu Móvil (Ej: 600 123 456) *';
+      var filaNomTel = document.createElement('div');
+      filaNomTel.className = 'grid grid-cols-1 sm:grid-cols-2 gap-1.5';
+      parentForm.insertBefore(filaNomTel, inpNom);
+      filaNomTel.appendChild(inpNom);
+      filaNomTel.appendChild(inpTel);
+      var inpNeg = document.createElement('input');
+      inpNeg.id = 'spCartInputNegocioCiudad';
+      inpNeg.type = 'text';
+      inpNeg.required = true;
+      inpNeg.placeholder = '3. Nombre de tu Negocio y Ciudad (Ej: Clínica Sol - Vigo) *';
+      inpNeg.className = 'w-full bg-white border-2 border-teal-600/60 focus:border-teal-600 rounded-xl px-3 py-1.5 text-slate-900 placeholder-slate-500 outline-none font-bold';
+      parentForm.insertBefore(inpNeg, filaNomTel.nextSibling);
+    }"""
+    html = patron_inputs_carrito.sub(lambda _: nuevo_js_inputs_compactos, html)
+
+    # 14. Compactar el bloque de Cita de Alta en 1 sola línea informativa sin el párrafo largo inferior que provocaba scroll
+    html = html.replace(
+        '<p class="text-[10px] text-amber-200/95 leading-snug">🔥 <strong>Horario Especial Gerentes:</strong> Habilitamos Sábados y Domingos (mañana y tarde) para ver juntos tu diagnóstico sin interrumpir tu horario de atención al público.</p>',
+        '<p class="text-[11px] text-amber-900 font-bold leading-tight">🔥 Incluye Sábados y Domingos (mañana y tarde) para no interrumpir tu horario de apertura.</p>'
+    )
 
     escribir_archivo_con_backup(ruta_index, html)
 
