@@ -1,0 +1,39 @@
+[
+  {
+    "origen": "Carrito Configurador a la Carta Web",
+    "nombre": "Cliente Web",
+    "telefono": "691407080",
+    "horario": "Llamada en horario laboral (<24h) • Reserva provisional: sábado, 07 de noviembre, 11:00",
+    "fecha_cita_iso": "2026-11-07T10:00:00.000Z",
+    "tiene_horario_especifico": false,
+    "plan": "Plan Base Flexible (59 €/mes + 150 € Setup)",
+    "auditorias": 0,
+    "atriles": 1,
+    "reservas_fase2": [
+      "S3 Leads en 10s + Portales (+40 €/m)"
+    ],
+    "bono_boveda_gratis": false,
+    "total_dia1": 248,
+    "enlace_google_calendar_cliente": "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Videollamada%20de%20Alta%20%E2%80%94%20Sistemas%20Pyme%20(Mi%20Negocio)&dates=20261107T100000Z%2F20261107T103000Z&details=%E2%80%A2%20Cliente%2FNegocio%3A%20Cliente%20Web%0A%E2%80%A2%20Tel%C3%A9fono%3A%20691407080%0A%E2%80%A2%20Cita%20solicitada%3A%20Llamada%20en%20horario%20laboral%20(%3C24h)%20%E2%80%A2%20Reserva%20provisional%3A%20s%C3%A1bado%2C%2007%20de%20noviembre%2C%2011%3A00%0A%E2%80%A2%20Plan%20elegido%3A%20Plan%20Base%20Flexible%20(59%20%E2%82%AC%2Fmes%20%2B%20150%20%E2%82%AC%20Setup)%0A%E2%80%A2%20Super-Auditor%C3%ADas%3A%200%20(0%20%E2%82%AC)%0A%E2%80%A2%20Atriles%20NFC%2FQR%3A%201%20(39%20%E2%82%AC)%0A%E2%80%A2%20Reserva%20Fase%202%3A%20S3%20Leads%20en%2010s%20%2B%20Portales%20(%2B40%20%E2%82%AC%2Fm)%0A%E2%80%A2%20Bono%20B%C3%B3veda%20Contrase%C3%B1as%20(3%2B%20m%C3%B3d.)%3A%20No%0A%E2%80%A2%20Total%20D%C3%ADa%201%3A%20248%20%E2%82%AC%20(sin%20IVA)&location=Videollamada%20%2F%20Tel%C3%A9fono%20con%20Francisco%20M.%20Gallardo%20(Sistemas%20Pyme%20-%20711%2054%2075%2061)",
+    "resumen": "• Cliente/Negocio: Cliente Web\n• Teléfono: 691407080\n• Cita solicitada: Llamada en horario laboral (<24h) • Reserva provisional: sábado, 07 de noviembre, 11:00\n• Plan elegido: Plan Base Flexible (59 €/mes + 150 € Setup)\n• Super-Auditorías: 0 (0 €)\n• Atriles NFC/QR: 1 (39 €)\n• Reserva Fase 2: S3 Leads en 10s + Portales (+40 €/m)\n• Bono Bóveda Contraseñas (3+ mód.): No\n• Total Día 1: 248 € (sin IVA)",
+    "fecha": "6/11/2026, 3:33:55"
+  },
+  {
+    "origen": "Voz / Teleprompter Tecnosala",
+    "telefono": "691407080",
+    "mensaje_usuario": "vale pues mi nombre es Francisco Gallardo mi teléfono es el 691 40 70 80 y quiero quedar con Francisco eh pasado mañana a las 4 de la tarde",
+    "historial": "Usuario: vale pues quiero comprar el servicio de reseñas | Consultor: ¡Enhorabuena por dar el paso para potenciar tu negocio! El Servicio 1 de gestión inteligente de reseñas de Google tiene un coste de 59 euros al mes más 150 euros de alta única, aunque también tienes disponible el botón del Configurador a la Carta en pantalla si prefieres configurarlo tú mismo de forma visual. Para dejar tu solicitud registrada ahora mismo, dime solo tu nombre y el del negocio, tu número de teléfono y qué día y hora te viene mejor que Francisco te llame para la puesta en marcha. | Usuario: vale pues me gustaría contratar ya el servicio de reseñas | Consultor: ¡Perfecto! Para dejar tu solicitud de alta registrada ya mismo, dime solo tu nombre y el del negocio, tu número de teléfono y qué día y hora te va bien que Francisco te llame para hacer la puesta en marcha. Recuerda que tienes en pantalla el botón verde de confirmación directa para enviar el aviso a su WhatsApp. ¡Vamos a por ello!",
+    "fecha_cita_iso": "2026-11-07T10:00:00.000Z",
+    "enlace_google_calendar_cliente": "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Videollamada%20de%20Alta%20%E2%80%94%20Sistemas%20Pyme%20(Francisco%20M.%20Gallardo)&dates=20261107T100000Z%2F20261107T103000Z&details=Puesta%20en%20marcha%20r%C3%A1pida%20(24-48h)%20con%20Francisco%20M.%20Gallardo%20(Tel%3A%20711%2054%2075%2061).%20Tel%C3%A9fono%20cliente%3A%20691407080.&location=Videollamada%20%2F%20Tel%C3%A9fono%20con%20Francisco%20M.%20Gallardo%20(Sistemas%20Pyme%20-%20711%2054%2075%2061)",
+    "fecha": "6/11/2026, 3:30:42"
+  },
+  {
+    "origen": "Carrito Configurador a la Carta Web",
+    "nombre": "Francisco Galallardo",
+    "telefono": "691407080",
+    "horario": "No sé",
+    "resumen": "• Cliente/Negocio: Francisco Galallardo\n• Teléfono: 691407080\n• Horario preferido videollamada: No sé\n• Plan elegido: Sin plan mensual (Solo Pago Único)\n• Super-Auditorías: 1 (350 €)\n• Atriles NFC/QR: 1 (39 €)\n• Reserva Fase 2: Ninguna\n• Total Día 1: 389 € (sin IVA)",
+    "total_dia1": 389,
+    "fecha": "6/11/2026, 2:02:00"
+  }
+]

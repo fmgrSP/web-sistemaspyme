@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistemas Pyme | Automatización, Reputación en Google e IA para Negocios Locales</title>
+  <meta name="description" content="Consultoría tecnológica en Galicia: ayudamos a negocios locales a conseguir más reseñas de 5 estrellas, frenar quejas en privado por WhatsApp y salir recomendados en Google, ChatGPT y Gemini.">
+  <meta name="theme-color" content="#071629">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0b2545',
+              dark: '#071426',
+              card: '#0c1e36',
+              teal: '#0d7d74',
+              tealLight: '#14b8a6',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    html, body {
+      overflow-x: clip;
+      max-width: 100%;
+      background-color: #071426;
+      color: #f1f5f9;
+    }
+
+    /* Sistema de Diapositivas con Aire y Paz Visual */
+    .slide-screen {
+      min-height: calc(100vh - 5rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 3.5rem;
+      padding-bottom: 3.5rem;
+      position: relative;
+    }
+
+    .calm-glow {
+      background: radial-gradient(circle at 50% 30%, rgba(20, 184, 166, 0.08) 0%, rgba(7, 20, 38, 0) 70%);
+    }
+
+    .zen-card {
+      background: rgba(12, 30, 54, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.25s ease;
+    }
+    .zen-card:hover {
+      border-color: rgba(20, 184, 166, 0.35);
+    }
+
+    /* Transición suave al cambiar de sección independiente */
+    .view-section {
+      display: none;
+      animation: fadeInView 0.3s ease-out;
+    }
+    .view-section.active {
+      display: block;
+    }
+    @keyframes fadeInView {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    a, button, summary, input { touch-action: manipulation; }
+  
+    /* Optimización INP < 40ms (Core Web Vitals 100/100) */
+    a, button, summary, input, [onclick] {
+      touch-action: manipulation;
+    }
+    #magazine, #despliegue, #contacto, footer {
+      content-visibility: auto;
+      contain-intrinsic-size: 1px 700px;
+    }
+  </style>
+
+  <!-- [SP_GEO_LLMO_HEAD_START] -->
+  <link rel="canonical" href="https://sistemaspyme.es/">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="author" content="Francisco M. Gallardo — Sistemas Pyme">
+  <meta name="geo.region" content="ES-GA">
+  <meta name="geo.placename" content="Santiago de Compostela, A Coruña, Galicia, España">
+
+  <!-- Grafo Conectado Schema.org JSON-LD (Oculto para el usuario, 100% visible para Google y ChatGPT) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://sistemaspyme.es/#website",
+        "url": "https://sistemaspyme.es/",
+        "name": "Sistemas Pyme",
+        "description": "Consultoría de automatización, gestión de reseñas en Google Maps y posicionamiento en IA (ChatGPT y Gemini) para negocios locales en Galicia.",
+        "inLanguage": "es-ES"
+      },
+      {
+        "@type": ["ProfessionalService", "LocalBusiness"],
+        "@id": "https://sistemaspyme.es/#localbusiness",
+        "name": "Sistemas Pyme",
+        "legalName": "Francisco M. Gallardo (Sistemas Pyme)",
+        "taxID": "52938419D",
+        "url": "https://sistemaspyme.es/",
+        "telephone": "+34 711 54 75 61",
+        "email": "francisco@sistemaspyme.es",
+        "priceRange": "39€ - 350€",
+        "image": "https://sistemaspyme.es/foto_atril.jpeg",
+        "founder": {
+          "@type": "Person",
+          "name": "Francisco M. Gallardo",
+          "jobTitle": "Consultor Tecnológico Local"
+        },
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Santiago de Compostela / A Coruña",
+          "addressRegion": "Galicia",
+          "postalCode": "15840",
+          "addressCountry": "ES"
+        }
+      }
+    ]
+  }
+  </script>
+  <!-- [SP_GEO_LLMO_HEAD_END] -->
+
+  <!-- [SP_TELEMETRY_ENGINE_START] -->
+  <script>
+    (function() {
+      var ua = (navigator.userAgent || '').toLowerCase();
+      var host = (window.location.hostname || '').toLowerCase();
+      var esBot = (navigator.webdriver === true || ua.indexOf('headlesschrome') !== -1 || host.indexOf('.vercel.app') !== -1);
+      var esPropietario = false;
+      try { esPropietario = (localStorage.getItem('sp_ignore_owner') === '1'); } catch(e) {}
+
+      if (!esBot && !esPropietario) {
+        var sGa = document.createElement('script');
+        sGa.async = true;
+        sGa.src = 'https://www.googletagmanager.com/gtag/js?id=G-J8Y61HLB7L';
+        document.head.appendChild(sGa);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-J8Y61HLB7L', { send_page_view: true, anonymize_ip: true });
+
+        (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "z5k1bnidx3");
+      }
+
+      window.spTrack = function(ev, params) {
+        if (typeof window.gtag === 'function') window.gtag('event', ev, params || {});
+        if (typeof window.clarity === 'function') window.clarity('event', ev);
+      };
+    })();
+  </script>
+  <!-- [SP_TELEMETRY_ENGINE_END] -->
+</head>
+
+<body class="pt-20 antialiased selection:bg-teal-600 selection:text-white">
+
+  <!-- ======================================================================= -->
+  <!-- CABECERA MINIMALISTA Y SERENA (NAVEGACIÓN POR VISTAS INDEPENDIENTES)    -->
+  <!-- ======================================================================= -->
+  <header class="fixed top-0 left-0 right-0 z-50 h-20 bg-brand-dark/90 backdrop-blur-md border-b border-white/10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between gap-4">
+      
+      <!-- Logo limpio -->
+      <button type="button" onclick="mostrarVista('inicio')" class="flex items-center group focus:outline-none">
+        <div class="bg-white rounded-full px-3.5 py-1.5 shadow-sm group-hover:scale-[1.02] transition-transform flex items-center justify-center">
+          <img src="logo.png" width="145" height="36" alt="Sistemas Pyme" class="h-8 sm:h-9 w-auto object-contain" onerror="cargarSiguienteExtension(this)" data-img-base="logo,Sistemas Pyme Logo">
+        </div>
+      </button>
+
+      <!-- Pestañas de Secciones Independientes (Escritorio) -->
+      <nav class="hidden md:flex items-center gap-1 lg:gap-2 text-xs lg:text-sm font-semibold text-slate-300">
+        <button type="button" onclick="mostrarVista('inicio')" data-nav-btn="inicio" class="nav-tab px-3.5 py-2 rounded-xl bg-teal-500/15 text-teal-300 border border-teal-500/30 transition-all">
+          Inicio (Resumen)
+        </button>
+        <button type="button" onclick="mostrarVista('soluciones')" data-nav-btn="soluciones" class="nav-tab px-3.5 py-2 rounded-xl hover:bg-white/5 hover:text-white transition-all">
+          Soluciones y Demos
+        </button>
+        <button type="button" onclick="mostrarVista('auditorias')" data-nav-btn="auditorias" class="nav-tab px-3.5 py-2 rounded-xl hover:bg-white/5 hover:text-white transition-all">
+          Auditorías
+        </button>
+        <button type="button" onclick="mostrarVista('tarifas')" data-nav-btn="tarifas" class="nav-tab px-3.5 py-2 rounded-xl hover:bg-white/5 hover:text-white transition-all">
+          Tarifas
+        </button>
+        <button type="button" onclick="mostrarVista('magazine')" data-nav-btn="magazine" class="nav-tab px-3.5 py-2 rounded-xl hover:bg-white/5 hover:text-white transition-all">
+          Magazine &amp; Podcast
+        </button>
+      </nav>
+
+      <!-- Único botón de contacto tranquilo + Menú móvil -->
+      <div class="flex items-center gap-2.5">
+        <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quisiera%20hacerte%20una%20consulta%20sobre%20mi%20negocio" target="_blank" class="inline-flex items-center gap-2 bg-brand-teal hover:bg-teal-600 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl transition-colors">
+          <span>💬 WhatsApp</span>
+        </a>
+
+        <button type="button" aria-label="Menú" onclick="toggleMobileMenu()" class="md:hidden text-slate-300 hover:text-white p-2 bg-white/5 border border-white/10 rounded-xl">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MENÚ MÓVIL SERENO -->
+  <div id="mobileMenu" class="fixed inset-0 z-[100] bg-brand-dark/98 backdrop-blur-xl translate-x-full transition-transform duration-300 md:hidden flex flex-col p-6">
+    <div class="flex items-center justify-between pb-6 border-b border-white/10">
+      <span class="text-sm font-bold text-teal-400 uppercase tracking-wider">Menú de Secciones</span>
+      <button type="button" onclick="toggleMobileMenu()" class="text-slate-300 p-2 bg-white/5 rounded-xl border border-white/10">✕</button>
+    </div>
+    <div class="flex flex-col gap-3 py-8 text-lg font-bold text-slate-200">
+      <button type="button" onclick="mostrarVista('inicio'); toggleMobileMenu();" class="text-left px-4 py-3.5 rounded-xl bg-white/5 hover:bg-teal-500/20 text-teal-300">1. Inicio (Vista General en Calma)</button>
+      <button type="button" onclick="mostrarVista('soluciones'); toggleMobileMenu();" class="text-left px-4 py-3.5 rounded-xl hover:bg-white/5">2. Soluciones y Simuladores en Vivo</button>
+      <button type="button" onclick="mostrarVista('auditorias'); toggleMobileMenu();" class="text-left px-4 py-3.5 rounded-xl hover:bg-white/5">3. Las 2 Auditorías (Google/IA y Web)</button>
+      <button type="button" onclick="mostrarVista('tarifas'); toggleMobileMenu();" class="text-left px-4 py-3.5 rounded-xl hover:bg-white/5">4. Tarifas Oficiales</button>
+      <button type="button" onclick="mostrarVista('magazine'); toggleMobileMenu();" class="text-left px-4 py-3.5 rounded-xl hover:bg-white/5">5. Pyme Magazine y Podcast</button>
+    </div>
+    <div class="mt-auto pt-6 border-t border-white/10">
+      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quisiera%20consultar%20qu%C3%A9%20me%20recomiendas%20para%20mi%20negocio" target="_blank" class="w-full block text-center bg-brand-teal text-white font-bold py-4 rounded-xl">
+        Hablar con Francisco por WhatsApp
+      </a>
+    </div>
+  </div>
+
+
+  <!-- ======================================================================= -->
+  <!-- VISTA 1 (PRINCIPAL): LANDING PAGE EN 5 DIAPOSITIVAS DE PAZ Y AIRE       -->
+  <!-- Sin precios, sin tablas, sin textos densos. Una idea clara por pantalla -->
+  <!-- ======================================================================= -->
+  <main id="vista-inicio" class="view-section active">
+
+    <!-- DIAPOSITIVA 1: EL HERO Y TU CONTACTO DIRECTO -->
+    <section class="slide-screen calm-glow border-b border-white/5">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          
+          <!-- Columna Izquierda: Mensaje limpio y humano -->
+          <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+            <span class="inline-block text-xs font-semibold uppercase tracking-widest text-teal-400 bg-teal-500/10 border border-teal-500/20 px-3.5 py-1.5 rounded-full">
+              Consultoría Tecnológica para Negocios Locales • Galicia
+            </span>
+
+            <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-[1.15]">
+              Más clientes, mejor reputación en Google y menos trabajo manual.
+            </h1>
+
+            <p class="text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl mx-auto lg:mx-0 font-normal">
+              Ayudamos a tu negocio local a conseguir más reseñas de 5★, frenar quejas en privado y salir recomendado en <strong>Google, ChatGPT y Gemini</strong>. Todo desde el WhatsApp que ya utilizas.
+            </p>
+
+            <!-- Botones serenos -->
+            <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+              <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20gustar%C3%ADa%20que%20me%20orientaras%20sobre%20mi%20negocio" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-brand-teal hover:bg-teal-600 text-white font-bold text-base px-7 py-4 rounded-2xl shadow-lg transition-all">
+                <span>💬 Hablar con Francisco</span>
+              </a>
+              <a href="#slide-problema" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-slate-200 font-semibold text-base px-6 py-4 rounded-2xl border border-white/10 transition-colors">
+                <span>Ver cómo funciona</span>
+                <span>&darr;</span>
+              </a>
+            </div>
+
+            <!-- Tu tarjeta personal limpia -->
+            <div class="pt-6 border-t border-white/10 flex items-center justify-center lg:justify-start gap-4 text-left">
+              <a href="tarjeta.html" class="w-14 h-14 rounded-full overflow-hidden border-2 border-teal-400/60 flex-shrink-0">
+                <img src="perfil.jpeg" width="56" height="56" alt="Francisco M. Gallardo" class="w-full h-full object-cover" onerror="cargarSiguienteExtension(this)" data-img-base="perfil,foto,avatar">
+              </a>
+              <div>
+                <a href="tarjeta.html" class="text-base font-bold text-white hover:text-teal-300 transition-colors block">Francisco M. Gallardo</a>
+                <p class="text-xs sm:text-sm text-slate-400">Trato directo y personal en tu local o en remoto • <a href="tel:+34711547561" class="text-slate-200 hover:text-teal-300 font-semibold">711 54 75 61</a></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna Derecha: El Atril Físico (Visual, limpio, sin tablas de precios) -->
+          <div class="lg:col-span-5">
+            <div class="zen-card rounded-3xl p-6 sm:p-7 text-center max-w-sm mx-auto">
+              <div class="rounded-2xl overflow-hidden border border-white/10 mb-5 aspect-[4/5] max-h-72 mx-auto bg-slate-950">
+                <img src="foto_atril.jpeg" width="320" height="400" alt="Atril Inteligente NFC Google Reviews" class="w-full h-full object-cover" onerror="cargarSiguienteExtension(this)" data-img-base="foto_atril,atril,atril_nfc">
+              </div>
+              <span class="text-xs font-bold uppercase tracking-wider text-teal-400 block mb-1">Soporte de Mostrador NFC + QR</span>
+              <h2 class="text-xl font-black text-white mb-2">Reseñas en 1 Segundo</h2>
+              <p class="text-sm text-slate-300 leading-relaxed mb-5">
+                El cliente acerca su móvil al pagar y se abre directamente tu ventana de 5 estrellas en Google Maps antes de salir del local.
+              </p>
+              <button type="button" onclick="mostrarVista('soluciones')" class="text-xs font-bold text-teal-300 hover:text-teal-200 underline underline-offset-4">
+                Conocer detalles del Atril &rarr;
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- DIAPOSITIVA 2: EL PROBLEMA EN EL LOCAL (SOLO ESTO EN PANTALLA, MUCHO AIRE) -->
+    <section id="slide-problema" class="slide-screen border-b border-white/5">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 w-full text-center">
+        
+        <h2 class="text-2xl sm:text-4xl font-black text-white tracking-tight mb-4">
+          ¿Qué ocurre cuando un cliente sale descontento de tu local?
+        </h2>
+        <p class="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mb-12">
+          El 97% de las personas mira tus reseñas en el móvil antes de entrar a tu negocio.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+          
+          <!-- Tarjeta 1: Sin sistema -->
+          <div class="zen-card rounded-3xl p-7 sm:p-8 border-l-4 border-l-slate-500">
+            <div class="text-2xl mb-3">😟</div>
+            <h3 class="text-lg sm:text-xl font-bold text-white mb-3">Lo que suele pasar hoy</h3>
+            <p class="text-sm sm:text-base text-slate-300 leading-relaxed">
+              Diez clientes encantados se marchan sin puntuar porque se les olvida al llegar a casa. Pero <strong>un solo cliente molesto escribe 1 estrella en Google Maps</strong> que ven miles de personas, bajando tu nota media.
+            </p>
+          </div>
+
+          <!-- Tarjeta 2: Con nuestro sistema -->
+          <div class="zen-card rounded-3xl p-7 sm:p-8 border-l-4 border-l-teal-400">
+            <div class="text-2xl mb-3">🛡️</div>
+            <h3 class="text-lg sm:text-xl font-bold text-teal-300 mb-3">Con nuestro escudo activo</h3>
+            <p class="text-sm sm:text-base text-slate-200 leading-relaxed">
+              Los clientes satisfechos van en un toque a Google Maps para sumar <strong>5 estrellas</strong>, mientras que cualquier queja o sugerencia queda <strong>retenida en privado en tu WhatsApp</strong> para que la soluciones en casa.
+            </p>
+          </div>
+
+        </div>
+
+        <div class="mt-12">
+          <a href="#slide-servicios" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-teal-300 transition-colors">
+            <span>Ver los 2 servicios que lo hacen posible</span>
+            <span>&darr;</span>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DIAPOSITIVA 3: LOS 2 SERVICIOS ACTIVOS (RESUMEN LIMPIO EN UNA SOLA VISTA) -->
+    <section id="slide-servicios" class="slide-screen border-b border-white/5 calm-glow">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 w-full">
+        
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <span class="text-xs font-bold uppercase tracking-widest text-teal-400 block mb-2">Activación en 24-48 horas</span>
+          <h2 class="text-2xl sm:text-4xl font-black text-white tracking-tight">
+            Dos Sistemas que Trabajan por Ti 24/7
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          <!-- Servicio 1 Sintético -->
+          <div class="zen-card rounded-3xl p-7 sm:p-8 flex flex-col justify-between">
+            <div>
+              <span class="inline-block text-xs font-bold text-teal-300 bg-teal-500/10 border border-teal-500/20 px-3 py-1 rounded-full mb-4">
+                Servicio 1 • En Google Maps
+              </span>
+              <h3 class="text-xl sm:text-2xl font-black text-white mb-3">
+                Respuesta Automática a Reseñas con IA
+              </h3>
+              <p class="text-sm sm:text-base text-slate-300 leading-relaxed mb-6">
+                Responde al instante a todas tus valoraciones de 4 y 5★ en el idioma del cliente para subir posiciones en Google. Si entra una crítica (1 a 3★), pausa la publicación y te avisa al móvil con una respuesta diplomática y legal lista para aprobar.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+              <button type="button" onclick="mostrarVista('soluciones')" class="text-sm font-bold text-teal-300 hover:text-white transition-colors">
+                Probar simulador interactivo &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- Servicio 2 Sintético -->
+          <div class="zen-card rounded-3xl p-7 sm:p-8 flex flex-col justify-between">
+            <div>
+              <span class="inline-block text-xs font-bold text-teal-300 bg-teal-500/10 border border-teal-500/20 px-3 py-1 rounded-full mb-4">
+                Servicio 2 • Por WhatsApp Oficial
+              </span>
+              <h3 class="text-xl sm:text-2xl font-black text-white mb-3">
+                Encuesta Cortafuegos Post-Visita
+              </h3>
+              <p class="text-sm sm:text-base text-slate-300 leading-relaxed mb-6">
+                Dos horas después de su cita o visita, el cliente recibe un WhatsApp con tres botones (<em>Excelente, Bien, Mejorable</em>). Quien pulsa «Excelente» va directo a puntuarte en Google Maps; quien tiene una queja te la envía en privado por texto o audio sin tocar internet.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+              <button type="button" onclick="mostrarVista('soluciones')" class="text-sm font-bold text-teal-300 hover:text-white transition-colors">
+                Ver ejemplo en WhatsApp &rarr;
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="mt-10 text-center">
+          <button type="button" onclick="mostrarVista('soluciones')" class="inline-flex items-center gap-2 bg-white/5 hover:bg-white/10 text-slate-200 font-semibold text-sm px-6 py-3 rounded-xl border border-white/10 transition-colors">
+            Explorar también los próximos módulos de Citas, Presupuestos y Facturas &rarr;
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DIAPOSITIVA 4: LAS 2 AUDITORÍAS (SIN PRECIOS NI CÓDIGO COMPLEJO) -->
+    <section id="slide-auditorias" class="slide-screen border-b border-white/5">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 w-full">
+        
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <span class="text-xs font-bold uppercase tracking-widest text-teal-400 block mb-2">Diagnóstico e Implantación en tu Web</span>
+          <h2 class="text-2xl sm:text-4xl font-black text-white tracking-tight">
+            Dos Auditorías para Multiplicar tus Resultados
+          </h2>
+          <p class="text-sm sm:text-base text-slate-300 mt-3">
+            De nada sirve tener una web si nadie te encuentra, ni atraer visitas si se marchan sin llamarte.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          <!-- Auditoría 1 -->
+          <div class="zen-card rounded-3xl p-7 sm:p-8 flex flex-col justify-between">
+            <div>
+              <span class="inline-block text-xs font-bold text-teal-300 bg-teal-500/10 border border-teal-500/20 px-3 py-1 rounded-full mb-4">
+                1. «Para que te encuentren»
+              </span>
+              <h3 class="text-xl sm:text-2xl font-black text-white mb-3">
+                Auditoría de Visibilidad en Google e IA (SEO + GEO)
+              </h3>
+              <p class="text-sm sm:text-base text-slate-300 leading-relaxed mb-6">
+                Preparamos tu página web y tu ficha de Google Maps por dentro para que cuando alguien pregunte en tu ciudad a <strong>Google, ChatGPT o Gemini</strong> qué negocio elegir, la inteligencia artificial te recomiende a ti.
+              </p>
+            </div>
+            <button type="button" onclick="mostrarVista('auditorias')" class="text-left text-sm font-bold text-teal-300 hover:text-white transition-colors pt-4 border-t border-white/10">
+              Ver en qué consiste esta auditoría &rarr;
+            </button>
+          </div>
+
+          <!-- Auditoría 2 -->
+          <div class="zen-card rounded-3xl p-7 sm:p-8 flex flex-col justify-between">
+            <div>
+              <span class="inline-block text-xs font-bold text-teal-300 bg-teal-500/10 border border-teal-500/20 px-3 py-1 rounded-full mb-4">
+                2. «Para que te compren»
+              </span>
+              <h3 class="text-xl sm:text-2xl font-black text-white mb-3">
+                Auditoría de Neuromarketing y Conversión Web
+              </h3>
+              <p class="text-sm sm:text-base text-slate-300 leading-relaxed mb-6">
+                Analizamos tu web actual con mapas de calor y psicología del consumidor para descubrir por qué las visitas se marchan sin contactar, eliminando distracciones para que te llamen o escriban en un clic.
+              </p>
+            </div>
+            <button type="button" onclick="mostrarVista('auditorias')" class="text-left text-sm font-bold text-teal-300 hover:text-white transition-colors pt-4 border-t border-white/10">
+              Ver detalles de conversión web &rarr;
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DIAPOSITIVA 5: CIERRE EN CALMA Y CONTACTO SIN COMPROMISO -->
+    <section id="slide-contacto" class="slide-screen calm-glow">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 w-full text-center">
+        
+        <div class="zen-card rounded-3xl p-8 sm:p-12">
+          <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-teal-400 mx-auto mb-5">
+            <img src="perfil.jpeg" width="64" height="64" alt="Francisco M. Gallardo" class="w-full h-full object-cover" onerror="cargarSiguienteExtension(this)" data-img-base="perfil,foto,avatar">
+          </div>
+
+          <h2 class="text-2xl sm:text-4xl font-black text-white tracking-tight mb-4">
+            ¿Hablamos con calma sobre tu negocio?
+          </h2>
+
+          <p class="text-base sm:text-lg text-slate-300 leading-relaxed mb-8 max-w-xl mx-auto">
+            No tienes que saber qué herramienta elegir. Cuéntame en un mensaje o nota de voz qué te gustaría mejorar en tu local y te daré mi opinión honesta sin ningún compromiso.
+          </p>
+
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20gustar%C3%ADa%20comentarte%20el%20caso%20de%20mi%20negocio%20para%20que%20me%20orient%C3%A9is" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-brand-teal hover:bg-teal-600 text-white font-bold text-base px-8 py-4 rounded-2xl shadow-lg transition-all">
+              <span>💬 Escribir por WhatsApp</span>
+            </a>
+            <a href="tel:+34711547561" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-slate-200 font-semibold text-base px-7 py-4 rounded-2xl border border-white/10 transition-colors">
+              <span>📞 Llamar: 711 54 75 61</span>
+            </a>
+          </div>
+
+          <!-- Accesos discretos a las demás salas independientes -->
+          <div class="mt-10 pt-6 border-t border-white/10 flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-slate-400">
+            <span>¿Quieres profundizar más?</span>
+            <button type="button" onclick="mostrarVista('tarifas')" class="text-teal-300 hover:underline">Ver Tarifas Oficiales</button>
+            <span>•</span>
+            <button type="button" onclick="mostrarVista('magazine')" class="text-teal-300 hover:underline">Leer Pyme Magazine y Podcast</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- ======================================================================= -->
+  <!-- VISTA 2 (INDEPENDIENTE): SOLUCIONES, SIMULADORES EN VIVO Y HOJA DE RUTA -->
+  <!-- Solo se muestra cuando el usuario quiere profundizar en cómo funciona   -->
+  <!-- ======================================================================= -->
+  <section id="vista-soluciones" class="view-section py-12 sm:py-16">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      
+      <div class="flex items-center justify-between mb-8">
+        <button type="button" onclick="mostrarVista('inicio')" class="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-teal-300 hover:text-white bg-white/5 px-4 py-2 rounded-xl border border-white/10">
+          <span>&larr; Volver al resumen principal</span>
+        </button>
+        <span class="text-xs font-semibold text-slate-400">Sala de Demostración Interactiva</span>
+      </div>
+
+      <div class="mb-12">
+        <h2 class="text-3xl sm:text-4xl font-black text-white mb-3">Demostración en Vivo de Nuestros Sistemas</h2>
+        <p class="text-slate-300 text-base">Toca los botones de cada simulador para comprobar cómo responde la Inteligencia Artificial y cómo actúa el cortafuegos de WhatsApp.</p>
+      </div>
+
+      <!-- Simulador 1 y Simulador 2 con aire -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+        
+        <!-- Simulador Servicio 1 -->
+        <div class="zen-card rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-teal-400 block mb-2">Simulador 1 • Google Maps</span>
+            <h3 class="text-xl font-black text-white mb-3">Gestión de Reseñas con IA (4 Tonos)</h3>
+            <p class="text-sm text-slate-300 mb-5">
+              Ante una crítica injusta (1 a 3★), el sistema detiene la publicación y te prepara una respuesta diplomática que protege el secreto profesional (RGPD) y evita repetir palabras negativas:
+            </p>
+
+            <div class="bg-slate-950 border border-white/10 rounded-2xl p-4 mb-5">
+              <div class="text-xs text-slate-300 pb-3 mb-3 border-b border-white/10">
+                <strong>Reseña recibida (1★):</strong> <em>«Fui por mi endodoncia y tras 40 min de espera me pareció caro...»</em>
+              </div>
+              <div class="text-xs font-semibold text-teal-300 mb-2">Elige el tono de respuesta:</div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4 text-xs font-bold">
+                <button type="button" onclick="cambiarTonoDemoS1('FORMAL')" id="btnTonoS1_FORMAL" class="bg-slate-800 text-slate-200 py-2 rounded-lg border border-white/10">Formal</button>
+                <button type="button" onclick="cambiarTonoDemoS1('SEMIFORMAL')" id="btnTonoS1_SEMIFORMAL" class="bg-teal-500/30 border border-teal-400 text-teal-200 py-2 rounded-lg">Semiformal ✓</button>
+                <button type="button" onclick="cambiarTonoDemoS1('CERCANO')" id="btnTonoS1_CERCANO" class="bg-slate-800 text-slate-200 py-2 rounded-lg border border-white/10">Cercano</button>
+                <button type="button" onclick="cambiarTonoDemoS1('DIRECTO')" id="btnTonoS1_DIRECTO" class="bg-slate-800 text-slate-200 py-2 rounded-lg border border-white/10">Directo</button>
+              </div>
+              <div class="bg-slate-900/90 rounded-xl p-3.5 text-xs text-slate-200 leading-relaxed border border-white/5">
+                <div class="font-bold text-teal-300 mb-1" id="labelTonoActivoS1">Tono Semiformal</div>
+                <div id="textoPropuestaS1" class="space-y-1.5 italic">
+                  <p>Hola, Carlos: Lamentamos sinceramente que los tiempos de espera no hayan cumplido tus expectativas. En nuestro centro trabajamos bajo estrictos protocolos de calidad y transparencia. Por respeto a tu privacidad (RGPD), te invitamos a contactarnos en dirección para revisarlo personalmente.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20el%20Servicio%201%20de%20Gesti%C3%B3n%20de%20Rese%C3%B1as%20con%20IA" target="_blank" class="w-full py-3.5 text-center rounded-xl bg-brand-teal hover:bg-teal-600 text-white font-bold text-sm block transition-colors">
+            Consultar este Servicio por WhatsApp &rarr;
+          </a>
+        </div>
+
+        <!-- Simulador Servicio 2 -->
+        <div class="zen-card rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-teal-400 block mb-2">Simulador 2 • WhatsApp Oficial</span>
+            <h3 class="text-xl font-black text-white mb-3">Encuesta Cortafuegos Post-Visita</h3>
+            <p class="text-sm text-slate-300 mb-5">
+              Comprueba cómo el sistema envía a los clientes contentos a Google Maps y retiene a los descontentos en un canal privado:
+            </p>
+
+            <div class="bg-slate-950 border border-white/10 rounded-2xl p-4 mb-5">
+              <div class="text-xs text-slate-300 pb-3 mb-3 border-b border-white/10">
+                <strong>Mensaje enviado 2h tras la visita:</strong> <em>«Hola Marta, gracias por tu visita. ¿Cómo valorarías el trato recibido hoy?»</em>
+              </div>
+              <div class="text-xs font-semibold text-teal-300 mb-2">Pulsa un botón como si fueras el cliente:</div>
+              <div class="grid grid-cols-3 gap-2 mb-4 text-xs font-bold">
+                <button type="button" onclick="cambiarBotonDemoS2('EXCELENTE')" id="btnDemoS2_EXCELENTE" class="bg-teal-500/30 border border-teal-400 text-teal-200 py-2 rounded-lg">Excelente ✓</button>
+                <button type="button" onclick="cambiarBotonDemoS2('BIEN')" id="btnDemoS2_BIEN" class="bg-slate-800 text-slate-200 py-2 rounded-lg border border-white/10">Bien</button>
+                <button type="button" onclick="cambiarBotonDemoS2('MEJORABLE')" id="btnDemoS2_MEJORABLE" class="bg-slate-800 text-slate-200 py-2 rounded-lg border border-white/10">Mejorable</button>
+              </div>
+              <div class="bg-slate-900/90 rounded-xl p-3.5 text-xs text-slate-200 leading-relaxed border border-white/5">
+                <div class="font-bold text-teal-300 mb-1" id="tituloRespuestaS2">🌟 Ruta Pública 5★ (Google Maps)</div>
+                <div id="textoRespuestaClienteS2" class="space-y-1.5">
+                  <p>¡Muchísimas gracias, Marta! Nos alegra enormemente saberlo. ¿Nos ayudarías compartiendo tu valoración en Google Maps con un solo toque aquí? 👉 <u>Enlace directo a 5 estrellas</u></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20el%20Servicio%202%20de%20Encuesta%20Cortafuegos%20por%20WhatsApp" target="_blank" class="w-full py-3.5 text-center rounded-xl bg-brand-teal hover:bg-teal-600 text-white font-bold text-sm block transition-colors">
+            Consultar este Servicio por WhatsApp &rarr;
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Desplegable limpio con los próximos módulos (Ocultos de entrada para no saturar) -->
+      <details class="zen-card rounded-3xl p-6 sm:p-8 cursor-pointer">
+        <summary class="flex items-center justify-between font-bold text-base sm:text-lg text-white">
+          <span>🚀 Ver próximos módulos opcionales (Presupuestos en 10s, Citas Anti-Plantón, Facturas e Instagram)</span>
+          <span class="text-teal-400 text-sm">Desplegar ▼</span>
+        </summary>
+        <div class="pt-6 mt-6 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-300">
+          <div class="bg-slate-950/60 p-5 rounded-2xl border border-white/5">
+            <strong class="text-white block mb-1">3. Respuesta a Presupuestos en 10 segundos</strong>
+            Contacta por WhatsApp al instante a quien pide información en tu web o portales y te avisa al móvil para cerrar la venta en caliente.
+          </div>
+          <div class="bg-slate-950/60 p-5 rounded-2xl border border-white/5">
+            <strong class="text-white block mb-1">4. Recordatorio de Citas Anti-Plantón</strong>
+            Confirma o reubica citas por WhatsApp 24h antes de forma automática y avisa a tu lista de espera si queda un hueco libre.
+          </div>
+          <div class="bg-slate-950/60 p-5 rounded-2xl border border-white/5">
+            <strong class="text-white block mb-1">5. Facturas y Tickets al Gestor con 1 Foto</strong>
+            Envías una foto de tus facturas por WhatsApp y la IA extrae el NIF, base e IVA dejándolo archivado para tu gestoría.
+          </div>
+          <div class="bg-slate-950/60 p-5 rounded-2xl border border-white/5">
+            <strong class="text-white block mb-1">Satélite: Instagram Inteligente 3 en 1</strong>
+            Envía enlaces automáticos cuando comentan tus Reels, atiende mensajes privados 24/7 y agradece las menciones en Stories.
+          </div>
+        </div>
+      </details>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================================================= -->
+  <!-- VISTA 3 (INDEPENDIENTE): LAS 2 AUDITORÍAS EN DETALLE                    -->
+  <!-- ======================================================================= -->
+  <section id="vista-auditorias" class="view-section py-12 sm:py-16">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      
+      <div class="flex items-center justify-between mb-8">
+        <button type="button" onclick="mostrarVista('inicio')" class="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-teal-300 hover:text-white bg-white/5 px-4 py-2 rounded-xl border border-white/10">
+          <span>&larr; Volver al resumen principal</span>
+        </button>
+        <span class="text-xs font-semibold text-slate-400">Posicionamiento y Conversión Web</span>
+      </div>
+
+      <div class="mb-10">
+        <h2 class="text-3xl sm:text-4xl font-black text-white mb-3">Nuestras 2 Auditorías e Implantaciones</h2>
+        <p class="text-slate-300 text-base">Pago único sin cuotas mensuales. Puedes contratar una sola o combinar ambas.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        
+        <div class="zen-card rounded-3xl p-7 sm:p-8 flex flex-col justify-between">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-teal-400 block mb-2">Auditoría 1 • «Para que te encuentren»</span>
+            <h3 class="text-2xl font-black text-white mb-3">Visibilidad en Google e IA (SEO Local + GEO)</h3>
+            <p class="text-sm text-slate-300 leading-relaxed mb-5">
+              Traducimos tu página web y tu perfil de Google Maps al lenguaje estructurado que leen los buscadores y las Inteligencias Artificiales (<strong>ChatGPT, Gemini, Perplexity</strong>) para que te recomienden cuando un cliente busque tu servicio en tu localidad.
+            </p>
+            <ul class="space-y-2.5 text-xs sm:text-sm text-slate-200 mb-6">
+              <li>✔ Optimización completa de tu ficha de Google Maps y Bing Places.</li>
+              <li>✔ Instalación del código interno <code>Schema.org</code> conectado a tu ciudad y sector.</li>
+              <li>✔ Apertura de tu web a los rastreadores de Inteligencia Artificial.</li>
+            </ul>
+          </div>
+          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20informaci%C3%B3n%20sobre%20la%20Auditor%C3%ADa%201%20de%20Visibilidad%20en%20Google%20e%20IA" target="_blank" class="w-full py-3.5 text-center rounded-xl bg-brand-teal hover:bg-teal-600 text-white font-bold text-sm block transition-colors">
+            Solicitar Auditoría 1 por WhatsApp &rarr;
+          </a>
+        </div>
+
+        <div class="zen-card rounded-3xl p-7 sm:p-8 flex flex-col justify-between">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-teal-400 block mb-2">Auditoría 2 • «Para que te compren»</span>
+            <h3 class="text-2xl font-black text-white mb-3">Neuromarketing y Conversión Web (CRO)</h3>
+            <p class="text-sm text-slate-300 leading-relaxed mb-5">
+              Estudiamos por qué las personas que entran en tu página web se marchan sin llamarte. Analizamos la carga visual, la velocidad móvil y los mapas de atención para eliminar distracciones y facilitar el contacto inmediato.
+            </p>
+            <ul class="space-y-2.5 text-xs sm:text-sm text-slate-200 mb-6">
+              <li>✔ Análisis de claridad visual, confianza y facilidad de lectura en móvil.</li>
+              <li>✔ Detección de puntos de fuga en formularios y botones de llamada.</li>
+              <li>✔ Implantación de mejoras directas en tu web incluidas en la modalidad llave en mano.</li>
+            </ul>
+          </div>
+          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20informaci%C3%B3n%20sobre%20la%20Auditor%C3%ADa%202%20de%20Neuromarketing%20y%20Conversi%C3%B3n%20Web" target="_blank" class="w-full py-3.5 text-center rounded-xl bg-brand-teal hover:bg-teal-600 text-white font-bold text-sm block transition-colors">
+            Solicitar Auditoría 2 por WhatsApp &rarr;
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Modalidades de precio de las auditorías explicadas sin saturar -->
+      <div class="zen-card rounded-3xl p-7 sm:p-8">
+        <h4 class="text-lg font-black text-white mb-4">Opciones de inversión (mismo importe para cada auditoría):</h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div class="bg-slate-950/70 p-4 rounded-2xl border border-white/5">
+            <div class="font-bold text-white mb-1">1. Solo Informe y Código: <span class="text-teal-300">200 €</span></div>
+            <p class="text-xs text-slate-300">Te entregamos el diagnóstico y los archivos listos para que los instale tu informático.</p>
+          </div>
+          <div class="bg-slate-950/70 p-4 rounded-2xl border border-white/5">
+            <div class="font-bold text-white mb-1">2. Llave en Mano Suelta: <span class="text-teal-300">350 €</span></div>
+            <p class="text-xs text-slate-300">Incluye la auditoría (200 €) más nuestra instalación completa en tu web (+150 €).</p>
+          </div>
+          <div class="bg-teal-950/40 p-4 rounded-2xl border border-teal-500/40">
+            <div class="font-bold text-teal-300 mb-1">3. Bonificada en Pack Dúo+: <span class="text-white">195 €</span></div>
+            <p class="text-xs text-slate-200">Al contratar 2 servicios mensuales, te regalamos la instalación y queda en 195 € llave en mano.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================================================= -->
+  <!-- VISTA 4 (INDEPENDIENTE): TARIFAS OFICIALES SIMPLIFICADAS                -->
+  <!-- ======================================================================= -->
+  <section id="vista-tarifas" class="view-section py-12 sm:py-16">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      
+      <div class="flex items-center justify-between mb-8">
+        <button type="button" onclick="mostrarVista('inicio')" class="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-teal-300 hover:text-white bg-white/5 px-4 py-2 rounded-xl border border-white/10">
+          <span>&larr; Volver al resumen principal</span>
+        </button>
+        <span class="text-xs font-semibold text-slate-400">Precios Claros Sin Permanencia</span>
+      </div>
+
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <h2 class="text-3xl sm:text-4xl font-black text-white mb-3">Tarifas Oficiales Claras</h2>
+        <p class="text-slate-300 text-sm sm:text-base">
+          El primer servicio cuesta <strong>59 €/mes</strong> y cada servicio adicional que sumes cuesta solo <strong>+40 €/mes</strong>.
+        </p>
+      </div>
+
+      <!-- 3 Opciones Principales Limpias (Ley de Hick: 3 columnas son fáciles de decidir) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        
+        <!-- 1. Atril Físico -->
+        <div class="zen-card rounded-3xl p-7 flex flex-col justify-between">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">Para tu mostrador</span>
+            <h3 class="text-xl font-black text-white mb-2">Atril NFC + QR</h3>
+            <div class="text-3xl font-black text-white mb-1">39 € <span class="text-xs font-normal text-slate-400">pago único</span></div>
+            <p class="text-xs text-teal-300 font-semibold mb-5">Sin cuotas mensuales</p>
+            <ul class="space-y-2.5 text-xs sm:text-sm text-slate-300 mb-6">
+              <li>✔ Listo para colocar junto al datáfono.</li>
+              <li>✔ Abre las 5★ de tu Google Maps en 1 segundo.</li>
+              <li>✔ Unidades adicionales a 29 € (5+: 25 €).</li>
+            </ul>
+          </div>
+          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20encargar%20el%20Atril%20NFC%20de%2039%20%E2%82%AC" target="_blank" class="w-full py-3 text-center rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs sm:text-sm block transition-colors">
+            Encargar Atril
+          </a>
+        </div>
+
+        <!-- 2. Plan Base (1 Servicio) -->
+        <div class="zen-card rounded-3xl p-7 flex flex-col justify-between">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">1 Servicio Activo</span>
+            <h3 class="text-xl font-black text-white mb-2">Plan Pyme Base</h3>
+            <div class="text-3xl font-black text-white mb-1">59 € <span class="text-xs font-normal text-slate-400">/ mes</span></div>
+            <p class="text-xs text-slate-400 mb-5">Puesta en marcha única: 150 €</p>
+            <ul class="space-y-2.5 text-xs sm:text-sm text-slate-300 mb-6">
+              <li>✔ Elige el Servicio 1 (Reseñas IA) o el Servicio 2 (Encuesta WhatsApp).</li>
+              <li>✔ Soporte técnico directo incluido.</li>
+              <li>✔ En Plan Anual te regalamos 2 meses gratis (590 €/año).</li>
+            </ul>
+          </div>
+          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20el%20Plan%20Pyme%20Base%20de%2059%20%E2%82%AC%2Fmes" target="_blank" class="w-full py-3 text-center rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs sm:text-sm block transition-colors">
+            Elegir Plan Base
+          </a>
+        </div>
+
+        <!-- 3. Pack Escudo Dúo (Recomendado) -->
+        <div class="zen-card rounded-3xl p-7 border-2 border-teal-400 flex flex-col justify-between relative">
+          <span class="absolute -top-3 right-6 bg-teal-400 text-slate-950 text-[11px] font-black uppercase px-3 py-0.5 rounded-full">
+            ★ Más Recomendado
+          </span>
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-teal-300 block mb-2">2 Servicios Combinados</span>
+            <h3 class="text-xl font-black text-white mb-2">Pack Escudo (Dúo)</h3>
+            <div class="text-3xl font-black text-teal-300 mb-1">99 € <span class="text-xs font-normal text-slate-300">/ mes</span></div>
+            <p class="text-xs text-slate-300 mb-5">Puesta en marcha Dúo: 225 €</p>
+            <ul class="space-y-2.5 text-xs sm:text-sm text-slate-200 mb-6">
+              <li>✔ Incluye <strong>Servicio 1 + Servicio 2</strong> trabajando juntos.</li>
+              <li>✔ Desbloquea cualquiera de las 2 Auditorías llave en mano por solo <strong>195 €</strong> (ahorras 155 €).</li>
+              <li>✔ En Plan Anual ahorras 198 €/año (2 meses gratis).</li>
+            </ul>
+          </div>
+          <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20activar%20el%20Pack%20Escudo%20D%C3%BAo%20de%2099%20%E2%82%AC%2Fmes" target="_blank" class="w-full py-3 text-center rounded-xl bg-brand-teal hover:bg-teal-600 text-white font-bold text-xs sm:text-sm block transition-colors">
+            Elegir Pack Escudo
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Nota fiscal y documentos PDF/A4 -->
+      <div class="zen-card rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-300">
+        <span>🧾 Precios profesionales netos antes de impuestos (IVA 21% no incluido • 100% deducible).</span>
+        <div class="flex flex-wrap gap-3 font-bold text-teal-300">
+          <a href="documentos/tarifas.html" target="_blank" class="hover:underline">Abrir tabla completa de planes (3 a 5 servicios) &rarr;</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================================================= -->
+  <!-- VISTA 5 (INDEPENDIENTE): PYME MAGAZINE, PODCAST Y VÍDEO                 -->
+  <!-- ======================================================================= -->
+  <section id="vista-magazine" class="view-section py-12 sm:py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6">
+      
+      <div class="flex items-center justify-between mb-8">
+        <button type="button" onclick="mostrarVista('inicio')" class="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-teal-300 hover:text-white bg-white/5 px-4 py-2 rounded-xl border border-white/10">
+          <span>&larr; Volver al resumen principal</span>
+        </button>
+        <span class="text-xs font-semibold text-slate-400">Lectura y Audio para Dueños de Negocio</span>
+      </div>
+
+      <div class="zen-card rounded-3xl p-7 sm:p-10">
+        <span class="text-xs font-bold uppercase tracking-widest text-teal-400 block mb-2">Pyme Magazine • Fascículo Nº 1</span>
+        <h2 class="text-2xl sm:text-3xl font-black text-white mb-3">
+          La Nueva Regla del «Boca a Boca» en Google Maps
+        </h2>
+        <p class="text-sm sm:text-base text-slate-300 leading-relaxed mb-6">
+          Descubre cómo funciona por dentro el algoritmo de Google Maps, por qué discutir con un cliente enfadado hunde tu posicionamiento (la trampa del Efecto Loro) y cómo proteger legalmente tu negocio.
+        </p>
+
+        <!-- Reproductor de Podcast Limpio -->
+        <div class="bg-slate-950 border border-white/10 rounded-2xl p-5 mb-6">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-bold text-teal-300">🎧 Escuchar Episodio 1 en Podcast (mientras conduces o trabajas)</span>
+            <a href="podcasts/episodio-1.m4a" download class="text-xs text-slate-400 hover:text-white underline">Descargar audio</a>
+          </div>
+          <div class="flex items-center gap-4">
+            <button type="button" onclick="toggleAudioMain()" id="btnPlayMain" class="w-11 h-11 rounded-full bg-brand-teal hover:bg-teal-600 text-white flex items-center justify-center flex-shrink-0 font-bold">
+              <span id="iconPlayMain">▶</span>
+              <span id="iconPauseMain" class="hidden">⏸</span>
+            </button>
+            <div class="flex-1 flex items-center gap-2.5 text-xs text-slate-300">
+              <span id="timeCurrent">0:00</span>
+              <input type="range" id="progressMain" class="flex-1 h-1.5 rounded-full bg-slate-800 accent-teal-400 cursor-pointer" value="0" min="0" max="100" step="0.1" oninput="seekAudio(this.value)">
+              <span id="timeTotal">0:00</span>
+            </div>
+          </div>
+          <audio id="audioEpisodio1" preload="metadata" class="hidden">
+            <source src="podcasts/episodio-1.m4a" type="audio/mp4">
+            <source src="podcasts/episodio-1.mp3" type="audio/mpeg">
+          </audio>
+        </div>
+
+        <!-- Bloque de Vídeo (Se activa automáticamente cuando pongas el ID en SP_YOUTUBE_CONFIG) -->
+        <div id="videoEmbedWrapper" class="hidden mb-6">
+          <div class="aspect-video rounded-2xl overflow-hidden border border-white/10 bg-black">
+            <iframe id="videoIframe" class="w-full h-full" src="" title="Vídeo Sistemas Pyme" frameborder="0" allowfullscreen></iframe>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center gap-4">
+          <a href="articulos/Pyme_Magazine_N1.html" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand-teal hover:bg-teal-600 text-white font-bold text-sm px-6 py-3.5 rounded-xl transition-colors">
+            📖 Leer Artículo Completo (Formato Revista A4)
+          </a>
+          <a href="documentos/catalogo.html" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-slate-200 font-semibold text-sm px-6 py-3.5 rounded-xl border border-white/10 transition-colors">
+            📄 Abrir Dossier Completo de Servicios
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- PIE DE PÁGINA DISCRETO Y SERENO -->
+  <footer class="border-t border-white/10 bg-slate-950 py-8 text-xs text-slate-400">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        <strong class="text-slate-200">Sistemas Pyme</strong> — Francisco M. Gallardo (NIF: 52938419D) • Galicia • <a href="tel:+34711547561" class="text-slate-300 hover:text-white">711 54 75 61</a>
+      </div>
+      <div class="flex flex-wrap gap-4">
+        <button type="button" onclick="abrirModalLegal()" class="hover:text-teal-300 underline">Aviso Legal y Privacidad (RGPD)</button>
+        <a href="mailto:francisco@sistemaspyme.es" class="hover:text-teal-300">francisco@sistemaspyme.es</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL LEGAL LIMPIO -->
+    <!-- ======================================================================= -->
+  <!-- ASISTENTE FLOTANTE NIVEL 2: RESPUESTAS CLARAS EN PANTALLA + WHATSAPP    -->
+  <!-- ======================================================================= -->
+  <div id="spAsistenteConsejo" style="position:fixed; bottom:22px; right:22px; z-index:9999;" class="flex flex-col items-end">
+    
+    <!-- Ventana Desplegable con Respuestas Instantáneas + Desplegable Completo + WhatsApp -->
+    <div id="spPanelConsejo" class="hidden mb-3 w-[94vw] max-w-[410px] rounded-2xl bg-slate-900/98 backdrop-blur-xl border-2 border-teal-400/80 shadow-[0_20px_60px_rgba(0,0,0,0.9)] overflow-hidden transition-all duration-200">
+      
+      <!-- Cabecera cálida con tu foto -->
+      <div class="bg-gradient-to-r from-brand-navy via-slate-900 to-teal-950 p-3.5 sm:p-4 border-b border-teal-500/30 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="relative w-11 h-11 rounded-full overflow-hidden border-2 border-teal-400 flex-shrink-0">
+            <img src="perfil.jpeg" data-img-base="perfil,foto,avatar" data-img-fallback="https://placehold.co/100x100/0d7d74/ffffff?text=FG" alt="Francisco" class="w-full h-full object-cover" onerror="cargarSiguienteExtension(this)">
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-300">Guía Rápida Interactiva • Cero Líos</span>
+            </div>
+            <h4 class="text-sm font-black text-white leading-tight">Toca tu duda y mira la solución aquí mismo:</h4>
+          </div>
+        </div>
+        <button type="button" onclick="togglePanelConsejo(false)" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white flex items-center justify-center text-xs font-bold transition-colors">
+          ✕
+        </button>
+      </div>
+
+      <!-- Subtítulo explicativo -->
+      <div class="px-4 py-2 bg-slate-950/80 border-b border-white/5">
+        <p class="text-[11px] text-slate-300 leading-snug">
+          👇 <strong class="text-teal-300">Explicado súper fácil:</strong> pulsa en cualquier punto para leer la respuesta al instante (y si te quedan dudas, dentro tienes el botón directo a mi WhatsApp):
+        </p>
+      </div>
+
+      <!-- Los 4 Puntos con Respuesta en Pantalla + El Punto 5 Directo -->
+      <div class="p-3 space-y-2.5 max-h-[66vh] overflow-y-auto">
+        
+        <!-- PUNTO 1: POR DÓNDE EMPEZAR Y CÓMO COMBINAR -->
+        <div class="rounded-xl bg-slate-950/90 border border-white/10 overflow-hidden">
+          <button type="button" onclick="toggleAcordeonConsejo(1)" class="w-full text-left p-3 hover:bg-teal-950/40 transition-colors flex items-center justify-between gap-2">
+            <div>
+              <span class="text-xs font-extrabold text-white block">🧩 1. ¿Por dónde me conviene empezar y cómo combinar?</span>
+              <span class="text-[10.5px] text-teal-300 font-semibold">Toca para ver la receta paso a paso</span>
+            </div>
+            <span id="iconoAcordeonConsejo1" class="text-teal-400 font-black text-xs transition-transform">▼</span>
+          </button>
+          
+          <div id="cuerpoAcordeonConsejo1" class="hidden px-3 pb-3 pt-1 border-t border-white/10 bg-slate-900/90 space-y-2 text-[11.5px] text-slate-200 leading-relaxed">
+            <div class="bg-teal-950/60 border border-teal-500/30 rounded-lg p-2.5">
+              <strong class="text-emerald-300 block mb-0.5">⚡ En resumen:</strong>
+              El 90% de los negocios empieza por el <strong>Pack Escudo Básico (99 €/mes)</strong> + <strong>1 Atril para el mostrador (39 €)</strong>. Con eso ya tienes las reseñas y las quejas 100% bajo control.
+            </div>
+
+            <button type="button" onclick="toggleDetalleProfundoConsejo(1, event)" id="btnVerMasConsejo1" class="text-[11px] font-extrabold text-amber-300 hover:text-amber-200 flex items-center gap-1 py-0.5">
+              <span>➕ Desplegar explicación sencilla paso a paso</span>
+            </button>
+
+            <div id="detalleProfundoConsejo1" class="hidden space-y-1.5 text-[11px] text-slate-300 bg-black/40 p-2.5 rounded-lg border border-white/5">
+              <p><strong>1º Si tienes mostrador o mesas:</strong> Pon el <strong>Atril NFC (39 € pago único)</strong>. El cliente acerca el móvil al pagar y te pone 5 estrellas en 1 segundo antes de irse y olvidarse.</p>
+              <p><strong>2º Para no perder tiempo contestando:</strong> El <strong>Servicio 1 (59 €/m)</strong> responde solo a todas tus reseñas buenas en Google para subirte posiciones, y si entra una mala la frena y te avisa al WhatsApp.</p>
+              <p><strong>3º Si trabajas con citas, reservas o reparaciones:</strong> Añade el <strong>Servicio 2 (+40 €/m = 99 €/m el Pack Escudo)</strong>. Manda un WhatsApp automático 2h después de atender al cliente: si pulsa «Excelente» va a Google Maps; si pulsa «Bien» o «Mejorable», la queja se queda en privado en tu móvil.</p>
+              <p><strong>4º ¿Y los demás módulos?</strong> Puedes empezar solo con esto y, más adelante, añadir el de Citas Anti-Plantón, Presupuestos o Facturas por solo +40 €/mes cada uno.</p>
+            </div>
+
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20acabo%20de%20leer%20en%20tu%20asistente%20c%C3%B3mo%20empezar%20y%20combinar%20m%C3%B3dulos%2C%20y%20quiero%20que%20me%20confirmes%20qu%C3%A9%20combinaci%C3%B3n%20le%20va%20mejor%20a%20mi%20negocio." target="_blank" class="w-full py-2 px-3 rounded-lg bg-brand-teal hover:bg-brand-tealDark text-white font-bold text-[11px] text-center block shadow transition-colors">
+              💬 Hablar con Francisco sobre qué módulos elegir &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- PUNTO 2: MEJOR COMBINACIÓN DE PRECIOS PARA AHORRAR -->
+        <div class="rounded-xl bg-slate-950/90 border border-white/10 overflow-hidden">
+          <button type="button" onclick="toggleAcordeonConsejo(2)" class="w-full text-left p-3 hover:bg-teal-950/40 transition-colors flex items-center justify-between gap-2">
+            <div>
+              <span class="text-xs font-extrabold text-white block">💰 2. ¿Cuál es la mejor combinación para ahorrar dinero?</span>
+              <span class="text-[10.5px] text-teal-300 font-semibold">El truco matemático para pagar menos el Día 1</span>
+            </div>
+            <span id="iconoAcordeonConsejo2" class="text-teal-400 font-black text-xs transition-transform">▼</span>
+          </button>
+          
+          <div id="cuerpoAcordeonConsejo2" class="hidden px-3 pb-3 pt-1 border-t border-white/10 bg-slate-900/90 space-y-2 text-[11.5px] text-slate-200 leading-relaxed">
+            <div class="bg-teal-950/60 border border-teal-500/30 rounded-lg p-2.5">
+              <strong class="text-emerald-300 block mb-0.5">⚡ En resumen:</strong>
+              Sale <strong>80 € más barato de entrada</strong> coger 2 servicios + 1 Auditoría (<strong>Pack Escudo Total: 420 €</strong>) que coger 1 solo servicio + 1 Auditoría suelta (<strong>500 €</strong>).
+            </div>
+
+            <button type="button" onclick="toggleDetalleProfundoConsejo(2, event)" id="btnVerMasConsejo2" class="text-[11px] font-extrabold text-amber-300 hover:text-amber-200 flex items-center gap-1 py-0.5">
+              <span>➕ Desplegar explicación sencilla de las cuentas</span>
+            </button>
+
+            <div id="detalleProfundoConsejo2" class="hidden space-y-1.5 text-[11px] text-slate-300 bg-black/40 p-2.5 rounded-lg border border-white/5">
+              <p><strong>• Regla 1 (Cuota mensual):</strong> El 1er servicio cuesta <strong>59 €/mes</strong>, pero a partir del 2º cada servicio que sumes cuesta solo <strong>+40 €/mes</strong> (te ahorras 19 €/mes en cada uno).</p>
+              <p><strong>• Regla 2 (Instalación inicial al 50%):</strong> Instalar 1 servicio cuesta 150 €, pero el 2º servicio se instala a mitad de precio (<strong>+75 €</strong> = 225 € en total los dos).</p>
+              <p><strong>• Regla 3 (Doble Bonificación en las 2 Auditorías):</strong> Si pides una Auditoría suelta (o con 1 solo servicio) cuesta <strong>350 €</strong> instalada. Pero al activar 2 servicios (Pack Escudo / Dúo), <strong>desbloqueas el descuento en AMBAS auditorías (195 € c/u en vez de 350 €, ahorrándote 155 € en cada una = ¡310 € de ahorro si haces las dos!)</strong>. Por eso el Día 1 pagas 80 € menos llevándote el doble de servicios.</p>
+            </div>
+
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20he%20visto%20el%20truco%20de%20ahorro%20del%20Pack%20Escudo%20en%20tu%20asistente%20y%20quiero%20que%20me%20hagas%20el%20presupuesto%20m%C3%A1s%20econ%C3%B3mico%20para%20mi%20caso." target="_blank" class="w-full py-2 px-3 rounded-lg bg-brand-teal hover:bg-brand-tealDark text-white font-bold text-[11px] text-center block shadow transition-colors">
+              💬 Pedir mi presupuesto con máximo ahorro por WhatsApp &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- PUNTO 3: DUDAS ENTRE LAS 2 AUDITORÍAS -->
+        <div class="rounded-xl bg-slate-950/90 border border-white/10 overflow-hidden">
+          <button type="button" onclick="toggleAcordeonConsejo(3)" class="w-full text-left p-3 hover:bg-teal-950/40 transition-colors flex items-center justify-between gap-2">
+            <div>
+              <span class="text-xs font-extrabold text-white block">🔍🧠 3. Dudas entre las 2 Auditorías (SEO+GEO vs Neuro CRO)</span>
+              <span class="text-[10.5px] text-teal-300 font-semibold">¿Para qué sirve cada una y cómo se bonifican?</span>
+            </div>
+            <span id="iconoAcordeonConsejo3" class="text-teal-400 font-black text-xs transition-transform">▼</span>
+          </button>
+          
+          <div id="cuerpoAcordeonConsejo3" class="hidden px-3 pb-3 pt-1 border-t border-white/10 bg-slate-900/90 space-y-2 text-[11.5px] text-slate-200 leading-relaxed">
+            <div class="bg-teal-950/60 border border-teal-500/30 rounded-lg p-2.5">
+              <strong class="text-emerald-300 block mb-0.5">⚡ En resumen:</strong>
+              La <strong>Auditoría 1 (SEO+GEO)</strong> sirve para <strong>que la gente te encuentre</strong> en Google y ChatGPT; la <strong>Auditoría 2 (Neuro CRO)</strong> sirve para <strong>que los que entran en tu web te compren</strong> y no se escapen.
+            </div>
+
+            <button type="button" onclick="toggleDetalleProfundoConsejo(3, event)" id="btnVerMasConsejo3" class="text-[11px] font-extrabold text-amber-300 hover:text-amber-200 flex items-center gap-1 py-0.5">
+              <span>➕ Desplegar diferencia sencilla y precios de cada una</span>
+            </button>
+
+            <div id="detalleProfundoConsejo3" class="hidden space-y-1.5 text-[11px] text-slate-300 bg-black/40 p-2.5 rounded-lg border border-white/5">
+              <p><strong>🔍 Auditoría 1 (SEO Local + GEO IA):</strong> Si un cliente busca hoy en Google o pregunta a ChatGPT <em>«¿Qué clínica/taller/empresa me recomiendas en mi ciudad?»</em>, ¿sales tú el primero? Si no sales, necesitas esta. Metemos en tu web y Google Maps el código interno que leen las IAs para recomendarte.</p>
+              <p><strong>🧠 Auditoría 2 (Neuromarketing y Conversión CRO):</strong> Si ya tienes web y entra gente, pero casi nadie te llama ni rellena el formulario, necesitas esta. Ponemos sensores térmicos y analizamos tu web con psicología de ventas para quitar atascos y hacer que te escriban por WhatsApp.</p>
+              <p><strong>💰 Descuento activado para una o para las dos (sin cuotas):</strong> Sueltas cuestan 200 € (solo código/informe) o 350 € (instaladas por nosotros). Pero con tu <strong>Pack Escudo / Plan Dúo+</strong> tienes <strong>155 € de descuento en CADA una (195 € c/u)</strong>, o <strong>95 € c/u</strong> desde Plan Anual Trinity+.</p>
+            </div>
+
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20he%20le%C3%ADdo%20la%20diferencia%20entre%20las%202%20Auditor%C3%ADas%20en%20tu%20asistente%20y%20quiero%20que%20mires%20mi%20web%20para%20decirme%20cu%C3%A1l%20me%20hace%20m%C3%A1s%20falta." target="_blank" class="w-full py-2 px-3 rounded-lg bg-brand-teal hover:bg-brand-tealDark text-white font-bold text-[11px] text-center block shadow transition-colors">
+              💬 Decirle a Francisco que revise mi web gratis &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- PUNTO 4: PLAN MENSUAL VS PLAN ANUAL Y PAGOS -->
+        <div class="rounded-xl bg-slate-950/90 border border-white/10 overflow-hidden">
+          <button type="button" onclick="toggleAcordeonConsejo(4)" class="w-full text-left p-3 hover:bg-teal-950/40 transition-colors flex items-center justify-between gap-2">
+            <div>
+              <span class="text-xs font-extrabold text-white block">📅 4. ¿Plan Mensual o Plan Anual (2 meses gratis)?</span>
+              <span class="text-[10.5px] text-teal-300 font-semibold">Cómo funcionan los pagos, plazos y descuentos</span>
+            </div>
+            <span id="iconoAcordeonConsejo4" class="text-teal-400 font-black text-xs transition-transform">▼</span>
+          </button>
+          
+          <div id="cuerpoAcordeonConsejo4" class="hidden px-3 pb-3 pt-1 border-t border-white/10 bg-slate-900/90 space-y-2 text-[11.5px] text-slate-200 leading-relaxed">
+            <div class="bg-teal-950/60 border border-teal-500/30 rounded-lg p-2.5">
+              <strong class="text-emerald-300 block mb-0.5">⚡ En resumen:</strong>
+              En <strong>Mensual</strong> vas mes a mes por domiciliación bancaria (tras 3 meses de rodaje inicial); en <strong>Anual</strong> pagas 10 meses y <strong>disfrutas 12 meses completos (2 gratis)</strong>.
+            </div>
+
+            <button type="button" onclick="toggleDetalleProfundoConsejo(4, event)" id="btnVerMasConsejo4" class="text-[11px] font-extrabold text-amber-300 hover:text-amber-200 flex items-center gap-1 py-0.5">
+              <span>➕ Desplegar explicación sencilla de pagos y plazos</span>
+            </button>
+
+            <div id="detalleProfundoConsejo4" class="hidden space-y-1.5 text-[11px] text-slate-300 bg-black/40 p-2.5 rounded-lg border border-white/5">
+              <p><strong>🔄 Vía 1: Mensual Flexible:</strong> Ideal para no hacer un desembolso grande de golpe. El Día 1 solo abonas la instalación (Setup) + el primer mes. Después de los 3 primeros meses de puesta en marcha, eres 100% libre de darte de baja o cambiar servicios avisando con 30 días.</p>
+              <p><strong>⭐ Vía 2: Plan Anual (10 Meses = 2 Gratis):</strong> Te ahorras un <strong>16,6% directo</strong> (por ejemplo, en el Pack Escudo te ahorras 198 € al año, y en el Plan Trinity te ahorras 278 € al año + Bóveda de Contraseñas gratis + las Auditorías a solo <strong>95 € c/u</strong>).</p>
+              <p><strong>🛡️ Tip de confianza:</strong> Muchos clientes empiezan en Mensual para probarnos y al 2º mes se pasan al Anual para llevarse los 2 meses gratis.</p>
+            </div>
+
+            <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20acabo%20de%20ver%20las%20condiciones%20del%20Plan%20Mensual%20y%20Anual%20en%20tu%20asistente%20y%20quiero%20consultar%20c%C3%B3mo%20ponerlo%20en%20marcha." target="_blank" class="w-full py-2 px-3 rounded-lg bg-brand-teal hover:bg-brand-tealDark text-white font-bold text-[11px] text-center block shadow transition-colors">
+              💬 Consultar formas de pago con Francisco por WhatsApp &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- PUNTO 5: CONTACTO DIRECTO / AUDIO SIN ESCRIBIR -->
+        <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20prefiero%20mandarte%20una%20nota%20de%20voz%20o%20que%20hablemos%20directamente%20para%20que%20me%20orient%C3%A9is%20sobre%20mi%20negocio." target="_blank" class="block w-full text-left p-3 rounded-xl bg-gradient-to-r from-emerald-950/90 to-teal-950/90 hover:from-emerald-900 hover:to-teal-900 border-2 border-emerald-400/70 transition-all shadow-md group">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-black text-emerald-300">🎙️ 5. «Prefiero hablar directamente o mandarte un audio»</span>
+            <span class="text-[10.5px] font-black bg-emerald-400 text-slate-950 px-2 py-0.5 rounded-md flex-shrink-0">WhatsApp &rarr;</span>
+          </div>
+          <p class="text-[11px] text-emerald-100/90 mt-1 leading-snug">Toca aquí para abrir mi WhatsApp directo: mándame una nota de voz de 20 segundos o llámame al 711 54 75 61 y lo vemos juntos.</p>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Botón Flotante Principal (Discreto, elegante y siempre accesible) -->
+    <button type="button" id="spBtnAbrirConsejo" onclick="togglePanelConsejo()" class="group flex items-center gap-2.5 bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 hover:from-teal-900 hover:to-slate-900 text-white pl-2 pr-4 py-2 rounded-full border-2 border-teal-400/80 shadow-[0_10px_30px_rgba(13,125,116,0.45)] hover:scale-[1.03] transition-all">
+      <div class="relative w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-400 flex-shrink-0">
+        <img src="perfil.jpeg" data-img-base="perfil,foto,avatar" data-img-fallback="https://placehold.co/100x100/0d7d74/ffffff?text=FG" alt="Francisco" class="w-full h-full object-cover" onerror="cargarSiguienteExtension(this)">
+      </div>
+      <div class="text-left leading-tight">
+        <div class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <span class="text-[10px] font-black uppercase tracking-wider text-emerald-300">¿Dudas o cómo combinar?</span>
+        </div>
+        <span class="text-xs sm:text-[13px] font-extrabold text-white block">Ver respuestas en 1 clic 💬</span>
+      </div>
+    </button>
+
+  </div>
+
+
+  <div id="modalLegal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-white/15 rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden">
+      <div class="px-6 py-4 bg-slate-950 border-b border-white/10 flex items-center justify-between">
+        <h3 class="text-base font-bold text-white">Aviso Legal, Privacidad (RGPD) y Condiciones</h3>
+        <button type="button" onclick="cerrarModalLegal()" class="text-slate-400 hover:text-white font-bold">✕</button>
+      </div>
+      <div class="p-6 overflow-y-auto space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed">
+        <p><strong>Titular Fiscal:</strong> Francisco M. Gallardo (Sistemas Pyme) • NIF: 52938419D • Domicilio de actividad: Galicia, España • Teléfono: +34 711 54 75 61 • Correo: francisco@sistemaspyme.es.</p>
+        <p><strong>Protección de Datos (RGPD):</strong> Los datos facilitados por nuestros clientes se emplean exclusivamente para la prestación de los servicios técnicos contratados y atención comercial, sin cesión a terceros salvo obligación legal. Cualquier destinatario de encuestas de calidad por WhatsApp Business API puede darse de baja en el acto respondiendo «BAJA».</p>
+      </div>
+      <div class="px-6 py-3 bg-slate-950 border-t border-white/10 text-right">
+        <button type="button" onclick="cerrarModalLegal()" class="bg-brand-teal text-white text-xs font-bold px-5 py-2 rounded-xl">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ========================================================================= */
+    /* CONFIGURACIÓN FÁCIL DE VÍDEO YOUTUBE                                      */
+    /* Cuando tengas un vídeo en YouTube, pega su código entre las comillas      */
+    /* ========================================================================= */
+    const SP_YOUTUBE_CONFIG = {
+      videoId: "",     // Ejemplo: "dQw4w9WgXcQ"
+      playlistId: ""
+    };
+
+    // NAVEGACIÓN ENTRE SECCIONES INDEPENDIENTES (SIN SCROLL INFINITO)
+    function mostrarVista(nombreVista) {
+      const vistas = ['inicio', 'soluciones', 'auditorias', 'tarifas', 'magazine'];
+      vistas.forEach(v => {
+        const el = document.getElementById('vista-' + v);
+        if (el) {
+          if (v === nombreVista) el.classList.add('active');
+          else el.classList.remove('active');
+        }
+      });
+
+      // Actualizar estado visual de los botones del menú superior
+      document.querySelectorAll('[data-nav-btn]').forEach(btn => {
+        if (btn.getAttribute('data-nav-btn') === nombreVista) {
+          btn.className = "nav-tab px-3.5 py-2 rounded-xl bg-teal-500/15 text-teal-300 border border-teal-500/30 transition-all";
+        } else {
+          btn.className = "nav-tab px-3.5 py-2 rounded-xl hover:bg-white/5 hover:text-white transition-all";
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (typeof window.spTrack === 'function') {
+        window.spTrack('sp_view_change', { vista: nombreVista });
+      }
+    }
+
+    function toggleMobileMenu() {
+      const m = document.getElementById('mobileMenu');
+      if (m) m.classList.toggle('translate-x-full');
+    }
+
+    // SIMULADOR SERVICIO 1
+    function cambiarTonoDemoS1(tono) {
+      const textos = {
+        FORMAL: 'Estimado Carlos: Lamentamos sinceramente que el tiempo de espera no haya estado a la altura de sus expectativas. En nuestro centro aplicamos rigurosos estándares de calidad y transparencia. Por estricto respeto a la confidencialidad de sus datos (RGPD), le invitamos a contactar con dirección para revisar su caso en privado.',
+        SEMIFORMAL: 'Hola, Carlos: Lamentamos sinceramente que los tiempos de espera no hayan cumplido tus expectativas. En nuestro centro trabajamos bajo estrictos protocolos de calidad y transparencia. Por respeto a tu privacidad (RGPD), te invitamos a contactarnos en dirección para revisarlo personalmente.',
+        CERCANO: 'Hola, Carlos: Sentimos muchísimo que tuvieras que esperar más de lo habitual en tu visita. Para todo nuestro equipo lo más importante es que te sientas bien atendido y con total claridad. Escríbenos o llámanos directamente para escucharte en privado y solucionarlo juntos.',
+        DIRECTO: 'Hola, Carlos: Tomamos nota de tu comentario sobre el tiempo de espera. Trabajamos siempre con presupuestos explicados previamente con total transparencia. Por privacidad (RGPD) no tratamos expedientes individuales por esta vía pública; contáctanos en dirección para revisarlo hoy mismo.'
+      };
+      const nombres = { FORMAL: 'Tono Formal', SEMIFORMAL: 'Tono Semiformal', CERCANO: 'Tono Cercano', DIRECTO: 'Tono Directo' };
+      document.getElementById('labelTonoActivoS1').textContent = nombres[tono] || 'Tono Semiformal';
+      document.getElementById('textoPropuestaS1').innerHTML = '<p>' + (textos[tono] || textos.SEMIFORMAL) + '</p>';
+
+      ['FORMAL', 'SEMIFORMAL', 'CERCANO', 'DIRECTO'].forEach(t => {
+        const b = document.getElementById('btnTonoS1_' + t);
+        if (!b) return;
+        const n = { FORMAL: 'Formal', SEMIFORMAL: 'Semiformal', CERCANO: 'Cercano', DIRECTO: 'Directo' }[t];
+        if (t === tono) {
+          b.className = 'bg-teal-500/30 border border-teal-400 text-teal-200 py-2 rounded-lg';
+          b.textContent = n + ' ✓';
+        } else {
+          b.className = 'bg-slate-800 text-slate-200 py-2 rounded-lg border border-white/10';
+          b.textContent = n;
+        }
+      });
+    }
+
+    // SIMULADOR SERVICIO 2
+    function cambiarBotonDemoS2(op) {
+      const datos = {
+        EXCELENTE: {
+          tit: '🌟 Ruta Pública 5★ (Google Maps)',
+          txt: '¡Muchísimas gracias, Marta! Nos alegra enormemente saberlo. ¿Nos ayudarías compartiendo tu valoración en Google Maps con un solo toque aquí? 👉 <u>Enlace directo a 5 estrellas</u>'
+        },
+        BIEN: {
+          tit: '😊 Sugerencia Privada en tu WhatsApp',
+          txt: 'Muchas gracias por tu valoración, Marta. Como siempre buscamos que todo sea de 10, ¿qué pequeño detalle crees que podríamos mejorar para tu próxima visita? Puedes escribirnos o mandar un audio por aquí.'
+        },
+        MEJORABLE: {
+          tit: '🛡️ Cortafuegos Activo (Queja retenida en privado)',
+          txt: 'Lamentamos sinceramente que tu experiencia no haya sido la esperada, Marta. Por favor, cuéntanos por aquí en texto o nota de voz qué ha ocurrido para que dirección lo solucione contigo personalmente.'
+        }
+      };
+      const d = datos[op] || datos.EXCELENTE;
+      document.getElementById('tituloRespuestaS2').textContent = d.tit;
+      document.getElementById('textoRespuestaClienteS2').innerHTML = '<p>' + d.txt + '</p>';
+
+      ['EXCELENTE', 'BIEN', 'MEJORABLE'].forEach(k => {
+        const b = document.getElementById('btnDemoS2_' + k);
+        if (!b) return;
+        const n = { EXCELENTE: 'Excelente', BIEN: 'Bien', MEJORABLE: 'Mejorable' }[k];
+        if (k === op) {
+          b.className = 'bg-teal-500/30 border border-teal-400 text-teal-200 py-2 rounded-lg';
+          b.textContent = n + ' ✓';
+        } else {
+          b.className = 'bg-slate-800 text-slate-200 py-2 rounded-lg border border-white/10';
+          b.textContent = n;
+        }
+      });
+    }
+
+    // REPRODUCTOR DE PODCAST
+    function formatTime(s) {
+      if (isNaN(s)) return "0:00";
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      return m + ":" + (sec < 10 ? "0" : "") + sec;
+    }
+
+    function toggleAudioMain() {
+      const a = document.getElementById('audioEpisodio1');
+      if (!a) return;
+      if (a.paused) {
+        a.play();
+        document.getElementById('iconPlayMain').classList.add('hidden');
+        document.getElementById('iconPauseMain').classList.remove('hidden');
+      } else {
+        a.pause();
+        document.getElementById('iconPlayMain').classList.remove('hidden');
+        document.getElementById('iconPauseMain').classList.add('hidden');
+      }
+    }
+
+    function seekAudio(val) {
+      const a = document.getElementById('audioEpisodio1');
+      if (a && a.duration) a.currentTime = (val / 100) * a.duration;
+    }
+
+    // FALLBACK DE IMÁGENES
+    function cargarSiguienteExtension(img) {
+      if (!img) return;
+      const bases = (img.getAttribute('data-img-base') || 'imagen').split(',');
+      const exts = ['jpeg', 'jpg', 'png', 'webp', 'svg'];
+      let cands = [];
+      bases.forEach(b => exts.forEach(e => cands.push(b.trim() + '.' + e)));
+      let idx = parseInt(img.getAttribute('data-try-idx') || '0', 10);
+      if (idx < cands.length) {
+        img.setAttribute('data-try-idx', (idx + 1).toString());
+        img.src = cands[idx];
+      } else {
+        img.onerror = null;
+      }
+    }
+
+    function abrirModalLegal() {
+      document.getElementById('modalLegal').classList.remove('hidden');
+    }
+    function cerrarModalLegal() {
+      document.getElementById('modalLegal').classList.add('hidden');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const a = document.getElementById('audioEpisodio1');
+      if (a) {
+        a.addEventListener('timeupdate', () => {
+          document.getElementById('timeCurrent').textContent = formatTime(a.currentTime);
+          if (a.duration) {
+            document.getElementById('timeTotal').textContent = formatTime(a.duration);
+            document.getElementById('progressMain').value = (a.currentTime / a.duration) * 100;
+          }
+        });
+        a.addEventListener('loadedmetadata', () => {
+          document.getElementById('timeTotal').textContent = formatTime(a.duration);
+        });
+      }
+
+      // Activar vídeo si Francisco ha configurado el ID
+      const vId = (SP_YOUTUBE_CONFIG.videoId || '').trim();
+      const pId = (SP_YOUTUBE_CONFIG.playlistId || '').trim();
+      if (vId || pId) {
+        const wrap = document.getElementById('videoEmbedWrapper');
+        const ifr = document.getElementById('videoIframe');
+        if (wrap && ifr) {
+          ifr.src = pId
+            ? 'https://www.youtube-nocookie.com/embed/videoseries?list=' + encodeURIComponent(pId)
+            : 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(vId);
+          wrap.classList.remove('hidden');
+        }
+      }
+    });
+  
+
+    // CONTROL DEL ASISTENTE FLOTANTE NIVEL 2 (SOLO SE CIERRA CON LA X O EL BOTÓN FLOTANTE)
+    function togglePanelConsejo(forzarEstado, ev) {
+      if (ev && ev.stopPropagation) ev.stopPropagation();
+      const panel = document.getElementById('spPanelConsejo');
+      if (!panel) return;
+      if (typeof forzarEstado === 'boolean') {
+        if (forzarEstado) panel.classList.remove('hidden');
+        else panel.classList.add('hidden');
+      } else {
+        panel.classList.toggle('hidden');
+      }
+    }
+
+    function toggleAcordeonConsejo(num, ev) {
+      if (ev && ev.stopPropagation) ev.stopPropagation();
+      for (let i = 1; i <= 4; i++) {
+        const cuerpo = document.getElementById('cuerpoAcordeonConsejo' + i);
+        const icono = document.getElementById('iconoAcordeonConsejo' + i);
+        if (!cuerpo) continue;
+        if (i === num) {
+          const estabaOculto = cuerpo.classList.contains('hidden');
+          if (estabaOculto) {
+            cuerpo.classList.remove('hidden');
+            if (icono) icono.style.transform = 'rotate(180deg)';
+          } else {
+            cuerpo.classList.add('hidden');
+            if (icono) icono.style.transform = 'rotate(0deg)';
+          }
+        } else {
+          cuerpo.classList.add('hidden');
+          if (icono) icono.style.transform = 'rotate(0deg)';
+        }
+      }
+    }
+
+    function toggleDetalleProfundoConsejo(num, ev) {
+      if (ev && ev.stopPropagation) ev.stopPropagation();
+      const det = document.getElementById('detalleProfundoConsejo' + num);
+      const btn = document.getElementById('btnVerMasConsejo' + num);
+      if (!det || !btn) return;
+      if (det.classList.contains('hidden')) {
+        det.classList.remove('hidden');
+        btn.textContent = '➖ Compactar explicación detallada';
+      } else {
+        det.classList.add('hidden');
+        btn.textContent = '➕ Desplegar explicación sencilla paso a paso';
+      }
+    }
+
+  </script>
+
+</body>
+</html>

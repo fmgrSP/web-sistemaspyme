@@ -1,0 +1,53 @@
+Tienes ESTRICTAMENTE PROHIBIDO:
+1. Generar el archivo completo en tus respuestas de chat.
+2. Darme bloques de código sueltos con comentarios tipo "# ... existing code ..." pidiéndome que los copie y pegue manualmente, ya que esto rompe la sintaxis de mi código.
+3. Generar archivos clon o duplicados con sufijos tipo "_2.html" o crear copias redundantes entre carpetas.
+
+================================================================================
+CONOCIMIENTO OBLIGATORIO DE LAS RUTAS DEL ECOSISTEMA (ESCRITORIO MAC):
+================================================================================
+El sistema trabaja con dos carpetas clave interconectadas en el Escritorio:
+1. RUTA DEL SCRAPER (Prospector Local en puerto 5000):
+   "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Scraper/Scrapper App"
+   - Contiene: servidor_local_b2b.py, prospeccion_b2b_dashboard.html, carpetas de Auditorias, Guiones IA, Informes del analizador IA, Historial_CSVs y crm_b2b_db.json.
+
+2. RUTA DEL SERVICIO DE RESEÑAS (Repositorio Git oficial conectado a Render en la nube):
+   "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Servicios/Servicio Reseñas/servicio_resenas"
+   - Contiene: main.py y la FUENTE ÚNICA de todas las consolas e informes:
+     * informe.html
+     * formulario_alta.html (y Consola_Maestra_Cierre_y_Onboarding_SistemasPyme.html)
+     * test_encuesta.html (y Consola_Maestra_Simulacion_y_Test_SistemasPyme.html)
+     * simulador_demo.html y gestor_resenas.html
+
+REGLA DE FUENTE ÚNICA (SINGLE SOURCE OF TRUTH):
+Los archivos informe.html, formulario_alta.html, test_encuesta.html y simulador_demo.html viven ÚNICAMENTE en la carpeta "servicio_resenas". "servidor_local_b2b.py" debe leerlos siempre directamente desde esa ruta para que nunca haya versiones desfasadas ni duplicadas.
+
+================================================================================
+EL MÉTODO DE TRABAJO (SCRIPT ACTUALIZADOR INTERACTIVO "AD.py"):
+================================================================================
+Cada vez que te pida añadir una función, arreglar un error, modificar un cálculo o ajustar un diseño, tu ÚNICA tarea será generarme el código completo de un script de Python llamado AD.py.
+
+Este script actualizador DEBE cumplir siempre esta estructura exacta:
+1. Librerías: Importar os, shutil, re, datetime y subprocess.
+2. Definición Fija de Rutas: Debe incluir siempre como constantes las rutas absolutas de RUTA_SCRAPER y RUTA_SERVICIO_RESENAS.
+3. Ejecución Universal (Da igual la carpeta de origen):
+   - El script debe funcionar exactamente igual se ejecute desde "Scrapper App", desde "servicio_resenas" o desde la raíz del sistema.
+   - En cada ejecución, AD.py debe auto-replicarse en ambas carpetas para estar siempre disponible y actualizado en los dos terminales.
+4. Backup Automático en "backups_sp":
+   - Lo primero que debe hacer el script antes de modificar cualquier archivo es crear una copia de seguridad con fecha y hora (.backup_YYYYMMDD_HHMMSS) en la subcarpeta "backups_sp" del proyecto.
+5. Escáner de Contexto y Modificación Segura:
+   - Debe localizar los archivos en las rutas oficiales sin depender de rutas relativas.
+   - REGLA TÉCNICA PYTHON 3.13: Al hacer sustituciones con re.sub(), usar siempre funciones lambda (lambda m: ...) como reemplazo para evitar errores de sintaxis tipo "re.PatternError: bad escape" con las barras invertidas de JavaScript o expresiones regulares.
+6. Guardado y Feedback Claro:
+   - Sobrescribir el archivo original y mostrar mensajes con emojis y explicaciones claras del estado en consola.
+7. Despliegue y Sincronización Automática:
+   - Si se modifican archivos de "servicio_resenas", AD.py debe ejecutar automáticamente git add, git commit y git push en esa carpeta para que Render se actualice solo sin comandos manuales.
+   - Si se modifica "servidor_local_b2b.py", debe reiniciar de forma limpia el proceso en el puerto 5000.
+
+================================================================================
+SALIDA OBLIGATORIA EN CADA RESPUESTA:
+================================================================================
+Siempre que te pida un cambio:
+1. Dame ÚNICAMENTE el bloque de código completo de "AD.py".
+2. Dame al final el comando unificado en una sola línea para ejecutarlo en la terminal:
+   python3 AD.py
