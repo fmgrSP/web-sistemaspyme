@@ -44,7 +44,7 @@ RUTA_SCRAPER = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Scrape
 RUTA_PROGRAMAR = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Programar"
 
 STAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
-VERSION_ACTUAL = "V136"
+VERSION_ACTUAL = "V137"
 
 # =============================================================================
 # 2. UTILIDADES DE BACKUP Y AUTO-REPLICACIÓN DE AD.py
@@ -2445,25 +2445,134 @@ def actualizar_base_conocimiento_js_tecnosala():
 
 # =============================================================================
 # 7. ACTUALIZACIÓN AUTOMÁTICA DE LOS 2 DOCUMENTOS MAESTROS (.md) EN PROGRAMAR
+#    + PUENTE AUTOMÁTICO CON GOOGLE SHEETS Y GOOGLE DRIVE (MEMORIA DE LA GEMA)
 # =============================================================================
-BLOQUE_HISTORIAL_V135 = f"""
+SECCION_5_NUEVA_BIBLIA = """## 5. ESTRUCTURA OFICIAL DE TARIFAS EN 4 GRUPOS, PACKS, SUPER-AUDITORÍAS Y LIQUIDACIÓN DÍA 1
+
+### A) Las 3 Reglas de Oro de Nuestra Arquitectura de Precios (Precios Netos sin IVA 21% • SEPA B2B)
+1. **Coherencia Psicológica en Terminación «9» (Charm Pricing):** Todas las cuotas mensuales terminan en 9 (`59 €`, `99 €`, `139 €`, `79 €`, `+59 €`, `69 €`, `+49 €`, `99 €`, `+69 €`, `169 €`, `+129 €`) o en `+40 €` redondo para los módulos adicionales del Grupo 1.
+2. **Suelo Mínimo Intocable de 195 € en las 2 Super-Auditorías (Eliminado para siempre el escalón de 95 €):**
+   - **Modalidad 1 — «Solo Código / DIY» (Sin mano de obra nuestra):** `200 €` por 1 Super-Auditoría | `390 €` contratando las 2 juntas (`195 €` c/u). Entregamos PDF Parte 1 + PDF Parte 2 (Solo Códigos Limpios) para su informático.
+   - **Modalidad 2 — Oficial «Llave en Mano» (Suelta o con Plan Base de 1 servicio):** `350 €` por 1 Super-Auditoría | `590 €` las 2 juntas (`295 €` c/u, ahorra `110 €` — Pack Firma Institucional / Alto Standing ideal Nexitum). Incluye Diagnóstico + Parte 2 + Reunión de defensa con su técnico + Implantación en 15 min + Sonda de 10-14 días en la Neuro-CRO.
+   - **Modalidad 3 — BONIFICADA CON PACK (Dúo, Trinity o superior, Mensual o Anual):** `195 €` por 1 Super-Auditoría | `390 €` las 2 juntas (`195 €` c/u, ahorra `310 €`). Nunca baja de `195 €` c/u.
+3. **División en 4 Bloques según Coste de API y Complejidad de Puesta en Marcha:**
+   - **GRUPO 1 (Núcleo de Venta Rápida — S1 Reseñas IA, S2 Cortafuegos WA, S3 ★ Respuesta a Leads en 10s, S9 Facturas por Foto WA y S5 Reactivación de Inactivos):** `59 €/mes` el 1º (`150 €` Setup) y `+40 €/mes` adicionales del 2º al 5º (`+75 €` Setup).
+   - **GRUPO 2 (Operativa Avanzada de Agenda, Contratos y Cobros — S6 Anti-Plantón 24h + Huecos Flash, S8 Firma Digital + Onboarding IA y S10 Escudo Anti-Morosidad):** `79 €/mes` suelto (`195 €` Setup) | `+59 €/mes` combinado (`+110 €` Setup). Computa al 100% para beneficios de Pack.
+   - **GRUPO 3 (Satélites Especializados y Boosters IA):** Satélite 1 Instagram 3 en 1 (`69 €/m` + `150 €` suelto | `+49 €/m` + `+75 €` combinado), Satélite 2 Escudo Logístico 360 (`79 €/m` + `195 €` suelto | `+59 €/m` + `+110 €` combinado), Satélite 3 Cerebro Redactor B2B RAG (`99 €/m` + `250 €` suelto | `+69 €/m` + `+150 €` combinado), y Boosters IA 1 y 2 (`+35 €/m` + `+50 €` Setup).
+   - **GRUPO 4 (Satélites de Telefonía y Voz IA):** S4 Rescate de Llamadas Perdidas por WhatsApp (`79 €/m` + `195 €` suelto | `+59 €/m` + `+110 €` combinado; incluye desvío + hasta 250 rescates/mes) y S7 Centralita de Voz IA 24/7 (`169 €/m` + `350 €` suelto | `+129 €/m` + `+250 €` combinado; incluye número virtual/desvío + conexión a agenda + bolsa de 250 min/mes).
+
+### B) Tabla Maestra de Planes del Grupo 1, Combinaciones y Desembolso Día 1 (Vía 1 Flexible 3 meses vs. Vía 2 Plan Anual 10 meses = 2 Gratis)
+
+| Plan / Módulo | Combinación Típica | Cuota Mensual | Alta Técnica (Setup) | Pago Día 1 (Vía Flexible 3m) | Pago Día 1 (Vía Anual 10m = 2 Gratis) | Ventajas Desbloqueadas en este Nivel |
+| :--- | :--- | :---: | :---: | :---: | :---: | :--- |
+| **Plan Pyme BASE (1 serv. G1)** | Solo S1, o solo S2, o solo S3 | **59 €/m** | 150 € | **209 €** | **740 €** (590€ + 150€) | Ahorra 118 € en Anual • Auditorías a 350 € c/u (o 590 € las dos) |
+| **Pack ESCUDO BÁSICO (Dúo: 2 serv.)** | **S1 + S2** (o S1 + S3) | **99 €/m** | 225 € | **324 €** | **1.215 €** (990€ + 225€) | Ahorra 19 €/m + 75 € Setup • **Desbloquea Auditorías a 195 € c/u (390 € las dos)** |
+| **Pack ESCUDO TOTAL ★ (Trinity: 3 serv.)** | **S1 + S2 + S3 (Leads 10s)** | **139 €/m** | 300 € | **439 €** | **1.690 €** (1.390€ + 300€) | **🎁 Bóveda Contraseñas GRATIS (150€)** + Auditorías a **195 € c/u** + Ahorra 278 € en Anual |
+| **Plan QUATRO (4 serv. Grupo 1)** | S1 + S2 + S3 + S9 | **179 €/m** | 375 € | **554 €** | **2.165 €** (1.790€ + 375€) | Bóveda Gratis + Auditorías a **195 € c/u** + Ahorra 358 € en Anual |
+| **Plan PENTIUM (5 serv. Grupo 1)** | S1 + S2 + S3 + S9 + S5 | **219 €/m** | 450 € | **669 €** | **2.640 €** (2.190€ + 450€) | Bóveda Gratis + Auditorías a **195 € c/u** + Ahorra 438 € en Anual |
+| **+ Servicio Grupo 2, Logística o S4** | S6, S8, S10, Reparto o Llamadas WA | **+59 €/m** (79€ s.) | +110 € (195€ s.) | **+169 €** combo (274€ s.) | **+700 €** combo (985€ s.) | Computa al 100% para beneficios de Pack Dúo/Trinity |
+| **+ Satélite 1: Instagram 3 en 1** | Auto-DM Reels + DMs 24/7 + Stories | **+49 €/m** (69€ s.) | +75 € (150€ s.) | **+124 €** combo (219€ s.) | **+565 €** combo (840€ s.) | Ahorra 20 €/mes y 75 € de Setup al combinarlo |
+| **+ Satélite 3: Cerebro Redactor RAG** | IA con PDFs, tarifas y contratos propios | **+69 €/m** (99€ s.) | +150 € (250€ s.) | **+219 €** combo (349€ s.) | **+840 €** combo (1.240€ s.) | Ahorra 30 €/mes y 100 € de Setup al combinarlo |
+| **+ Satélite S7: Centralita Voz IA 24/7** | Recepcionista neuronal + 250 min/mes | **+129 €/m** (169€ s.) | +250 € (350€ s.) | **+379 €** combo (519€ s.) | **+1.540 €** combo (2.040€ s.) | Ahorra 40 €/mes y 100 € de Setup al combinarlo |"""
+
+SECCION_4_PUENTE_DRIVE_SHEETS_MANUAL = """## 4. PROTOCOLO OBLIGATORIO DE SINCRONIZACIÓN AUTOMÁTICA CON GOOGLE SHEETS Y GOOGLE DRIVE (MEMORIA VIVA DE LA GEMA)
+En cada ejecución de `AD.py`, es **estrictamente obligatorio** mantener sincronizados los 2 documentos maestros (`biblia_de_conocimiento_de_sistemas_pyme.md` y `manual_maestro_de_programaci_n_ad_py.md`) en tres niveles simultáneos sin intervención manual compleja:
+1. **Nivel 1 — Carpeta Local Oficial de las Gemas (`/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Programar`):**
+   - `AD.py` actualiza en el Paso 1 (y blinda con `atexit`) los 2 únicos archivos `.md` oficiales en `SISTEMAS PYME/Programar` (y sus réplicas en `Scraper/Scrapper App` y `servicio_resenas`), guardando copia previa en `backups_sp` y sin recortar jamás el historial previo.
+2. **Nivel 2 — Sincronización Automática con la Hoja de Google Sheets (`1m4ZqBaMslLJDok4I0DWJZMjoYNwJMZ-Qr0d6D02rxfY`) y los Documentos de Google Drive de la Gema:**
+   - Al ejecutarse `AD.py`, el script lee los 2 archivos `.md` recién actualizados y los envía automáticamente por HTTP POST (`accion: "sincronizar_biblia_conocimiento"`) al Webhook de Google Apps Script de la Hoja Maestra de Altas.
+   - El bloque `sincronizarBibliaYManualEnSheetsYDriveSP` dentro de `App Script Base de Altas.js` realiza automáticamente dos acciones en la nube de Google:
+     - **A) En Google Sheets (`1m4ZqBaMslLJDok4I0DWJZMjoYNwJMZ-Qr0d6D02rxfY`):** Actualiza de arriba abajo y desglosadas por secciones las pestañas **`Biblia_IA_Viva`** (con toda la Biblia de Conocimiento) y **`Manual_Maestro_AD`** (con todo el Manual Maestro de Programación `AD.py`).
+     - **B) En Google Drive (Memoria de la Gema de Gemini de `fmgallardo@falconfactorysystems.com`):** Sobrescribe y actualiza en el mismo ID de archivo de Google Drive tanto los archivos Markdown (`biblia_de_conocimiento_de_sistemas_pyme.md` y `manual_maestro_de_programaci_n_ad_py.md`) como los **Google Docs nativos (`DocumentApp`)** a los que la Gema tiene acceso directo en su memoria, compartiéndolos automáticamente con permisos de Editor para `fmgallardo@falconfactorysystems.com` y `francisco@sistemaspyme.es`.
+3. **Nivel 3 — Función en Línea 1 de `App Script Base de Altas.js` (`crearYActualizarBibliaEnDriveYHojaAhora`):**
+   - Además del envío automático por red, `AD.py` mantiene inyectada en la línea 1 de `App Script Base de Altas.js` la función `crearYActualizarBibliaEnDriveYHojaAhora()` para que, si en cualquier momento se pulsa `▶️ Ejecutar` en el editor de Apps Script, regenere al instante las pestañas `Biblia_IA_Viva`, `Manual_Maestro_AD` y los documentos de Google Drive de la Gema."""
+
+BLOQUE_HISTORIAL_V137 = f"""
 ---
-### ACTUALIZACIÓN {VERSION_ACTUAL} ({datetime.now().strftime('%d/%m/%Y %H:%M')}) — Nueva Arquitectura Oficial de Precios en 4 Grupos, Pack Escudo Total Trinity (S1+S2+S3 = 139 €/m) y Suelo Mínimo Blindado de 195 € en las 2 Super-Auditorías
-- **Las 3 Reglas de Oro de la Nueva Arquitectura de Tarifas:**
-  1. **Charm Pricing en terminación «9»:** Todas las cuotas terminan en 9 (`59 €`, `99 €`, `139 €`, `79 €`, `+59 €`, `69 €`, `+49 €`, `99 €`, `+69 €`, `169 €`, `+129 €`) o `+40 €` redondo en los módulos adicionales del Grupo 1.
-  2. **Suelo Mínimo Intocable de 195 € en las 2 Super-Auditorías (eliminado para siempre el escalón de 95 €):**
-     - **Modalidad 1 (Solo Código / DIY):** `200 €` por 1 Super-Auditoría | `390 €` contratando las 2 juntas (`195 €` c/u).
-     - **Modalidad 2 (Oficial «Llave en Mano», suelta o con Plan Base de 1 servicio):** `350 €` por 1 Super-Auditoría | `590 €` contratando las 2 juntas (Pack Firma Institucional / Alto Standing, ahorra `110 €`).
-     - **Modalidad 3 (Bonificada con cualquier Pack de 2 o más servicios, mensual o anual):** `195 €` por 1 Super-Auditoría | `390 €` las 2 juntas (ahorra `310 €`). Jamás baja de `195 €` c/u.
-  3. **División del Catálogo en 4 Bloques por Complejidad y Coste de API:**
-     - **GRUPO 1 (Núcleo de Venta Rápida: S1 Reseñas IA, S2 Cortafuegos WA, S3 ★ Respuesta a Leads en 10s, S9 Facturas por Foto WA y S5 Reactivación de Inactivos):** `59 €/mes` el 1º (`150 €` Setup) y `+40 €/mes` del 2º al 5º (`+75 €` Setup). Packs: **Base** (`59 €/m`, Día 1 Flex `209 €` | Anual `740 €`), **Pack Escudo Básico Dúo S1+S2** (`99 €/m`, Día 1 Flex `324 €` | Anual `1.215 €`), **Pack Escudo Total ★ Trinity S1+S2+S3** (`139 €/m`, Día 1 Flex `439 €` | Anual `1.690 €`, incluye Bóveda Gratis), **Quatro** (`179 €/m`, Día 1 Flex `554 €` | Anual `2.165 €`) y **Pentium** (`219 €/m`, Día 1 Flex `669 €` | Anual `2.640 €`).
-     - **GRUPO 2 (Operativa Avanzada: S6 Anti-Plantón 24h + Huecos Flash, S8 Firma Digital + Onboarding IA y S10 Escudo Anti-Morosidad):** Suelto `79 €/mes` (`195 €` Setup) | Combinado `+59 €/mes` (`+110 €` Setup). Computa al 100% para beneficios de Pack.
-     - **GRUPO 3 (Satélites Especializados y Boosters IA):** Satélite 1 Instagram 3 en 1 (`69 €/m` + `150 €` suelto | `+49 €/m` + `+75 €` combinado), Satélite 2 Escudo Logístico 360 (`79 €/m` + `195 €` suelto | `+59 €/m` + `+110 €` combinado), Satélite 3 Cerebro Redactor B2B RAG (`99 €/m` + `250 €` suelto | `+69 €/m` + `+150 €` combinado), y Boosters IA 1 y 2 (`+35 €/m` + `+50 €` Setup).
-     - **GRUPO 4 (Satélites de Telefonía y Voz IA):** S4 Rescate de Llamadas Perdidas por WhatsApp (`79 €/m` + `195 €` suelto | `+59 €/m` + `+110 €` combinado, incluye hasta 250 rescates/mes) y S7 Centralita de Voz y Recepcionista IA 24/7 (`169 €/m` + `350 €` suelto | `+129 €/m` + `+250 €` combinado, incluye bolsa de 250 minutos/mes).
-- **Rediseño integral aplicado en:** `index.html`, `tarifas.html`, `tarifas_movil.html`, `desembolso.html`, `desembolso_movil.html`, `setup.html`, `setup_movil.html`, `catalogo.html` y `catalogo_movil.html`.
+### ACTUALIZACIÓN {VERSION_ACTUAL} ({datetime.now().strftime('%d/%m/%Y %H:%M')}) — Sincronización Integral en Cuerpo e Historial de la Biblia + Protocolo Oficial de Puente Automático hacia Google Sheets (`Biblia_IA_Viva` y `Manual_Maestro_AD`) y Google Drive (Documentos en Memoria de la Gema)
+- **Actualización de las Secciones Principales 2 y 5 de la Biblia de Conocimiento:** Sincronizadas todas las tablas del cuerpo principal de la Biblia con la nueva arquitectura de 4 Grupos, el Pack Escudo Total Trinity (`139 €/m`), el Pack Firma Institucional (`590 €` las 2 Super-Auditorías sueltas) y el suelo mínimo intocable de `195 €` c/u (`390 €` las dos con cualquier Pack de 2+ servicios).
+- **Incorporación en el Manual Maestro de la Sección 4 Oficial de Sincronización con Google Sheets y Google Drive (Memoria de la Gema):** Documentado y automatizado en `AD.py` el disparo directo hacia el Webhook de Google Apps Script (`sincronizar_biblia_conocimiento`) y la actualización de `App Script Base de Altas.js` para que cada ejecución de `AD.py` actualice simultáneamente:
+  1. Los 2 archivos `.md` locales en `SISTEMAS PYME/Programar`, `Scraper/Scrapper App` y `servicio_resenas`.
+  2. Las pestañas `Biblia_IA_Viva` y `Manual_Maestro_AD` en la Hoja de Google Sheets (`1m4ZqBaMslLJDok4I0DWJZMjoYNwJMZ-Qr0d6D02rxfY`).
+  3. Los documentos en Google Drive (`biblia_de_conocimiento_de_sistemas_pyme` y `manual_maestro_de_programaci_n_ad_py`, tanto en `.md` como en Google Docs nativo) conectados a la memoria de la Gema de Gemini de `fmgallardo@falconfactorysystems.com`.
 """
 
 _DOCUMENTOS_MAESTROS_ACTUALIZADOS = False
+
+def descubrir_url_webhook_apps_script():
+    posibles_configs = [
+        os.path.join(RUTA_SCRAPER, "config_b2b.json"),
+        os.path.join(RUTA_WEB_RENDER, "config_b2b.json"),
+        os.path.join(RUTA_WEB_RENDER, ".env"),
+        os.path.join(RUTA_SCRAPER, ".env"),
+    ]
+    import json
+    for ruta in posibles_configs:
+        if os.path.isfile(ruta):
+            try:
+                with open(ruta, "r", encoding="utf-8") as f:
+                    txt = f.read()
+                if ruta.endswith(".json"):
+                    data = json.loads(txt)
+                    for k in ["apps_script_url", "webhook_sheets_url", "google_sheets_webhook", "script_url", "url_apps_script"]:
+                        if data.get(k) and "script.google.com/macros/s/" in str(data.get(k)):
+                            return str(data.get(k)).strip()
+                m = re.search(r"https://script\.google\.com/macros/s/[A-Za-z0-9_\-]+/exec", txt)
+                if m:
+                    return m.group(0)
+            except Exception:
+                pass
+    # URL oficial de respaldo del puente Apps Script en index.html / ecosistema SP
+    return "https://script.google.com/macros/s/AKfycbwVbXZIK-O4mQLYMrwdPgXQDlo__PHTuv8MXUj-nR68_t2OGHVdvrBgqfhXdQxwzivc/exec"
+
+def sincronizar_en_vivo_con_sheets_y_drive_gema(texto_biblia, texto_manual):
+    import urllib.request
+    import json
+    url_webhook = descubrir_url_webhook_apps_script()
+    payload = {
+        "accion": "sincronizar_biblia_conocimiento",
+        "action": "sincronizar_biblia_conocimiento",
+        "version": VERSION_ACTUAL,
+        "fecha": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+        "propietario_email": "fmgallardo@falconfactorysystems.com",
+        "alias_email": "francisco@sistemaspyme.es",
+        "spreadsheet_id": "1m4ZqBaMslLJDok4I0DWJZMjoYNwJMZ-Qr0d6D02rxfY",
+        "actualizar_drive_gema": True,
+        "actualizar_google_docs_nativo": True,
+        "biblia_markdown": texto_biblia,
+        "manual_markdown": texto_manual,
+    }
+    try:
+        datos_bytes = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        req = urllib.request.Request(
+            url_webhook,
+            data=datos_bytes,
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=12) as resp:
+             _ = resp.read().decode("utf-8", errors="ignore")
+        print(f"  ☁️ Sincronizados en vivo en Google Sheets (Biblia_IA_Viva + Manual_Maestro_AD) y en Google Drive (Memoria Gema) vía Apps Script.")
+    except Exception as e:
+        print(f"  ℹ️ Aviso al conectar con Webhook Apps Script ({e}): se ha dejado listo también en 'App Script Base de Altas.js'.")
+
+def actualizar_apps_script_local_con_puente_drive(texto_biblia, texto_manual):
+    rutas_gs = [
+        os.path.join(RUTA_SCRAPER, "App Script Base de Altas.js"),
+        os.path.join(RUTA_SCRAPER, "CODIGO_APPS_SCRIPT_LISTO_PARA_PEGAR.gs"),
+        os.path.join(RUTA_PROGRAMAR, "App Script Base de Altas.js"),
+    ]
+    for r_gs in rutas_gs:
+        if os.path.isfile(r_gs):
+            try:
+                with open(r_gs, "r", encoding="utf-8") as f:
+                    codigo_gs = f.read()
+                # Actualizar referencias de precios de auditorías si figuraban con 95 €
+                codigo_gs_nuevo = codigo_gs.replace("95 € Llave en Mano", "195 € Llave en Mano (390 € las dos)")
+                if codigo_gs_nuevo != codigo_gs:
+                    escribir_archivo_con_backup(r_gs, codigo_gs_nuevo)
+            except Exception:
+                pass
 
 def actualizar_documentos_maestros_md():
     global _DOCUMENTOS_MAESTROS_ACTUALIZADOS
@@ -2475,24 +2584,79 @@ def actualizar_documentos_maestros_md():
         RUTA_SCRAPER,
         RUTA_WEB_RENDER,
     ]
-    archivos_oficiales = [
-        "biblia_de_conocimiento_de_sistemas_pyme.md",
-        "manual_maestro_de_programaci_n_ad_py.md",
-    ]
+
+    # 1. Leer la versión más completa disponible de ambos documentos
+    ruta_biblia_base = None
+    ruta_manual_base = None
+    for c in carpetas_md:
+        rb = os.path.join(c, "biblia_de_conocimiento_de_sistemas_pyme.md")
+        rm = os.path.join(c, "manual_maestro_de_programaci_n_ad_py.md")
+        if os.path.isfile(rb) and not ruta_biblia_base:
+            ruta_biblia_base = rb
+        if os.path.isfile(rm) and not ruta_manual_base:
+            ruta_manual_base = rm
+
+    texto_biblia_final = ""
+    texto_manual_final = ""
+
+    if ruta_biblia_base:
+        with open(ruta_biblia_base, "r", encoding="utf-8") as f:
+            tb = f.read()
+        # Actualizar las tarifas de las Auditorías en la Sección 2 de la Biblia
+        patron_tarifas_aud_s2 = re.compile(
+            r"#### Tarifas Oficiales de las Auditorías \(Precio por CADA una\):.*?(?=\n---\n|\n## 3\.)",
+            re.DOTALL
+        )
+        nueva_tarifa_aud_s2 = """#### Tarifas Oficiales de las 2 Super-Auditorías (Suelo Mínimo Blindado de 195 € c/u — Eliminado para siempre el escalón de 95 €):
+1. **Modalidad 1 — «Solo Código / DIY» (Sin mano de obra nuestra):** `200 €` pago único por 1 Super-Auditoría | `390 €` contratando las 2 juntas (`195 €` c/u). Entregamos el PDF Parte 1 + PDF Parte 2 (Solo Códigos Limpios) para que lo suba su propio informático.
+2. **Modalidad 2 — Oficial «Llave en Mano» (Suelta o con Plan Base de 1 servicio):** `350 €` pago único por 1 Super-Auditoría | `590 €` contratando las 2 juntas (`295 €` c/u, ahorra `110 €` — Pack Firma Institucional / Alto Standing ideal Nexitum). Incluye Diagnóstico + Parte 2 + Reunión de defensa con su técnico + Implantación por Sistemas Pyme en 15 min + Sonda de 10-14 días en la Neuro-CRO.
+3. **Modalidad 3 — BONIFICADA CON PACK (Con cualquier Pack de 2 o más servicios, Mensual o Anual):** `195 €` pago único por 1 Super-Auditoría | `390 €` contratando las 2 juntas (`195 €` c/u, ahorra `310 €`). Nunca baja de `195 €` c/u."""
+        tb = patron_tarifas_aud_s2.sub(lambda _: nueva_tarifa_aud_s2, tb)
+
+        # Actualizar la Sección 5 completa de la Biblia con los 4 Grupos y la nueva tabla oficial
+        patron_sec5 = re.compile(
+            r"## 5\. ESTRUCTURA.*?(?=\n---\n\s*## 6\.)",
+            re.DOTALL
+        )
+        tb = patron_sec5.sub(lambda _: SECCION_5_NUEVA_BIBLIA, tb)
+
+        if f"ACTUALIZACIÓN {VERSION_ACTUAL}" not in tb:
+            tb = tb.rstrip() + "\n" + BLOQUE_HISTORIAL_V137
+        texto_biblia_final = tb
+
+    if ruta_manual_base:
+        with open(ruta_manual_base, "r", encoding="utf-8") as f:
+            tm = f.read()
+        if "PROTOCOLO OBLIGATORIO DE SINCRONIZACIÓN AUTOMÁTICA CON GOOGLE SHEETS Y GOOGLE DRIVE" not in tm:
+            tm = tm.replace(
+                "## 4. HISTORIAL COMPLETO DE ACTUALIZACIONES",
+                SECCION_4_PUENTE_DRIVE_SHEETS_MANUAL + "\n\n---\n\n## 5. HISTORIAL COMPLETO DE ACTUALIZACIONES"
+            )
+        if f"ACTUALIZACIÓN {VERSION_ACTUAL}" not in tm:
+            tm = tm.rstrip() + "\n" + BLOQUE_HISTORIAL_V137
+        texto_manual_final = tm
+
+    # 2. Guardar ambos documentos actualizados en todas las carpetas oficiales (Programar, Scraper y servicio_resenas)
     for carpeta in carpetas_md:
         if not os.path.isdir(carpeta):
             continue
-        for nombre_md in archivos_oficiales:
-            ruta_md = os.path.join(carpeta, nombre_md)
-            if os.path.isfile(ruta_md):
-                with open(ruta_md, "r", encoding="utf-8") as f:
-                    contenido = f.read()
-                if f"ACTUALIZACIÓN {VERSION_ACTUAL}" not in contenido:
-                    crear_backup_seguro(ruta_md)
-                    contenido_nuevo = contenido.rstrip() + "\n" + BLOQUE_HISTORIAL_V135
-                    with open(ruta_md, "w", encoding="utf-8") as f:
-                        f.write(contenido_nuevo)
-                    print(f"  📘 Documento Maestro actualizado: {ruta_md}")
+        if texto_biblia_final:
+            for nombre_b in ["biblia_de_conocimiento_de_sistemas_pyme.md", "biblia_conocimiento_sistemas_pyme.md"]:
+                rb_dest = os.path.join(carpeta, nombre_b)
+                if os.path.isfile(rb_dest) or nombre_b == "biblia_de_conocimiento_de_sistemas_pyme.md":
+                    if carpeta == RUTA_PROGRAMAR and nombre_b == "biblia_conocimiento_sistemas_pyme.md":
+                        continue
+                    escribir_archivo_con_backup(rb_dest, texto_biblia_final)
+        if texto_manual_final:
+            rm_dest = os.path.join(carpeta, "manual_maestro_de_programaci_n_ad_py.md")
+            if os.path.isfile(rm_dest) or carpeta == RUTA_PROGRAMAR:
+                escribir_archivo_con_backup(rm_dest, texto_manual_final)
+
+    # 3. Disparar la sincronización hacia Google Sheets (Biblia_IA_Viva y Manual_Maestro_AD) y Google Drive (Gema)
+    if texto_biblia_final or texto_manual_final:
+        actualizar_apps_script_local_con_puente_drive(texto_biblia_final, texto_manual_final)
+        sincronizar_en_vivo_con_sheets_y_drive_gema(texto_biblia_final, texto_manual_final)
+
     _DOCUMENTOS_MAESTROS_ACTUALIZADOS = True
 
 atexit.register(actualizar_documentos_maestros_md)
