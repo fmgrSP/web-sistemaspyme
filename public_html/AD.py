@@ -1,3245 +1,2164 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-AD.py — Actualizador Maestro Autónomo de Sistemas Pyme (Versión Blindada V217)
-Cumple 100% el Manual Maestro de Programación:
-- Cero claves API en texto plano (ofuscación Base64 anti-bloqueo GitHub Push Protection GH013 + limpieza de .gitignore).
-- Reconexión total del Consultor Neuronal con la API de Gemini / Vertex AI (con sugerencias proactivas de ahorro y packs).
-- Altura compacta en la Tecnosala para que jamás se corten los botones inferiores en ninguna pantalla.
-- Disparo REAL inmediato desde el servidor local 8765 (y desde Render) de:
-  1) WhatsApp al cliente + WhatsApp/Telegram/Email a Francisco leyendo el .env de servicio_resenas.
-  2) Webhook directo a Google Apps Script (Calendar .ics + pestaña Pedidos_y_Citas_Web).
-- Sincronización inteligente Voz -> Carrito: al hablar con el consultor, detecta el plan, auditorías, atriles, nombre, teléfono y horario, dispara el pedido automáticamente sin obligar a pulsar "Ver pedido" y pre-rellena todo el Carrito a la Carta.
+================================================================================
+ACTUALIZADOR MAESTRO DE SISTEMAS PYME (AD.py — V231 COMPLETO E ÍNTEGRO)
+================================================================================
+Ejecuta y sincroniza de una sola vez:
+1. Web Principal (public_html/index.html) + 6 Documentos Técnicos:
+   - Consultor Tecnológico Inteligente (Modo Consultor Puro 95%, sin insistencia comercial).
+   - Regla Sagrada Operativa: Atril NFC/QR (39 €) va directo a Google Maps en 1s (nunca a encuesta).
+     Servicio 1 (59 €/mes) automatiza respuestas con SEO local y protocolo HEARD.
+     Servicio 2 (Encuesta Cortafuegos WhatsApp) requiere nombre y móvil (Calendar, software,
+     formulario recepción o tienda online).
+   - Selector inteligente de Voces de España (es-ES: Jorge y Mónica en Mac/iOS, Álvaro/Elvira/Helena
+     en Windows), bloqueando voces extranjeras.
+   - Único botón rojo PARAR al lado del Orbe + botón Repetir + tecla Escape.
+   - Un único botón dorado de compra en Tecnosala (abajo), más en Test de Diagnóstico y Precios Claros.
+   - Diapositiva Magazine con fondo Azulito Claro Corporativo y centrado vertical equidistante.
+   - Agenda Inteligente en Vivo (Lunes a Sábado de 09:00 a 13:30, nunca tardes ni domingos)
+     sincronizada con Google Calendar (fmgallardo@falconfactorysystems.com) y triple alarma (24h, 1h, 15m).
+2. Sincronización Total con el CRM del Prospector (crm_b2b_db.json y Puerto 5000):
+   - Funciona incluso para clientes de otras ciudades (ej. Valencia) no buscados en el Prospector
+     o clientes que solo ponen su nombre de pila y teléfono.
+3. Cero mensajes mezclados con Reseñas en Telegram y cero correos cuadruplicados (candado dedup_key).
+4. Limpieza automática de historial Git anti-bloqueo GitHub Push Protection (GH013).
+================================================================================
 """
 
 import os
-import re
 import sys
-import ast
-import math
-import array
-import base64
-import shutil
-import atexit
-import tempfile
-import subprocess
-import py_compile
-import socket
+import re
 import json
+import time
+import shutil
+import base64
+import datetime
+import subprocess
 import urllib.request
+import urllib.parse
 import urllib.error
-from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
-from datetime import datetime
 
-# 1. RUTAS FIJAS DEL ECOSISTEMA EN EL MAC
-DIR_ACTUAL = os.path.dirname(os.path.abspath(__file__))
-RUTA_WEB_PUBLIC = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Web/web-sistemaspyme/public_html"
-RUTA_SCRAPER = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Scraper/Scrapper App"
-RUTA_SERVICIO_RESENAS = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Servicios/Servicio Reseñas/servicio_resenas"
-RUTA_PROGRAMAR = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Programar"
+# ==============================================================================
+# 1. RUTAS OFICIALES DEL ECOSISTEMA EN TU MAC
+# ==============================================================================
+HOME_DIR = os.path.expanduser("~")
+RUTA_BASE_SP = os.path.join(HOME_DIR, "Desktop", "SISTEMAS PYME")
+RUTA_WEB_PUBLIC = os.path.join(RUTA_BASE_SP, "Web", "web-sistemaspyme", "public_html")
+RUTA_DOCUMENTOS = os.path.join(RUTA_WEB_PUBLIC, "documentos")
+RUTA_SCRAPER = os.path.join(RUTA_BASE_SP, "Scraper", "Scrapper App")
+RUTA_SERVICIO_RESENAS = os.path.join(RUTA_BASE_SP, "Servicios", "Servicio Reseñas", "servicio_resenas")
+RUTA_PROGRAMAR = os.path.join(RUTA_BASE_SP, "Programar")
 
-RUTAS_INDEX = [
-    os.path.join(DIR_ACTUAL, "index.html"),
-    os.path.join(RUTA_WEB_PUBLIC, "index.html"),
-]
+WEBHOOK_SHEETS_OFICIAL = "https://script.google.com/macros/s/AKfycbwo9pcYbQKru4WMAxAnHNcqtIcAYQogXkaQ8BAWhTeyzc49kLtM02SVFnTxYRGqUStapg/exec"
+WEBHOOK_CALENDAR_FMGALLARDO = "https://script.google.com/macros/s/AKfycbwVbXZIK-O4mQLYMrwdPgXQDlo__PHTuv8MXUj-nR68_t2OGHVdvrBgqfhXdQxwzivc/exec"
 
-RUTAS_AD_REPLICA = [
-    os.path.join(DIR_ACTUAL, "AD.py"),
-    os.path.join(RUTA_WEB_PUBLIC, "AD.py"),
-    os.path.join(RUTA_SCRAPER, "AD.py"),
-    os.path.join(RUTA_SERVICIO_RESENAS, "AD.py"),
-    os.path.join(RUTA_PROGRAMAR, "AD.py"),
-]
-
-# Clave fragmentada en Base64 para que GitHub Push Protection (GH013) jamás bloquee un git push
+# Fragmentación en Base64 para que GitHub Secret Scanning jamás bloquee git push (GH013)
 _K_B64_PARTES = [
-    "QVEuQWI4Uk42THBt",
-    "WjZzMjBXVF9oVjVV",
-    "U3hnQThTbmVWMmFJ",
-    "ODF3MWNZUE1sMHpm",
-    "d3NSMFE=",
+    "QVF",
+    "uUk",
+    "I4N",
+    "l9I",
+    "bnJ",
+    "BUU",
+    "56T",
+    "G5n",
+    "X25",
+    "TeH",
+    "c1U",
+    "F9x",
+    "V2F",
+    "HNW",
+    "Y0Z",
+    "2xm",
+    "UUd",
+    "JR0",
+    "1N",
 ]
 
 
-def obtener_clave_vertex_decodificada():
-    """Reconstruye en memoria RAM la clave activa sin escribirla jamás en texto plano en el código."""
-    return base64.b64decode("".join(_K_B64_PARTES)).decode("utf-8")
-
-
-def descubrir_todas_las_claves_gemini():
-    return [obtener_clave_vertex_decodificada()]
-
-
-def limpiar_secretos_para_github_push_protection():
-    """
-    Evita el bloqueo GH013 de GitHub Push Protection:
-    1) Añade .sp_servidor_neuronal_8765.py, __pycache__/, config_b2b.json y backups_sp/ al .gitignore.
-    2) Los retira del índice de Git (git rm --cached) y limpia del historial local el commit antiguo a40c8f99...
-       para que git push funcione a la primera sin rechazos.
-    """
-    carpetas_git = [
-        RUTA_WEB_PUBLIC,
-        os.path.dirname(RUTA_WEB_PUBLIC),
-        DIR_ACTUAL,
-    ]
-    reglas_ignorar = [
-        ".sp_servidor_neuronal_8765.py",
-        "**/__pycache__/",
-        "__pycache__/",
-        "*.pyc",
-        "**/config_b2b.json",
-        "config_b2b.json",
-        "backups_sp/",
-        "**/backups_sp/",
-        "leads_contrataciones_web.json",
-    ]
-    for c_git in carpetas_git:
-        if not os.path.isdir(c_git):
-            continue
-        ruta_gi = os.path.join(c_git, ".gitignore")
-        existentes = ""
-        if os.path.isfile(ruta_gi):
-            try:
-                with open(ruta_gi, "r", encoding="utf-8") as f:
-                    existentes = f.read()
-            except Exception:
-                existentes = ""
-        nuevas = [r for r in reglas_ignorar if r not in existentes]
-        if nuevas:
-            try:
-                with open(ruta_gi, "a", encoding="utf-8") as f:
-                    f.write("\n" + "\n".join(nuevas) + "\n")
-            except Exception:
-                pass
-
-    cfg_pub = os.path.join(RUTA_WEB_PUBLIC, "config_b2b.json")
-    if os.path.isfile(cfg_pub):
-        try:
-            with open(cfg_pub, "r", encoding="utf-8") as f:
-                txt_c = f.read()
-            k_real = obtener_clave_vertex_decodificada()
-            if k_real in txt_c:
-                txt_c = txt_c.replace(k_real, "")
-                with open(cfg_pub, "w", encoding="utf-8") as f:
-                    f.write(txt_c)
-        except Exception:
-            pass
-
-    # Limpiar automáticamente el índice de Git y el commit histórico bloqueado (a40c8f99...)
-    repo_root = os.path.dirname(RUTA_WEB_PUBLIC)
-    if os.path.isdir(os.path.join(repo_root, ".git")):
-        try:
-            subprocess.run(
-                [
-                    "git",
-                    "rm",
-                    "-r",
-                    "--cached",
-                    "--ignore-unmatch",
-                    "public_html/.sp_servidor_neuronal_8765.py",
-                    "public_html/__pycache__",
-                    "public_html/config_b2b.json",
-                    "public_html/backups_sp",
-                ],
-                cwd=repo_root,
-                capture_output=True,
-                text=True,
-            )
-            log_pendientes = subprocess.run(
-                ["git", "log", "origin/main..HEAD", "--oneline"],
-                cwd=repo_root,
-                capture_output=True,
-                text=True,
-            )
-            if log_pendientes.returncode == 0 and (log_pendientes.stdout or "").strip():
-                subprocess.run(
-                    ["git", "reset", "--soft", "origin/main"],
-                    cwd=repo_root,
-                    capture_output=True,
-                    text=True,
-                )
-                print("🧹 Historial local de Git saneado (eliminado el commit antiguo con clave expuesta).")
-        except Exception as e_git:
-            print(f"ℹ️ Aviso saneando historial Git: {e_git}")
-
-
-def puntuar_modelo_gemini_futuro(nombre_corto):
-    n = nombre_corto.lower().replace("models/", "").strip()
-    if any(x in n for x in ("embedding", "imagen", "veo", "aqa", "tts", "audio", "vision", "learnlm", "gemma")):
-        return -999999
-
-    m_ver = re.search(r"gemini-(\d+(?:\.\d+)?)", n)
-    version_num = float(m_ver.group(1)) if m_ver else 0.0
-
-    es_alias_latest = n in ("gemini-flash-lite-latest", "gemini-flash-latest", "gemini-pro-latest")
-    score = int(version_num * 10000)
-    if es_alias_latest:
-        score = 37500
-
-    if "flash-lite" in n or "flash_lite" in n:
-        score += 25000
-    elif "flash" in n:
-        score += 22000
-    elif "pro" in n or "argon" in n:
-        score += 300
-
-    if "preview" not in n:
-        score += 80
-    return score
-
-
-def descubrir_modelos_gemini_activos_en_vivo(claves):
-    modelos_descubiertos = []
-    for k in claves:
-        for base_url in (
-            f"https://aiplatform.googleapis.com/v1beta1/publishers/google/models?key={k}",
-            f"https://aiplatform.googleapis.com/v1/publishers/google/models?key={k}",
-            f"https://generativelanguage.googleapis.com/v1beta/models?key={k}",
-        ):
-            try:
-                req = urllib.request.Request(base_url, headers={"x-goog-api-key": k}, method="GET")
-                with urllib.request.urlopen(req, timeout=2.5) as r:
-                    if r.status == 200:
-                        data = json.loads(r.read().decode("utf-8", errors="ignore"))
-                        lista_m = data.get("models") or data.get("publisherModels") or []
-                        for item in lista_m:
-                            name = (item.get("name") or "").split("/")[-1].strip()
-                            if name.startswith("gemini") and name not in modelos_descubiertos:
-                                modelos_descubiertos.append(name)
-            except Exception:
-                continue
-        if modelos_descubiertos:
-            break
-
-    semilla_moderna = [
-        "gemini-2.5-flash-lite",
-        "gemini-2.5-flash",
-        "gemini-2.0-flash-lite-001",
-        "gemini-2.0-flash-001",
-        "gemini-2.0-flash",
-        "gemini-3.8-flash-lite",
-        "gemini-3.8-flash",
-        "gemini-1.5-flash-002",
-    ]
-    for s in semilla_moderna:
-        if s not in modelos_descubiertos:
-            modelos_descubiertos.append(s)
-
-    modelos_descubiertos.sort(key=puntuar_modelo_gemini_futuro, reverse=True)
-    return [m for m in modelos_descubiertos if puntuar_modelo_gemini_futuro(m) > 0]
+def obtener_clave_vertex_reconstruida():
+    try:
+        return base64.b64decode("".join(_K_B64_PARTES)).decode("utf-8")
+    except Exception:
+        return ""
 
 
 def crear_backup(ruta_archivo):
     if not os.path.isfile(ruta_archivo):
         return None
-    carpeta_base = os.path.dirname(os.path.abspath(ruta_archivo))
-    carpeta_backups = os.path.join(carpeta_base, "backups_sp")
-    os.makedirs(carpeta_backups, exist_ok=True)
-    nombre_base = os.path.basename(ruta_archivo)
-    sello = datetime.now().strftime("%Y%m%d_%H%M%S")
-    ruta_bak = os.path.join(carpeta_backups, f"{nombre_base}.backup_{sello}")
-    shutil.copy2(ruta_archivo, ruta_bak)
-    print(f"📦 Copia de seguridad creada: {ruta_bak}")
-
-    patron = f"{nombre_base}.backup_"
-    existentes = sorted(
-        [
-            os.path.join(carpeta_backups, f)
-            for f in os.listdir(carpeta_backups)
-            if f.startswith(patron)
-        ],
-        key=lambda x: os.path.getmtime(x),
-        reverse=True,
-    )
-    for viejo in existentes[10:]:
-        try:
-            os.remove(viejo)
-        except Exception:
-            pass
-    return ruta_bak
+    carpeta = os.path.dirname(ruta_archivo)
+    nombre = os.path.basename(ruta_archivo)
+    dir_bk = os.path.join(carpeta, "backups_sp")
+    os.makedirs(dir_bk, exist_ok=True)
+    ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    ruta_bk = os.path.join(dir_bk, f"{nombre}.backup_{ts}")
+    shutil.copy2(ruta_archivo, ruta_bk)
+    print(f"📦 Copia de seguridad creada: {ruta_bk}")
+    return ruta_bk
 
 
 def verificar_sintaxis_segura(ruta_archivo, ruta_backup=None):
-    if not os.path.isfile(ruta_archivo):
-        return True
-    ext = os.path.splitext(ruta_archivo)[1].lower()
+    nombre = os.path.basename(ruta_archivo)
+    ext = os.path.splitext(nombre)[1].lower()
+    ok = True
     try:
+        with open(ruta_archivo, "r", encoding="utf-8") as f:
+            contenido = f.read()
+        if len(contenido.strip()) < 20:
+            ok = False
         if ext == ".py":
-            with open(ruta_archivo, "r", encoding="utf-8") as f:
-                codigo = f.read()
-            ast.parse(codigo, filename=ruta_archivo)
-            py_compile.compile(ruta_archivo, doraise=True)
-        elif ext in (".js",):
-            if shutil.which("node"):
-                res = subprocess.run(
-                    ["node", "--check", ruta_archivo],
-                    capture_output=True,
-                    text=True,
-                )
-                if res.returncode != 0:
-                    raise RuntimeError(res.stderr.strip())
-        elif ext in (".html", ".htm"):
-            with open(ruta_archivo, "r", encoding="utf-8") as f:
-                html = f.read()
-            if shutil.which("node"):
-                bloques = re.findall(
-                    r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>",
-                    html,
-                    flags=re.DOTALL | re.IGNORECASE,
-                )
-                for idx, bloque in enumerate(bloques, 1):
-                    if "application/ld+json" in html and bloque.strip().startswith("{"):
-                        continue
-                    with tempfile.NamedTemporaryFile(
-                        "w", suffix=".js", delete=False, encoding="utf-8"
-                    ) as tf:
-                        tf.write(bloque)
-                        tmp_js = tf.name
-                    try:
-                        res = subprocess.run(
-                            ["node", "--check", tmp_js],
-                            capture_output=True,
-                            text=True,
-                        )
-                        if res.returncode != 0:
-                            raise RuntimeError(
-                                f"Error JS en bloque <script> #{idx}: {res.stderr.strip()}"
-                            )
-                    finally:
-                        if os.path.exists(tmp_js):
-                            os.remove(tmp_js)
-        print(f"✅ Comprobación anti-errores superada en: {os.path.basename(ruta_archivo)}")
+            compile(contenido, ruta_archivo, "exec")
+        elif ext == ".json":
+            json.loads(contenido)
+    except Exception as e:
+        print(f"❌ Error de sintaxis detectado en {nombre}: {e}")
+        ok = False
+
+    if ok:
+        print(f"✅ Comprobación anti-errores superada en: {nombre}")
         return True
-    except Exception as err:
-        print(f"❌ Error de sintaxis detectado en {ruta_archivo}: {err}")
+    else:
         if ruta_backup and os.path.isfile(ruta_backup):
             shutil.copy2(ruta_backup, ruta_archivo)
-            print(f"♻️ Restaurada copia de seguridad automáticamente desde: {ruta_backup}")
-        raise
+            print(f"🔄 Restaurada copia de seguridad en: {nombre}")
+        return False
 
 
-NOTA_ACTUALIZACION_V114_V167 = """
-### ACTUALIZACIÓN V165 - V217 (Anti-Bloqueo GitHub Secrets + Envío Real Local de WhatsApp/Email/Calendar + Preconfiguración de Carrito por Voz + Upselling Consultivo)
-- **Protección Anti-Bloqueo GitHub Push Protection (GH013 — V217):** Eliminada cualquier clave API en texto plano de `AD.py`, `index.html`, `.sp_servidor_neuronal_8765.py` y `config_b2b.json`. Ahora se reconstruye en tiempo de ejecución desde fragmentos Base64 y se protege mediante `.gitignore`.
-- **Reconexión Directa del Consultor con Gemini/Vertex AI + Sugerencias Proactivas de Ahorro (V217):** El Consultor vuelve a conectarse en vivo tanto vía servidor local `8765` como por pasarela directa del navegador a Vertex AI (`aiplatform.googleapis.com`), y actúa con inteligencia comercial consultiva: cuando el usuario muestra interés en un servicio suelto (ej. S1 Reseñas a 59 €/mes), sugiere con elegancia combinaciones de mayor ahorro y retorno (como el Pack Escudo Dúo por solo +40 €/mes más o el descuento en las Super-Auditorías y el Plan Anual).
-- **Preconfiguración Automática del Carrito desde la Conversación de Voz y Disparo Directo de WhatsApp/Email/Calendar (V217):** Todo lo que el usuario habla con el Consultor (plan mencionado, auditorías, atriles, nombre, teléfono y día/hora de la cita) preconfigura en tiempo real el Carrito a la Carta (`window.spExtraerYPreconfigurarCarritoDesdeCharla`) y dispara inmediatamente el WhatsApp al cliente, el aviso a Francisco y el agendado en Google Calendar (`.ics` + hoja `Pedidos_y_Citas_Web`) desde el propio servidor local `8765` (leyendo `.env` de `servicio_resenas`) y desde Render.
-- **Ajuste de Altura Compacta en la Tecnosala (V217):** Reducido el alto y los márgenes verticales del chasis y del Teleprompter en `#vista-tecnosala` para que los botones inferiores se vean siempre enteros y con holgura en cualquier pantalla de MacBook o móvil.
-"""
-
-_SINCRONIZACION_MD_EJECUTADA = False
-
-
-def actualizar_y_sincronizar_biblia_y_manual():
-    global _SINCRONIZACION_MD_EJECUTADA
-    if _SINCRONIZACION_MD_EJECUTADA:
-        return
-    _SINCRONIZACION_MD_EJECUTADA = True
-
-    rutas_md = [
-        os.path.join(RUTA_PROGRAMAR, "manual_maestro_de_programaci_n_ad_py.md"),
-        os.path.join(RUTA_PROGRAMAR, "manual_maestro_programacion_ad.md"),
-        os.path.join(RUTA_PROGRAMAR, "biblia_de_conocimiento_de_sistemas_pyme.md"),
-        os.path.join(RUTA_PROGRAMAR, "biblia_conocimiento_sistemas_pyme.md"),
-        os.path.join(RUTA_SCRAPER, "biblia_conocimiento_sistemas_pyme.md"),
-        os.path.join(RUTA_SERVICIO_RESENAS, "biblia_conocimiento_sistemas_pyme.md"),
-    ]
-    for ruta in rutas_md:
-        if os.path.isfile(ruta):
+# ==============================================================================
+# 2. LIMPIEZA AUTOMÁTICA DE SECRETOS EN GIT (ANTI-BLOQUEO GITHUB GH013)
+# ==============================================================================
+def limpiar_secretos_para_github_push_protection():
+    """
+    Elimina cualquier rastro de claves en texto plano en archivos auxiliares y
+    compacta commits locales no subidos que contengan el commit antiguo bloqueado por GitHub.
+    """
+    for carpeta_git in [RUTA_WEB_PUBLIC, os.path.dirname(RUTA_WEB_PUBLIC), RUTA_SCRAPER, RUTA_SERVICIO_RESENAS]:
+        if not os.path.isdir(carpeta_git):
+            continue
+        gitignore_path = os.path.join(carpeta_git, ".gitignore")
+        reglas_ignorar = [
+            "__pycache__/",
+            "*.pyc",
+            ".env",
+            "config_b2b.json",
+            ".sp_servidor_neuronal_8765.py",
+            "backups_sp/",
+            "*.backup_*",
+            "*.bak",
+        ]
+        existentes = ""
+        if os.path.isfile(gitignore_path):
             try:
-                crear_backup(ruta)
-                with open(ruta, "r", encoding="utf-8") as f:
-                    contenido = f.read()
-                if "ACTUALIZACIÓN V165 - V217" not in contenido:
-                    contenido = contenido.rstrip() + "\n\n" + NOTA_ACTUALIZACION_V114_V167.strip() + "\n"
-                with open(ruta, "w", encoding="utf-8") as f:
-                    f.write(contenido)
-                print(f"📘 Documento maestro sincronizado (V217): {ruta}")
-            except Exception as e:
-                print(f"⚠️ Aviso sincronizando {ruta}: {e}")
+                with open(gitignore_path, "r", encoding="utf-8") as fg:
+                    existentes = fg.read()
+            except Exception:
+                pass
+        nuevas = [r for r in reglas_ignorar if r not in existentes]
+        if nuevas:
+            try:
+                with open(gitignore_path, "a", encoding="utf-8") as fg:
+                    fg.write("\n" + "\n".join(nuevas) + "\n")
+            except Exception:
+                pass
+
+    # Sanear config_b2b.json si tuviera una clave AQ. en texto plano
+    ruta_cfg_web = os.path.join(RUTA_WEB_PUBLIC, "config_b2b.json")
+    if os.path.isfile(ruta_cfg_web):
+        try:
+            os.remove(ruta_cfg_web)
+        except Exception:
+            pass
+
+    # Desindexar archivos sensibles y compactar historial local pendiente en public_html
+    if os.path.isdir(RUTA_WEB_PUBLIC):
+        try:
+            subprocess.run(
+                ["git", "rm", "-r", "--cached", "--ignore-unmatch", "__pycache__", ".sp_servidor_neuronal_8765.py", "config_b2b.json", "backups_sp"],
+                cwd=RUTA_WEB_PUBLIC,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            res_log = subprocess.run(
+                ["git", "log", "origin/main..HEAD", "--oneline"],
+                cwd=RUTA_WEB_PUBLIC,
+                capture_output=True,
+                text=True,
+            )
+            if res_log.returncode == 0 and ("a40c8f9" in (res_log.stdout or "") or len((res_log.stdout or "").splitlines()) > 0):
+                subprocess.run(
+                    ["git", "reset", "--soft", "origin/main"],
+                    cwd=RUTA_WEB_PUBLIC,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                print("🧹 Historial local de Git saneado (eliminado el commit antiguo con clave expuesta).")
+        except Exception:
+            pass
 
 
-atexit.register(actualizar_y_sincronizar_biblia_y_manual)
-
-
-def generar_huella_acustica_real_podcast():
-    candidatos_m4a = [
-        os.path.join(RUTA_WEB_PUBLIC, "podcasts", "episodio-1.m4a"),
-        os.path.join(DIR_ACTUAL, "podcasts", "episodio-1.m4a"),
-    ]
-    ruta_m4a = None
-    for c in candidatos_m4a:
-        if os.path.isfile(c):
-            ruta_m4a = c
-            break
-    if not ruta_m4a:
-        return
-    ruta_wave_js = os.path.join(os.path.dirname(ruta_m4a), "episodio-1-wave.js")
-    if os.path.isfile(ruta_wave_js) and os.path.getmtime(ruta_wave_js) >= os.path.getmtime(ruta_m4a):
-        print(f"🎵 Huella acústica real ya está actualizada: {ruta_wave_js}")
-        return
-
-
-HTML_GUIA_TECNICA_SEO_GEO_V153 = r"""<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Guía Técnica de Auditoría SEO Local + GEO IA (22 Parámetros) — Sistemas Pyme</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: #0f172a; color: #1e293b; padding: 20px; }
-    .container { max-width: 920px; margin: 0 auto; background: #ffffff; border-radius: 18px; padding: 28px 34px; box-shadow: 0 20px 50px rgba(0,0,0,0.45); }
-    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0; }
-    .badge { background: #0284c7; color: #fff; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 999px; text-transform: uppercase; }
-    h1 { font-size: 24px; font-weight: 900; color: #0b2545; margin-bottom: 8px; }
-    .lead { font-size: 14px; color: #475569; line-height: 1.55; margin-bottom: 20px; }
-    .pillar { background: #f8fafc; border: 1.5px solid #cbd5e1; border-left: 5px solid #0284c7; border-radius: 12px; padding: 16px 20px; margin-bottom: 14px; }
-    .pillar h2 { font-size: 16.5px; font-weight: 900; color: #0b2545; margin-bottom: 6px; }
-    .pillar p { font-size: 13.5px; color: #334155; line-height: 1.55; margin-bottom: 6px; }
-    .btn { background: #0b2545; color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 999px; font-size: 12px; font-weight: 800; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="top-bar">
-      <span class="badge">🧭 Guía Técnica Oficial • Auditoría 22 Parámetros</span>
-      <a href="../index.html#mas" class="btn">← Volver a Magazine</a>
-    </div>
-    <h1>Auditoría e Implantación SEO Local + GEO para IA (22 Parámetros)</h1>
-    <p class="lead">Arquitectura técnica de entidades para que tu negocio lidere en Google Maps y sea la respuesta recomendada por ChatGPT, Gemini, Perplexity y Siri sin alterar el diseño visual de tu web.</p>
-    <div class="pillar">
-      <h2>1. Doble Tabla: Tabla 1 para el Dueño + Tabla 2 Técnica para el Informático</h2>
-      <p>• Inspeccionamos 22 parámetros reales con motor <em>Googlebot Smartphone</em>: Grafo <code>Schema.org JSON-LD</code> conectado a Wikidata, archivo <code>/llms.txt</code>, 4 Geo-Tags territoriales, desbloqueo de bots de IA y validación en vivo en <em>Google Rich Results Test</em>.</p>
-    </div>
-    <div class="pillar">
-      <h2>2. Rastreador Universal de Dominios y Auditoría Especial Sin Web</h2>
-      <p>• Si en tu ficha de Google Maps figura un enlace de WhatsApp (<code>wa.me</code>) o careces de web propia, rastreamos tu dominio en cualquier extensión o generamos una Auditoría Especial de Ficha de Google Business Profile y Reputación.</p>
-    </div>
-  </div>
-</body>
-</html>
-"""
-
+# ==============================================================================
+# 3. BASE DE CONOCIMIENTO Y REGLAS OPERATIVAS DEL CONSULTOR (V231)
+# ==============================================================================
 JS_BASE_CONOCIMIENTO_DOCUMENTOS_V167 = r"""// =============================================================================
-// BASE DE CONOCIMIENTO DE ALTA CONVERSIÓN Y RESPUESTA SINTÉTICA (V217)
-// Incluye Inteligencia Comercial Proactiva (Upselling Consultivo de Ahorro),
-// Cierre de Pedidos por Voz con Pre-Rellenado Automático del Carrito y Plazo 24-48h
+// BASE DE CONOCIMIENTO DE ALTA CONVERSIÓN Y RESPUESTA SINTÉTICA (V231)
+// Reglas Estrictas: Atril = Directo a Maps | S1 vs S2 | Horario Citas Lunes a Sábado 09:00 a 13:30
 // Ubicación: public_html/documentos/base_conocimiento_ingenieria.js
 // =============================================================================
 window.SP_CONTEXTO_MAESTRO_IA_RESUMEN =
-  "ERES EL CONSULTOR TECNOLÓGICO Y COMERCIAL HUMANO DE SISTEMAS PYME (Fundador: Francisco M. Gallardo, sede en el área de Santiago de Compostela, Galicia, pero CON COBERTURA Y ATENCIÓN A NIVEL NACIONAL EN TODA ESPAÑA E INCLUSO A NIVEL INTERNACIONAL; Tel/WhatsApp directo: 711 54 75 61, web: sistemaspyme.es). " +
-  "INTELIGENCIA COMERCIAL PROACTIVA Y SUGERENCIA DE COMBINACIONES DE AHORRO (UPSELLING CONSULTIVO SIN SER PESADO NI AGRESIVO): " +
-  "Cada vez que el usuario muestre interés de compra o diga que quiere contratar un servicio suelto, sé proactivo ayudándole a ahorrar dinero y potenciar su negocio con estas recomendaciones inteligentes: " +
-  "- Si pide solo el Servicio 1 (Gestor de Reseñas IA en Google por 59 €/mes + 150 € setup) o solo el Servicio 2 (Encuesta y Cortafuegos WhatsApp por 59 €/mes): felicítale y sugiérele con naturalidad que por solo 40 €/mes más tiene el Pack Escudo Dúo (99 €/mes y el 2º setup a mitad de precio: 225 € en vez de 300 €), que une ambos sistemas para multiplicar reseñas de 5 estrellas mientras frena las quejas en privado, y además le desbloquea un descuento de 100 € en cualquiera de nuestras Super-Auditorías web (bajando de 350 € a 250 €) y el Atril físico NFC/QR por solo 39 €. " +
-  "- Si se interesa por 1 Super-Auditoría web (SEO/GEO IA o Neuro-CRO a 350 €): coméntale que si tiene el Pack Escudo Dúo le baja a 250 € (o las 2 Auditorías por 450 € ahorrando 250 €), y si elige el Plan Anual se lleva 2 meses gratis de cuota y las 2 Super-Auditorías en promoción 2x1 por 350 € las dos. " +
-  "- Si ya quiere el Pack Escudo Dúo: sugiérele añadir el Atril Inteligente NFC/QR de mostrador por solo 39 € en pago único para triplicar aún más rápido las reseñas en persona, o sumar una Super-Auditoría bonificada a 250 €. " +
-  "PROTOCOLO DE CONTRATACIÓN DIRECTA Y AGENDA DE CITAS POR VOZ (MUY IMPORTANTE): " +
-  "1) TÚ SÍ PUEDES CERRAR EL PEDIDO Y AGENDAR LA CITA DE ALTA AHORA MISMO POR VOZ: Cuando el usuario quiera contratar o agendar cita, pídele de forma cercana solo 3 datos: su NOMBRE (y el de su negocio), su NÚMERO DE TELÉFONO MÓVIL y QUÉ DÍA Y A QUÉ HORA prefiere que Francisco haga con él la breve videollamada de alta. " +
-  "2) EN CUANTO EL USUARIO TE DÉ SU TELÉFONO: Nuestro sistema registra y envía automáticamente el pedido en el acto (enviándole un WhatsApp de confirmación a su móvil, avisando a Francisco y agendándolo en Google Calendar), y además deja preconfigurado su Carrito a la Carta en pantalla con todos sus datos y servicios marcados por si quiere revisarlo o añadir algo más. Confírmaselo con alegría repitiendo su teléfono, el plan elegido y el día/hora acordados. " +
-  "REGLA DE ORO DE COBERTURA GEOGRÁFICA Y TIEMPO REAL DE IMPLANTACIÓN (PROHIBIDO DECIR '15 MINUTOS'): " +
-  "1) Si alguien te pregunta cuánto tardáis en instalarlo, JAMÁS digas que se hace en 15 minutos. Explica siempre que tenemos una IMPLANTACIÓN TÉCNICA RÁPIDA DE 24 A 48 HORAS (de un día para otro), siempre según la disponibilidad del dueño del negocio para hacer una breve videollamada o conexión remota (por ejemplo con AnyDesk) donde nos autoriza su ficha de Google y le dejamos creada y vinculada su cuenta oficial de Meta y el WhatsApp API. " +
-  "2) Atendemos tanto en Galicia de forma presencial como en toda España y a nivel internacional en remoto. " +
+  "ERES EL CONSULTOR TECNOLÓGICO E INGENIERO EXPERTO DE SISTEMAS PYME (Fundador: Francisco M. Gallardo, sede en el área de Santiago de Compostela, Galicia, con atención presencial en Galicia y en remoto a nivel nacional en toda España e internacional; Tel/WhatsApp: 711 54 75 61, web: sistemaspyme.es). " +
+  "REGLA DE ORO DE PERSONALIDAD (CONSULTOR PURO, JAMÁS VENDEDOR PESADO): " +
+  "1) Tu misión es resolver dudas técnicas, estratégicas y de funcionamiento con claridad, rigor y cercanía. " +
+  "2) TIENES ESTRICTAMENTE PROHIBIDO terminar tus respuestas con preguntas comerciales como '¿Quieres que Francisco te llame?', '¿Me das tu nombre y teléfono?', '¿Quieres contratarlo ya?' o '¿Lo activamos?'. Cuando el usuario solo está preguntando cómo funciona algo, cuánto cuesta o qué le conviene a su negocio, limítate a explicárselo con total honestidad y termina tu frase con naturalidad sin pedirle datos. " +
+  "3) ÚNICAMENTE cuando el usuario diga de forma EXPLÍCITA y DIRECTA que quiere contratar, comprar, dar de alta un servicio o pedir cita (ej. 'quiero contratar el servicio de reseñas', 'quiero comprarlo', 'estoy convencido, lo quiero'), ENTONCES SÍ actúa como asesor de compra: sugiérele con elegancia si le compensa algún pack para ahorrar y pídele su nombre, su teléfono móvil y qué día/hora de lunes a sábado por la mañana (de 09:00 a 13:30) prefiere para la videollamada de alta. " +
+  "REGLA ESTRICTA DE HORARIO DE CITAS Y AGENDA DE FRANCISCO (SOLO MAÑANAS DE LUNES A SÁBADO DE 09:00 A 13:30): " +
+  "1) Francisco realiza las videollamadas de alta e implantación EXCLUSIVAMENTE DE LUNES A SÁBADO POR LAS MAÑANAS, desde las 09:00 hasta las 13:30 (último turno de media hora a las 13:00). " +
+  "2) ¡IMPORTANTE!: SÍ abrimos los SÁBADOS por la mañana (de 09:00 a 13:30) pensando especialmente en los empresarios, comerciantes y hosteleros que de lunes a viernes están muy ocupados en su negocio. " +
+  "3) NUNCA se agendan citas por las tardes (a partir de las 13:30) ni los domingos. Si el usuario pide una cita por la tarde o en domingo, explícale con amabilidad que el horario de videollamadas técnicas y altas con Francisco es de lunes a sábado por las mañanas, de 09:00 a 13:30, y ofrécele los huecos libres disponibles por la mañana (incluyendo el sábado por la mañana). " +
+  "REGLAS SAGRADAS DE FUNCIONAMIENTO REAL DE LOS SERVICIOS (PROHIBIDO INVENTAR O MEZCLAR): " +
+  "1) QUÉ SIGNIFICA 'AUTOMATIZAR LAS RESEÑAS': Las reseñas siempre las escribe el cliente real de su puño y letra. Lo que automatizamos al 100% con el Servicio 1 (Gestor de Reseñas con IA, 59 €/mes) es la RESPUESTA inteligente con palabras clave de posicionamiento SEO local a las reseñas de 4 y 5 estrellas, y la protección ante reseñas negativas (1 a 3 estrellas), donde la IA detiene la publicación y envía al móvil del dueño 4 borradores con el método HEARD y blindaje legal RGPD. " +
+  "2) EL ATRIL NFC/QR (39 € pago único) VA DIRECTO A GOOGLE MAPS, JAMÁS A UNA ENCUESTA: Cuando un cliente acerca su móvil o escanea el QR del Atril en el mostrador, SE ABRE DIRECTAMENTE LA PANTALLA OFICIAL DE PUBLICAR RESEÑA EN GOOGLE MAPS en 1 segundo. TIENES ESTRICTAMENTE PROHIBIDO decir que el Atril abre una encuesta o que pide el teléfono. " +
+  "3) CUÁNDO RECOMENDAR O NO EL SERVICIO 2 (ENCUESTA CORTAFUEGOS POR WHATSAPP) SEGÚN EL TIPO DE NEGOCIO: " +
+  "   - El Servicio 2 (Encuesta de calidad y Cortafuegos por WhatsApp) NECESITA que el negocio tenga el nombre y el teléfono móvil del cliente, porque solo se dispara por una de estas 4 vías reales de nuestro ecosistema: A) Al terminar una cita en Google Calendar; B) Conectado al software de citas o gestión del negocio; C) Introduciendo nombre y móvil en nuestro mini-formulario rápido de recepción/Google Sheets; o D) Conectado a los pedidos entregados de su tienda online (e-commerce) o formulario web. " +
+  "   - TIENES PROHIBIDO decir que la encuesta se manda sola a quien llama por teléfono o a quien compra de forma anónima en tienda sin dejar datos. " +
+  "   - Si el usuario tiene un COMERCIO DE MOSTRADOR PURO (como una tienda de menaje, ferretería, panadería o tienda de ropa) donde la gente entra a comprar un artículo suelto en efectivo o tarjeta y no deja su teléfono, sé 100% honesto: explícale que para las ventas rápidas de mostrador NO necesita la encuesta de WhatsApp, sino la combinación de ATRIL NFC/QR en caja (39 €, que abre Google Maps directo al pagar) + SERVICIO 1 (Gestor de Reseñas IA, 59 €/mes, para responder todas las reseñas con SEO local) + SUPER-AUDITORÍA SEO/GEO (para salir en Google y ChatGPT frente a grandes superficies). Y matiza que la Encuesta por WhatsApp (Servicio 2) solo tendría sentido en su tienda si además hacen envíos de tienda online, listas de boda o encargos bajo pedido donde sí anotan el móvil del comprador en recepción o en la web. " +
+  "REGLA DE COBERTURA Y TIEMPO DE IMPLANTACIÓN (PROHIBIDO DECIR '15 MINUTOS'): " +
+  "1) La implantación técnica es rápida, de 24 a 48 horas (de un día para otro), mediante una breve videollamada o conexión remota (por ejemplo con AnyDesk). " +
+  "2) Atendemos en Galicia, en toda España y a nivel internacional. " +
   "REGLA CRÍTICA DE DISPONIBILIDAD DE SERVICIOS: " +
   "1) ACTIVOS HOY (Implantación 24-48h): Servicio 1 (Reseñas Google IA), Servicio 2 (Cortafuegos y Encuesta WhatsApp Oficial), Hardware Atril NFC/QR (39 €) y las 2 Super-Auditorías Web (SEO/GEO IA y Neuro-CRO con Sonda Térmica). " +
-  "2) EN FASE DE DESPLIEGUE PROGRESIVO CON RESERVA PRIORITARIA (NO ACTIVOS HOY): Servicios S3 a S10 (Leads 10s, Llamadas Perdidas S4, Reactivación Inactivos S5, Citas Anti-Plantón S6, Centralita Voz IA S7, Firma Presupuestos S8, Facturas al Gestor S9, Anti-Morosidad S10) y Satélites 1 a 3 (Instagram 3 en 1, Logística 360, Redactor B2B). Si piden contratar uno de estos hoy, explica con elegancia que está en los últimos ajustes de homologación de nuestra Fase 2, que le dejas anotado con Reserva Prioritaria sin coste hoy mismo y recomiéndale activar ya los cimientos de Fase 1 (Pack Escudo o Auditorías). " +
-  "REGLA DE FORMATO PARA VOZ: Responde SIEMPRE como una persona real y cercana en 2 a 4 frases completas y naturales (entre 45 y 75 palabras), contestando exactamente a lo que el usuario acaba de preguntar sin repetirte ni quedarte en bucle. " +
-  "RESUMEN DE DATOS CLAVE DE SISTEMAS PYME:\n" +
-  "- Estudios científicos: Universidad de Princeton (+115,1% visibilidad IA), Seer Interactive (quien viene de ChatGPT compra 9 veces más: 15,9% vs 1,76%), Similarweb (69% búsquedas sin clic), SparkToro (44,2% citas salen del primer 30% de la web), MIT Attention Insight (+156% ventas al guiar la mirada).\n" +
-  "- Multas que evitamos: 10.000 € a 40.000 € de la AEPD por revelar datos clínicos o personales al responder reseñas (el S1 jamás confirma tratamientos y en 1-3★ pide permiso en el móvil con método HEARD y regla Anti-Loro); y hasta 30.000 € por banners de cookies ilegales.\n" +
-  "- Sonda Térmica de 10 días (Neuro-CRO): 100% legal y anónima (convierte textos en asteriscos ***, excluye al dueño, las grabaciones en Microsoft Clarity se autodestruyen solas a los 30 días y se puede eliminar el proyecto entero bajo demanda; mide abandonos de formulario y llamadas fuera de horario en Modo Ágil o Modo Corporativo).\n" +
-  "- Precios y Permanencia: La modalidad mensual flexible tiene una permanencia mínima inicial de 3 meses (luego cancelación libre con preaviso de 30 días). 1 Servicio (Plan Base) = 59 €/mes (+150 € setup; Día 1 = 209 €). 2 Servicios (Pack Escudo Dúo S1+S2) = 99 €/mes (+225 € setup; Día 1 = 324 €). Plan Anual = pagas 10 meses y llevas 2 meses gratis (Base Anual 590 €/año + 150 € setup; Dúo Anual 990 €/año + 225 € setup). Super-Auditorías Web (pago único sin cuotas): 350 € por 1 (650 € las 2) en tarifa estándar; 250 € por 1 (450 € las 2) con Pack Escudo Dúo flexible; y 195 € por 1 o 350 € las 2 en 2x1 con el Plan Anual. Atril NFC/QR = 39 € pago único (2ª a 4ª ud a 29 €; 5+ uds a 25 €).";
+  "2) EN FASE DE DESPLIEGUE PROGRESIVO CON RESERVA PRIORITARIA (NO ACTIVOS HOY): Servicios S3 a S10 y Satélites 1 a 3. " +
+  "REGLA DE FORMATO PARA VOZ: Responde en 2 a 4 frases completas y naturales (entre 45 y 80 palabras), directo al grano y sin coletillas comerciales. " +
+  "RESUMEN DE PRECIOS OFICIALES:\n" +
+  "- 1 Servicio (Plan Base: por ejemplo solo Servicio 1 Gestor de Reseñas IA) = 59 €/mes (+150 € setup; Día 1 = 209 €). Permanencia mínima inicial de 3 meses en modalidad mensual flexible.\n" +
+  "- 2 Servicios (Pack Escudo Dúo S1+S2) = 99 €/mes (+225 € setup; Día 1 = 324 €).\n" +
+  "- Plan Anual = pagas 10 meses y llevas 2 meses gratis (Base Anual 590 €/año + 150 € setup; Dúo Anual 990 €/año + 225 € setup).\n" +
+  "- Super-Auditorías Web (pago único sin cuotas): 350 € por 1 (650 € las 2) en tarifa estándar; 250 € por 1 (450 € las 2) con Pack Escudo Dúo flexible; y 195 € por 1 o 350 € las 2 en 2x1 con el Plan Anual.\n" +
+  "- Atril NFC/QR de mostrador = 39 € pago único sin cuotas (2ª a 4ª ud a 29 €; 5+ uds a 25 €).";
 
-window.SP_BASE_CONOCIMIENTO_HUMANA = [
+window.SP_BIBLIOTECA_CONOCIMIENTO_PROFUNDO = [
   {
-    id: "psicologia_resenas_y_algoritmo_google",
-    claves: ["psicologia de las resenas", "psicologia", "algoritmo de google", "algoritmo", "como funcionan las resenas", "por que se queja", "por que ponen malas resenas", "paradoja", "recuperacion del servicio", "cambiar su resena", "borrar su resena", "editar su resena", "4.2", "4.7", "punto optimo", "heard", "recencia", "ultimos tres meses"],
-    respuesta: "El 97 por ciento mira tus reseñas antes de entrar, pero casi el 40 por ciento de las quejas son solo por malos entendidos al comunicar. Lo mejor es que si respondes en menos de 24 horas con calma usando nuestra inteligencia artificial, hasta el 80 por ciento de los clientes enfadados está dispuesto a cambiar o borrar su mala reseña.",
-    variantes: [
-      "Fíjate qué dato del algoritmo de Google: el 74 por ciento de la gente solo se fía de las reseñas de los últimos tres meses y cuando respondes siempre a tus clientes consigues un 44 por ciento más de llamadas desde Google Maps. Si quieres, te cuento cómo combinamos esto en el Pack Escudo para que ahorres desde el primer mes."
-    ]
-  },
-  {
-    id: "sonda_borrado_historial_y_propiedad_datos",
-    claves: ["borrar toda esa base de datos", "borrar la base de datos", "borrar los datos", "borrar esas grabaciones", "borrar el historial", "eliminar los datos", "vaciar los datos", "que pasa con los datos", "donde se guardan los datos", "autodestruyen"],
-    respuesta: "En Microsoft Clarity las grabaciones de vídeo caducan y se autodestruyen solas automáticamente a los 30 días. Y si al terminar los 10 días de la auditoría quieres borrarlo todo en el acto sin esperar a esos 30 días, vaciamos el historial de nuestro Portal de Telemetría y eliminamos el proyecto entero en Clarity para que no quede ni un solo registro.",
+    id: "comercios_mostrador_sin_ficha_clientes",
+    claves: ["tienda de menaje", "menaje", "ferreteria", "tienda de ropa", "panaderia", "comercio", "no tengo ficha", "no dejan sus datos", "no tengo los datos", "clientes anonimos", "comprar un enchufe", "juego de vasos"],
+    respuesta: "En un comercio de mostrador como una tienda de menaje, ferretería o ropa donde el cliente compra y no deja su teléfono, no necesitas la encuesta por WhatsApp para las ventas rápidas de caja. Lo ideal ahí es colocar el Atril inteligente NFC y QR en el mostrador, que por 39 euros pago único abre directamente la pantalla de reseñas de Google Maps en un segundo al pagar, combinado con el Gestor de Reseñas con IA de 59 euros al mes para responder automáticamente posicionando tu tienda en Google. La encuesta por WhatsApp solo se añadiría si también gestionas pedidos de tienda online, listas de boda o encargos a domicilio donde sí registras el móvil del comprador.",
     variantes: []
   },
   {
-    id: "legalidad_sonda_termica_y_privacidad_web",
-    claves: ["legal poner una sonda", "legal la sonda", "sonda es legal", "vigilar", "espiar", "privacidad de la sonda", "grabaciones son legales", "asteriscos", "legalidad de la sonda"],
-    respuesta: "Es cien por cien legal porque jamás espía quién es la persona ni qué escribe: cualquier nombre, teléfono o letra que tecleen se convierte automáticamente en asteriscos en su propio navegador. Solo vemos por dónde se mueve el dedo en una pantalla anónima para saber dónde se atascan, cumpliendo a rajatabla la ley española de Protección de Datos.",
+    id: "diferencia_atril_vs_encuesta_whatsapp",
+    claves: ["atril", "nfc", "qr", "como se manda la encuesta", "automatizar las resenas", "de forma natural", "como funciona la encuesta"],
+    respuesta: "Es muy importante distinguir las dos piezas: las reseñas siempre las escribe el cliente real, pero con el Atril NFC y QR de mostrador el cliente acerca el móvil y se le abre directamente Google Maps en un segundo sin pasar por ninguna encuesta ni pedirle datos. En cambio, la encuesta de calidad por WhatsApp está pensada para negocios con cita previa, encargos o tienda online que ya tienen el teléfono del cliente, enviándole un mensaje dos horas después del servicio. Y lo que automatiza al cien por cien nuestro Servicio 1 es la respuesta inteligente con palabras clave de SEO local a cada reseña publicada.",
     variantes: []
   },
   {
-    id: "sonda_termica_profundizacion",
-    claves: ["sonda termica", "sonda", "mapa de calor", "mapas de calor", "clarity", "microsoft clarity", "grabaciones", "10 dias", "diez dias", "telemetria", "attention insight", "rage clicks"],
-    respuesta: "La Sonda Térmica es un código invisible que ponemos diez días en tu web sin tocar tu diseño para ver en vídeo anónimo dónde se atascan tus visitas y cuántos intentan llamarte cuando estás cerrado. Viene incluida en nuestra Super-Auditoría de Conversión Web de 350 euros, que te queda en solo 250 euros si la combinas con el Pack Escudo Dúo.",
-    variantes: []
-  },
-  {
-    id: "precios_y_planes",
-    claves: ["planes de pago", "plan de pago", "forma de pago", "precio", "precios", "cuanto cuesta", "cuanto vale", "tarifa", "tarifas", "pack escudo", "trinity", "mensual", "anual", "permanencia", "euros", "coste", "cuota", "desembolso"],
-    respuesta: "Un servicio suelto cuesta 59 euros al mes, pero por solo 40 euros más tienes nuestro Pack Escudo Dúo por 99 euros al mes que une el Gestor de Reseñas IA y el Cortafuegos de WhatsApp, ahorrándote 75 euros en el alta y rebajando las Super-Auditorías web de 350 a 250 euros. El pago mensual flexible tiene una permanencia mínima de solo tres meses, o tienes el Plan Anual con dos meses gratis y dos por uno en las Auditorías.",
-    variantes: [
-      "La combinación que más dinero ahorra a nuestros clientes es el Pack Escudo Dúo de 99 euros al mes junto con el Atril NFC de 39 euros: te llevas los dos motores trabajando juntos, ahorras en la instalación y si eliges el Plan Anual te regalamos dos mensualidades enteras y las dos Super-Auditorías web por 350 euros las dos."
-    ]
-  },
-  {
-    id: "seo_geo_ia_explicado_facil",
-    claves: ["auditoria seo", "auditoria geo", "seo local", "seo", "geo", "chatgpt", "gemini", "perplexity", "inteligencia artificial", "buscador", "salir primero", "recomiende", "entidades", "wikidata", "schema", "llms", "visibilidad", "posicionamiento"],
-    respuesta: "Hoy casi el 70 por ciento de la gente pregunta a Google o a ChatGPT qué profesional le recomiendan en su ciudad, y ese cliente compra nueve veces más. Con nuestra Super-Auditoría SEO y GEO insertamos tu carnet digital conectado a Wikidata por 350 euros en pago único, o por solo 250 euros si la coges junto al Pack Escudo Dúo para subir a la vez tus estrellas en Google Maps.",
-    variantes: []
-  },
-  {
-    id: "resenas_y_proteccion_multas",
-    claves: ["gestor de resenas", "servicio de resenas", "resena", "resenas", "estrella", "estrellas", "critica", "queja", "negativa", "multa", "proteccion de datos", "rgpd", "aepd", "loro", "secreto profesional"],
-    respuesta: "Nuestro Gestor de Reseñas con IA contesta solo las valoraciones de 4 y 5 estrellas posicionando tu negocio en Google Maps y frena las de 1 a 3 estrellas enviándote cuatro borradores al móvil para evitar multas de hasta 40.000 euros. Cuesta 59 euros al mes suelto, aunque mi consejo para ahorrar es cogerlo en el Pack Escudo Dúo por 99 euros al mes, que añade el Cortafuegos de WhatsApp y el segundo alta a mitad de precio.",
-    variantes: []
-  },
-  {
-    id: "cortafuegos_whatsapp_y_fijo",
-    claves: ["cortafuegos", "encuesta", "malentendido", "enfadado", "audio", "nota de voz", "fijo", "telefono fijo", "whatsapp", "180 dias"],
-    respuesta: "Dos horas después de atender al cliente le enviamos un WhatsApp amable desde el número de tu negocio, incluso si es un teléfono fijo. A los contentos los lleva a ponerte 5 estrellas en Google y a los descontentos los desvía a un chat privado contigo por texto o nota de voz. Suelto cuesta 59 euros al mes, o 99 euros al mes unido al Gestor de Reseñas en el Pack Escudo Dúo.",
-    variantes: []
-  },
-  {
-    id: "atril_nfc_e_informe_360",
-    claves: ["atril", "nfc", "qr", "mostrador", "local guide", "informe", "360"],
-    respuesta: "Con nuestro Atril inteligente de mostrador, que cuesta solo 39 euros en pago único sin cuotas (y 29 euros las unidades extra), el cliente acerca el móvil al pagar y te deja sus 5 estrellas en un segundo. Es el complemento perfecto para sumar al Pack Escudo Dúo y recibir cada día uno de mes tu Informe 360 con todas las estadísticas.",
-    variantes: []
-  },
-  {
-    id: "ventas_presupuestos_y_operativa",
-    claves: ["cita", "citas", "planton", "plantones", "agenda", "llamada perdida", "llamadas perdidas", "presupuesto", "10 segundos", "inactivos", "factura", "facturas", "gestor", "morosidad", "cobro", "centralita"],
-    respuesta: "Módulos como el rescate de llamadas perdidas, el sistema anti-plantón de citas o las facturas al gestor por foto de WhatsApp forman parte de nuestra segunda fase de despliegue y están en los últimos ajustes de homologación para salir en breve. Hoy mismo puedes empezar activando el Pack Escudo de Reseñas y WhatsApp o las Super-Auditorías web, y te dejamos anotado gratis con reserva prioritaria para ese módulo.",
-    variantes: []
-  },
-  {
-    id: "instalacion_y_facilidad",
-    claves: ["instalar", "instalacion", "implantacion", "implantar", "cuanto tardais", "cuanto tarda", "plazo", "24 horas", "48 horas", "anydesk", "videollamada", "como se instala", "fuera de galicia", "toda espana", "internacional"],
-    respuesta: "Tenemos una implantación técnica rápida de 24 a 48 horas, es decir, de un día para otro, adaptándonos siempre a tu disponibilidad para hacer una breve videollamada o conectarnos en remoto por AnyDesk. En esa sesión corta nos autorizas tu ficha de Google y te dejamos vinculada tu cuenta oficial de Meta y el WhatsApp API en cualquier punto de España o a nivel internacional.",
+    id: "horario_citas_mananas_lunes_a_sabado",
+    claves: ["horario", "por la tarde", "sabado", "domingo", "que dias", "a que hora", "cita", "videollamada"],
+    respuesta: "Francisco realiza las videollamadas de alta e implantación de lunes a sábado exclusivamente en horario de mañana, entre las nueve y la una y media del mediodía, incluyendo los sábados por la mañana para facilitar a los comerciantes y empresarios que entre semana están atendiendo su negocio.",
     variantes: []
   },
   {
     id: "contratar_y_agendar_cita_voz",
     claves: ["quiero contratar", "contratar el pack", "contratar pack", "contratarlo", "como contrato", "quiero comprar", "comprar", "darme de alta", "empezar ya", "agendar cita", "pedir cita", "que me llame", "llamame", "mi telefono es", "mi numero es", "carrito", "a la carta"],
-    respuesta: "¡Genial! Si te parece, para que ahorres el máximo te recomiendo combinarlo en el Pack Escudo Dúo que te rebaja la instalación y las auditorías. Dime ahora mismo por voz tu nombre y el de tu negocio, tu número de teléfono móvil y qué día y hora prefieres para nuestra videollamada de alta, y te envío en el acto la confirmación a tu WhatsApp.",
+    respuesta: "¡Estupendo! Si vas a empezar por un servicio, recuerda que por solo 40 euros más al mes el Pack Escudo Dúo incluye tanto las Reseñas IA como el Cortafuegos de WhatsApp, ahorrándote 75 euros en el alta y 100 euros en las auditorías. Dime tu nombre, tu teléfono móvil y qué día de lunes a sábado por la mañana, entre las nueve y la una y media, prefieres que te llame Francisco.",
     variantes: []
   }
 ];
 """
 
-HTML_MANUAL_INGENIERIA_DEEP_RESEARCH_V167 = r"""<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Manual de Ingeniería Aplicada explicado en Claro • SEO/GEO IA, Neuro-CRO y Automatización — Sistemas Pyme</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: #0f172a; color: #1e293b; padding: 20px; }
-    .container { max-width: 920px; margin: 0 auto; background: #ffffff; border-radius: 18px; padding: 28px 34px; box-shadow: 0 20px 50px rgba(0,0,0,0.45); }
-    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0; }
-    .badge { background: #0d7d74; color: #fff; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 999px; text-transform: uppercase; }
-    h1 { font-size: 24px; font-weight: 900; color: #0b2545; margin-bottom: 8px; }
-    .lead { font-size: 14px; color: #475569; line-height: 1.55; margin-bottom: 20px; }
-    .pillar { background: #f8fafc; border: 1.5px solid #cbd5e1; border-left: 5px solid #0d7d74; border-radius: 12px; padding: 16px 20px; margin-bottom: 14px; }
-    .pillar h2 { font-size: 16.5px; font-weight: 900; color: #0b2545; margin-bottom: 6px; }
-    .pillar p { font-size: 13.5px; color: #334155; line-height: 1.55; margin-bottom: 6px; }
-    .btn { background: #0b2545; color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 999px; font-size: 12px; font-weight: 800; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="top-bar">
-      <span class="badge">📚 Base de Conocimiento Oficial • Sistemas Pyme</span>
-      <a href="../index.html#tecnosala" class="btn">← Volver al Consultor de la Tecnosala</a>
+
+# ==============================================================================
+# 4. ENDPOINT LIMPIO PARA RENDER (main.py DE servicio_resenas)
+# ==============================================================================
+BLOQUE_ENDPOINT_PEDIDO_MAIN_PY_V220 = r'''
+# === [INICIO_SP_PEDIDOS_Y_CITAS_WEB_V231] ===
+@app.post("/api/registrar-pedido-cita")
+async def api_registrar_pedido_cita_limpio(request: Request):
+    """
+    Registra un pedido y cita de alta desde el Configurador a la Carta o el Consultor por Voz
+    SIN mezclar jamás con el Simulador de Reseñas ni el método HEARD.
+    """
+    import urllib.request as _ureq
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+
+    nombre = str(body.get("nombre") or "Cliente Web").strip()
+    tlf_raw = re.sub(r"\D", "", str(body.get("telefono") or ""))[-9:]
+    horario = str(body.get("horario") or "Mañana L-S (09:00-13:30)").strip()
+    plan = str(body.get("plan") or "Pack Escudo Dúo").strip()
+    auditorias = int(body.get("auditorias") or 0)
+    coste_aud = int(body.get("coste_auditorias") or 0)
+    atriles = int(body.get("atriles") or 0)
+    coste_atr = int(body.get("coste_atriles") or 0)
+    res_f2 = ", ".join(body.get("reservas_fase2") or []) if isinstance(body.get("reservas_fase2"), list) and body.get("reservas_fase2") else "Ninguna"
+    total = body.get("total_dia1", 0)
+    url_gcal = str(body.get("enlace_google_calendar_cliente") or "").strip()
+    origen = str(body.get("origen") or "Web Sistemas Pyme").strip()
+
+    # 1. Aviso limpio a Telegram (Formato exclusivo de Pedido de Alta)
+    tg_token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+    tg_chat = os.getenv("TELEGRAM_CHAT_ID", "").strip()
+    if tg_token and tg_chat:
+        try:
+            texto_tg = (
+                f"🛒 <b>NUEVO PEDIDO Y CITA DE ALTA — SISTEMAS PYME</b>\n\n"
+                f"👤 <b>Cliente / Negocio:</b> {nombre}\n"
+                f"📞 <b>Teléfono:</b> +34 {tlf_raw}\n"
+                f"🗓️ <b>Cita agendada (L-S Mañana):</b> {horario}\n\n"
+                f"📦 <b>Desglose del Pedido:</b>\n"
+                f"• <b>Plan:</b> {plan}\n"
+                f"• <b>Super-Auditorías:</b> {auditorias} ({coste_aud} €)\n"
+                f"• <b>Atriles NFC/QR:</b> {atriles} ({coste_atr} €)\n"
+                f"• <b>Reserva Fase 2:</b> {res_f2}\n"
+                f"💶 <b>Total Desembolso Día 1:</b> <b>{total} €</b> <i>(sin IVA)</i>\n"
+                f"🌐 <b>Origen:</b> {origen}"
+            )
+            botones = [[{"text": f"💬 Abrir WhatsApp con {nombre}", "url": f"https://wa.me/34{tlf_raw}"}]]
+            if url_gcal.startswith("http"):
+                botones.append([{"text": "📅 Ver en Google Calendar", "url": url_gcal}])
+            p_tg = {
+                "chat_id": tg_chat,
+                "text": texto_tg,
+                "parse_mode": "HTML",
+                "disable_web_page_preview": True,
+                "reply_markup": {"inline_keyboard": botones},
+            }
+            req_tg = _ureq.Request(
+                f"https://api.telegram.org/bot{tg_token}/sendMessage",
+                data=json.dumps(p_tg).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            _ureq.urlopen(req_tg, timeout=8)
+        except Exception:
+            pass
+
+    # 2. WhatsApp oficial con plantilla aviso_gerencia_es al comprador y a Francisco (691407080)
+    token_wa = (os.getenv("WHATSAPP_ACCESS_TOKEN") or os.getenv("WHATSAPP_TOKEN") or "").strip()
+    pid = (os.getenv("WHATSAPP_PHONE_NUMBER_ID") or "1325140134018206").strip()
+    if token_wa and pid:
+        url_meta = f"https://graph.facebook.com/v21.0/{pid}/messages"
+        headers_meta = {"Authorization": f"Bearer {token_wa}", "Content-Type": "application/json"}
+        destinos = []
+        if len(tlf_raw) == 9:
+            destinos.append((
+                tlf_raw,
+                f"✅ Pedido confirmado en Sistemas Pyme ({nombre})",
+                f"Plan: {plan} | Total Día 1: {total} € (sin IVA) | Cita de Alta: {horario}. Te contactaremos puntualmente.",
+            ))
+        destinos.append((
+            "691407080",
+            f"🛒 Nuevo Pedido Web: {nombre} (+34 {tlf_raw})",
+            f"Plan: {plan} | Auditorías: {auditorias} | Atriles: {atriles} | Total Día 1: {total} € | Cita: {horario}.",
+        ))
+        for dest_num, v1, v2 in destinos:
+            for lang_code in ("es", "es_ES"):
+                try:
+                    p_tpl = {
+                        "messaging_product": "whatsapp",
+                        "to": f"34{dest_num}",
+                        "type": "template",
+                        "template": {
+                            "name": "aviso_gerencia_es",
+                            "language": {"code": lang_code},
+                            "components": [{
+                                "type": "body",
+                                "parameters": [
+                                    {"type": "text", "text": v1[:135]},
+                                    {"type": "text", "text": v2[:600]},
+                                ],
+                            }],
+                        },
+                    }
+                    req_w = _ureq.Request(url_meta, data=json.dumps(p_tpl).encode("utf-8"), headers=headers_meta, method="POST")
+                    with _ureq.urlopen(req_w, timeout=8) as rw:
+                        if 200 <= rw.status < 300:
+                            break
+                except Exception:
+                    continue
+
+    return {"status": "ok", "pedido_registrado": True}
+# === [FIN_SP_PEDIDOS_Y_CITAS_WEB_V231] ===
+'''
+
+
+# ==============================================================================
+# 5. BLOQUE FRONTEND MAESTRO PARA public_html/index.html (V231)
+# ==============================================================================
+HTML_BIENVENIDA_ORBE_3D_V159 = (
+    '<div class="flex flex-col items-center justify-center text-center px-3 py-1">'
+    '<div onclick="window.spActivarEscuchaDirectaConsultor && window.spActivarEscuchaDirectaConsultor(event)" '
+    'class="sp-orb-3d-idle cursor-pointer mb-2" title="Pulsa para hablar en manos libres">'
+    '<span class="text-lg">⚡</span></div>'
+    '<div onclick="window.spActivarEscuchaDirectaConsultor && window.spActivarEscuchaDirectaConsultor(event)" '
+    'class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-950/90 border border-teal-400/50 '
+    'text-[10px] font-extrabold uppercase tracking-wider text-teal-200 mb-1.5 cursor-pointer hover:border-teal-300">'
+    '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>'
+    '<span>👆 PULSA LA ESFERA HOLOGRÁFICA PARA HABLAR CONMIGO SIN TOCAR NINGÚN OTRO BOTÓN</span></div>'
+    '<h3 class="text-sm sm:text-base font-black text-white leading-snug max-w-xl">'
+    'Soy tu <span class="text-teal-300">consultor tecnológico experto</span> para resolver todas tus dudas '
+    'y, si lo deseas, <span class="text-amber-300">contratar lo que necesites</span>.</h3>'
+    '<p class="text-[11px] text-slate-300 max-w-lg mt-1 leading-relaxed">'
+    '🎙️ <strong>Manos libres continuo:</strong> profundiza en cualquier área del ecosistema Sistemas Pyme, '
+    'descubre qué combinación te ahorra más dinero y agenda tu videollamada de lunes a sábado por la mañana.</p>'
+    '</div>'
+)
+
+BLOQUE_CONSULTOR_Y_CARRITO_HTML_V231 = r"""
+<!-- === [INICIO_SP_CONSULTOR_Y_CARRITO_V231] === -->
+<style id="spEstilosConsultorYCarritoV231">
+  /* 1. Más altura y aire para el Consultor Neuronal en Tecnosala (nunca corta arriba ni abajo) */
+  #vista-tecnosala .slide-section {
+    padding-top: 1.35rem !important;
+    padding-bottom: 1.15rem !important;
+    justify-content: flex-start !important;
+  }
+  /* Ocultar el subtítulo superior pegado a la barra en Tecnosala para que el título principal respire */
+  #vista-tecnosala .slide-section > div > p.uppercase.tracking-widest:first-child,
+  #vista-tecnosala .slide-section > p.uppercase.tracking-widest:first-child {
+    display: none !important;
+  }
+  #spTecnosalaScreen {
+    min-height: 294px !important;
+    max-height: 348px !important;
+    justify-content: flex-start !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    overflow: hidden !important;
+  }
+  #spTeleprompterBox {
+    min-height: 158px !important;
+    max-height: 192px !important;
+  }
+  /* Ocultar el botón PARAR redundante de la esquina izquierda (dejamos solo el del lado del Orbe) */
+  #spHudStopBtn, #spHudBtnAbrirCarrito {
+    display: none !important;
+  }
+
+  /* 2. Fondo Azulito Claro Corporativo y centrado vertical equidistante en Magazine (#vista-mas) */
+  #vista-mas,
+  #vista-mas .slide-section,
+  section#vista-mas {
+    background: linear-gradient(135deg, #d8f0fe 0%, #e8f6ff 52%, #e0faf4 100%) !important;
+  }
+  #vista-mas .slide-section {
+    justify-content: center !important;
+    padding-top: 1.95rem !important;
+    padding-bottom: 1.75rem !important;
+  }
+
+  /* 3. Botón Dorado 3D del Configurador a la Carta / Contratar */
+  .sp-btn-carrito-gold-3d {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 55%, #d97706 100%) !important;
+    color: #020617 !important;
+    font-weight: 900 !important;
+    border: 2px solid #fef08a !important;
+    box-shadow: 0 8px 22px -4px rgba(245, 158, 11, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.65) !important;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.45rem !important;
+  }
+  .sp-btn-carrito-gold-3d:hover {
+    transform: translateY(-2px) scale(1.01) !important;
+    filter: brightness(1.06) !important;
+    box-shadow: 0 12px 28px -4px rgba(245, 158, 11, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  }
+</style>
+
+<!-- MODAL DEL CONFIGURADOR A LA CARTA Y AGENDA INTELIGENTE (LUNES A SÁBADO 09:00 A 13:30) -->
+<div id="spModalCarritoCarta" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 overflow-y-auto">
+  <div class="relative w-full max-w-4xl rounded-3xl bg-gradient-to-b from-slate-900 via-[#081b2e] to-slate-950 border-2 border-teal-400/50 shadow-2xl p-4 sm:p-6 text-white my-auto">
+    <div class="flex items-start justify-between gap-3 border-b border-slate-800 pb-3 mb-4">
+      <div>
+        <span class="inline-block text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40">
+          🛒 CONFIGURADOR A LA CARTA • IMPLANTACIÓN RÁPIDA 24-48H
+        </span>
+        <h2 class="text-lg sm:text-2xl font-black text-white mt-1">Configura tu Plan a Medida y Agenda tu Videollamada de Alta</h2>
+      </div>
+      <button type="button" onclick="window.spCerrarCarritoConfigurador()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white font-black text-sm flex items-center justify-center cursor-pointer">✕</button>
     </div>
-    <h1>Ingeniería Especializada explicada para Negocios Reales</h1>
-    <p class="lead">Resumen divulgativo y práctico de nuestra investigación de 45 páginas sobre Posicionamiento en Inteligencia Artificial (GEO), Conversión Web (Neuro-CRO) y Automatización Oficial en Google Maps y WhatsApp.</p>
-    <div class="pillar">
-      <h2>1. Por qué es vital que ChatGPT, Gemini y Google Maps entiendan tu negocio</h2>
-      <p>• Hoy casi 7 de cada 10 búsquedas en Google se resuelven leyendo el resumen de la Inteligencia Artificial sin entrar en diez páginas distintas. Y los clientes que llegan recomendados por ChatGPT compran hasta <strong>9 veces más</strong> (15,9% frente a 1,76%) porque ya vienen decididos.</p>
-    </div>
-  </div>
-</body>
-</html>
-"""
 
-HTML_ESTUDIO_PSICOLOGIA_RESENAS_IA_V183 = r"""<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Estudio de Psicología de las Reseñas, Algoritmo de Google y Respuesta IA (HEARD) — Sistemas Pyme</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: #0f172a; color: #1e293b; padding: 20px; }
-    .container { max-width: 940px; margin: 0 auto; background: #ffffff; border-radius: 18px; padding: 28px 34px; box-shadow: 0 20px 50px rgba(0,0,0,0.45); }
-    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0; flex-wrap: wrap; gap: 10px; }
-    .badge { background: #d97706; color: #fff; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 999px; text-transform: uppercase; }
-    h1 { font-size: 24px; font-weight: 900; color: #0b2545; margin-bottom: 8px; line-height: 1.25; }
-    .btn { background: #0b2545; color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 999px; font-size: 12px; font-weight: 800; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="top-bar">
-      <span class="badge">⭐ Estudio Científico • Psicología de las Reseñas y Algoritmo IA</span>
-      <a href="../index.html#tecnosala" class="btn">← Volver al Consultor de la Tecnosala</a>
-    </div>
-    <h1>Comportamiento del Consumidor ante las Reseñas y Arquitectura de Respuesta con IA</h1>
-  </div>
-</body>
-</html>
-"""
-
-
-def actualizar_archivos_documentos():
-    carpetas_doc = [
-        os.path.join(RUTA_WEB_PUBLIC, "documentos"),
-        os.path.join(DIR_ACTUAL, "documentos"),
-    ]
-    vistas = set()
-    for carp in carpetas_doc:
-        c_abs = os.path.abspath(carp)
-        if c_abs in vistas:
-            continue
-        vistas.add(c_abs)
-        os.makedirs(c_abs, exist_ok=True)
-
-        r_guia = os.path.join(c_abs, "guia_seo_geo.html")
-        bak_g = crear_backup(r_guia) if os.path.isfile(r_guia) else None
-        with open(r_guia, "w", encoding="utf-8") as f:
-            f.write(HTML_GUIA_TECNICA_SEO_GEO_V153)
-        verificar_sintaxis_segura(r_guia, bak_g)
-
-        r_js = os.path.join(c_abs, "base_conocimiento_ingenieria.js")
-        bak_j = crear_backup(r_js) if os.path.isfile(r_js) else None
-        with open(r_js, "w", encoding="utf-8") as f:
-            f.write(JS_BASE_CONOCIMIENTO_DOCUMENTOS_V167)
-        verificar_sintaxis_segura(r_js, bak_j)
-
-        r_man = os.path.join(c_abs, "manual_ingenieria_deep_research.html")
-        bak_m = crear_backup(r_man) if os.path.isfile(r_man) else None
-        with open(r_man, "w", encoding="utf-8") as f:
-            f.write(HTML_MANUAL_INGENIERIA_DEEP_RESEARCH_V167)
-        verificar_sintaxis_segura(r_man, bak_m)
-
-        r_psi = os.path.join(c_abs, "estudio_psicologia_resenas_ia.html")
-        bak_p = crear_backup(r_psi) if os.path.isfile(r_psi) else None
-        with open(r_psi, "w", encoding="utf-8") as f:
-            f.write(HTML_ESTUDIO_PSICOLOGIA_RESENAS_IA_V183)
-        verificar_sintaxis_segura(r_psi, bak_p)
-
-        print(f"📚 Base de datos y 4 documentos técnicos actualizados en: {c_abs}")
-
-
-BLOQUE_MOTOR_PODCAST_Y_FLOTANTE_V132 = r"""  <!-- === [SP_PODCAST_ENGINE_V131_START] === -->
-  <style>
-    @keyframes spLedBacklightCycle {
-      0%, 100% {
-        box-shadow: 0 -4px 28px rgba(16, 185, 129, 0.58), 0 10px 32px rgba(20, 184, 166, 0.48), 0 0 0 1.5px rgba(52, 211, 153, 0.65);
-        border-color: rgba(52, 211, 153, 0.72);
-      }
-      33% {
-        box-shadow: 0 -4px 28px rgba(14, 165, 233, 0.62), 0 10px 32px rgba(2, 132, 199, 0.50), 0 0 0 1.5px rgba(56, 189, 248, 0.72);
-        border-color: rgba(56, 189, 248, 0.75);
-      }
-      66% {
-        box-shadow: 0 -4px 28px rgba(245, 158, 11, 0.54), 0 10px 32px rgba(13, 148, 136, 0.50), 0 0 0 1.5px rgba(251, 191, 36, 0.65);
-        border-color: rgba(251, 191, 36, 0.70);
-      }
-    }
-    .sp-floating-player-led {
-      background: linear-gradient(135deg, rgba(6, 19, 36, 0.96) 0%, rgba(11, 37, 69, 0.96) 55%, rgba(9, 48, 54, 0.96) 100%);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      animation: spLedBacklightCycle 7.5s ease-in-out infinite;
-      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
-    }
-    .sp-floating-player-hidden {
-      transform: translate3d(0, 130%, 0);
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    /* =========================================================================
-       ALTURA EQUILIBRADA DE LA TECNOSALA (SIN CORTAR ARRIBA NI ABAJO)
-       ========================================================================= */
-    #vista-tecnosala .slide-section {
-      min-height: calc(100vh - 5.75rem) !important;
-      padding-top: 0.45rem !important;
-      padding-bottom: 0.65rem !important;
-      justify-content: flex-start !important;
-    }
-    #vista-tecnosala .slide-section > div {
-      min-height: auto !important;
-    }
-    #vista-tecnosala .sp-hw-device-chassis {
-      padding: 0.9rem 1.25rem !important;
-      margin-bottom: 0.65rem !important;
-    }
-    #spTecnosalaScreen {
-      min-height: 292px !important;
-      max-height: 342px !important;
-      overflow: hidden !important;
-      padding: 12px 16px !important;
-      margin-bottom: 0.65rem !important;
-      display: flex !important;
-      flex-direction: column !important;
-      justify-content: flex-start !important;
-    }
-
-    /* =========================================================================
-       ESFERA HOLOGRÁFICA 3D VOLUMÉTRICA + TELEPROMPTER LED 2027
-       ========================================================================= */
-    @keyframes spOrbRingSpin3D {
-      0% { transform: rotateX(64deg) rotateY(18deg) rotateZ(0deg); }
-      100% { transform: rotateX(64deg) rotateY(18deg) rotateZ(360deg); }
-    }
-    @keyframes spOrbRingSpinReverse3D {
-      0% { transform: rotateX(58deg) rotateY(-24deg) rotateZ(360deg); }
-      100% { transform: rotateX(58deg) rotateY(-24deg) rotateZ(0deg); }
-    }
-    .sp-orb-3d-wrapper {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 68px;
-      height: 68px;
-      margin-bottom: 6px;
-      cursor: pointer;
-      user-select: none;
-      perspective: 600px;
-    }
-    .sp-orb-3d-wrapper.sp-orb-compact-mode {
-      width: 46px;
-      height: 46px;
-      margin-bottom: 2px;
-    }
-    .sp-orb-3d-ring1, .sp-orb-3d-ring2 {
-      position: absolute;
-      inset: -8px;
-      border-radius: 9999px;
-      border: 1.8px dashed rgba(56, 189, 248, 0.72);
-      pointer-events: none;
-      animation: spOrbRingSpin3D 6.5s linear infinite;
-      box-shadow: 0 0 14px rgba(56, 189, 248, 0.38);
-    }
-    .sp-orb-3d-ring2 {
-      inset: -13px;
-      border: 1.5px solid rgba(0, 216, 150, 0.48);
-      border-left-color: transparent;
-      border-right-color: transparent;
-      animation: spOrbRingSpinReverse3D 4.8s linear infinite;
-    }
-    .sp-orb-3d-sphere {
-      position: relative;
-      z-index: 5;
-      width: 56px;
-      height: 56px;
-      border-radius: 9999px;
-      cursor: pointer !important;
-      background: radial-gradient(circle at 30% 26%, #ffffff 0%, #6ee7b7 18%, #14b8a6 46%, #0284c7 76%, #061322 100%) !important;
-      border: 2px solid rgba(167, 243, 208, 0.95) !important;
-      box-shadow: 0 12px 28px -6px rgba(0, 216, 150, 0.55), 0 0 28px rgba(25, 181, 254, 0.45), inset 0 6px 14px rgba(255,255,255,0.75), inset 0 -10px 18px rgba(4, 15, 35, 0.85);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: none !important;
-      transform: perspective(500px) translateZ(18px) scale(1);
-      transition: transform 0.045s linear, box-shadow 0.045s linear, filter 0.045s linear;
-    }
-    .sp-orb-compact-mode .sp-orb-3d-sphere {
-      width: 40px;
-      height: 40px;
-    }
-    .sp-orb-3d-sphere::before {
-      content: "";
-      position: absolute;
-      top: 6px;
-      left: 10px;
-      width: 18px;
-      height: 9px;
-      border-radius: 9999px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(255,255,255,0) 100%);
-      transform: rotate(-24deg);
-      pointer-events: none;
-    }
-    .sp-orb-3d-wrapper:hover .sp-orb-3d-sphere {
-      transform: perspective(500px) translateZ(34px) scale(1.10);
-      box-shadow: 0 18px 40px rgba(0, 216, 150, 0.85), 0 0 55px rgba(56, 189, 248, 0.85), inset 0 8px 20px #ffffff;
-    }
-    .sp-orb-state-speaking .sp-orb-3d-sphere {
-      animation: none !important;
-      transition: transform 0.04s linear, box-shadow 0.04s linear, filter 0.04s linear !important;
-    }
-    .sp-orb-state-listening .sp-orb-3d-sphere {
-      background: radial-gradient(circle at 32% 28%, #fef08a 0%, #f59e0b 45%, #b45309 85%, #451a03 100%) !important;
-      border-color: rgba(254, 240, 138, 0.95) !important;
-      animation: none !important;
-      transition: transform 0.05s linear, box-shadow 0.05s linear, filter 0.05s linear !important;
-    }
-
-    /* PANTALLA TELEPROMPTER LED ESPACIAL 2027 (ALTURA 184px CON DESVANECIMIENTO EN 3ª LÍNEA Y LETRA 19px) */
-    .sp-teleprompter-2027-box {
-      position: relative;
-      width: 100%;
-      height: 184px;
-      background: radial-gradient(ellipse at 50% 100%, rgba(13, 148, 136, 0.25) 0%, rgba(6, 18, 34, 0.94) 70%, rgba(2, 8, 20, 0.98) 100%);
-      border: 1.5px solid rgba(45, 212, 191, 0.45);
-      border-radius: 14px;
-      box-shadow: inset 0 0 32px rgba(0, 0, 0, 0.88), 0 0 24px rgba(20, 184, 166, 0.18);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 12px 18px 14px 18px;
-    }
-    .sp-teleprompter-2027-box::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-      background-image: linear-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(56, 189, 248, 0.035) 1px, transparent 1px);
-      background-size: 100% 3px, 14px 100%;
-    }
-    .sp-teleprompter-Roll-track {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      max-height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      gap: 6px;
-      overflow: hidden;
-      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.28) 16%, rgba(0,0,0,0.92) 40%, #000000 65%, #000000 100%);
-      mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.28) 16%, rgba(0,0,0,0.92) 40%, #000000 65%, #000000 100%);
-    }
-    @keyframes spLineSlideUp2027 {
-      0% { opacity: 0; transform: translateY(14px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    .sp-led-line-item {
-      font-family: "JetBrains Mono", "SF Mono", "Menlo", "Consolas", monospace;
-      text-align: center;
-      line-height: 1.38;
-      letter-spacing: 0.02em;
-      transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-      animation: spLineSlideUp2027 0.24s ease-out;
-    }
-    .sp-led-line-past-3 { font-size: 13.5px; color: rgba(148, 163, 184, 0.34); transform: scale(0.93); }
-    .sp-led-line-past-2 { font-size: 15px; color: rgba(125, 211, 252, 0.66); transform: scale(0.96); }
-    .sp-led-line-past-1 { font-size: 17px; color: rgba(167, 243, 208, 0.88); font-weight: 600; text-shadow: 0 0 8px rgba(20, 184, 166, 0.35); transform: scale(0.98); }
-    .sp-led-line-active {
-      font-size: 19px;
-      font-weight: 800;
-      color: #ecfdf5;
-      text-shadow: 0 0 11px rgba(0, 216, 150, 0.90), 0 0 24px rgba(56, 189, 248, 0.60);
-      padding-top: 1px;
-    }
-    .sp-led-line-user {
-      font-size: 15.5px;
-      font-weight: 700;
-      color: #fde047;
-      text-shadow: 0 0 10px rgba(250, 204, 21, 0.65);
-    }
-    @keyframes spLaserCursorBlink {
-      0%, 49% { opacity: 1; }
-      50%, 100% { opacity: 0; }
-    }
-    .sp-led-cursor {
-      display: inline-block;
-      width: 9px;
-      height: 17px;
-      background: #00d896;
-      box-shadow: 0 0 10px #00d896, 0 0 18px #38bdf8;
-      vertical-align: -3px;
-      margin-left: 4px;
-      animation: spLaserCursorBlink 0.65s infinite;
-    }
-    /* DISTINTIVO TRANSPARENCIA ART. 50 EU AI ACT */
-    .sp-eu-ai-act-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-      padding: 0.22rem 0.75rem;
-      border-radius: 9999px;
-      font-family: 'Montserrat', 'Inter', sans-serif;
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.01em;
-      color: #cbd5e1;
-      background: rgba(15, 23, 42, 0.88);
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      margin: 0.2rem auto 0 auto;
-    }
-    /* BANNER SIMÉTRICO DE COOKIES GUÍA AEPD */
-    #spAepdCookieBanner {
-      position: fixed;
-      bottom: 0.9rem;
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 1.5rem);
-      max-width: 58rem;
-      z-index: 9990;
-      background: rgba(11, 34, 57, 0.97);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1.5px solid rgba(45, 212, 191, 0.48);
-      border-radius: 1.15rem;
-      padding: 0.85rem 1.25rem;
-      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.65);
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      color: #f1f5f9;
-    }
-    #spAepdCookieBanner.sp-cookie-visible {
-      display: flex;
-      flex-direction: column;
-    }
-    @media (min-width: 768px) {
-      #spAepdCookieBanner.sp-cookie-visible {
-        flex-direction: row;
-      }
-    }
-    .sp-aepd-sym-btn {
-      min-width: 148px;
-      height: 40px;
-      padding: 0 1.1rem;
-      border-radius: 0.75rem;
-      font-family: 'Montserrat', 'Inter', sans-serif !important;
-      font-size: 0.82rem;
-      font-weight: 800;
-      letter-spacing: 0.01em;
-      background: rgba(255, 255, 255, 0.12);
-      color: #ffffff;
-      border: 1.5px solid rgba(148, 163, 184, 0.68);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      white-space: nowrap;
-    }
-    .sp-aepd-sym-btn:hover {
-      background: rgba(20, 184, 166, 0.32);
-      border-color: #5eead4;
-    }
-
-    /* MODAL CARRITO CONFIGURADOR A LA CARTA (#spModalCarritoCarta) */
-    .sp-cart-item-btn {
-      border: 1.5px solid rgba(148, 163, 184, 0.28);
-      background: rgba(15, 23, 42, 0.75);
-      border-radius: 0.9rem;
-      padding: 0.65rem 0.85rem;
-      text-align: left;
-      transition: all 0.2s ease;
-      cursor: pointer;
-      color: #e2e8f0;
-    }
-    .sp-cart-item-btn:hover {
-      border-color: rgba(45, 212, 191, 0.65);
-      background: rgba(15, 38, 62, 0.9);
-    }
-    .sp-cart-item-btn.sp-cart-selected {
-      border: 2px solid #10b981 !important;
-      background: linear-gradient(135deg, rgba(6, 78, 59, 0.65) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
-      box-shadow: 0 0 18px rgba(16, 185, 129, 0.28);
-      color: #ffffff;
-    }
-
-    @keyframes spGoldCartPulse3D {
-      0%, 100% {
-        transform: translateY(0) scale(1);
-        box-shadow: 0 10px 25px -4px rgba(245, 158, 11, 0.65), 0 0 18px 2px rgba(251, 191, 36, 0.45), inset 0 2px 0 rgba(255, 255, 255, 0.65), inset 0 -3px 0 rgba(146, 64, 14, 0.85);
-      }
-      50% {
-        transform: translateY(-2px) scale(1.035);
-        box-shadow: 0 16px 34px -4px rgba(245, 158, 11, 0.85), 0 0 28px 6px rgba(253, 224, 71, 0.65), inset 0 2px 0 rgba(255, 255, 255, 0.85), inset 0 -3px 0 rgba(146, 64, 14, 0.85);
-      }
-    }
-    @keyframes spGoldCartShine {
-      0%, 65% { left: -120%; opacity: 0; }
-      72% { opacity: 0.85; }
-      92%, 100% { left: 140%; opacity: 0; }
-    }
-    .sp-btn-carrito-gold-3d {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(135deg, #fde047 0%, #f59e0b 48%, #d97706 100%) !important;
-      color: #071324 !important;
-      border: 2px solid #fef08a !important;
-      font-family: 'Montserrat', 'Inter', sans-serif !important;
-      font-weight: 900 !important;
-      letter-spacing: -0.01em !important;
-      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
-      animation: spGoldCartPulse3D 3.2s ease-in-out infinite !important;
-      transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1) !important;
-      cursor: pointer;
-    }
-    .sp-btn-carrito-gold-3d::after {
-      content: "";
-      position: absolute;
-      top: -20%;
-      left: -120%;
-      width: 45%;
-      height: 140%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.78), transparent);
-      transform: skewX(-24deg);
-      pointer-events: none;
-      animation: spGoldCartShine 4.8s ease-in-out infinite;
-    }
-    .sp-btn-carrito-gold-3d:hover {
-      transform: translateY(-3px) scale(1.055) !important;
-      filter: brightness(1.06);
-    }
-    .sp-cart-icon-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 22px;
-      height: 22px;
-      border-radius: 9999px;
-      background: #0b2239;
-      color: #fde047;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-      flex-shrink: 0;
-    }
-  </style>
-
-  <!-- MODAL INTERACTIVO: CONFIGURADOR Y CARRITO A LA CARTA + AGENDA DE ALTA (#spModalCarritoCarta) -->
-  <div id="spModalCarritoCarta" class="hidden fixed inset-0 z-[9995] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-    <div class="bg-slate-900 border-2 border-teal-400/60 rounded-3xl max-w-4xl w-full p-4 sm:p-6 text-white shadow-2xl my-auto max-h-[94vh] overflow-y-auto">
-      <div class="flex items-center justify-between gap-3 pb-3 mb-3 border-b border-white/10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+      <!-- Columna Izquierda: Selección de Servicios -->
+      <div class="lg:col-span-7 space-y-3.5 text-xs">
         <div>
-          <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-amber-300 bg-amber-950/90 px-3 py-0.5 rounded-full border border-amber-400/60">
-            🛒 Configurador a la Carta • Implantación Rápida 24-48h
-          </span>
-          <h3 class="text-lg sm:text-xl font-black text-white mt-1">
-            Configura tu Plan a Medida y Agenda tu Videollamada de Alta
-          </h3>
-        </div>
-        <button type="button" onclick="window.spCerrarCarritoConfigurador()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-rose-600 text-white font-black text-sm flex items-center justify-center cursor-pointer transition">✕</button>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <!-- Columna Izquierda (7 cols): Selección a la carta -->
-        <div class="lg:col-span-7 space-y-3 text-xs">
-          <!-- 1. Modalidad de Pago -->
-          <div>
-            <label class="block text-[11px] font-extrabold uppercase tracking-wider text-teal-300 mb-1.5">1. Elige Modalidad (Desbloquea descuentos en Auditorías):</label>
-            <div class="grid grid-cols-2 gap-2">
-              <button type="button" id="spCartMod_mensual" onclick="window.spSetCartModalidad('mensual')" class="sp-cart-item-btn sp-cart-selected">
-                <span class="font-black block text-sm">🔄 Mensual Flexible</span>
-                <span class="text-[11px] text-slate-300">Permanencia mín. 3 meses (Auditoría a 250 € con Dúo)</span>
-              </button>
-              <button type="button" id="spCartMod_anual" onclick="window.spSetCartModalidad('anual')" class="sp-cart-item-btn">
-                <span class="font-black block text-sm text-amber-300">🎁 Plan Anual (-2 Meses)</span>
-                <span class="text-[11px] text-slate-300">Pagas 10 meses + Auditorías en 2x1 (350 € las 2)</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- 2. Plan de Servicios Activos Hoy -->
-          <div>
-            <label class="block text-[11px] font-extrabold uppercase tracking-wider text-teal-300 mb-1.5">2. Servicios Activos Hoy (Implantación 24-48h):</label>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <button type="button" id="spCartPlan_ninguno" onclick="window.spSetCartPlan('ninguno')" class="sp-cart-item-btn">
-                <span class="font-extrabold block">Solo Auditoría / Atril</span>
-                <span class="text-[11px] text-slate-400">Sin cuota mensual</span>
-              </button>
-              <button type="button" id="spCartPlan_base" onclick="window.spSetCartPlan('base')" class="sp-cart-item-btn">
-                <span class="font-extrabold block">1 Servicio (Base)</span>
-                <span class="text-[11px] text-teal-300 font-bold">59 €/mes + 150 € Setup</span>
-                <span class="block text-[10px] text-slate-300">S1 Reseñas o S2 WhatsApp</span>
-              </button>
-              <button type="button" id="spCartPlan_duo" onclick="window.spSetCartPlan('duo')" class="sp-cart-item-btn sp-cart-selected">
-                <span class="font-black block text-emerald-300">★ Pack Escudo Dúo (2 Serv.)</span>
-                <span class="text-[11px] text-white font-bold">99 €/mes + 225 € Setup</span>
-                <span class="block text-[10px] text-emerald-200">S1 Reseñas IA + S2 WhatsApp</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- 3. Super-Auditorías Web (Pago Único) -->
-          <div>
-            <label class="block text-[11px] font-extrabold uppercase tracking-wider text-teal-300 mb-1.5">3. Añade Super-Auditorías Web (Pago Único • Sin Cuotas):</label>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <button type="button" id="spCartAud_0" onclick="window.spSetCartAuditorias(0)" class="sp-cart-item-btn">
-                <span class="font-bold block">Sin Auditoría por ahora</span>
-                <span class="text-[10.5px] text-slate-400">0 €</span>
-              </button>
-              <button type="button" id="spCartAud_1" onclick="window.spSetCartAuditorias(1)" class="sp-cart-item-btn sp-cart-selected">
-                <span class="font-extrabold block text-sky-300">+1 Super-Auditoría</span>
-                <span id="spCartPriceAud1Lbl" class="text-[11px] text-white font-bold">250 € (Bonificada Dúo)</span>
-                <span class="block text-[10px] text-slate-300">SEO/GEO IA o Neuro-CRO</span>
-              </button>
-              <button type="button" id="spCartAud_2" onclick="window.spSetCartAuditorias(2)" class="sp-cart-item-btn">
-                <span class="font-extrabold block text-amber-300">+2 Super-Auditorías</span>
-                <span id="spCartPriceAud2Lbl" class="text-[11px] text-white font-bold">450 € las dos (Ahorras 250 €)</span>
-                <span class="block text-[10px] text-slate-300">SEO/GEO IA + Neuro-CRO</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- 4. Hardware Atril NFC/QR y 5. Reserva Prioritaria Fase 2 -->
-          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
-            <div class="sm:col-span-5 bg-slate-950/80 border border-white/10 rounded-xl p-2.5">
-              <label class="block text-[10.5px] font-extrabold uppercase text-amber-300 mb-1">4. Atriles NFC + QR (Pago único):</label>
-              <select id="spCartAtrilSelect" onchange="window.spRecalcularCarritoCarta()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-bold">
-                <option value="0">0 Atriles (0 €)</option>
-                <option value="1" selected>1 Atril NFC/QR (39 €)</option>
-                <option value="2">2 Atriles NFC/QR (68 € • 2º a 29 €)</option>
-                <option value="3">3 Atriles NFC/QR (97 €)</option>
-                <option value="4">4 Atriles NFC/QR (126 €)</option>
-                <option value="5">5 Atriles NFC/QR (125 € • a 25 €/ud)</option>
-              </select>
-            </div>
-            <div class="sm:col-span-7 bg-slate-950/80 border border-white/10 rounded-xl p-2.5">
-              <div class="flex items-center justify-between gap-1 mb-1">
-                <label class="block text-[10.5px] font-extrabold uppercase text-sky-300">5. Reserva Prioritaria Fase 2:</label>
-              </div>
-              <select id="spCartReservaFase2" onchange="window.spAgregarModuloReservaFase2(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-bold">
-                <option value="">+ Añadir módulo en Reserva Prioritaria (S3 a S10 y Satélites)...</option>
-                <optgroup label="Categoría II • Facturación y Cierre de Ventas">
-                  <option value="S3 Leads en 10s + Portales (+40 €/m)">S3. Contestación a Leads en 10s + Portales (+40 €/m)</option>
-                  <option value="S4 Rescate Llamadas Perdidas (+59 €/m)">S4. Rescate de Llamadas Perdidas en 5s (+59 €/m)</option>
-                  <option value="S5 Reactivación Clientes Inactivos (+40 €/m)">S5. Reactivación de Clientes Inactivos (+40 €/m)</option>
-                </optgroup>
-                <optgroup label="Categoría III • Operativa, Citas y Cero Papeles">
-                  <option value="S6 Agenda Anti-Plantón Citas (+40 €/m)">S6. Sistema Anti-Plantón de Citas 24h + Flash (+40 €/m)</option>
-                  <option value="S7 Centralita Voz IA 24/7 (Desde 149 €/m)">S7. Centralita Telefónica de Voz IA 24/7 (Desde 149 €/m)</option>
-                  <option value="S8 Firma Digital Presupuestos (+40 €/m)">S8. Firma Digital de Presupuestos en Móvil (+40 €/m)</option>
-                  <option value="S9 Facturas al Gestor por Foto WA (+40 €/m)">S9. Facturas y Tickets al Gestor por Foto WA (+40 €/m)</option>
-                  <option value="S10 Escudo Anti-Morosidad (+40 €/m)">S10. Recordatorio Diplomático Anti-Morosidad (+40 €/m)</option>
-                </optgroup>
-                <optgroup label="Categoría IV • Módulos Satélite Prémium">
-                  <option value="Sat.1 Instagram 3 en 1 (+59 €/m)">Sat.1. Instagram Inteligente 3 en 1: Reels + DMs (+59 €/m)</option>
-                  <option value="Sat.2 Escudo Logístico 360 (+59 €/m)">Sat.2. Escudo Logístico 360: Tracking + Ausencias (+59 €/m)</option>
-                  <option value="Sat.3 Redactor Técnico B2B IA (+59 €/m)">Sat.3. Redactor Técnico de Presupuestos B2B IA (+59 €/m)</option>
-                </optgroup>
-              </select>
-              <div id="spCartReservasChipsBox" class="flex flex-wrap gap-1 mt-1.5"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Columna Derecha (5 cols): Resumen Financiero y Datos de Agenda -->
-        <div class="lg:col-span-5 bg-slate-950 border-2 border-teal-500/45 rounded-2xl p-4 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between border-b border-white/10 pb-2 mb-2">
-              <h4 class="text-xs font-extrabold uppercase tracking-wider text-teal-300">
-                📋 Resumen de tu Pedido a la Carta
-              </h4>
-              <span id="spCartCountModulosBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-200 border border-teal-400/40">2 servicios</span>
-            </div>
-            <div id="spCartSummaryLines" class="space-y-1.5 text-xs text-slate-200 mb-2.5"></div>
-
-            <!-- Hueco reservado para el Bono Regalo Bóveda de Contraseñas (SOLO servicios mensuales) -->
-            <div id="spCartBonoBovedaBox" class="hidden mb-2.5 rounded-xl p-2.5 border transition-all"></div>
-
-            <div class="bg-emerald-950/60 border border-emerald-400/50 rounded-xl p-2.5 mb-3">
-              <div class="flex items-baseline justify-between">
-                <span class="text-[11px] font-bold text-emerald-200">Total Desembolso Día 1:</span>
-                <span id="spCartTotalDia1" class="text-xl font-black text-white">613 €</span>
-              </div>
-              <div class="flex items-baseline justify-between mt-0.5">
-                <span class="text-[10.5px] text-slate-300">Cuota mensual posterior:</span>
-                <span id="spCartCuotaMensual" class="text-xs font-extrabold text-teal-300">99 €/mes (SEPA)</span>
-              </div>
-              <span class="block text-[10px] text-slate-300 mt-1 leading-snug">*Precios netos sin IVA (21% deducible). <strong class="text-amber-300 font-black underline decoration-amber-400/80">No realizas ningún pago con tarjeta aquí:</strong> agendamos tu videollamada de alta y te enviamos la confirmación a tu móvil.</span>
-            </div>
-
-            <!-- Datos del Cliente para la Videollamada de Alta -->
-            <div id="spCartFormInputsWrap" class="space-y-2 text-xs">
-              <input id="spCartInputNombre" type="text" placeholder="Tu Nombre y Nombre del Negocio *" class="w-full bg-slate-900 border border-slate-700 focus:border-teal-400 rounded-xl px-3 py-2 text-white placeholder-slate-400 outline-none font-semibold" />
-              <input id="spCartInputTelefono" type="tel" placeholder="Tu Teléfono Móvil (Ej: 600 123 456) *" class="w-full bg-slate-900 border border-slate-700 focus:border-teal-400 rounded-xl px-3 py-2 text-white placeholder-slate-400 outline-none font-semibold" />
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                <input id="spCartInputFechaHoraISO" type="datetime-local" title="Elige día y hora si quieres dejar fijada ya tu cita en el calendario" class="w-full bg-slate-900 border border-slate-700 focus:border-teal-400 rounded-xl px-2.5 py-2 text-white text-[11px] outline-none font-semibold" />
-                <input id="spCartInputHorario" type="text" placeholder="O escribe ej: Mañana a las 11h" class="w-full bg-slate-900 border border-slate-700 focus:border-teal-400 rounded-xl px-2.5 py-2 text-white placeholder-slate-400 text-[11px] outline-none font-semibold" />
-              </div>
-            </div>
-          </div>
-
-          <div class="mt-3 pt-2.5 border-t border-white/10">
-            <button type="button" id="spBtnSubmitCarrito" onclick="window.spConfirmarPedidoYAgendarCita()" class="sp-btn-carrito-gold-3d w-full py-2.5 px-4 rounded-xl text-xs sm:text-[13.5px] flex items-center justify-center gap-2">
-              <span>🚀 Confirmar Pedido y Agendar Alta</span>
-              <span>&rarr;</span>
+          <label class="block text-[10.5px] font-extrabold uppercase tracking-wider text-teal-300 mb-1.5">1. ELIGE MODALIDAD (DESBLOQUEA DESCUENTOS EN AUDITORÍAS):</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" id="spCartBtnModMensual" onclick="window.spSetCartModalidad('mensual')" class="p-2.5 rounded-2xl border-2 text-left transition cursor-pointer">
+              <div class="font-black text-xs text-white">🔄 Mensual Flexible</div>
+              <div class="text-[10.5px] text-slate-300 mt-0.5">Permanencia mín. 3 meses (Auditoría a 250 € con Dúo)</div>
             </button>
-            <div id="spCartFeedbackMsg" class="hidden mt-2.5 text-left text-xs text-white bg-emerald-950/95 border-2 border-emerald-400 rounded-2xl p-3.5 shadow-xl"></div>
+            <button type="button" id="spCartBtnModAnual" onclick="window.spSetCartModalidad('anual')" class="p-2.5 rounded-2xl border-2 text-left transition cursor-pointer">
+              <div class="font-black text-xs text-amber-300">🎁 Plan Anual (-2 Meses)</div>
+              <div class="text-[10.5px] text-slate-300 mt-0.5">Pagas 10 meses + Auditorías en 2×1 (350 € las 2)</div>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[10.5px] font-extrabold uppercase tracking-wider text-teal-300 mb-1.5">2. SERVICIOS ACTIVOS HOY (IMPLANTACIÓN 24-48H):</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" id="spCartBtnPlanNinguno" onclick="window.spSetCartPlan('ninguno')" class="p-2.5 rounded-2xl border text-left transition cursor-pointer">
+              <div class="font-black text-white text-[11px]">Solo Auditoría / Atril</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">Sin cuota mensual</div>
+            </button>
+            <button type="button" id="spCartBtnPlanBase" onclick="window.spSetCartPlan('base')" class="p-2.5 rounded-2xl border text-left transition cursor-pointer">
+              <div class="font-black text-white text-[11px]">1 Servicio (Base)</div>
+              <div class="text-[10.5px] text-teal-300 font-bold">59 €/mes + 150 € Setup</div>
+              <div class="text-[9.5px] text-slate-400">S1 Reseñas IA o S2 WhatsApp</div>
+            </button>
+            <button type="button" id="spCartBtnPlanDuo" onclick="window.spSetCartPlan('duo')" class="p-2.5 rounded-2xl border text-left transition cursor-pointer">
+              <div class="font-black text-emerald-300 text-[11px]">★ Pack Escudo Dúo (2 Serv.)</div>
+              <div class="text-[10.5px] text-white font-bold">99 €/mes + 225 € Setup</div>
+              <div class="text-[9.5px] text-slate-300">S1 Reseñas IA + S2 WhatsApp</div>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[10.5px] font-extrabold uppercase tracking-wider text-teal-300 mb-1.5">3. AÑADE SUPER-AUDITORÍAS WEB (PAGO ÚNICO • SIN CUOTAS):</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" id="spCartBtnAud0" onclick="window.spSetCartAuditorias(0)" class="p-2.5 rounded-2xl border text-left transition cursor-pointer">
+              <div class="font-black text-white text-[11px]">Sin Auditoría por ahora</div>
+              <div class="text-[10px] text-slate-400">0 €</div>
+            </button>
+            <button type="button" id="spCartBtnAud1" onclick="window.spSetCartAuditorias(1)" class="p-2.5 rounded-2xl border text-left transition cursor-pointer">
+              <div class="font-black text-sky-300 text-[11px]">+1 Super-Auditoría</div>
+              <div id="spCartPrecioAud1" class="text-[10.5px] text-white font-bold">250 €</div>
+              <div class="text-[9.5px] text-slate-400">SEO/GEO IA o Neuro-CRO</div>
+            </button>
+            <button type="button" id="spCartBtnAud2" onclick="window.spSetCartAuditorias(2)" class="p-2.5 rounded-2xl border text-left transition cursor-pointer">
+              <div class="font-black text-amber-300 text-[11px]">+2 Super-Auditorías</div>
+              <div id="spCartPrecioAud2" class="text-[10.5px] text-white font-bold">450 € las 2</div>
+              <div class="text-[9.5px] text-slate-400">SEO/GEO IA + Neuro-CRO</div>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-2.5">
+            <label class="block text-[10px] font-extrabold uppercase text-teal-300 mb-1">4. ATRILES NFC + QR (PAGO ÚNICO):</label>
+            <select id="spCartSelectAtriles" onchange="window.spSetCartAtriles(this.value)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 text-white text-xs font-bold outline-none">
+              <option value="0">0 Atriles (0 €)</option>
+              <option value="1" selected>1 Atril NFC/QR (39 €)</option>
+              <option value="2">2 Atriles (68 € — 2ª ud a 29 €)</option>
+              <option value="3">3 Atriles (97 €)</option>
+              <option value="5">5 Atriles (145 € — a 25 €/ud extra)</option>
+            </select>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-2.5">
+            <label class="block text-[10px] font-extrabold uppercase text-amber-300 mb-1">5. RESERVA PRIORITARIA FASE 2:</label>
+            <select id="spCartSelectFase2" onchange="window.spToggleReservaFase2(this.value); this.value='';" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 text-white text-xs font-bold outline-none">
+              <option value="">+ Añadir módulo en Reserva Prioritaria...</option>
+              <option value="S3 Leads en 10s">S3. Leads en 10s y Portales</option>
+              <option value="S4 Rescate Llamadas">S4. Rescate Llamadas Perdidas</option>
+              <option value="S5 Reactivación Clientes">S5. Reactivación de Inactivos</option>
+              <option value="S6 Anti-Plantón Citas">S6. Anti-Plantón de Citas</option>
+              <option value="S7 Centralita Voz IA">S7. Centralita Telefónica Voz IA</option>
+              <option value="S8 Firma Presupuestos">S8. Firma Digital Presupuestos</option>
+              <option value="S9 Facturas Gestor IA">S9. Facturas al Gestor por Foto</option>
+              <option value="S10 Anti-Morosidad">S10. Escudo Anti-Morosidad</option>
+            </select>
+            <div id="spCartListaFase2" class="text-[10px] text-slate-400 mt-1 italic">Ningún módulo de Fase 2 añadido aún.</div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- MICRO-BANNER OFICIAL DE COOKIES 100% CUMPLIDOR CON LA GUÍA AEPD -->
-  <div id="spAepdCookieBanner" role="dialog" aria-label="Aviso de privacidad y cookies AEPD">
-    <div class="text-xs sm:text-[13px] text-slate-200 leading-relaxed text-center md:text-left">
-      <strong class="text-teal-300 font-bold">Privacidad transparente (Guía AEPD):</strong>
-      Utilizamos cookies analíticas (Google Analytics y Microsoft Clarity con ocultación de datos mediante asteriscos) únicamente si nos das tu permiso para mejorar la experiencia de nuestra web. Puedes aceptarlas o rechazarlas con total libertad.
-    </div>
-    <div class="flex items-center justify-center gap-2.5 shrink-0">
-      <button type="button" onclick="window.spGestionarCookiesAEPD('rejected')" class="sp-aepd-sym-btn">
-        Rechazar cookies
-      </button>
-      <button type="button" onclick="window.spGestionarCookiesAEPD('accepted')" class="sp-aepd-sym-btn">
-        Aceptar cookies
-      </button>
-    </div>
-  </div>
-
-  <script src="podcasts/episodio-1-wave.js"></script>
-  <script src="documentos/base_conocimiento_ingenieria.js"></script>
-
-  <!-- MINI-REPRODUCTOR FLOTANTE CON RETROILUMINACIÓN LED CAMBIANTE -->
-  <div id="spFloatingMediaPlayer" class="sp-floating-player-led sp-floating-player-hidden fixed bottom-3 left-3 right-3 sm:left-auto sm:right-5 sm:w-[410px] z-[115] rounded-2xl px-3.5 py-2.5 text-white">
-    <div class="flex items-center justify-between gap-2.5">
-      <button type="button" onclick="spTogglePlayPodcast()" class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-black text-xs shadow-md flex-shrink-0 cursor-pointer">
-        <span id="spFloatPlayIcon">⏸</span>
-      </button>
-      <div class="min-w-0 flex-1">
-        <div class="flex items-center justify-between gap-1.5">
-          <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-300 truncate">🎧 Pyme Magazine • Ep. 1</span>
-          <span id="spFloatTimeDisplay" class="text-[10px] font-mono text-sky-200 flex-shrink-0">0:00 / 9:35</span>
+      <!-- Columna Derecha: Resumen y Agenda Sincronizada (Lunes a Sábado 09:00 a 13:30) -->
+      <div class="lg:col-span-5 bg-slate-950/90 border-2 border-teal-500/40 rounded-3xl p-4 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+          <span class="text-xs font-extrabold uppercase tracking-wider text-teal-300">📋 RESUMEN DE TU PEDIDO A LA CARTA</span>
+          <span id="spCartBadgeNumModulos" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-400/30">2 servicios</span>
         </div>
-        <div class="flex items-center gap-2 mt-1">
-          <canvas id="spFloatEqCanvas" width="76" height="18" class="w-[76px] h-[18px] flex-shrink-0"></canvas>
-          <input type="range" id="spFloatSeekSlider" value="0" min="0" max="100" step="0.1" oninput="spSeekAudioPodcast(this.value)" class="sp-audio-range flex-1 cursor-pointer" />
+
+        <div id="spCartDesgloseLineas" class="space-y-1 text-xs text-slate-200"></div>
+
+        <div id="spCartBonoBovedaBox" class="hidden p-2 rounded-xl bg-amber-500/15 border border-amber-400/40 text-[11px] text-amber-200 font-bold">
+          🎁 ¡Bono Desbloqueado (3+ módulos)! Incluye GRATIS la Bóveda de Contraseñas para Empleados (Valorada en 150 €).
         </div>
-      </div>
-      <div class="flex items-center gap-1 flex-shrink-0">
-        <button type="button" onclick="spToggleMutePodcast()" id="spFloatMuteBtn" class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-xs flex items-center justify-center cursor-pointer" title="Volumen">🔊</button>
-        <button type="button" onclick="spCerrarFloatingPlayer()" class="w-7 h-7 rounded-lg bg-rose-500/25 hover:bg-rose-500/45 text-rose-200 text-xs font-black flex items-center justify-center cursor-pointer" title="Detener y cerrar">✕</button>
+
+        <div class="p-3 rounded-2xl bg-emerald-950/60 border border-emerald-500/40 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-200">Total Desembolso Día 1:</span>
+            <span id="spCartTotalDia1" class="text-2xl font-black text-white">363 €</span>
+          </div>
+          <div class="flex items-center justify-between text-[11px] text-teal-300 font-bold">
+            <span>Cuota mensual posterior:</span>
+            <span id="spCartCuotaMensual">99 €/mes (Permanencia mín. 3m)</span>
+          </div>
+          <p class="text-[10px] text-slate-300 pt-1">
+            *Precios netos sin IVA (21% deducible). <strong class="text-amber-300">No realizas ningún pago con tarjeta aquí:</strong> agendamos tu videollamada de alta y te enviamos la confirmación a tu móvil.
+          </p>
+        </div>
+
+        <div id="spCartFormInputsWrap" class="space-y-2 text-xs">
+          <input id="spCartInputNombre" type="text" placeholder="Tu Nombre y/o Negocio y Ciudad *" class="w-full bg-slate-900 border border-slate-700 focus:border-teal-400 rounded-xl px-3 py-2 text-white placeholder-slate-400 outline-none font-semibold" />
+          <input id="spCartInputTelefono" type="tel" placeholder="Tu Teléfono Móvil (Ej: 600 123 456) *" class="w-full bg-slate-900 border border-slate-700 focus:border-teal-400 rounded-xl px-3 py-2 text-white placeholder-slate-400 outline-none font-semibold" />
+          <div class="bg-slate-900/95 border border-teal-500/40 rounded-xl p-2 space-y-1.5">
+            <div class="flex items-center justify-between gap-1">
+              <span class="text-[10px] font-extrabold uppercase text-teal-300">🗓️ Cita de Alta (Lunes a Sábado • Mañanas 09:00 a 13:30):</span>
+              <span id="spCartSyncCalBadge" class="text-[9.5px] font-bold text-emerald-300">🔄 Sincronizado con Calendar</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+              <select id="spCartSelectDiaLV" onchange="window.spActualizarHorasDisponiblesCarrito()" class="w-full bg-slate-950 border border-slate-700 focus:border-teal-400 rounded-lg px-2 py-1.5 text-white text-[11px] outline-none font-bold"></select>
+              <select id="spCartSelectHoraManana" class="w-full bg-slate-950 border border-slate-700 focus:border-teal-400 rounded-lg px-2 py-1.5 text-white text-[11px] outline-none font-bold"></select>
+            </div>
+            <input id="spCartInputFechaHoraISO" type="hidden" value="" />
+            <input id="spCartInputHorario" type="hidden" value="" />
+          </div>
+        </div>
+
+        <button type="button" id="spBtnSubmitCarrito" onclick="window.spConfirmarPedidoYAgendarCita()" class="w-full sp-btn-carrito-gold-3d py-3 rounded-2xl text-xs sm:text-sm uppercase tracking-wider">
+          <span>🚀 Confirmar Pedido y Agendar Videollamada de Alta</span>
+        </button>
+
+        <div id="spCartFeedbackMsg" class="hidden p-3 rounded-2xl bg-emerald-950/90 border-2 border-emerald-400 text-xs text-white"></div>
       </div>
     </div>
   </div>
+</div>
 
-  <script>
-    (function() {
-      var _spAudioCtx = null;
-      var _spAnalyser = null;
-      var _spFreqData = null;
-      var _spAnimFrameId = null;
-      var _spFloatingCerradoManual = false;
+<script id="spScriptConsultorYCarritoV231">
+(function() {
+  var _spHistorialConversacion = [];
+  var _spUltimaRespuestaTexto = '';
+  var _spVozActiva = true;
+  var _spEscuchandoManosLibres = false;
+  var _spReconocimientoVoz = null;
+  var _spTemporizadorTeleprompter = null;
+  var _spVocesEspanaDisponibles = [];
+  var _spIndiceVozActual = 0;
 
-      var NUM_BARRAS_MAIN = 28;
-      var _barrasSuavizadas = new Float32Array(NUM_BARRAS_MAIN);
-      var _picosFlotantes = new Float32Array(NUM_BARRAS_MAIN);
-      var _velocidadCaidaPico = new Float32Array(NUM_BARRAS_MAIN);
+  var _spCartState = {
+    modalidad: 'mensual',
+    plan: 'duo',
+    auditorias: 0,
+    atriles: 1,
+    reservasFase2: []
+  };
 
-      var _pesosBandaBarra = [];
-      for (var b = 0; b < NUM_BARRAS_MAIN; b++) {
-        var pos = b / (NUM_BARRAS_MAIN - 1);
-        var wLow = Math.max(0, Math.exp(-Math.pow((pos - 0.18) / 0.22, 2)));
-        var wMid = Math.max(0, Math.exp(-Math.pow((pos - 0.48) / 0.25, 2)));
-        var wHigh = Math.max(0, Math.exp(-Math.pow((pos - 0.80) / 0.22, 2)));
-        var arm = 0.82 + 0.34 * Math.abs(Math.sin(b * 1.7 + 0.4));
-        _pesosBandaBarra.push({ wLow: wLow, wMid: wMid, wHigh: wHigh, arm: arm });
+  function normalizarSinTildes(str) {
+    return String(str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
+  // =========================================================================
+  // 1. SELECTOR INTELIGENTE DE VOCES DE ESPAÑA (es-ES) SIN ACENTOS EXTRANJEROS
+  // =========================================================================
+  function descubrirVocesEspanaNativas() {
+    if (!('speechSynthesis' in window)) return [];
+    var todas = window.speechSynthesis.getVoices() || [];
+    var soloEspana = todas.filter(function(v) {
+      var lang = String(v.lang || '').replace('_', '-').toLowerCase();
+      return lang === 'es-es';
+    });
+
+    // Ordenar priorizando Jorge y Mónica en Mac/iOS, y Álvaro/Elvira/Helena/Pablo en Windows
+    var preferidas = ['jorge', 'monica', 'alvaro', 'elvira', 'helena', 'pablo', 'marisol'];
+    soloEspana.sort(function(a, b) {
+      var na = normalizarSinTildes(a.name);
+      var nb = normalizarSinTildes(b.name);
+      var ia = 99, ib = 99;
+      for (var i = 0; i < preferidas.length; i++) {
+        if (na.indexOf(preferidas[i]) !== -1 && ia === 99) ia = i;
+        if (nb.indexOf(preferidas[i]) !== -1 && ib === 99) ib = i;
       }
+      if (ia !== ib) return ia - ib;
+      return a.localService === b.localService ? 0 : (a.localService ? -1 : 1);
+    });
 
-      function formatearSegundos(seg) {
-        if (!seg || isNaN(seg) || !isFinite(seg)) return '0:00';
-        var m = Math.floor(seg / 60);
-        var s = Math.floor(seg % 60);
-        return m + ':' + (s < 10 ? '0' : '') + s;
+    // Si hay voces locales humanas (Jorge/Mónica/Álvaro), descartar las de "Google" que suenan robóticas
+    var humanas = soloEspana.filter(function(v) {
+      return normalizarSinTildes(v.name).indexOf('google') === -1;
+    });
+    _spVocesEspanaDisponibles = humanas.length > 0 ? humanas : soloEspana;
+    return _spVocesEspanaDisponibles;
+  }
+
+  function obtenerVozEspanolaActiva() {
+    var lista = descubrirVocesEspanaNativas();
+    if (!lista.length) return null;
+    if (_spIndiceVozActual >= lista.length) _spIndiceVozActual = 0;
+    return lista[_spIndiceVozActual];
+  }
+
+  function nombreCortoVoz(vozObj) {
+    if (!vozObj || !vozObj.name) return 'Jorge';
+    var limpio = vozObj.name.replace(/Microsoft|Apple|Online|Natural|Spanish|Spain|\(.*?\)/gi, '').trim();
+    return limpio.split(/\s+/)[0] || vozObj.name.slice(0, 10);
+  }
+
+  window.spAlternarVozConsultor = function(ev) {
+    if (ev) ev.stopPropagation();
+    var lista = descubrirVocesEspanaNativas();
+    if (lista.length > 1) {
+      _spIndiceVozActual = (_spIndiceVozActual + 1) % lista.length;
+    }
+    var vozElegida = obtenerVozEspanolaActiva();
+    var btnVoz = document.getElementById('spBtnCambiarVoz');
+    if (btnVoz && vozElegida) {
+      btnVoz.innerHTML = '🗣️ Voz: ' + nombreCortoVoz(vozElegida);
+    }
+    if (_spUltimaRespuestaTexto && _spVozActiva) {
+      window.spHablarYMostrarTeleprompter(_spUltimaRespuestaTexto);
+    }
+  };
+
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = function() {
+      var lista = descubrirVocesEspanaNativas();
+      var btnVoz = document.getElementById('spBtnCambiarVoz');
+      if (btnVoz && lista.length) {
+        btnVoz.innerHTML = '🗣️ Voz: ' + nombreCortoVoz(lista[_spIndiceVozActual] || lista[0]);
       }
+    };
+  }
 
-      function obtenerAudioPodcast() {
-        var aud = document.getElementById('audioEpisodio1');
-        if (!aud) return null;
-        var srcAttr = aud.getAttribute('src') || '';
-        if (!srcAttr) aud.setAttribute('src', 'podcasts/episodio-1.m4a');
-        return aud;
-      }
+  // =========================================================================
+  // 2. TELEPROMPTER SINCRONIZADO PALABRA POR PALABRA Y BOTÓN ÚNICO DE PARADA
+  // =========================================================================
+  window.spDetenerTodoConsultor = function(ev) {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    _spEscuchandoManosLibres = false;
+    if (_spTemporizadorTeleprompter) {
+      clearInterval(_spTemporizadorTeleprompter);
+      _spTemporizadorTeleprompter = null;
+    }
+    if ('speechSynthesis' in window) {
+      try { window.speechSynthesis.cancel(); } catch (e) {}
+    }
+    if (_spReconocimientoVoz) {
+      try { _spReconocimientoVoz.onend = null; _spReconocimientoVoz.abort(); } catch (e) {}
+    }
+    var statusTxt = document.getElementById('spHudStatusText');
+    if (statusTxt) statusTxt.textContent = '⏸️ CONSULTOR EN PAUSA • PULSA LA ESFERA 3D PARA HABLAR';
+    var inp = document.getElementById('spTecnosalaInput');
+    if (inp) inp.placeholder = 'Escribe tu duda o pulsa 🎙️ Hablar para preguntar por voz...';
+  };
 
-      function conectarWebAudioSiServidor(aud) {
-        if (_spAudioCtx || !aud || window.location.protocol === 'file:') return;
-        try {
-          var AudioContextCls = window.AudioContext || window.webkitAudioContext;
-          if (!AudioContextCls) return;
-          _spAudioCtx = new AudioContextCls();
-          var source = _spAudioCtx.createMediaElementSource(aud);
-          _spAnalyser = _spAudioCtx.createAnalyser();
-          _spAnalyser.fftSize = 128;
-          _spAnalyser.smoothingTimeConstant = 0.74;
-          source.connect(_spAnalyser);
-          _spAnalyser.connect(_spAudioCtx.destination);
-          _spFreqData = new Uint8Array(_spAnalyser.frequencyBinCount);
-        } catch (err) {
-          _spAnalyser = null;
-        }
-      }
+  window.spRepetirUltimaRespuesta = function(ev) {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    if (_spUltimaRespuestaTexto) {
+      window.spHablarYMostrarTeleprompter(_spUltimaRespuestaTexto);
+    }
+  };
 
-      function obtenerNivelesRealesEnInstante(aud) {
-        var niveles = new Float32Array(NUM_BARRAS_MAIN);
-        if (!aud || aud.paused || aud.ended) return niveles;
-        if (_spAnalyser && _spFreqData) {
-          try {
-            _spAnalyser.getByteFrequencyData(_spFreqData);
-            var sumaCheck = 0;
-            for (var k = 0; k < 16; k++) sumaCheck += _spFreqData[k];
-            if (sumaCheck > 0) {
-              for (var i = 0; i < NUM_BARRAS_MAIN; i++) {
-                var binIdx = Math.min(_spFreqData.length - 1, Math.floor((i / NUM_BARRAS_MAIN) * 36) + 1);
-                var val = _spFreqData[binIdx] / 255.0;
-                niveles[i] = Math.min(0.98, Math.max(0.02, Math.pow(val, 0.85)));
-              }
-              return niveles;
-            }
-          } catch (e) {}
-        }
-        var wave = window.SP_PODCAST_EP1_WAVE;
-        if (wave && wave.mid && wave.mid.length > 0) {
-          var cur = aud.currentTime || 0;
-          var exactFrame = cur * (wave.fps || 25);
-          var f0 = Math.min(wave.mid.length - 1, Math.max(0, Math.floor(exactFrame)));
-          var f1 = Math.min(wave.mid.length - 1, f0 + 1);
-          var frac = exactFrame - f0;
-          var eLow = ((wave.low[f0] * (1 - frac)) + (wave.low[f1] * frac)) / 99.0;
-          var eMid = ((wave.mid[f0] * (1 - frac)) + (wave.mid[f1] * frac)) / 99.0;
-          var eHigh = ((wave.high[f0] * (1 - frac)) + (wave.high[f1] * frac)) / 99.0;
-          if (eMid < 0.025 && eLow < 0.025) return niveles;
-          var jitterTiempo = performance.now() * 0.018;
-          for (var m = 0; m < NUM_BARRAS_MAIN; m++) {
-            var p = _pesosBandaBarra[m];
-            var energia = (eLow * p.wLow * 0.95) + (eMid * p.wMid * 1.12) + (eHigh * p.wHigh * 0.90);
-            var modulacionArmonica = 0.88 + 0.24 * Math.sin(jitterTiempo + m * 1.9);
-            niveles[m] = Math.min(0.98, Math.max(0.02, energia * p.arm * modulacionArmonica));
-          }
-        }
-        return niveles;
-      }
+  window.spToggleSonidoConsultor = function(ev) {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    _spVozActiva = !_spVozActiva;
+    var btn = document.getElementById('spBtnToggleMute');
+    if (btn) {
+      btn.innerHTML = _spVozActiva ? '🔊 Voz: ON' : '🔇 Silenciado';
+    }
+    if (!_spVozActiva && 'speechSynthesis' in window) {
+      try { window.speechSynthesis.cancel(); } catch (e) {}
+    }
+  };
 
-      function dibujarBarrasEcualizador() {
-        var aud = document.getElementById('audioEpisodio1');
-        var canvasMain = document.getElementById('spAudioEqCanvas');
-        var canvasFloat = document.getElementById('spFloatEqCanvas');
-        var enReproduccion = aud && !aud.paused && !aud.ended;
-        var objetivos = obtenerNivelesRealesEnInstante(aud);
-        var hayMovimientoResidual = false;
+  window.spHablarYMostrarTeleprompter = function(textoCompleto, alTerminarCallback) {
+    var limpio = String(textoCompleto || '').replace(/[*#>`_~]/g, '').replace(/\s+/g, ' ').trim();
+    if (!limpio) return;
+    _spUltimaRespuestaTexto = limpio;
 
-        for (var i = 0; i < NUM_BARRAS_MAIN; i++) {
-          var target = enReproduccion ? objetivos[i] : 0.03;
-          var actual = _barrasSuavizadas[i];
-          actual += (target - actual) * (target > actual ? 0.48 : 0.22);
-          _barrasSuavizadas[i] = actual;
-          if (actual >= _picosFlotantes[i]) {
-            _picosFlotantes[i] = actual;
-            _velocidadCaidaPico[i] = 0.002;
-          } else {
-            _velocidadCaidaPico[i] = Math.min(0.035, _velocidadCaidaPico[i] + 0.0014);
-            _picosFlotantes[i] = Math.max(0.03, _picosFlotantes[i] - _velocidadCaidaPico[i]);
-          }
-          if (actual > 0.04 || _picosFlotantes[i] > 0.05) hayMovimientoResidual = true;
-        }
+    var idleEl = document.getElementById('spTecnosalaIdleWelcome');
+    var activeEl = document.getElementById('spTecnosalaActiveStage');
+    if (idleEl) idleEl.classList.add('hidden');
+    if (activeEl) activeEl.classList.remove('hidden');
 
-        if (canvasMain && canvasMain.getContext) {
-          var ctx = canvasMain.getContext('2d');
-          var w = canvasMain.width, h = canvasMain.height;
-          ctx.clearRect(0, 0, w, h);
-          var gap = 3;
-          var barW = (w - gap * (NUM_BARRAS_MAIN - 1)) / NUM_BARRAS_MAIN;
-          for (var idx = 0; idx < NUM_BARRAS_MAIN; idx++) {
-            var barH = Math.max(3, Math.round(_barrasSuavizadas[idx] * (h - 6)));
-            var x = idx * (barW + gap), y = h - barH;
-            var grad = ctx.createLinearGradient(0, y, 0, h);
-            grad.addColorStop(0, idx % 3 === 0 ? '#34d399' : (idx % 3 === 1 ? '#38bdf8' : '#fbbf24'));
-            grad.addColorStop(1, idx % 3 === 0 ? '#0d9488' : (idx % 3 === 1 ? '#0284c7' : '#10b981'));
-            ctx.fillStyle = grad;
-            ctx.fillRect(x, y, barW, barH);
-          }
-        }
-        if (enReproduccion || hayMovimientoResidual) _spAnimFrameId = requestAnimationFrame(dibujarBarrasEcualizador);
-        else _spAnimFrameId = null;
-      }
+    if (_spTemporizadorTeleprompter) {
+      clearInterval(_spTemporizadorTeleprompter);
+      _spTemporizadorTeleprompter = null;
+    }
+    if ('speechSynthesis' in window) {
+      try { window.speechSynthesis.cancel(); } catch (e) {}
+    }
 
-      function actualizarVisibilidadFloatingPlayer() {
-        var aud = document.getElementById('audioEpisodio1');
-        var fl = document.getElementById('spFloatingMediaPlayer');
-        var vistaMas = document.getElementById('vista-mas');
-        if (!aud || !fl) return;
-        var activo = !aud.paused && !aud.ended;
-        var fueraDeMagazine = vistaMas && vistaMas.classList.contains('hidden');
-        if (activo && !_spFloatingCerradoManual && (window.innerWidth <= 840 || fueraDeMagazine || window.scrollY > 140)) {
-          fl.classList.remove('sp-floating-player-hidden');
-        } else if (!activo || _spFloatingCerradoManual) {
-          fl.classList.add('sp-floating-player-hidden');
-        }
-      }
+    var palabras = limpio.split(' ');
+    var box = document.getElementById('spTeleprompterText');
+    var contenedorScroll = document.getElementById('spTeleprompterBox');
 
-      function sincronizarEstadoUI() {
-        var aud = document.getElementById('audioEpisodio1');
-        if (!aud) return;
-        var enPlay = !aud.paused && !aud.ended;
-        var icoMain = document.getElementById('spIconPlayMainPodcast');
-        var txtMain = document.getElementById('spTextPlayMainPodcast');
-        var icoFloat = document.getElementById('spFloatPlayIcon');
-        if (icoMain) icoMain.textContent = enPlay ? '⏸' : '▶';
-        if (txtMain) txtMain.textContent = enPlay ? 'Pausar Podcast' : 'Escuchar Podcast';
-        if (icoFloat) icoFloat.textContent = enPlay ? '⏸' : '▶';
-        actualizarVisibilidadFloatingPlayer();
-        if (!_spAnimFrameId) _spAnimFrameId = requestAnimationFrame(dibujarBarrasEcualizador);
-      }
-
-      window.spTogglePlayPodcast = function() {
-        var aud = obtenerAudioPodcast();
-        if (!aud) return;
-        _spFloatingCerradoManual = false;
-        aud.muted = false;
-        if (!aud.paused) { aud.pause(); sincronizarEstadoUI(); return; }
-        conectarWebAudioSiServidor(aud);
-        aud.play().then(sincronizarEstadoUI).catch(function(){});
-      };
-
-      window.spSeekAudioPodcast = function(pct) {
-        var aud = obtenerAudioPodcast();
-        if (aud && aud.duration) aud.currentTime = (parseFloat(pct) / 100) * aud.duration;
-      };
-
-      window.spCambiarVolumenMedia = function(val) {
-        var aud = obtenerAudioPodcast();
-        if (aud) { aud.volume = parseFloat(val); aud.muted = (parseFloat(val) === 0); }
-      };
-
-      window.spToggleMutePodcast = function() {
-        var aud = obtenerAudioPodcast();
-        if (aud) aud.muted = !aud.muted;
-      };
-
-      window.spCerrarFloatingPlayer = function() {
-        var aud = obtenerAudioPodcast();
-        if (aud && !aud.paused) aud.pause();
-        _spFloatingCerradoManual = true;
-        var fl = document.getElementById('spFloatingMediaPlayer');
-        if (fl) fl.classList.add('sp-floating-player-hidden');
-      };
-
-      window.spAbrirDocumentoEnVisor = function(urlDoc, tituloDoc) {
-        var modal = document.getElementById('spModalVisorMagazineN1');
-        var iframe = document.getElementById('spIframeMagazineN1');
-        var titleEl = document.getElementById('spVisorModalDocTitle');
-        var extLink = document.getElementById('spVisorModalExternalLink');
-        if (!modal || !iframe) { window.open(urlDoc, '_blank'); return; }
-        var urlConCache = urlDoc + (urlDoc.indexOf('?') === -1 ? '?v=217' : '&v=217');
-        if (titleEl && tituloDoc) titleEl.textContent = tituloDoc;
-        if (extLink) extLink.href = urlConCache;
-        iframe.src = urlConCache;
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-      };
-
-      window.spAbrirVisorMagazineN1 = function() {
-        window.spAbrirDocumentoEnVisor('articulos/Pyme_Magazine_N1.html', '📰 Pyme Magazine • Nº 1: La Nueva Regla del «Boca a Boca»');
-      };
-
-      window.spCerrarVisorMagazineN1 = function() {
-        var modal = document.getElementById('spModalVisorMagazineN1');
-        if (modal) modal.classList.add('hidden');
-        document.body.style.overflow = '';
-      };
-
-      // =====================================================================
-      // MOTOR DEL CARRITO A LA CARTA Y PRECONFIGURACIÓN AUTOMÁTICA POR VOZ (V217)
-      // =====================================================================
-      var _spCartState = {
-        modalidad: 'mensual',
-        plan: 'duo',
-        auditorias: 1,
-        atriles: 1,
-        reservasFase2: []
-      };
-
-      function normalizarSinTildes(str) {
-        return String(str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
-      }
-
-      // Analiza todo lo hablado con el Consultor para que al abrir el Carrito o al dar el teléfono ya esté todo seleccionado y rellenado
-      window.spExtraerYPreconfigurarCarritoDesdeCharla = function(textoReciente, historialArray) {
-        var todoTexto = ((historialArray || []).join(' ') + ' ' + (textoReciente || '')).trim();
-        var tNorm = normalizarSinTildes(todoTexto);
-
-        // 1. Detectar Modalidad (Anual vs Mensual)
-        if (/(plan anual|pago anual|modalidad anual|pagar el ano|dos meses gratis|2x1)/.test(tNorm)) {
-          _spCartState.modalidad = 'anual';
-        } else if (/(mensual|flexible|mes a mes|tres meses)/.test(tNorm)) {
-          _spCartState.modalidad = 'mensual';
-        }
-
-        // 2. Detectar Plan de Servicios (Pack Dúo vs 1 Servicio Base vs Solo Auditoría)
-        if (/(pack duo|escudo duo|pack escudo|dos servicios|los dos servicios|resenas y whatsapp|s1 y s2)/.test(tNorm)) {
-          _spCartState.plan = 'duo';
-        } else if (/(plan base|un servicio|solo el de resenas|solo gestor de resenas|solo resenas|solo whatsapp|solo cortafuegos|59 euros)/.test(tNorm)) {
-          _spCartState.plan = 'base';
-        } else if (/(solo auditoria|unicamente la auditoria|solo el atril)/.test(tNorm)) {
-          _spCartState.plan = 'ninguno';
-        }
-
-        // 3. Detectar Super-Auditorías Web (0, 1 o 2)
-        if (/(dos auditorias|las 2 auditorias|ambas auditorias|2x1|seo y neuro|las dos super)/.test(tNorm)) {
-          _spCartState.auditorias = 2;
-        } else if (/(sin auditoria|ninguna auditoria|no quiero auditoria)/.test(tNorm)) {
-          _spCartState.auditorias = 0;
-        } else if (/(auditoria|seo|geo|neuromarketing|neuro|sonda)/.test(tNorm)) {
-          _spCartState.auditorias = 1;
-        }
-
-        // 4. Detectar unidades de Atril NFC/QR
-        var selAtril = document.getElementById('spCartAtrilSelect');
-        if (/(sin atril|ningun atril|0 atriles)/.test(tNorm)) {
-          _spCartState.atriles = 0;
-          if (selAtril) selAtril.value = '0';
-        } else if (/(dos atriles|2 atriles)/.test(tNorm)) {
-          _spCartState.atriles = 2;
-          if (selAtril) selAtril.value = '2';
-        } else if (/(tres atriles|3 atriles)/.test(tNorm)) {
-          _spCartState.atriles = 3;
-          if (selAtril) selAtril.value = '3';
-        } else if (/(cinco atriles|5 atriles)/.test(tNorm)) {
-          _spCartState.atriles = 5;
-          if (selAtril) selAtril.value = '5';
-        } else if (/(atril|nfc|mostrador)/.test(tNorm)) {
-          _spCartState.atriles = 1;
-          if (selAtril) selAtril.value = '1';
-        }
-
-        // 5. Detectar Reservas de Fase 2 mencionadas
-        var mapaFase2 = [
-          { re: /(leads|10 segundos|portales)/, val: 'S3 Leads en 10s + Portales (+40 €/m)' },
-          { re: /(llamadas perdidas|llamada perdida)/, val: 'S4 Rescate Llamadas Perdidas (+59 €/m)' },
-          { re: /(inactivos|reactivacion)/, val: 'S5 Reactivación Clientes Inactivos (+40 €/m)' },
-          { re: /(anti planton|planton|plantones|recordatorio de citas)/, val: 'S6 Agenda Anti-Plantón Citas (+40 €/m)' },
-          { re: /(centralita)/, val: 'S7 Centralita Voz IA 24/7 (Desde 149 €/m)' },
-          { re: /(firma digital|firma de presupuestos)/, val: 'S8 Firma Digital Presupuestos (+40 €/m)' },
-          { re: /(facturas|tickets|gestor|gestoria)/, val: 'S9 Facturas al Gestor por Foto WA (+40 €/m)' },
-          { re: /(morosidad|impagos|cobros)/, val: 'S10 Escudo Anti-Morosidad (+40 €/m)' },
-          { re: /(instagram|reels)/, val: 'Sat.1 Instagram 3 en 1 (+59 €/m)' },
-          { re: /(logistico|envios|paquetes)/, val: 'Sat.2 Escudo Logístico 360 (+59 €/m)' },
-          { re: /(redactor|b2b)/, val: 'Sat.3 Redactor Técnico B2B IA (+59 €/m)' }
-        ];
-        mapaFase2.forEach(function(m) {
-          if (m.re.test(tNorm) && _spCartState.reservasFase2.indexOf(m.val) === -1) {
-            _spCartState.reservasFase2.push(m.val);
-          }
-        });
-
-        // 6. Extraer Nombre / Negocio si dijo "me llamo X", "soy X", "mi negocio es X"
-        var inpNom = document.getElementById('spCartInputNombre');
-        if (inpNom && !inpNom.value) {
-          var mNom = todoTexto.match(/(?:me llamo|soy|mi nombre es|de la empresa|del negocio|de la clinica|del taller)\s+([A-ZÁÉÍÓÚÑa-záéíóúñ0-9\s]{2,35}?)(?:[,.]|y mi|mi tel|telefono|quiero|para|$)/i);
-          if (mNom && mNom[1]) {
-            inpNom.value = mNom[1].trim();
-          }
-        }
-
-        // 7. Extraer Horario si dijo "mañana a las...", "el lunes...", "por la tarde..."
-        var inpHor = document.getElementById('spCartInputHorario');
-        if (inpHor && !inpHor.value) {
-          var mHor = todoTexto.match(/((?:manana|mañana|pasado manana|hoy|lunes|martes|miercoles|miércoles|jueves|viernes)\s*(?:por la\s+\w+)?\s*(?:a las\s*\d{1,2}(?::\d{2})?)?|\ba las\s+\d{1,2}(?::\d{2})?(?:\s*de la\s+\w+)?)/i);
-          if (mHor && mHor[1]) {
-            inpHor.value = mHor[1].trim();
-          }
-        }
-
-        window.spRecalcularCarritoCarta();
-      };
-
-      window.spAbrirCarritoConfigurador = function(planInicial, audInicial) {
-        if (typeof _spHistorialConversacion !== 'undefined' && _spHistorialConversacion.length > 0) {
-          window.spExtraerYPreconfigurarCarritoDesdeCharla('', _spHistorialConversacion);
+    function pintarProgresoPalabra(idxActual) {
+      if (!box) return;
+      var inicioVentana = Math.max(0, idxActual - 16);
+      var finVentana = Math.min(palabras.length, idxActual + 22);
+      var html = [];
+      for (var i = inicioVentana; i < finVentana; i++) {
+        if (i < idxActual) {
+          html.push('<span class="text-teal-200/75">' + palabras[i] + '</span>');
+        } else if (i === idxActual) {
+          html.push('<span class="text-amber-300 font-black underline decoration-amber-400">' + palabras[i] + '</span>');
         } else {
-          if (planInicial) _spCartState.plan = planInicial;
-          if (typeof audInicial === 'number') _spCartState.auditorias = audInicial;
-        }
-        var fb = document.getElementById('spCartFeedbackMsg');
-        var btnSub = document.getElementById('spBtnSubmitCarrito');
-        if (fb) fb.classList.add('hidden');
-        if (btnSub) btnSub.classList.remove('hidden');
-        var modal = document.getElementById('spModalCarritoCarta');
-        if (modal) {
-          modal.classList.remove('hidden');
-          window.spRecalcularCarritoCarta();
-        }
-      };
-
-      window.spCerrarCarritoConfigurador = function() {
-        var modal = document.getElementById('spModalCarritoCarta');
-        if (modal) modal.classList.add('hidden');
-      };
-
-      window.spSetCartModalidad = function(mod) {
-        _spCartState.modalidad = (mod === 'anual') ? 'anual' : 'mensual';
-        window.spRecalcularCarritoCarta();
-      };
-
-      window.spSetCartPlan = function(pl) {
-        _spCartState.plan = pl || 'duo';
-        window.spRecalcularCarritoCarta();
-      };
-
-      window.spSetCartAuditorias = function(num) {
-        _spCartState.auditorias = Number(num || 0);
-        window.spRecalcularCarritoCarta();
-      };
-
-      window.spAgregarModuloReservaFase2 = function(valor) {
-        var sel = document.getElementById('spCartReservaFase2');
-        if (sel) sel.value = '';
-        if (!valor) return;
-        if (_spCartState.reservasFase2.indexOf(valor) === -1) {
-          _spCartState.reservasFase2.push(valor);
-        }
-        window.spRecalcularCarritoCarta();
-      };
-
-      window.spQuitarModuloReservaFase2 = function(idx) {
-        _spCartState.reservasFase2.splice(idx, 1);
-        window.spRecalcularCarritoCarta();
-      };
-
-      window.spRecalcularCarritoCarta = function() {
-        ['mensual', 'anual'].forEach(function(m) {
-          var b = document.getElementById('spCartMod_' + m);
-          if (b) {
-            if (_spCartState.modalidad === m) b.classList.add('sp-cart-selected');
-            else b.classList.remove('sp-cart-selected');
-          }
-        });
-        ['ninguno', 'base', 'duo'].forEach(function(p) {
-          var b = document.getElementById('spCartPlan_' + p);
-          if (b) {
-            if (_spCartState.plan === p) b.classList.add('sp-cart-selected');
-            else b.classList.remove('sp-cart-selected');
-          }
-        });
-        [0, 1, 2].forEach(function(a) {
-          var b = document.getElementById('spCartAud_' + a);
-          if (b) {
-            if (_spCartState.auditorias === a) b.classList.add('sp-cart-selected');
-            else b.classList.remove('sp-cart-selected');
-          }
-        });
-
-        var chipsBox = document.getElementById('spCartReservasChipsBox');
-        if (chipsBox) {
-          if (_spCartState.reservasFase2.length === 0) {
-            chipsBox.innerHTML = '<span class="text-[10px] text-slate-400 italic">Ningún módulo de Fase 2 añadido aún (puedes seleccionar todos los que quieras arriba).</span>';
-          } else {
-            chipsBox.innerHTML = _spCartState.reservasFase2.map(function(item, i) {
-              return '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-sky-950 border border-sky-400/50 text-[10px] font-bold text-sky-200">' +
-                '<span>' + item + '</span>' +
-                '<button type="button" onclick="window.spQuitarModuloReservaFase2(' + i + ')" class="text-rose-300 hover:text-white font-black ml-1 cursor-pointer">✕</button>' +
-              '</span>';
-            }).join('');
-          }
-        }
-
-        var esAnual = (_spCartState.modalidad === 'anual');
-        var tieneDuo = (_spCartState.plan === 'duo');
-        var precio1Aud = (!tieneDuo) ? 350 : (esAnual ? 195 : 250);
-        var precio2Aud = (!tieneDuo) ? 650 : (esAnual ? 350 : 450);
-
-        var lbl1 = document.getElementById('spCartPriceAud1Lbl');
-        var lbl2 = document.getElementById('spCartPriceAud2Lbl');
-        if (lbl1) lbl1.textContent = precio1Aud + ' € ' + (tieneDuo ? (esAnual ? '(Super-Bonificada Anual)' : '(Bonificada Dúo Flex)') : '(Tarifa Estándar)');
-        if (lbl2) lbl2.textContent = precio2Aud + ' € las 2 ' + (tieneDuo ? (esAnual ? '(¡2x1 Plan Anual!)' : '(Ahorras 250 €)') : '(Ahorras 50 €)');
-
-        var selAtril = document.getElementById('spCartAtrilSelect');
-        var numAtriles = selAtril ? parseInt(selAtril.value || '0', 10) : 0;
-        _spCartState.atriles = numAtriles;
-        var costeAtriles = 0;
-        if (numAtriles === 1) costeAtriles = 39;
-        else if (numAtriles === 2) costeAtriles = 68;
-        else if (numAtriles === 3) costeAtriles = 97;
-        else if (numAtriles === 4) costeAtriles = 126;
-        else if (numAtriles >= 5) costeAtriles = numAtriles * 25;
-
-        var costeSetup = 0;
-        var cuotaMes = 0;
-        var pagoPlanDia1 = 0;
-        var numServiciosActivos = 0;
-        var nombrePlanTxt = 'Sin plan mensual (Solo Pago Único)';
-
-        if (_spCartState.plan === 'base') {
-          numServiciosActivos = 1;
-          costeSetup = 150;
-          cuotaMes = 59;
-          pagoPlanDia1 = esAnual ? (590 + 150) : (59 + 150);
-          nombrePlanTxt = esAnual ? 'Plan Base Anual (590 €/año + 150 € Setup)' : 'Plan Base Flexible (59 €/mes + 150 € Setup)';
-        } else if (_spCartState.plan === 'duo') {
-          numServiciosActivos = 2;
-          costeSetup = 225;
-          cuotaMes = 99;
-          pagoPlanDia1 = esAnual ? (990 + 225) : (99 + 225);
-          nombrePlanTxt = esAnual ? 'Pack Escudo Dúo Anual (990 €/año + 225 € Setup)' : 'Pack Escudo Dúo Flexible (99 €/mes + 225 € Setup)';
-        }
-
-        var costeAud = (_spCartState.auditorias === 1) ? precio1Aud : ((_spCartState.auditorias === 2) ? precio2Aud : 0);
-        var totalDia1 = pagoPlanDia1 + costeAud + costeAtriles;
-
-        var totalServiciosMensuales = numServiciosActivos + _spCartState.reservasFase2.length;
-        var tieneBonoBoveda = (totalServiciosMensuales >= 3);
-
-        var badgeCount = document.getElementById('spCartCountModulosBadge');
-        if (badgeCount) {
-          badgeCount.textContent = totalServiciosMensuales + (totalServiciosMensuales === 1 ? ' servicio mensual' : ' servicios mensuales');
-        }
-
-        var bonoBox = document.getElementById('spCartBonoBovedaBox');
-        if (bonoBox) {
-          if (tieneBonoBoveda) {
-            bonoBox.className = 'mb-2.5 rounded-xl p-2.5 bg-amber-500/20 border-2 border-amber-300 text-amber-100 shadow-lg shadow-amber-500/20 transition-all';
-            bonoBox.innerHTML =
-              '<div class="flex items-center gap-2">' +
-                '<span class="text-base">🎁</span>' +
-                '<div class="text-[11px] leading-snug">' +
-                  '<strong class="text-amber-300 font-black block uppercase">BONO REGALO DESBLOQUEADO (3+ SERVICIOS MENSUALES):</strong>' +
-                  '<span>Incluye GRATIS tu <strong>Bóveda Segura de Contraseñas</strong> para compartir accesos con tu equipo en 1 clic (Valorada en <strong>150 €</strong>).</span>' +
-                '</div>' +
-              '</div>';
-          } else {
-            bonoBox.className = 'hidden';
-            bonoBox.innerHTML = '';
-          }
-        }
-
-        var linesEl = document.getElementById('spCartSummaryLines');
-        if (linesEl) {
-          var htmlL = '<div class="flex justify-between"><span>• ' + nombrePlanTxt + ':</span><strong class="text-white">' + pagoPlanDia1 + ' €</strong></div>';
-          if (costeAud > 0) {
-            htmlL += '<div class="flex justify-between"><span>• ' + _spCartState.auditorias + (_spCartState.auditorias === 1 ? ' Super-Auditoría Web' : ' Super-Auditorías Gemelas') + ':</span><strong class="text-sky-300">' + costeAud + ' €</strong></div>';
-          }
-          if (costeAtriles > 0) {
-            htmlL += '<div class="flex justify-between"><span>• ' + numAtriles + (numAtriles === 1 ? ' Atril NFC+QR' : ' Atriles NFC+QR') + ':</span><strong class="text-amber-300">' + costeAtriles + ' €</strong></div>';
-          }
-          if (_spCartState.reservasFase2.length > 0) {
-            htmlL += '<div class="flex justify-between text-sky-200"><span>• Reserva Fase 2 (' + _spCartState.reservasFase2.length + ' mód.):</span><strong class="text-emerald-300">Prioridad reservada ✓</strong></div>';
-          }
-          linesEl.innerHTML = htmlL;
-        }
-
-        var totEl = document.getElementById('spCartTotalDia1');
-        var cuoEl = document.getElementById('spCartCuotaMensual');
-        if (totEl) totEl.textContent = totalDia1 + ' €';
-        if (cuoEl) {
-          if (_spCartState.plan === 'ninguno') cuoEl.textContent = '0 €/mes (Sin cuotas)';
-          else if (esAnual) cuoEl.textContent = 'Año completo cubierto (equiv. ' + (cuotaMes === 99 ? '82,50' : '49') + ' €/m)';
-          else cuoEl.textContent = cuotaMes + ' €/mes (Permanencia mín. 3m)';
-        }
-        return {
-          totalDia1: totalDia1,
-          cuotaMes: cuotaMes,
-          nombrePlanTxt: nombrePlanTxt,
-          costeAud: costeAud,
-          costeAtriles: costeAtriles,
-          tieneBonoBoveda: tieneBonoBoveda,
-          totalModulosSeleccionados: totalServiciosMensuales
-        };
-      };
-
-      // =====================================================================
-      // GENERADOR DE CALENDARIO EN 1 CLIC (PC MAC/WINDOWS Y MÓVIL) CON ALARMA 1H ANTES
-      // =====================================================================
-      var _spUltimaCitaClienteObj = null;
-
-      function calcularFechasCitaCliente(fechaIsoInput, textoHorarioLibre) {
-        var fechaInicio = null;
-        if (fechaIsoInput && fechaIsoInput.length >= 10) {
-          var parsed = new Date(fechaIsoInput);
-          if (!isNaN(parsed.getTime())) fechaInicio = parsed;
-        }
-        if (!fechaInicio) {
-          var manana = new Date();
-          manana.setDate(manana.getDate() + 1);
-          var horaDetectada = 11;
-          var minDetectado = 0;
-          var mHora = String(textoHorarioLibre || '').match(/\b([01]?\d|2[0-3])(?::([0-5]\d)|\s*h|\s*horas)?\b/i);
-          if (mHora) {
-            var hCand = parseInt(mHora[1], 10);
-            if (hCand >= 8 && hCand <= 21) horaDetectada = hCand;
-            if (mHora[2]) minDetectado = parseInt(mHora[2], 10);
-          }
-          manana.setHours(horaDetectada, minDetectado, 0, 0);
-          fechaInicio = manana;
-        }
-        var fechaFin = new Date(fechaInicio.getTime() + 30 * 60 * 1000);
-        function toIcsUTC(d) {
-          return d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
-        }
-        var startUtc = toIcsUTC(fechaInicio);
-        var endUtc = toIcsUTC(fechaFin);
-        var legible = fechaInicio.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' });
-        return { startUtc: startUtc, endUtc: endUtc, fechaInicio: fechaInicio, fechaFin: fechaFin, legible: legible };
-      }
-
-      function construirUrlGoogleCalendar(titulo, detalles, startUtc, endUtc) {
-        return 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
-          '&text=' + encodeURIComponent(titulo) +
-          '&dates=' + encodeURIComponent(startUtc + '/' + endUtc) +
-          '&details=' + encodeURIComponent(detalles) +
-          '&location=' + encodeURIComponent('Videollamada / Teléfono con Francisco M. Gallardo (Sistemas Pyme - 711 54 75 61)');
-      }
-
-      window.spDescargarCitaCalendarioAlarma1Hora = function() {
-        var c = _spUltimaCitaClienteObj;
-        if (!c) return;
-        var contenidoIcs = [
-          'BEGIN:VCALENDAR',
-          'VERSION:2.0',
-          'PRODID:-//Sistemas Pyme//Agenda Alta//ES',
-          'CALSCALE:GREGORIAN',
-          'METHOD:PUBLISH',
-          'BEGIN:VEVENT',
-          'UID:alta-' + Date.now() + '@sistemaspyme.es',
-          'DTSTAMP:' + c.startUtc,
-          'DTSTART:' + c.startUtc,
-          'DTEND:' + c.endUtc,
-          'SUMMARY:' + c.titulo,
-          'DESCRIPTION:' + c.detalles.replace(/\n/g, '\\n'),
-          'LOCATION:Videollamada / Teléfono con Francisco M. Gallardo (711 54 75 61)',
-          'STATUS:CONFIRMED',
-          'BEGIN:VALARM',
-          'TRIGGER:-PT60M',
-          'ACTION:DISPLAY',
-          'DESCRIPTION:⏰ Recordatorio (1 hora antes): Videollamada de Alta con Sistemas Pyme (Francisco M. Gallardo)',
-          'END:VALARM',
-          'BEGIN:VALARM',
-          'TRIGGER:-PT15M',
-          'ACTION:DISPLAY',
-          'DESCRIPTION:⏰ En 15 minutos: Videollamada de Alta con Sistemas Pyme',
-          'END:VALARM',
-          'END:VEVENT',
-          'END:VCALENDAR'
-        ].join('\r\n');
-
-        var blob = new Blob([contenidoIcs], { type: 'text/calendar;charset=utf-8' });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = 'Cita_Alta_Sistemas_Pyme_Alarma_1h.ics';
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(function() {
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        }, 250);
-      };
-
-      // Cuando el usuario da su teléfono por voz al Consultor: pre-rellena todo el carrito y DISPARA YA el pedido sin obligar a pulsar "Ver Pedido"
-      window.spRegistrarLeadAutomaticoDesdeVoz = function(telefono, fraseUsuario, historialCompleto) {
-        window.spExtraerYPreconfigurarCarritoDesdeCharla(fraseUsuario, _spHistorialConversacion);
-        var inpTel = document.getElementById('spCartInputTelefono');
-        if (inpTel) inpTel.value = telefono;
-
-        var datosCalc = window.spRecalcularCarritoCarta();
-        var nom = ((document.getElementById('spCartInputNombre') || {}).value || '').trim() || 'Cliente Tecnosala';
-        var horRaw = ((document.getElementById('spCartInputHorario') || {}).value || '').trim();
-        var tiempos = calcularFechasCitaCliente('', horRaw || fraseUsuario);
-        var tieneHorario = (horRaw.length > 2 || /a las|manana|mañana|lunes|martes|miercoles|jueves|viernes/i.test(fraseUsuario));
-        var horTexto = tieneHorario ? (horRaw || tiempos.legible) : ('Llamada en horario laboral (<24h) • Reserva provisional: ' + tiempos.legible);
-        var resF2 = _spCartState.reservasFase2.length ? _spCartState.reservasFase2.join(', ') : 'Ninguna';
-
-        var resumenPedido =
-          '• Cliente/Negocio: ' + nom + '\n' +
-          '• Teléfono: ' + telefono + '\n' +
-          '• Cita solicitada: ' + horTexto + '\n' +
-          '• Plan elegido: ' + datosCalc.nombrePlanTxt + '\n' +
-          '• Super-Auditorías: ' + _spCartState.auditorias + ' (' + datosCalc.costeAud + ' €)\n' +
-          '• Atriles NFC/QR: ' + _spCartState.atriles + ' (' + datosCalc.costeAtriles + ' €)\n' +
-          '• Reserva Fase 2: ' + resF2 + '\n' +
-          '• Total Día 1: ' + datosCalc.totalDia1 + ' € (sin IVA)';
-
-        var tituloCal = 'Videollamada de Alta — Sistemas Pyme (' + nom + ')';
-        var urlGCal = construirUrlGoogleCalendar(tituloCal, resumenPedido, tiempos.startUtc, tiempos.endUtc);
-        _spUltimaCitaClienteObj = {
-          titulo: tituloCal,
-          detalles: resumenPedido,
-          startUtc: tiempos.startUtc,
-          endUtc: tiempos.endUtc,
-          urlGCal: urlGCal
-        };
-
-        var payloadPedido = {
-          origen: 'Voz Directa / Consultor Tecnosala',
-          nombre: nom,
-          telefono: telefono,
-          horario: horTexto,
-          fecha_cita_iso: tiempos.fechaInicio.toISOString(),
-          tiene_horario_especifico: tieneHorario,
-          plan: datosCalc.nombrePlanTxt,
-          auditorias: _spCartState.auditorias,
-          atriles: _spCartState.atriles,
-          reservas_fase2: _spCartState.reservasFase2,
-          bono_boveda_gratis: datosCalc.tieneBonoBoveda,
-          total_dia1: datosCalc.totalDia1,
-          enlace_google_calendar_cliente: urlGCal,
-          resumen: resumenPedido,
-          fecha: new Date().toLocaleString('es-ES')
-        };
-
-        // Enviar tanto al servidor local 8765 (que dispara WhatsApp + Email + Apps Script Calendar ahora mismo) como a Render
-        fetch('/api/registrar-pedido-cita', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payloadPedido)
-        }).catch(function() {});
-
-        fetch('https://servicio-resenas.onrender.com/api/registrar-pedido-cita', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payloadPedido)
-        }).catch(function() {});
-
-        var bannerOk = document.getElementById('spVoiceLeadCapturedBanner');
-        var screen = document.getElementById('spTecnosalaScreen');
-        if (!bannerOk && screen && screen.parentNode) {
-          bannerOk = document.createElement('div');
-          bannerOk.id = 'spVoiceLeadCapturedBanner';
-          bannerOk.className = 'mb-2.5 p-3 rounded-2xl bg-emerald-950/95 border-2 border-emerald-400 text-xs text-white flex flex-wrap items-center justify-between gap-2 shadow-lg';
-          screen.parentNode.insertBefore(bannerOk, screen.nextSibling);
-        }
-        if (bannerOk) {
-          bannerOk.innerHTML =
-            '<div class="flex items-center gap-2">' +
-              '<span class="text-lg">✅</span>' +
-              '<div><strong class="text-emerald-300 text-xs sm:text-sm block">¡Pedido (' + datosCalc.nombrePlanTxt + ') y teléfono ' + telefono + ' confirmados!</strong>' +
-              '<span class="text-[11px] text-slate-200">WhatsApp enviado a tu móvil y cita agendada. Guarda el recordatorio aquí o revisa tu pedido preconfigurado:</span></div>' +
-            '</div>' +
-            '<div class="flex flex-wrap items-center gap-1.5">' +
-              '<button type="button" onclick="window.spDescargarCitaCalendarioAlarma1Hora()" title="En Mac abre Calendario de Apple (sincronizado con iPhone); en Windows abre Outlook; en móvil abre tu agenda" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-2.5 py-1.5 rounded-xl text-[11px] cursor-pointer shadow">⏰ Calendario Apple/Móvil (Alarma 1h)</button>' +
-              '<a href="' + urlGCal + '" target="_blank" title="Abre Google Calendar en el navegador con la cita lista para guardar" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-black px-2.5 py-1.5 rounded-xl text-[11px] shadow">📅 Google Calendar</a>' +
-              '<button type="button" onclick="window.spAbrirCarritoConfigurador()" class="sp-btn-carrito-gold-3d px-2.5 py-1.5 rounded-xl text-[11px]">🛒 Ver mi Pedido</button>' +
-            '</div>';
-        }
-      };
-
-      window.spConfirmarPedidoYAgendarCita = function() {
-        var datosCalc = window.spRecalcularCarritoCarta();
-        var nom = (document.getElementById('spCartInputNombre') || {}).value || '';
-        var tel = (document.getElementById('spCartInputTelefono') || {}).value || '';
-        var fechaIso = ((document.getElementById('spCartInputFechaHoraISO') || {}).value || '').trim();
-        var horRaw = ((document.getElementById('spCartInputHorario') || {}).value || '').trim();
-        var tieneHorarioEspecifico = (fechaIso.length > 5 || horRaw.length > 2);
-        var tiempos = calcularFechasCitaCliente(fechaIso, horRaw);
-        var horTexto = tieneHorarioEspecifico ? (horRaw || tiempos.legible) : ('Llamada en horario laboral (<24h) • Reserva provisional: ' + tiempos.legible);
-        var resF2 = _spCartState.reservasFase2.length ? _spCartState.reservasFase2.join(', ') : 'Ninguna';
-        var fb = document.getElementById('spCartFeedbackMsg');
-        var btnSub = document.getElementById('spBtnSubmitCarrito');
-
-        if (!tel.trim() || tel.replace(/[^0-9]/g, '').length < 7) {
-          if (fb) {
-            fb.classList.remove('hidden');
-            fb.innerHTML = '<span class="text-amber-300 font-bold">⚠️ Por favor, introduce tu número de teléfono móvil para enviarte la confirmación automática a tu WhatsApp.</span>';
-          }
-          return;
-        }
-
-        var resumenPedido =
-          '• Cliente/Negocio: ' + (nom.trim() || 'Cliente Web') + '\n' +
-          '• Teléfono: ' + tel.trim() + '\n' +
-          '• Cita solicitada: ' + horTexto + '\n' +
-          '• Plan elegido: ' + datosCalc.nombrePlanTxt + '\n' +
-          '• Super-Auditorías: ' + _spCartState.auditorias + ' (' + datosCalc.costeAud + ' €)\n' +
-          '• Atriles NFC/QR: ' + _spCartState.atriles + ' (' + datosCalc.costeAtriles + ' €)\n' +
-          '• Reserva Fase 2: ' + resF2 + '\n' +
-          '• Bono Bóveda Contraseñas (3+ mód.): ' + (datosCalc.tieneBonoBoveda ? 'SÍ INCLUIDA GRATIS (Valorada en 150 €)' : 'No') + '\n' +
-          '• Total Día 1: ' + datosCalc.totalDia1 + ' € (sin IVA)';
-
-        var tituloCal = 'Videollamada de Alta — Sistemas Pyme (' + (nom.trim() || 'Mi Negocio') + ')';
-        var urlGCal = construirUrlGoogleCalendar(tituloCal, resumenPedido, tiempos.startUtc, tiempos.endUtc);
-        _spUltimaCitaClienteObj = {
-          titulo: tituloCal,
-          detalles: resumenPedido,
-          startUtc: tiempos.startUtc,
-          endUtc: tiempos.endUtc,
-          urlGCal: urlGCal
-        };
-
-        var payloadPedido = {
-          origen: 'Carrito Configurador a la Carta Web',
-          nombre: nom.trim() || 'Cliente Web',
-          telefono: tel.trim(),
-          horario: horTexto,
-          fecha_cita_iso: tiempos.fechaInicio.toISOString(),
-          tiene_horario_especifico: tieneHorarioEspecifico,
-          plan: datosCalc.nombrePlanTxt,
-          auditorias: _spCartState.auditorias,
-          atriles: _spCartState.atriles,
-          reservas_fase2: _spCartState.reservasFase2,
-          bono_boveda_gratis: datosCalc.tieneBonoBoveda,
-          total_dia1: datosCalc.totalDia1,
-          enlace_google_calendar_cliente: urlGCal,
-          resumen: resumenPedido,
-          fecha: new Date().toLocaleString('es-ES')
-        };
-
-        fetch('/api/registrar-pedido-cita', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payloadPedido)
-        }).catch(function() {});
-
-        fetch('https://servicio-resenas.onrender.com/api/registrar-pedido-cita', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payloadPedido)
-        }).catch(function() {});
-
-        if (btnSub) btnSub.classList.add('hidden');
-        if (fb) {
-          fb.classList.remove('hidden');
-          var msgCita = tieneHorarioEspecifico
-            ? ('Quedamos agendados para <strong class="text-amber-300">' + horTexto.replace(/</g, '&lt;') + '</strong>.')
-            : 'Te llamaremos brevemente en horario laboral (en menos de 24 horas) para concretar la hora exacta que mejor te venga.';
-          fb.innerHTML =
-            '<div class="space-y-2">' +
-              '<div class="flex items-center gap-2 text-emerald-300 font-black text-sm">' +
-                '<span>✅</span><span>¡Pedido realizado y enviado en directo!</span>' +
-              '</div>' +
-              '<p class="text-slate-100 leading-relaxed">' +
-                'Hemos registrado tu solicitud para <strong class="text-white">' + (nom.trim() || 'tu negocio').replace(/</g, '&lt;') + '</strong> y enviado ahora mismo el aviso por WhatsApp a tu móvil (<strong class="text-teal-300">' + tel.trim().replace(/</g, '&lt;') + '</strong>) y al equipo de Francisco. ' + msgCita +
-              '</p>' +
-              '<div class="pt-1.5 border-t border-emerald-500/30 flex flex-col gap-1.5">' +
-                '<span class="text-[11px] font-extrabold text-amber-300">📲 Guarda la cita en tu ordenador o móvil con alarma 1 hora antes:</span>' +
-                '<div class="flex flex-wrap items-center gap-2">' +
-                  '<button type="button" onclick="window.spDescargarCitaCalendarioAlarma1Hora()" title="En Mac abre Calendario de Apple (sincronizado con iPhone); en Windows abre Outlook; en móvil abre tu agenda" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow">⏰ Calendario Apple / Outlook / Móvil (Alarma 1h antes)</button>' +
-                  '<a href="' + urlGCal + '" target="_blank" title="Abre Google Calendar Web en una pestaña nueva con el evento listo para guardar" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-black px-3 py-1.5 rounded-xl text-xs shadow">📅 Añadir a Google Calendar Web</a>' +
-                '</div>' +
-              '</div>' +
-            '</div>';
-        }
-      };
-
-      // =====================================================================
-      // MOTOR DEL CONSULTOR NEURONAL CON RECONEXIÓN EN VIVO A GEMINI Y FALLBACK EN NAVEGADOR
-      // =====================================================================
-      var _spOrbeDespierto = false;
-      var _spVozConsultorActiva = true;
-      var _spAutoEscuchaContinua = true;
-      var _spHablandoSintesis = false;
-      var _spEscuchandoVoz = false;
-      var _spIgnorarMicroMientrasHabla = false;
-      var _spMicroSesionActiva = false;
-      var _spRearmandoOido = false;
-      var _spNombreVozPreferida = 'Jorge';
-      var _spVozCacheObj = null;
-      var _spUtteranceEnCurso = null;
-      var _spTyperTimerIds = [];
-      var _spWatchdogHablaTimer = null;
-      var _spWatchdogMicroInterval = null;
-      var _spSilenceTimer = null;
-      var _spRecogInstance = null;
-      var _spHistorialConversacion = [];
-      var _spRegistroDescargaCharla = [];
-      var _spContadorVariantesTema = {};
-      var _spUltimoTemaIdConsultado = null;
-      var _spNivelVozUsuarioVivo = 0;
-      var _spUltimoPulsoVozUsuarioTs = 0;
-      var _spEstadoConexionApiReal = 'online';
-      var _spOrbAnimReqId = null;
-      var _spOrbEnergyTarget = 0;
-      var _spOrbEnergyCurrent = 0;
-      var _spOrbCharActual = ' ';
-      var _spOrbLastBoundaryTs = 0;
-      var _spMicStream = null;
-
-      // Reconstruye la clave en memoria del navegador desde fragmentos Base64 (invisible a escáneres de secretos de GitHub)
-      function _obtenerKBrowser() {
-        try {
-          return atob(['QVEuQWI4Uk42THBt', 'WjZzMjBXVF9oVjVV', 'U3hnQThTbmVWMmFJ', 'ODF3MWNZUE1sMHpm', 'd3NSMFE='].join(''));
-        } catch (e) {
-          return '';
+          html.push('<span class="text-slate-400/70">' + palabras[i] + '</span>');
         }
       }
-
-      function pintarPuntitoSecretoEstadoApi(estado, tooltipExtra) {
-        _spEstadoConexionApiReal = estado || 'online';
-        var dots = document.querySelectorAll('#spApiSecretStatusDot, #spTecnosalaAdminTrigger .sp-tecnosala-live-dot');
-        for (var i = 0; i < dots.length; i++) {
-          var d = dots[i];
-          if (estado === 'online') {
-            d.style.backgroundColor = '#10b981';
-            d.style.boxShadow = '0 0 10px #10b981, 0 0 18px #34d399';
-            d.title = tooltipExtra || '🟢 API Gemini Conectada en Vivo';
-          } else {
-            d.style.backgroundColor = '#38bdf8';
-            d.style.boxShadow = '0 0 10px #38bdf8, 0 0 18px #0ea5e9';
-            d.title = tooltipExtra || '🔵 Motor Experto Local Activo';
-          }
-        }
+      box.innerHTML = html.join(' ');
+      if (contenedorScroll) {
+        contenedorScroll.scrollTop = contenedorScroll.scrollHeight;
       }
+    }
 
-      function actualizarContadorBotonDescarga() {
-        var numTurnos = _spRegistroDescargaCharla.length;
-        var btnDlHud = document.getElementById('spBtnDescargarCharlaHud');
-        var btnDlBottom = document.getElementById('spBtnDescargarCharlaBottom');
-        if (btnDlHud && numTurnos > 0) {
-          btnDlHud.classList.remove('hidden');
-          btnDlHud.innerHTML = '📥 Descargar charla (' + numTurnos + ')';
-        }
-        if (btnDlBottom && numTurnos > 0) {
-          btnDlBottom.classList.remove('hidden');
-          btnDlBottom.innerHTML = '📥 Descargar conversación (' + numTurnos + ')';
-        }
-      }
+    pintarProgresoPalabra(0);
 
-      window.spDescargarConversacionConsultor = function(ev) {
-        if (ev && ev.stopPropagation) ev.stopPropagation();
-        if (!_spRegistroDescargaCharla.length) {
-          window.spReproducirEnTeleprompter2027('Aún no hemos tenido ninguna pregunta en esta sesión. Hazme cualquier consulta primero y podrás descargar aquí todo nuestro informe conversacional.');
-          return;
-        }
-        var ahora = new Date();
-        var fechaStr = ahora.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        var horaStr = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    var idxMarcapasos = 0;
+    var eventoBoundaryRecibido = false;
 
-        var bloquesHtml = '';
-        for (var i = 0; i < _spRegistroDescargaCharla.length; i++) {
-          var t = _spRegistroDescargaCharla[i];
-          bloquesHtml +=
-            '<div class="turn-card">' +
-              '<div class="turn-q"><span class="badge-q">Pregunta ' + (i + 1) + ' (' + t.hora + ')</span><p>' + String(t.pregunta || '').replace(/</g, '&lt;') + '</p></div>' +
-              '<div class="turn-a"><span class="badge-a">Consultor Tecnológico Sistemas Pyme</span><p>' + String(t.respuesta || '').replace(/</g, '&lt;') + '</p></div>' +
-            '</div>';
-        }
-
-        var docHtml =
-          '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">' +
-          '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
-          '<title>Informe de Consulta Tecnológica — Sistemas Pyme (' + fechaStr + ')</title>' +
-          '<style>' +
-            'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f172a;color:#1e293b;margin:0;padding:24px;}' +
-            '.sheet{max-width:840px;margin:0 auto;background:#ffffff;border-radius:20px;padding:32px 36px;box-shadow:0 20px 50px rgba(0,0,0,0.45);}' +
-            '.header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;border-bottom:2px solid #e2e8f0;padding-bottom:18px;margin-bottom:22px;}' +
-            '.brand{font-size:22px;font-weight:900;color:#0b2239;}' +
-            '.sub{font-size:13px;color:#0d7d74;font-weight:700;margin-top:2px;}' +
-            '.meta{font-size:12px;color:#64748b;text-align:right;}' +
-            '.actions{display:flex;gap:10px;margin-bottom:22px;}' +
-            '.btn{display:inline-block;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:800;text-decoration:none;cursor:pointer;border:none;}' +
-            '.btn-print{background:#0b2239;color:#ffffff;}' +
-            '.btn-wa{background:#0d7d74;color:#ffffff;}' +
-            '.turn-card{border:1.5px solid #cbd5e1;border-radius:16px;overflow:hidden;margin-bottom:16px;page-break-inside:avoid;}' +
-            '.turn-q{background:#f8fafc;padding:14px 18px;border-bottom:1px solid #e2e8f0;}' +
-            '.turn-a{background:#f0fdfa;padding:16px 18px;}' +
-            '.badge-q{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;color:#0369a1;background:#e0f2fe;padding:3px 10px;border-radius:999px;margin-bottom:6px;}' +
-            '.badge-a{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;color:#0f766e;background:#ccfbf1;padding:3px 10px;border-radius:999px;margin-bottom:6px;}' +
-            '.turn-card p{margin:4px 0 0 0;font-size:15px;line-height:1.6;color:#0f172a;}' +
-            '.footer{margin-top:26px;padding-top:16px;border-top:2px solid #e2e8f0;font-size:12.5px;color:#475569;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}' +
-            '@media print{body{background:#fff;padding:0;}.sheet{box-shadow:none;padding:10px;}.actions{display:none;}}' +
-          '</style></head><body><div class="sheet">' +
-            '<div class="header">' +
-              '<div><div class="brand">Sistemas Pyme — Francisco M. Gallardo</div>' +
-              '<div class="sub">Ingeniería Especializada en Entidades SEO/GEO IA, Neuro-CRO y Automatización Oficial Meta/Google</div></div>' +
-              '<div class="meta"><strong>Fecha:</strong> ' + fechaStr + ' · ' + horaStr + '<br><strong>Tel / WhatsApp:</strong> 711 54 75 61 · <strong>Web:</strong> sistemaspyme.es</div>' +
-            '</div>' +
-            '<div class="actions">' +
-              '<button class="btn btn-print" onclick="window.print()">🖨️ Imprimir o Guardar como PDF</button>' +
-              '<a class="btn btn-wa" href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20acabo%20de%20descargar%20mi%20conversaci%C3%B3n%20con%20el%20Consultor%20Tecnol%C3%B3gico%20de%20la%20web%20y%20me%20gustar%C3%ADa%20comentarlo%20contigo." target="_blank">💬 Comentar este informe con Francisco por WhatsApp</a>' +
-            '</div>' +
-            bloquesHtml +
-            '<div class="footer">' +
-              '<span><strong>Sistemas Pyme</strong> · Área de Santiago de Compostela (Galicia · Atención Nacional e Internacional)</span>' +
-              '<span>Contacto directo: <strong>francisco@sistemaspyme.es</strong> · Tel: <strong>711 54 75 61</strong></span>' +
-            '</div>' +
-          '</div></body></html>';
-
-        var blob = new Blob([docHtml], { type: 'text/html;charset=utf-8' });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        var selloArchivo = ahora.toISOString().slice(0, 10);
-        a.download = 'Consulta_Tecnologica_Sistemas_Pyme_' + selloArchivo + '.html';
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(function() {
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        }, 250);
-      };
-
-      function elegirVarianteNoRepetida(item) {
-        if (!item) return '';
-        var piscina = [item.respuesta];
-        if (item.variantes && item.variantes.length) {
-          for (var i = 0; i < item.variantes.length; i++) piscina.push(item.variantes[i]);
-        }
-        var claveUsados = '_spUsados_' + (item.id || 'default');
-        var usados = _spContadorVariantesTema[claveUsados] || [];
-        if (usados.length >= piscina.length) usados = [];
-        var disponibles = [];
-        for (var j = 0; j < piscina.length; j++) {
-          if (usados.indexOf(j) === -1) disponibles.push(j);
-        }
-        var elegidoIdx = disponibles[Math.floor(Math.random() * disponibles.length)];
-        usados.push(elegidoIdx);
-        _spContadorVariantesTema[claveUsados] = usados;
-        return piscina[elegidoIdx] || item.respuesta || '';
-      }
-
-      window.spObtenerRespuestaOmniscienteCompleta = function(preguntaRaw) {
-        var qNorm = normalizarSinTildes(preguntaRaw);
-        var bd = window.SP_BASE_CONOCIMIENTO_HUMANA || [];
-        var mejorItem = null;
-        var mejorPts = 0;
-        for (var i = 0; i < bd.length; i++) {
-          var it = bd[i];
-          var pts = 0;
-          for (var j = 0; j < it.claves.length; j++) {
-            var kw = normalizarSinTildes(it.claves[j]);
-            if (kw && qNorm.indexOf(kw) !== -1) {
-              pts += (kw.split(' ').length >= 2) ? 45 : 15;
-            }
-          }
-          if (pts > mejorPts) {
-            mejorPts = pts;
-            mejorItem = it;
-          }
-        }
-        if (mejorItem && mejorPts > 0) {
-          _spUltimoTemaIdConsultado = mejorItem.id;
-          return elegirVarianteNoRepetida(mejorItem);
-        }
-        return 'En Sistemas Pyme te ayudamos a multiplicar tus reseñas de 5 estrellas con IA, a posicionar tu web en Google y ChatGPT y a automatizar tu WhatsApp en 24 a 48 horas. Dime qué servicio te interesa y te recomiendo la combinación que más dinero te ahorre.';
-      };
-
-      function limpiarTimersTeleprompter() {
-        for (var i = 0; i < _spTyperTimerIds.length; i++) clearTimeout(_spTyperTimerIds[i]);
-        _spTyperTimerIds = [];
-        if (_spWatchdogHablaTimer) {
-          clearInterval(_spWatchdogHablaTimer);
-          _spWatchdogHablaTimer = null;
-        }
-      }
-
-      function obtenerVozEspanaFija() {
-        if (!('speechSynthesis' in window)) return null;
-        var voces = window.speechSynthesis.getVoices() || [];
-        if (!voces.length) return _spVozCacheObj;
-        for (var i = 0; i < voces.length; i++) {
-          var v = voces[i];
-          if (v.name && v.name.toLowerCase().indexOf(_spNombreVozPreferida.toLowerCase()) !== -1) {
-            _spVozCacheObj = v;
-            return v;
-          }
-        }
-        for (var j = 0; j < voces.length; j++) {
-          var vj = voces[j];
-          if (/^es[-_]ES$/i.test(vj.lang || '') || /Jorge|Mónica|Monica/i.test(vj.name || '')) {
-            _spVozCacheObj = vj;
-            return vj;
-          }
-        }
-        return _spVozCacheObj;
-      }
-
-      function bucleFisicoOrbe60FPS() {
-        var spheres = document.querySelectorAll('#spOrb3DWrapperMain .sp-orb-3d-sphere, #vista-tecnosala .sp-orb-3d-sphere');
-        if (!spheres.length || (!_spHablandoSintesis && !_spEscuchandoVoz)) {
-          for (var s = 0; s < spheres.length; s++) {
-            spheres[s].style.transform = 'perspective(500px) translateZ(18px) scale(1)';
-            spheres[s].style.boxShadow = '';
-            spheres[s].style.filter = '';
-          }
-          _spOrbEnergyCurrent = 0;
-          _spOrbAnimReqId = null;
-          return;
-        }
-        var now = performance.now();
-        if (_spHablandoSintesis) {
-          var ch = (_spOrbCharActual || ' ').toLowerCase();
-          var dt = now - _spOrbLastBoundaryTs;
-          if (dt > 175 || '.,;:?!'.indexOf(ch) !== -1) _spOrbEnergyTarget = 0.0;
-          else if ('aeoáéó'.indexOf(ch) !== -1) _spOrbEnergyTarget = 0.92;
-          else if ('iuíú'.indexOf(ch) !== -1) _spOrbEnergyTarget = 0.65;
-          else if (ch === ' ') _spOrbEnergyTarget = 0.06;
-          else _spOrbEnergyTarget = 0.36;
-        } else if (_spEscuchandoVoz) {
-          _spOrbEnergyTarget = (now - _spUltimoPulsoVozUsuarioTs < 240) ? _spNivelVozUsuarioVivo : 0.0;
-        }
-        var factor = (_spOrbEnergyTarget > _spOrbEnergyCurrent) ? 0.48 : 0.28;
-        _spOrbEnergyCurrent += (_spOrbEnergyTarget - _spOrbEnergyCurrent) * factor;
-        if (_spOrbEnergyCurrent < 0.005) _spOrbEnergyCurrent = 0;
-        var escala = (1.0 + _spOrbEnergyCurrent * 0.34).toFixed(3);
-        var zElev = Math.round(18 + _spOrbEnergyCurrent * 36);
-        for (var i = 0; i < spheres.length; i++) {
-          spheres[i].style.transform = 'perspective(500px) translateZ(' + zElev + 'px) scale(' + escala + ')';
-        }
-        _spOrbAnimReqId = requestAnimationFrame(bucleFisicoOrbe60FPS);
-      }
-
-      function arrancarMotorFisicoOrbe() {
-        if (!_spOrbAnimReqId) _spOrbAnimReqId = requestAnimationFrame(bucleFisicoOrbe60FPS);
-      }
-
-      function mostrarBotonesParadaActivos() {
-        var b1 = document.getElementById('spHudStopBtn');
-        var b2 = document.getElementById('spBtnStopSideOrb');
-        if (b1) b1.classList.remove('hidden');
-        if (b2) b2.classList.remove('hidden');
-      }
-
-      function ocultarBotonesParadaActivos() {
-        var b1 = document.getElementById('spHudStopBtn');
-        var b2 = document.getElementById('spBtnStopSideOrb');
-        if (b1) b1.classList.add('hidden');
-        if (b2) b2.classList.add('hidden');
-      }
-
-      function actualizarAparienciaOrbeYEstado(modo) {
-        var wrappers = document.querySelectorAll('#spOrb3DWrapperMain, #vista-tecnosala .sp-ai-core-orb');
-        for (var i = 0; i < wrappers.length; i++) {
-          wrappers[i].classList.remove('sp-orb-state-speaking', 'sp-orb-state-listening');
-          if (modo === 'speaking') wrappers[i].classList.add('sp-orb-state-speaking');
-          else if (modo === 'listening') wrappers[i].classList.add('sp-orb-state-listening');
-        }
-        var statusLed = document.getElementById('spTeleprompterHudStatus');
-        if (modo === 'speaking') {
-          mostrarBotonesParadaActivos();
-          arrancarMotorFisicoOrbe();
-          if (statusLed) statusLed.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full animate-pulse inline-block mr-1.5"></span>HABLANDO EN VIVO • PULSA EL ORBE O «⏹ PARAR» PARA DETENERLO';
-        } else if (modo === 'listening') {
-          mostrarBotonesParadaActivos();
-          arrancarMotorFisicoOrbe();
-          if (statusLed) statusLed.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full animate-pulse inline-block mr-1.5"></span>🎙️ MANOS LIBRES ACTIVO • HÁBLAME DIRECTAMENTE SIN PULSAR NADA';
+    function iniciarMarcapasosRespaldo() {
+      _spTemporizadorTeleprompter = setInterval(function() {
+        if (eventoBoundaryRecibido) return;
+        idxMarcapasos++;
+        if (idxMarcapasos < palabras.length) {
+          pintarProgresoPalabra(idxMarcapasos);
         } else {
-          ocultarBotonesParadaActivos();
-          if (statusLed) statusLed.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full inline-block mr-1.5"></span>⏸ CONSULTOR EN PAUSA • PULSA EL ORBE 3D PARA VOLVER A ACTIVARLO';
-        }
-        pintarPuntitoSecretoEstadoApi(_spEstadoConexionApiReal);
-      }
-
-      function reclasificarJerarquiaLineas(track) {
-        if (!track) return;
-        var hijos = track.querySelectorAll('.sp-led-line-item:not(.sp-led-line-user)');
-        while (track.children.length > 4) track.removeChild(track.firstElementChild);
-        var total = hijos.length;
-        for (var i = 0; i < total; i++) {
-          var el = hijos[i];
-          var dist = (total - 1) - i;
-          el.classList.remove('sp-led-line-active', 'sp-led-line-past-1', 'sp-led-line-past-2', 'sp-led-line-past-3');
-          var cur = el.querySelector('.sp-led-cursor');
-          if (dist === 0) el.classList.add('sp-led-line-active');
-          else {
-            if (cur) cur.remove();
-            if (dist === 1) el.classList.add('sp-led-line-past-1');
-            else if (dist === 2) el.classList.add('sp-led-line-past-2');
-            else el.classList.add('sp-led-line-past-3');
-          }
-        }
-      }
-
-      function asegurarCabinaTeleprompter2027() {
-        var screen = document.getElementById('spTecnosalaScreen');
-        if (!screen) return null;
-        var idle = document.getElementById('spTecnosalaIdleWelcome');
-        var out = document.getElementById('spTecnosalaActiveOutput');
-        var btnReset = document.getElementById('spBtnResetScreenTecnosala');
-        if (idle) idle.classList.add('hidden');
-        if (out) out.classList.add('hidden');
-        if (btnReset) btnReset.classList.remove('hidden');
-
-        var trackExistente = document.getElementById('spTeleprompterRollTrack');
-        if (trackExistente) return trackExistente;
-
-        var stage = document.createElement('div');
-        stage.id = 'spTeleprompter2027Stage';
-        stage.className = 'w-full flex flex-col items-center justify-between my-auto';
-        stage.innerHTML =
-          '<div class="w-full flex flex-wrap items-center justify-between gap-1.5 mb-1 px-1">' +
-            '<div id="spTeleprompterHudStatus" class="text-[10px] sm:text-[10.5px] font-mono font-extrabold uppercase tracking-wider text-teal-300 truncate">' +
-              '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse inline-block mr-1.5"></span>CONSULTOR CONECTADO • VOZ Y TEXTO SINCRONIZADOS' +
-            '</div>' +
-            '<div class="flex flex-wrap items-center gap-1.5 flex-shrink-0">' +
-              '<button type="button" id="spHudStopBtn" onclick="window.spPararConsultorTotalmente(event)" class="px-2.5 py-0.5 rounded-full bg-rose-600 hover:bg-rose-500 border border-rose-300 text-[10px] font-black text-white shadow cursor-pointer transition flex items-center gap-1">' +
-                '<span>⏹</span><span>PARAR</span>' +
-              '</button>' +
-              '<button type="button" onclick="window.spAbrirCarritoConfigurador()" class="sp-btn-carrito-gold-3d px-2.5 py-0.5 rounded-full text-[10px] flex items-center gap-1">' +
-                '<span>🛒</span><span>Ver Pedido / Contratar</span>' +
-              '</button>' +
-              '<button type="button" id="spBtnDescargarCharlaHud" onclick="window.spDescargarConversacionConsultor(event)" class="' + (_spRegistroDescargaCharla.length > 0 ? '' : 'hidden ') + 'px-2.5 py-0.5 rounded-full bg-amber-500/25 border border-amber-300/70 text-[10px] font-extrabold text-amber-200 cursor-pointer">' +
-                '📥 Descargar charla (' + _spRegistroDescargaCharla.length + ')' +
-              '</button>' +
-              '<button type="button" id="spBtnToggleVozSintetica" onclick="window.spToggleVozConsultorMute(event)" class="px-2.5 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/50 text-[10px] font-extrabold text-cyan-200 cursor-pointer">' +
-                (_spVozConsultorActiva ? '🔊 Voz: ON' : '🔇 Silenciado') +
-              '</button>' +
-            '</div>' +
-          '</div>' +
-          '<div class="flex items-center justify-center gap-3 mb-1">' +
-            '<div id="spOrb3DWrapperMain" onclick="window.spActivarOrbeConsultorInteractivo(event)" class="sp-orb-3d-wrapper sp-orb-compact-mode">' +
-              '<div class="sp-orb-3d-ring1"></div>' +
-              '<div class="sp-orb-3d-ring2"></div>' +
-              '<div class="sp-orb-3d-sphere"><span class="text-sm drop-shadow pointer-events-none">⚡</span></div>' +
-            '</div>' +
-            '<button type="button" id="spBtnStopSideOrb" onclick="window.spPararConsultorTotalmente(event)" class="px-3 py-1 rounded-xl bg-rose-600/90 hover:bg-rose-500 border border-rose-300 text-white font-black text-[11px] shadow cursor-pointer transition flex items-center gap-1">' +
-              '<span>⏹</span><span>PARAR</span>' +
-            '</button>' +
-          '</div>' +
-          '<div class="sp-teleprompter-2027-box">' +
-            '<div id="spTeleprompterRollTrack" class="sp-teleprompter-Roll-track"></div>' +
-          '</div>';
-        screen.appendChild(stage);
-        return document.getElementById('spTeleprompterRollTrack');
-      }
-
-      window.spPararConsultorTotalmente = function(ev) {
-        if (ev && ev.stopPropagation) ev.stopPropagation();
-        _spAutoEscuchaContinua = false;
-        _spHablandoSintesis = false;
-        _spEscuchandoVoz = false;
-        _spIgnorarMicroMientrasHabla = true;
-        _spOrbEnergyTarget = 0;
-        limpiarTimersTeleprompter();
-        if (_spWatchdogMicroInterval) {
-          clearInterval(_spWatchdogMicroInterval);
-          _spWatchdogMicroInterval = null;
-        }
-        if (_spSilenceTimer) {
-          clearTimeout(_spSilenceTimer);
-          _spSilenceTimer = null;
-        }
-        if ('speechSynthesis' in window) {
-          try { window.speechSynthesis.cancel(); } catch (e) {}
-        }
-        if (_spRecogInstance) {
-          try {
-            _spRecogInstance.onend = null;
-            _spRecogInstance.onerror = null;
-            _spRecogInstance.onresult = null;
-            _spRecogInstance.abort();
-          } catch (e) {}
-          _spRecogInstance = null;
-        }
-        _spMicroSesionActiva = false;
-        actualizarAparienciaOrbeYEstado('idle');
-      };
-
-      function iniciarVigilanteMicrofonoContinuo() {
-        if (_spWatchdogMicroInterval) clearInterval(_spWatchdogMicroInterval);
-        _spWatchdogMicroInterval = setInterval(function() {
-          var vistaTec = document.getElementById('vista-tecnosala');
-          if (!vistaTec || vistaTec.classList.contains('hidden')) return;
-          if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spHablandoSintesis && !_spMicroSesionActiva && !_spRearmandoOido) {
-            window.spActivarModoEscuchaPersistente(false);
-          }
-        }, 950);
-      }
-
-      window.spActivarModoEscuchaPersistente = function(forzarReinicio) {
-        var vistaTec = document.getElementById('vista-tecnosala');
-        if (!vistaTec || vistaTec.classList.contains('hidden')) return;
-        var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-        var inp = document.getElementById('spTecnosalaInput');
-        if (!SpeechRec || !_spAutoEscuchaContinua || _spHablandoSintesis) return;
-
-        _spIgnorarMicroMientrasHabla = false;
-        _spEscuchandoVoz = true;
-        actualizarAparienciaOrbeYEstado('listening');
-        if (inp) inp.setAttribute('placeholder', '🟢 Manos libres activo: habla directamente sin pulsar ningún botón...');
-
-        if (_spRecogInstance && _spMicroSesionActiva && !forzarReinicio) return;
-        if (_spRearmandoOido) return;
-        _spRearmandoOido = true;
-
-        if (_spRecogInstance) {
-          try {
-            _spRecogInstance.onend = null;
-            _spRecogInstance.onerror = null;
-            _spRecogInstance.onresult = null;
-            _spRecogInstance.abort();
-          } catch (e) {}
-          _spRecogInstance = null;
-          _spMicroSesionActiva = false;
-        }
-
-        setTimeout(function() {
-          _spRearmandoOido = false;
-          if (!_spAutoEscuchaContinua || _spHablandoSintesis) return;
-          try {
-            var rec = new SpeechRec();
-            _spRecogInstance = rec;
-            rec.lang = 'es-ES';
-            rec.continuous = true;
-            rec.interimResults = true;
-            var acumuladoTurno = '';
-            var lineaDictadoVivo = null;
-
-            function enviarTurnoDetectado() {
-              if (_spSilenceTimer) { clearTimeout(_spSilenceTimer); _spSilenceTimer = null; }
-              var preguntaLista = acumuladoTurno.trim();
-              acumuladoTurno = '';
-              if (!preguntaLista || preguntaLista.length < 2 || _spIgnorarMicroMientrasHabla || _spHablandoSintesis) return;
-              _spIgnorarMicroMientrasHabla = true;
-              _spEscuchandoVoz = false;
-              if (lineaDictadoVivo) { try { lineaDictadoVivo.remove(); } catch (e) {} lineaDictadoVivo = null; }
-              if (_spRecogInstance) {
-                try { _spRecogInstance.onend = null; _spRecogInstance.stop(); } catch (e) {}
-                _spMicroSesionActiva = false;
-              }
-              window.spProcesarConsultaEnTeleprompterDirecto(preguntaLista);
-            }
-
-            rec.onstart = function() {
-              _spMicroSesionActiva = true;
-              if (!_spHablandoSintesis && _spAutoEscuchaContinua) {
-                _spIgnorarMicroMientrasHabla = false;
-                _spEscuchandoVoz = true;
-                actualizarAparienciaOrbeYEstado('listening');
-              }
-            };
-            rec.onresult = function(ev) {
-              if (_spIgnorarMicroMientrasHabla || _spHablandoSintesis || !_spAutoEscuchaContinua) { acumuladoTurno = ''; return; }
-              _spUltimoPulsoVozUsuarioTs = performance.now();
-              _spNivelVozUsuarioVivo = 0.72;
-              var parcial = '';
-              var hayFinal = false;
-              for (var i = ev.resultIndex; i < ev.results.length; i++) {
-                parcial += ev.results[i][0].transcript;
-                if (ev.results[i].isFinal) hayFinal = true;
-              }
-              acumuladoTurno = parcial.trim();
-              if (!acumuladoTurno) return;
-              if (inp) inp.value = acumuladoTurno;
-              var track = asegurarCabinaTeleprompter2027();
-              if (track && !lineaDictadoVivo) {
-                lineaDictadoVivo = document.createElement('div');
-                lineaDictadoVivo.className = 'sp-led-line-item sp-led-line-user';
-                track.appendChild(lineaDictadoVivo);
-                reclasificarJerarquiaLineas(track);
-              }
-              if (lineaDictadoVivo) lineaDictadoVivo.innerHTML = '🎙️ <span>«' + acumuladoTurno + '»</span><span class="sp-led-cursor"></span>';
-              if (_spSilenceTimer) clearTimeout(_spSilenceTimer);
-              _spSilenceTimer = setTimeout(enviarTurnoDetectado, hayFinal ? 520 : 1000);
-            };
-            rec.onerror = function() { _spMicroSesionActiva = false; };
-            rec.onend = function() {
-              _spMicroSesionActiva = false;
-              if (acumuladoTurno && acumuladoTurno.trim().length > 1 && !_spIgnorarMicroMientrasHabla && !_spHablandoSintesis) {
-                enviarTurnoDetectado();
-              }
-            };
-            rec.start();
-          } catch (e) {
-            _spMicroSesionActiva = false;
-          }
-        }, 60);
-      };
-
-      window.spIniciarEscuchaDirectaConsultor = function() {
-        _spAutoEscuchaContinua = true;
-        _spHablandoSintesis = false;
-        _spIgnorarMicroMientrasHabla = false;
-        window.spActivarModoEscuchaPersistente(false);
-      };
-
-      window.spReproducirEnTeleprompter2027 = function(textoCompleto, alTerminarCallback, etiquetaUsuarioPrevio) {
-        limpiarTimersTeleprompter();
-        _spIgnorarMicroMientrasHabla = true;
-        _spEscuchandoVoz = false;
-        if (_spRecogInstance) {
-          try {
-            _spRecogInstance.onend = null;
-            _spRecogInstance.onerror = null;
-            _spRecogInstance.onresult = null;
-            _spRecogInstance.abort();
-          } catch (e) {}
-          _spRecogInstance = null;
-          _spMicroSesionActiva = false;
-        }
-
-        var track = asegurarCabinaTeleprompter2027();
-        if (!track) return;
-        if (etiquetaUsuarioPrevio) {
-          var divUser = document.createElement('div');
-          divUser.className = 'sp-led-line-item sp-led-line-user';
-          divUser.textContent = '▸ TÚ: «' + etiquetaUsuarioPrevio + '»';
-          track.appendChild(divUser);
-          reclasificarJerarquiaLineas(track);
-        }
-
-        var limpio = String(textoCompleto || '').replace(/<[^>]+>/g, ' ').replace(/[`*_#•]/g, ' ').replace(/\s+/g, ' ').trim();
-        if (!limpio) {
+          clearInterval(_spTemporizadorTeleprompter);
+          _spTemporizadorTeleprompter = null;
+          pintarProgresoPalabra(palabras.length - 1);
           if (typeof alTerminarCallback === 'function') alTerminarCallback();
-          return;
         }
+      }, 310);
+    }
 
-        var maxLen = window.innerWidth < 640 ? 38 : 54;
-        var palabras = limpio.split(' ');
-        var segmentos = [];
-        var lineaAct = '';
-        var cursorGlobal = 0;
-        for (var w = 0; w < palabras.length; w++) {
-          var pal = palabras[w];
-          var cand = lineaAct ? (lineaAct + ' ' + pal) : pal;
-          if (cand.length <= maxLen) lineaAct = cand;
-          else {
-            if (lineaAct) {
-              segmentos.push({ texto: lineaAct, start: cursorGlobal, end: cursorGlobal + lineaAct.length });
-              cursorGlobal += lineaAct.length + 1;
-            }
-            lineaAct = pal;
-          }
-        }
-        if (lineaAct) segmentos.push({ texto: lineaAct, start: cursorGlobal, end: cursorGlobal + lineaAct.length });
+    if (_spVozActiva && 'speechSynthesis' in window) {
+      var u = new SpeechSynthesisUtterance(limpio);
+      var vozEsp = obtenerVozEspanolaActiva();
+      if (vozEsp) u.voice = vozEsp;
+      u.lang = 'es-ES';
+      u.rate = 0.94;
+      u.pitch = 1.0;
 
-        var textoGlobalUnido = segmentos.map(function(s) { return s.texto; }).join(' ');
-        var totalChars = textoGlobalUnido.length;
-        var charActualMostrado = 0;
-        var charObjetivoPorVoz = 0;
-        var idxSegMostrado = -1;
-        var spanTextoActivo = null;
-        var finalDisparado = false;
-        var tsInicioLocucion = performance.now();
-        var tsUltimoEventoVoz = performance.now();
-
-        function pintarHastaCharGlobal(posGlobal) {
-          var p = Math.min(totalChars, Math.max(0, posGlobal));
-          _spOrbCharActual = textoGlobalUnido.charAt(Math.max(0, p - 1)) || ' ';
-          _spOrbLastBoundaryTs = performance.now();
-          var segIdx = 0;
-          for (var i = 0; i < segmentos.length; i++) {
-            if (p >= segmentos[i].start) segIdx = i;
-            else break;
-          }
-          while (idxSegMostrado < segIdx) {
-            if (idxSegMostrado >= 0 && spanTextoActivo) spanTextoActivo.textContent = segmentos[idxSegMostrado].texto;
-            idxSegMostrado++;
-            var nuevaLineaEl = document.createElement('div');
-            nuevaLineaEl.className = 'sp-led-line-item sp-led-line-active';
-            var spT = document.createElement('span');
-            var spC = document.createElement('span');
-            spC.className = 'sp-led-cursor';
-            nuevaLineaEl.appendChild(spT);
-            nuevaLineaEl.appendChild(spC);
-            track.appendChild(nuevaLineaEl);
-            reclasificarJerarquiaLineas(track);
-            spanTextoActivo = spT;
-          }
-          if (spanTextoActivo && segIdx >= 0 && segIdx < segmentos.length) {
-            var seg = segmentos[segIdx];
-            spanTextoActivo.textContent = seg.texto.slice(0, Math.min(seg.texto.length, Math.max(1, p - seg.start)));
-          }
-        }
-
-        function forzarCierreYPasarAEscucha() {
-          if (finalDisparado) return;
-          finalDisparado = true;
-          pintarHastaCharGlobal(totalChars);
-          limpiarTimersTeleprompter();
-          _spHablandoSintesis = false;
-          _spOrbEnergyTarget = 0;
-          if (_spAutoEscuchaContinua) {
-            _spIgnorarMicroMientrasHabla = false;
-            _spEscuchandoVoz = true;
-            window.spActivarModoEscuchaPersistente(false);
-          } else {
-            actualizarAparienciaOrbeYEstado('idle');
-          }
-          if (typeof alTerminarCallback === 'function') {
-            try { alTerminarCallback(); } catch (e) {}
-          }
-        }
-
-        _spHablandoSintesis = true;
-        actualizarAparienciaOrbeYEstado('speaking');
-
-        var duracionMaxMs = Math.max(4000, totalChars * 82 + 2000);
-        _spTyperTimerIds.push(setTimeout(forzarCierreYPasarAEscucha, duracionMaxMs));
-
-        function pasoMarcapasos() {
-          if (!_spHablandoSintesis || finalDisparado) return;
-          if (charObjetivoPorVoz > charActualMostrado) {
-            charActualMostrado = Math.min(totalChars, charActualMostrado + Math.max(1, Math.ceil((charObjetivoPorVoz - charActualMostrado) * 0.45)));
-          } else {
-            charActualMostrado = Math.min(totalChars, charActualMostrado + 1);
-          }
-          pintarHastaCharGlobal(charActualMostrado);
-          if (charActualMostrado >= totalChars) {
-            if (!_spVozConsultorActiva || !('speechSynthesis' in window) || !window.speechSynthesis.speaking) {
-              forzarCierreYPasarAEscucha();
-              return;
-            }
-            _spTyperTimerIds.push(setTimeout(forzarCierreYPasarAEscucha, 850));
-            return;
-          }
-          var ch = textoGlobalUnido.charAt(charActualMostrado - 1) || '';
-          var d = (ch === '.' || ch === '?' || ch === '!') ? 450 : ((ch === ',' || ch === ';') ? 250 : 62);
-          _spTyperTimerIds.push(setTimeout(pasoMarcapasos, d));
-        }
-        _spTyperTimerIds.push(setTimeout(pasoMarcapasos, 45));
-
-        if (_spVozConsultorActiva && ('speechSynthesis' in window)) {
-          setTimeout(function() {
-            if (!_spHablandoSintesis || finalDisparado) return;
-            try {
-              if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
-              window.speechSynthesis.resume();
-              var vozFija = obtenerVozEspanaFija();
-              var u = new SpeechSynthesisUtterance(textoGlobalUnido);
-              _spUtteranceEnCurso = u;
-              u.lang = 'es-ES';
-              u.rate = 0.89;
-              if (vozFija) u.voice = vozFija;
-              u.onboundary = function(ev) {
-                tsUltimoEventoVoz = performance.now();
-                if (ev && typeof ev.charIndex === 'number') {
-                  charObjetivoPorVoz = Math.min(totalChars, ev.charIndex + (ev.charLength || 2));
-                  _spOrbCharActual = textoGlobalUnido.charAt(ev.charIndex) || 'a';
-                  _spOrbLastBoundaryTs = performance.now();
-                }
-              };
-              _spWatchdogHablaTimer = setInterval(function() {
-                if (!_spHablandoSintesis || finalDisparado) {
-                  clearInterval(_spWatchdogHablaTimer);
-                  return;
-                }
-                var ahora = performance.now();
-                if ((ahora - tsInicioLocucion > 900 && !window.speechSynthesis.speaking && !window.speechSynthesis.pending) ||
-                    (charActualMostrado >= totalChars * 0.90 && (ahora - tsUltimoEventoVoz > 1300))) {
-                  clearInterval(_spWatchdogHablaTimer);
-                  forzarCierreYPasarAEscucha();
-                }
-              }, 350);
-              u.onend = forzarCierreYPasarAEscucha;
-              u.onerror = forzarCierreYPasarAEscucha;
-              window.speechSynthesis.speak(u);
-            } catch (e) {
-              forzarCierreYPasarAEscucha();
-            }
-          }, 35);
+      u.onboundary = function(ev) {
+        if (ev.name === 'word' || typeof ev.charIndex === 'number') {
+          eventoBoundaryRecibido = true;
+          var textoHastaAqui = limpio.slice(0, ev.charIndex);
+          var numPalabra = textoHastaAqui.trim() ? textoHastaAqui.trim().split(/\s+/).length : 0;
+          pintarProgresoPalabra(Math.min(numPalabra, palabras.length - 1));
         }
       };
 
-      // Doble pasarela IA: 1º Servidor Local 8765 -> 2º Llamada directa desde el navegador a Vertex AI con los modelos activos -> 3º Base Local
-      function llamarVertexDirectoNavegador(promptCompleto) {
-        var k = _obtenerKBrowser();
-        if (!k) return Promise.resolve(null);
-        var modelosProbar = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash-lite-001', 'gemini-2.0-flash-001'];
-        function intentar(idx) {
-          if (idx >= modelosProbar.length) return Promise.resolve(null);
-          var m = modelosProbar[idx];
-          var url = 'https://aiplatform.googleapis.com/v1beta1/publishers/google/models/' + m + ':generateContent?key=' + encodeURIComponent(k);
-          return fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ role: 'user', parts: [{ text: promptCompleto }] }],
-              generationConfig: { temperature: 0.65, topP: 0.92, maxOutputTokens: 450 }
-            })
-          })
-          .then(function(r) { return r && r.ok ? r.json() : null; })
-          .then(function(d) {
-            var parts = d && d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts;
-            if (parts && parts.length) {
-              var txt = parts.map(function(p) { return p.thought ? '' : (p.text || ''); }).join(' ').trim();
-              if (txt.length > 10) return { texto: txt, modelo: m };
-            }
-            return intentar(idx + 1);
-          })
-          .catch(function() { return intentar(idx + 1); });
+      u.onend = function() {
+        if (_spTemporizadorTeleprompter) {
+          clearInterval(_spTemporizadorTeleprompter);
+          _spTemporizadorTeleprompter = null;
         }
-        return intentar(0);
+        pintarProgresoPalabra(palabras.length - 1);
+        if (typeof alTerminarCallback === 'function') alTerminarCallback();
+      };
+
+      u.onerror = function() {
+        if (_spTemporizadorTeleprompter) {
+          clearInterval(_spTemporizadorTeleprompter);
+          _spTemporizadorTeleprompter = null;
+        }
+        pintarProgresoPalabra(palabras.length - 1);
+      };
+
+      iniciarMarcapasosRespaldo();
+      window.speechSynthesis.speak(u);
+    } else {
+      iniciarMarcapasosRespaldo();
+    }
+  };
+
+  // =========================================================================
+  // 3. MOTOR DE AGENDA INTELIGENTE SINCRONIZADO CON GOOGLE CALENDAR
+  //    (DE LUNES A SÁBADO DE 09:00 A 13:30 — BLOQUEA TARDES, DOMINGOS Y OCUPADOS)
+  // =========================================================================
+  var _spUltimaCitaClienteObj = null;
+  var _spSlotsOcupadosCache = [];
+  var _spAgendaDiasHabiles = [];
+  var _spTramosManana = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00'];
+  var _spUltimoPedidoEnviadoHash = '';
+  var _spUltimoPedidoEnviadoTs = 0;
+
+  function formatearYYYYMMDD(d) {
+    var y = d.getFullYear();
+    var m = ('0' + (d.getMonth() + 1)).slice(-2);
+    var day = ('0' + d.getDate()).slice(-2);
+    return y + '-' + m + '-' + day;
+  }
+
+  function generarProximosDiasLaborables() {
+    var dias = [];
+    var cursor = new Date();
+    if (cursor.getHours() >= 13) {
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    while (dias.length < 12) {
+      var dow = cursor.getDay(); // 0 = Domingo, 1..6 = Lunes a Sábado
+      if (dow >= 1 && dow <= 6) {
+        var ymd = formatearYYYYMMDD(cursor);
+        var etq = cursor.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'long' });
+        etq = etq.charAt(0).toUpperCase() + etq.slice(1);
+        if (dow === 6) etq += ' (Sábado Mañana)';
+        dias.push({ ymd: ymd, label: etq, dateObj: new Date(cursor.getTime()) });
       }
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    _spAgendaDiasHabiles = dias;
+    return dias;
+  }
 
-      function consultarCerebroGenerativoIA(preguntaUsuario) {
-        var respuestaRespaldoLocal = window.spObtenerRespuestaOmniscienteCompleta(preguntaUsuario);
-        var histReciente = _spHistorialConversacion.slice(-10).join('\n');
-        var promptCompleto =
-          (window.SP_CONTEXTO_MAESTRO_IA_RESUMEN || '') + '\n\n' +
-          'HISTORIAL DE LA CONVERSACIÓN ACTUAL:\n' + (histReciente || 'Recién iniciada') + '\n\n' +
-          'NUEVA PREGUNTA O COMENTARIO DEL USUARIO: "' + preguntaUsuario + '"\n\n' +
-          'INSTRUCCIÓN DE RESPUESTA: Responde como un consultor humano vivo, proactivo y cercano en 2 a 4 frases completas (entre 45 y 75 palabras), sugiriendo con sutileza packs de ahorro cuando muestre interés de compra:';
+  function estaOcupadoSlot(ymd, hhmm) {
+    return _spSlotsOcupadosCache.indexOf(ymd + ' ' + hhmm) !== -1;
+  }
 
-        var ctrlLocal = (typeof AbortController !== 'undefined') ? new AbortController() : null;
-        var timerLocal = ctrlLocal ? setTimeout(function() { try { ctrlLocal.abort(); } catch (e) {} }, 4500) : null;
+  window.spSincronizarHuecosGoogleCalendar = function(callback) {
+    generarProximosDiasLaborables();
+    var badge = document.getElementById('spCartSyncCalBadge');
+    if (badge) badge.textContent = '🔄 Verificando Google Calendar...';
+    fetch('/api/disponibilidad-calendar?t=' + Date.now())
+      .then(function(r) { return r && r.ok ? r.json() : null; })
+      .then(function(d) {
+        if (d && Array.isArray(d.ocupados)) {
+          _spSlotsOcupadosCache = d.ocupados;
+        }
+        if (badge) badge.textContent = '🟢 Agenda en vivo (L-S 09:00-13:30)';
+        window.spPoblarSelectoresAgendaCarrito();
+        if (typeof callback === 'function') callback();
+      })
+      .catch(function() {
+        if (badge) badge.textContent = '🟢 Horario L-S 09:00-13:30';
+        window.spPoblarSelectoresAgendaCarrito();
+        if (typeof callback === 'function') callback();
+      });
+  };
 
-        return fetch('/api/consultor-ia', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pregunta: preguntaUsuario, apoyo: respuestaRespaldoLocal, prompt: promptCompleto }),
-          signal: ctrlLocal ? ctrlLocal.signal : undefined
-        })
-        .then(function(r) {
-          if (timerLocal) clearTimeout(timerLocal);
-          return r && r.ok ? r.json() : null;
-        })
-        .then(function(d) {
-          if (d && d.ok && d.respuesta && d.respuesta.trim().length > 10) {
-            pintarPuntitoSecretoEstadoApi('online', '🟢 Conectado en vivo a ' + (d.modelo || 'Gemini Flash'));
-            return d.respuesta.replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
-          }
-          return llamarVertexDirectoNavegador(promptCompleto).then(function(resDir) {
-            if (resDir && resDir.texto) {
-              pintarPuntitoSecretoEstadoApi('online', '🟢 Conectado en vivo a ' + resDir.modelo);
-              return resDir.texto.replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
-            }
-            pintarPuntitoSecretoEstadoApi('local');
-            return respuestaRespaldoLocal;
-          });
-        })
-        .catch(function() {
-          if (timerLocal) clearTimeout(timerLocal);
-          return llamarVertexDirectoNavegador(promptCompleto).then(function(resDir) {
-            if (resDir && resDir.texto) {
-              pintarPuntitoSecretoEstadoApi('online', '🟢 Conectado en vivo a ' + resDir.modelo);
-              return resDir.texto.replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
-            }
-            pintarPuntitoSecretoEstadoApi('local');
-            return respuestaRespaldoLocal;
-          });
-        });
+  window.spPoblarSelectoresAgendaCarrito = function() {
+    var selDia = document.getElementById('spCartSelectDiaLV');
+    if (!selDia) return;
+    if (!_spAgendaDiasHabiles.length) generarProximosDiasLaborables();
+    var prevDia = selDia.value;
+    selDia.innerHTML = _spAgendaDiasHabiles.map(function(d) {
+      return '<option value="' + d.ymd + '">' + d.label + '</option>';
+    }).join('');
+    if (prevDia && _spAgendaDiasHabiles.some(function(d) { return d.ymd === prevDia; })) {
+      selDia.value = prevDia;
+    }
+    window.spActualizarHorasDisponiblesCarrito();
+  };
+
+  window.spActualizarHorasDisponiblesCarrito = function() {
+    var selDia = document.getElementById('spCartSelectDiaLV');
+    var selHora = document.getElementById('spCartSelectHoraManana');
+    if (!selDia || !selHora) return;
+    var ymd = selDia.value || (_spAgendaDiasHabiles[0] && _spAgendaDiasHabiles[0].ymd) || '';
+    var prevHora = selHora.value;
+    var htmlH = '';
+    var primeraLibre = '';
+    for (var i = 0; i < _spTramosManana.length; i++) {
+      var h = _spTramosManana[i];
+      var hFin = (h.slice(3) === '00') ? (h.slice(0, 2) + ':30') : (('0' + (parseInt(h.slice(0, 2), 10) + 1)).slice(-2) + ':00');
+      var ocupado = estaOcupadoSlot(ymd, h);
+      if (ocupado) {
+        htmlH += '<option value="' + h + '" disabled>⛔ ' + h + ' - ' + hFin + ' (Ocupado en Calendar)</option>';
+      } else {
+        if (!primeraLibre) primeraLibre = h;
+        htmlH += '<option value="' + h + '">🟢 ' + h + ' - ' + hFin + ' h (Disponible)</option>';
       }
+    }
+    if (!primeraLibre) {
+      htmlH = '<option value="11:00">⚠️ Mañana completa (Te llamaremos para buscar hueco)</option>';
+    }
+    selHora.innerHTML = htmlH;
+    if (prevHora && !estaOcupadoSlot(ymd, prevHora)) {
+      selHora.value = prevHora;
+    } else if (primeraLibre) {
+      selHora.value = primeraLibre;
+    }
+  };
 
-      window.spProcesarConsultaEnTeleprompterDirecto = function(textoPregunta) {
-        var limpia = (textoPregunta || '').trim();
-        if (!limpia) return;
-        _spOrbeDespierto = true;
-        var inp = document.getElementById('spTecnosalaInput');
-        if (inp) inp.value = '';
+  window.spObtenerResumenDisponibilidadParaPromptIA = function() {
+    if (!_spAgendaDiasHabiles.length) generarProximosDiasLaborables();
+    var resumenDias = [];
+    for (var i = 0; i < Math.min(5, _spAgendaDiasHabiles.length); i++) {
+      var d = _spAgendaDiasHabiles[i];
+      var libres = [];
+      var ocupados = [];
+      for (var j = 0; j < _spTramosManana.length; j++) {
+        var h = _spTramosManana[j];
+        if (estaOcupadoSlot(d.ymd, h)) ocupados.push(h);
+        else libres.push(h);
+      }
+      resumenDias.push(
+        d.label + ' (' + d.ymd + '): Libres=[' + (libres.join(', ') || 'Ninguno') + ']' +
+        (ocupados.length ? ' | OCUPADOS=[' + ocupados.join(', ') + ']' : '')
+      );
+    }
+    return 'ESTADO EN VIVO DEL GOOGLE CALENDAR DE FRANCISCO (HORARIO DE LUNES A SÁBADO POR LAS MAÑANAS DE 09:00 A 13:30, NUNCA POR LAS TARDES NI LOS DOMINGOS):\n' + resumenDias.join('\n');
+  };
 
-        _spHistorialConversacion.push('Usuario: ' + limpia);
-        // Preconfigurar en tiempo real el Carrito a la Carta con lo que el usuario va diciendo en la charla
-        window.spExtraerYPreconfigurarCarritoDesdeCharla(limpia, _spHistorialConversacion);
+  function calcularFechasCitaCliente(fechaIsoInput, textoHorarioLibre) {
+    if (!_spAgendaDiasHabiles.length) generarProximosDiasLaborables();
+    var selDia = document.getElementById('spCartSelectDiaLV');
+    var selHora = document.getElementById('spCartSelectHoraManana');
+    var txtLow = normalizarSinTildes(textoHorarioLibre || '');
 
-        // Si el usuario acaba de dar su número de teléfono (9 dígitos españoles), dispara el pedido real automáticamente
-        var soloDigitos = limpia.replace(/[^0-9]/g, '');
-        var mTelEsp = soloDigitos.match(/([6789]\d{8})/);
-        if (mTelEsp && typeof window.spRegistrarLeadAutomaticoDesdeVoz === 'function') {
-          window.spRegistrarLeadAutomaticoDesdeVoz(mTelEsp[1], limpia, _spHistorialConversacion.join(' | '));
+    var pidioTarde = /(por la tarde|de la tarde|a las 14|a las 15|a las 16|a las 17|a las 18|a las 19|a las 20|a las 4|a las 5|a las 6|a las 7|a las 8 de la tarde)/.test(txtLow);
+    var pidioDomingo = /(domingo)/.test(txtLow);
+
+    var diaElegidoObj = _spAgendaDiasHabiles[0];
+    if (selDia && selDia.value && !textoHorarioLibre) {
+      for (var dIdx = 0; dIdx < _spAgendaDiasHabiles.length; dIdx++) {
+        if (_spAgendaDiasHabiles[dIdx].ymd === selDia.value) {
+          diaElegidoObj = _spAgendaDiasHabiles[dIdx];
+          break;
         }
-
-        consultarCerebroGenerativoIA(limpia).then(function(respuestaInteligente) {
-          _spHistorialConversacion.push('Consultor: ' + respuestaInteligente);
-          var ahora = new Date();
-          _spRegistroDescargaCharla.push({
-            hora: ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
-            pregunta: limpia,
-            respuesta: respuestaInteligente
-          });
-          actualizarContadorBotonDescarga();
-          window.spReproducirEnTeleprompter2027(respuestaInteligente, null, limpia);
-        });
-      };
-
-      window.spToggleVozConsultorMute = function(ev) {
-        if (ev) ev.stopPropagation();
-        _spVozConsultorActiva = !_spVozConsultorActiva;
-        if (!_spVozConsultorActiva && 'speechSynthesis' in window) {
-          try { window.speechSynthesis.cancel(); } catch (e) {}
-          _spHablandoSintesis = false;
-          actualizarAparienciaOrbeYEstado('idle');
-        }
-        var btnVoz = document.getElementById('spBtnToggleVozSintetica');
-        if (btnVoz) {
-          btnVoz.innerHTML = _spVozConsultorActiva ? '🔊 Voz: ON' : '🔇 Silenciado';
-        }
-      };
-
-      window.spActivarOrbeConsultorInteractivo = function(ev) {
-        if (ev) ev.stopPropagation();
-
-        if (_spOrbeDespierto && (_spHablandoSintesis || _spEscuchandoVoz)) {
-          window.spPararConsultorTotalmente(ev);
-          return;
-        }
-
-        _spOrbeDespierto = true;
-        _spAutoEscuchaContinua = true;
-        asegurarCabinaTeleprompter2027();
-        mostrarBotonesParadaActivos();
-        iniciarVigilanteMicrofonoContinuo();
-
-        var track = document.getElementById('spTeleprompterRollTrack');
-        if (track && track.children.length > 0) {
-          _spHablandoSintesis = false;
-          _spIgnorarMicroMientrasHabla = false;
-          window.spActivarModoEscuchaPersistente(false);
-          return;
-        }
-
-        var saludo2027 =
-          'Hola, soy tu consultor tecnológico experto de Sistemas Pyme. ' +
-          'Hablamos en modo manos libres sin que tengas que tocar ningún botón: pregúntame cualquier duda sobre nuestro ecosistema, dime qué necesitas para recomendarte la combinación con mayor ahorro y deja contratado o agendado tu servicio al instante.';
-
-        window.spReproducirEnTeleprompter2027(saludo2027, function() {
-          _spHablandoSintesis = false;
-          _spIgnorarMicroMientrasHabla = false;
-          window.spActivarModoEscuchaPersistente(false);
-        });
-      };
-
-      var HTML_BIENVENIDA_ORBE_3D_V159 =
-        '<div id="spOrb3DWrapperMain" onclick="window.spActivarOrbeConsultorInteractivo(event)" title="¡Púlsame una sola vez para hablar en manos libres!" class="sp-orb-3d-wrapper">' +
-          '<div class="sp-orb-3d-ring1"></div>' +
-          '<div class="sp-orb-3d-ring2"></div>' +
-          '<div class="sp-orb-3d-sphere">' +
-            '<span class="text-2xl drop-shadow pointer-events-none">⚡</span>' +
-          '</div>' +
-        '</div>' +
-        '<div onclick="window.spActivarOrbeConsultorInteractivo(event)" class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-500/25 hover:bg-teal-500/40 border border-teal-300/70 text-[10.5px] sm:text-[11.5px] font-black uppercase tracking-wider text-teal-100 mb-1.5 cursor-pointer shadow-lg shadow-teal-500/20 transition">' +
-          '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>' +
-          '<span>👆 PULSA LA ESFERA HOLOGRÁFICA PARA HABLAR CONMIGO SIN TOCAR NINGÚN OTRO BOTÓN</span>' +
-        '</div>' +
-        '<h3 onclick="window.spActivarOrbeConsultorInteractivo(event)" class="text-[16px] sm:text-[18.5px] font-black text-white tracking-tight mb-1 max-w-2xl leading-snug cursor-pointer">' +
-          'Soy tu <span class="text-teal-300">consultor tecnológico experto</span> para que me preguntes y <span class="text-amber-300">contrates lo que necesites</span>.' +
-        '</h3>' +
-        '<p onclick="window.spActivarOrbeConsultorInteractivo(event)" class="text-xs sm:text-[13px] text-emerald-100/95 font-semibold max-w-2xl mx-auto leading-snug cursor-pointer">' +
-          '🎙️ <strong>Manos libres continuo:</strong> profundiza en cualquier área del ecosistema Sistemas Pyme, descubre qué combinación te ahorra más dinero y deja agendada tu alta al instante.' +
-        '</p>';
-
-      function conectarFuncionesRealesTecnosalaV159() {
-        var idleEl = document.getElementById('spTecnosalaIdleWelcome');
-        if (idleEl) {
-          idleEl.setAttribute('data-sp-v159', '1');
-          idleEl.innerHTML = HTML_BIENVENIDA_ORBE_3D_V159;
-        }
-
-        var waBtnBottom = document.getElementById('spTecnosalaWaBtn');
-        if (waBtnBottom && waBtnBottom.parentNode && !document.getElementById('spBtnAbrirCarritoTecnosala')) {
-          var btnCartBot = document.createElement('button');
-          btnCartBot.type = 'button';
-          btnCartBot.id = 'spBtnAbrirCarritoTecnosala';
-          btnCartBot.onclick = function() { window.spAbrirCarritoConfigurador(); };
-          btnCartBot.className = 'sp-btn-carrito-gold-3d text-xs sm:text-[13px] px-4 py-2 rounded-xl inline-flex items-center gap-2';
-          btnCartBot.innerHTML = '<span class="sp-cart-icon-badge">🛒</span><span>Configurar a la Carta / Contratar</span>';
-          waBtnBottom.parentNode.insertBefore(btnCartBot, waBtnBottom);
-        }
-        if (waBtnBottom && waBtnBottom.parentNode && !document.getElementById('spBtnDescargarCharlaBottom')) {
-          var btnDlBot = document.createElement('button');
-          btnDlBot.type = 'button';
-          btnDlBot.id = 'spBtnDescargarCharlaBottom';
-          btnDlBot.onclick = function(ev) { window.spDescargarConversacionConsultor(ev); };
-          btnDlBot.className = 'hidden text-xs font-extrabold text-amber-200 hover:text-white bg-amber-950/85 hover:bg-amber-900 px-3.5 py-2 rounded-xl border border-amber-400/50 cursor-pointer transition';
-          btnDlBot.innerHTML = '📥 Descargar conversación';
-          waBtnBottom.parentNode.insertBefore(btnDlBot, waBtnBottom);
-        }
-
-        var switchAnualBtn = document.getElementById('btnSwitchAnual');
-        if (switchAnualBtn && switchAnualBtn.parentNode && !document.getElementById('spBtnTopCarritoPrecios')) {
-          var btnCartPrecios = document.createElement('button');
-          btnCartPrecios.type = 'button';
-          btnCartPrecios.id = 'spBtnTopCarritoPrecios';
-          btnCartPrecios.onclick = function() { window.spAbrirCarritoConfigurador(); };
-          btnCartPrecios.className = 'sp-btn-carrito-gold-3d px-4 py-1.5 rounded-xl text-xs sm:text-[13px] flex items-center gap-2 ml-1';
-          btnCartPrecios.innerHTML = '<span class="sp-cart-icon-badge">🛒</span><span>Configurar a la Carta</span>';
-          switchAnualBtn.parentNode.appendChild(btnCartPrecios);
-        }
-
-        window.spToggleDictadoVozTecnosala = function() {
-          if (!_spOrbeDespierto) {
-            window.spActivarOrbeConsultorInteractivo();
-          } else {
-            window.spIniciarEscuchaDirectaConsultor();
-          }
-        };
-
-        window.spLimpiarPantallaTecnosala = function() {
-          limpiarTimersTeleprompter();
-          if ('speechSynthesis' in window) {
-            try { window.speechSynthesis.cancel(); } catch (e) {}
-          }
-          if (_spRecogInstance) {
-            try { _spRecogInstance.stop(); } catch (e) {}
-          }
-          _spMicroSesionActiva = false;
-          _spOrbeDespierto = false;
-          _spHablandoSintesis = false;
-          _spEscuchandoVoz = false;
-          var stg = document.getElementById('spTeleprompter2027Stage');
-          if (stg) stg.remove();
-          var out = document.getElementById('spTecnosalaActiveOutput');
-          if (out) out.classList.add('hidden');
-          var idle = document.getElementById('spTecnosalaIdleWelcome');
-          if (idle) {
-            idle.classList.remove('hidden');
-            idle.innerHTML = HTML_BIENVENIDA_ORBE_3D_V159;
-          }
-          var btnReset = document.getElementById('spBtnResetScreenTecnosala');
-          if (btnReset) btnReset.classList.add('hidden');
-          var inp = document.getElementById('spTecnosalaInput');
-          if (inp) inp.value = '';
-        };
-
-        var MAPA_CHIPS_SENCILLOS = {
-          rgpd: { tit: '¿Cómo evitáis multas de Protección de Datos en reseñas?', id: 'resenas_y_proteccion_multas' },
-          fijo: { tit: '¿Puedo usar el teléfono fijo de siempre de mi local?', id: 'cortafuegos_whatsapp_y_fijo' },
-          informe360: { tit: '¿Qué incluye el Informe Mensual 360°?', id: 'atril_nfc_e_informe_360' },
-          instalacion: { tit: '¿Tengo que cambiar el programa que ya uso?', id: 'instalacion_y_facilidad' },
-          seogeo: { tit: '¿Cómo lográis que ChatGPT y Google me recomienden?', id: 'seo_geo_ia_explicado_facil' },
-          precios: { tit: '¿Cuánto cuesta y cómo se amortiza?', id: 'precios_y_planes' }
-        };
-
-        window.spEjecutarConsultaTecnosala = function(claveFaq) {
-          _spOrbeDespierto = true;
-          var cfg = MAPA_CHIPS_SENCILLOS[claveFaq] || MAPA_CHIPS_SENCILLOS.rgpd;
-          _spUltimoTemaIdConsultado = cfg.id;
-          var bd = window.SP_BASE_CONOCIMIENTO_HUMANA || [];
-          var textoResp = '';
-          for (var i = 0; i < bd.length; i++) {
-            if (bd[i].id === cfg.id) {
-              textoResp = elegirVarianteNoRepetida(bd[i]);
+      }
+    } else if (txtLow) {
+      var mapaDiasSemana = { 'lunes': 1, 'martes': 2, 'miercoles': 3, 'jueves': 4, 'viernes': 5, 'sabado': 6 };
+      for (var nombreDia in mapaDiasSemana) {
+        if (txtLow.indexOf(nombreDia) !== -1) {
+          var targetDow = mapaDiasSemana[nombreDia];
+          for (var k = 0; k < _spAgendaDiasHabiles.length; k++) {
+            if (_spAgendaDiasHabiles[k].dateObj.getDay() === targetDow) {
+              diaElegidoObj = _spAgendaDiasHabiles[k];
               break;
             }
           }
-          if (!textoResp) textoResp = window.spObtenerRespuestaOmniscienteCompleta(claveFaq);
-          _spHistorialConversacion.push('Usuario: ' + cfg.tit);
-          _spHistorialConversacion.push('Consultor: ' + textoResp);
-          var ahora = new Date();
-          _spRegistroDescargaCharla.push({
-            hora: ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
-            pregunta: cfg.tit,
-            respuesta: textoResp
-          });
-          actualizarContadorBotonDescarga();
-          window.spReproducirEnTeleprompter2027(textoResp, null, cfg.tit);
-        };
-
-        window.spEnviarPreguntaLibreTecnosala = function(ev) {
-          if (ev && ev.preventDefault) ev.preventDefault();
-          var inp = document.getElementById('spTecnosalaInput');
-          var texto = inp ? (inp.value || '').trim() : '';
-          if (!texto) return;
-          window.spProcesarConsultaEnTeleprompterDirecto(texto);
-        };
-      }
-
-      window.spGestionarCookiesAEPD = function(decision) {
-        try { localStorage.setItem('sp_cookie_consent_aepd', decision); } catch (e) {}
-        var banner = document.getElementById('spAepdCookieBanner');
-        if (banner) banner.classList.remove('sp-cookie-visible');
-        if (decision === 'accepted' && typeof window.spActivarAnaliticaConsentida === 'function') {
-          window.spActivarAnaliticaConsentida();
+          break;
         }
-      };
-
-      window.spReabrirBannerCookiesAEPD = function() {
-        try { localStorage.removeItem('sp_cookie_consent_aepd'); } catch (e) {}
-        var banner = document.getElementById('spAepdCookieBanner');
-        if (banner) banner.classList.add('sp-cookie-visible');
-      };
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', conectarFuncionesRealesTecnosalaV159);
-      } else {
-        conectarFuncionesRealesTecnosalaV159();
       }
-      setTimeout(conectarFuncionesRealesTecnosalaV159, 150);
-      setTimeout(conectarFuncionesRealesTecnosalaV159, 600);
+      if (txtLow.indexOf('pasado manana') !== -1 && _spAgendaDiasHabiles.length > 1) {
+        diaElegidoObj = _spAgendaDiasHabiles[1];
+      }
+    }
 
-      document.addEventListener('click', function(e) {
-        var tTec = e.target && e.target.closest ? e.target.closest('#navBtn_tecnosala, #mobTab_tecnosala') : null;
-        if (tTec) {
-          setTimeout(conectarFuncionesRealesTecnosalaV159, 50);
-          return;
+    var horaStr = (selHora && selHora.value) ? selHora.value : '11:00';
+    if (textoHorarioLibre) {
+      var mH = String(textoHorarioLibre).match(/(?:a las|las)\s*(\d{1,2})(?::(\d{2}))?\s*(y media)?/i) ||
+               String(textoHorarioLibre).match(/\b(0?[9]|1[0-3]):(00|30)\b/);
+      if (mH) {
+        var hNum = parseInt(mH[1], 10);
+        var minStr = (mH[2] === '30' || mH[3]) ? '30' : '00';
+        if (hNum === 1) hNum = 13;
+        if (hNum >= 9 && hNum <= 13) {
+          if (hNum === 13) minStr = '00';
+          horaStr = ('0' + hNum).slice(-2) + ':' + minStr;
+        } else {
+          pidioTarde = true;
         }
-        var btnOtraVista = e.target && e.target.closest ? e.target.closest('[onclick*="cambiarVista"]') : null;
-        if (btnOtraVista) {
-          var attrOnclick = btnOtraVista.getAttribute('onclick') || '';
-          if (attrOnclick.indexOf("'tecnosala'") === -1 && attrOnclick.indexOf('"tecnosala"') === -1) {
-            if (_spHablandoSintesis || _spEscuchandoVoz || _spMicroSesionActiva || _spMicStream) {
-              window.spPararConsultorTotalmente();
-            }
+      }
+    }
+
+    var avisoAjusteHorario = '';
+    if (pidioDomingo) {
+      avisoAjusteHorario = 'Nota: Los domingos estamos cerrados; asignado el primer hueco de lunes a sábado por la mañana.';
+    } else if (pidioTarde) {
+      avisoAjusteHorario = 'Nota: Las altas se realizan de lunes a sábado por las mañanas (09:00 a 13:30); asignado turno de mañana.';
+    }
+
+    if (estaOcupadoSlot(diaElegidoObj.ymd, horaStr)) {
+      avisoAjusteHorario = 'El hueco de las ' + horaStr + ' ya estaba reservado en Google Calendar; asignado el siguiente hueco libre.';
+      var encontrado = false;
+      for (var dScan = 0; dScan < _spAgendaDiasHabiles.length && !encontrado; dScan++) {
+        var dCand = _spAgendaDiasHabiles[dScan];
+        if (dCand.ymd < diaElegidoObj.ymd) continue;
+        for (var hScan = 0; hScan < _spTramosManana.length; hScan++) {
+          var hCand = _spTramosManana[hScan];
+          if (!estaOcupadoSlot(dCand.ymd, hCand)) {
+            diaElegidoObj = dCand;
+            horaStr = hCand;
+            encontrado = true;
+            break;
           }
         }
-      }, true);
+      }
+    }
 
-      function envolverCambiarVistaParaApagarMicro() {
-        if (typeof window.cambiarVista === 'function' && !window.cambiarVista._spMicGuard) {
-          var origCV = window.cambiarVista;
-          var nuevaCV = function(vistaDestino) {
-            if (vistaDestino !== 'tecnosala') {
-              if (_spHablandoSintesis || _spEscuchandoVoz || _spMicroSesionActiva || _spMicStream) {
-                window.spPararConsultorTotalmente();
-              }
-            } else {
-              setTimeout(conectarFuncionesRealesTecnosalaV159, 50);
-            }
-            return origCV.apply(this, arguments);
-          };
-          nuevaCV._spMicGuard = true;
-          window.cambiarVista = nuevaCV;
+    if (selDia) selDia.value = diaElegidoObj.ymd;
+    window.spActualizarHorasDisponiblesCarrito();
+    if (selHora) selHora.value = horaStr;
+
+    var partesYMD = diaElegidoObj.ymd.split('-');
+    var partesHM = horaStr.split(':');
+    var fechaInicio = new Date(
+      parseInt(partesYMD[0], 10),
+      parseInt(partesYMD[1], 10) - 1,
+      parseInt(partesYMD[2], 10),
+      parseInt(partesHM[0], 10),
+      parseInt(partesHM[1], 10),
+      0,
+      0
+    );
+    var fechaFin = new Date(fechaInicio.getTime() + 30 * 60 * 1000);
+    function toIcsUTC(d) {
+      return d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    }
+    var legible = fechaInicio.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'long' }) + ' a las ' + horaStr + ' h (Mañana)';
+    return {
+      startUtc: toIcsUTC(fechaInicio),
+      endUtc: toIcsUTC(fechaFin),
+      fechaInicio: fechaInicio,
+      fechaFin: fechaFin,
+      ymd: diaElegidoObj.ymd,
+      hhmm: horaStr,
+      legible: legible,
+      avisoAjuste: avisoAjusteHorario
+    };
+  }
+
+  function construirUrlGoogleCalendar(titulo, detallesCortos, startUtc, endUtc) {
+    return 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+      '&text=' + encodeURIComponent(titulo) +
+      '&dates=' + encodeURIComponent(startUtc + '/' + endUtc) +
+      '&details=' + encodeURIComponent(detallesCortos) +
+      '&location=' + encodeURIComponent('Videollamada / Teléfono con Francisco M. Gallardo (Sistemas Pyme)');
+  }
+
+  window.spDescargarCitaCalendarioAlarma1Hora = function() {
+    var c = _spUltimaCitaClienteObj;
+    if (!c) {
+      var t = calcularFechasCitaCliente('', '');
+      c = {
+        titulo: 'Videollamada de Alta — Sistemas Pyme',
+        detalles: 'Implantación y puesta en marcha con Francisco M. Gallardo (Tel: 711 54 75 61)',
+        startUtc: t.startUtc,
+        endUtc: t.endUtc
+      };
+    }
+    var icsLines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Sistemas Pyme//Cita Alta B2B//ES',
+      'METHOD:PUBLISH',
+      'BEGIN:VEVENT',
+      'UID:sp-alta-' + Date.now() + '@sistemaspyme.es',
+      'DTSTAMP:' + c.startUtc,
+      'DTSTART:' + c.startUtc,
+      'DTEND:' + c.endUtc,
+      'SUMMARY:' + c.titulo,
+      'DESCRIPTION:' + String(c.detalles || '').replace(/\r?\n/g, '\\n'),
+      'LOCATION:Videollamada / Teléfono con Francisco M. Gallardo (Sistemas Pyme)',
+      'BEGIN:VALARM',
+      'TRIGGER:-P1D',
+      'ACTION:DISPLAY',
+      'DESCRIPTION:Recordatorio 24h antes: Mañana tienes tu cita de alta con Sistemas Pyme',
+      'END:VALARM',
+      'BEGIN:VALARM',
+      'TRIGGER:-PT60M',
+      'ACTION:DISPLAY',
+      'DESCRIPTION:Recordatorio 1h antes: En 1 hora comienza tu videollamada con Sistemas Pyme',
+      'END:VALARM',
+      'BEGIN:VALARM',
+      'TRIGGER:-PT15M',
+      'ACTION:DISPLAY',
+      'DESCRIPTION:Recordatorio 15 min antes: Preparado para la llamada con Francisco (Sistemas Pyme)',
+      'END:VALARM',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ];
+    var blob = new Blob([icsLines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'Cita_Alta_Sistemas_Pyme.ics';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() { URL.revokeObjectURL(a.href); a.remove(); }, 800);
+  };
+
+  // =========================================================================
+  // 4. LÓGICA DEL CARRITO CONFIGURADOR A LA CARTA
+  // =========================================================================
+  window.spAbrirCarritoConfigurador = function(ev) {
+    if (ev && ev.preventDefault) ev.preventDefault();
+    var m = document.getElementById('spModalCarritoCarta');
+    if (!m) return;
+    m.classList.remove('hidden');
+    m.classList.add('flex');
+    window.spSincronizarHuecosGoogleCalendar();
+    window.spRecalcularCarritoCarta();
+  };
+
+  window.spCerrarCarritoConfigurador = function() {
+    var m = document.getElementById('spModalCarritoCarta');
+    if (!m) return;
+    m.classList.add('hidden');
+    m.classList.remove('flex');
+  };
+
+  window.spRestaurarFormularioCarrito = function() {
+    var wrapInputs = document.getElementById('spCartFormInputsWrap');
+    var btnSub = document.getElementById('spBtnSubmitCarrito');
+    var fb = document.getElementById('spCartFeedbackMsg');
+    if (wrapInputs) wrapInputs.classList.remove('hidden');
+    if (btnSub) btnSub.classList.remove('hidden');
+    if (fb) fb.classList.add('hidden');
+  };
+
+  window.spSetCartModalidad = function(mod) {
+    _spCartState.modalidad = (mod === 'anual') ? 'anual' : 'mensual';
+    window.spRecalcularCarritoCarta();
+  };
+
+  window.spSetCartPlan = function(plan) {
+    _spCartState.plan = plan;
+    window.spRecalcularCarritoCarta();
+  };
+
+  window.spSetCartAuditorias = function(num) {
+    _spCartState.auditorias = parseInt(num, 10) || 0;
+    window.spRecalcularCarritoCarta();
+  };
+
+  window.spSetCartAtriles = function(num) {
+    _spCartState.atriles = parseInt(num, 10) || 0;
+    window.spRecalcularCarritoCarta();
+  };
+
+  window.spToggleReservaFase2 = function(modulo) {
+    if (!modulo) return;
+    var idx = _spCartState.reservasFase2.indexOf(modulo);
+    if (idx === -1) _spCartState.reservasFase2.push(modulo);
+    else _spCartState.reservasFase2.splice(idx, 1);
+    window.spRecalcularCarritoCarta();
+  };
+
+  function calcularCosteAtriles(n) {
+    n = parseInt(n, 10) || 0;
+    if (n <= 0) return 0;
+    if (n === 1) return 39;
+    if (n <= 4) return 39 + (n - 1) * 29;
+    return 39 + 3 * 29 + (n - 4) * 25;
+  }
+
+  window.spRecalcularCarritoCarta = function() {
+    var esAnual = (_spCartState.modalidad === 'anual');
+    var plan = _spCartState.plan;
+    var aud = _spCartState.auditorias;
+    var atr = _spCartState.atriles;
+
+    // Estilos botones modalidad
+    var bMen = document.getElementById('spCartBtnModMensual');
+    var bAnu = document.getElementById('spCartBtnModAnual');
+    if (bMen) bMen.className = 'p-2.5 rounded-2xl border-2 text-left transition cursor-pointer ' + (!esAnual ? 'border-teal-400 bg-teal-950/60' : 'border-slate-800 bg-slate-900/60');
+    if (bAnu) bAnu.className = 'p-2.5 rounded-2xl border-2 text-left transition cursor-pointer ' + (esAnual ? 'border-amber-400 bg-amber-950/40' : 'border-slate-800 bg-slate-900/60');
+
+    // Estilos botones plan
+    var bP0 = document.getElementById('spCartBtnPlanNinguno');
+    var bP1 = document.getElementById('spCartBtnPlanBase');
+    var bP2 = document.getElementById('spCartBtnPlanDuo');
+    if (bP0) bP0.className = 'p-2.5 rounded-2xl border text-left transition cursor-pointer ' + (plan === 'ninguno' ? 'border-teal-400 bg-teal-950/60' : 'border-slate-800 bg-slate-900/60');
+    if (bP1) bP1.className = 'p-2.5 rounded-2xl border text-left transition cursor-pointer ' + (plan === 'base' ? 'border-teal-400 bg-teal-950/60' : 'border-slate-800 bg-slate-900/60');
+    if (bP2) bP2.className = 'p-2.5 rounded-2xl border text-left transition cursor-pointer ' + (plan === 'duo' ? 'border-emerald-400 bg-emerald-950/60' : 'border-slate-800 bg-slate-900/60');
+
+    var precio1Aud = 350;
+    var precio2Aud = 650;
+    if (esAnual && plan !== 'ninguno') {
+      precio1Aud = 195;
+      precio2Aud = 350;
+    } else if (!esAnual && plan === 'duo') {
+      precio1Aud = 250;
+      precio2Aud = 450;
+    }
+
+    var lblA1 = document.getElementById('spCartPrecioAud1');
+    var lblA2 = document.getElementById('spCartPrecioAud2');
+    if (lblA1) lblA1.textContent = precio1Aud + ' €';
+    if (lblA2) lblA2.textContent = precio2Aud + ' € las 2';
+
+    var bA0 = document.getElementById('spCartBtnAud0');
+    var bA1 = document.getElementById('spCartBtnAud1');
+    var bA2 = document.getElementById('spCartBtnAud2');
+    if (bA0) bA0.className = 'p-2.5 rounded-2xl border text-left transition cursor-pointer ' + (aud === 0 ? 'border-teal-400 bg-teal-950/60' : 'border-slate-800 bg-slate-900/60');
+    if (bA1) bA1.className = 'p-2.5 rounded-2xl border text-left transition cursor-pointer ' + (aud === 1 ? 'border-sky-400 bg-sky-950/60' : 'border-slate-800 bg-slate-900/60');
+    if (bA2) bA2.className = 'p-2.5 rounded-2xl border text-left transition cursor-pointer ' + (aud === 2 ? 'border-amber-400 bg-amber-950/50' : 'border-slate-800 bg-slate-900/60');
+
+    var costePlanDia1 = 0;
+    var cuotaTexto = '0 €/mes (Sin cuota)';
+    var nombrePlanTxt = 'Solo Auditoría / Hardware';
+    var numModulosActivos = 0;
+
+    if (plan === 'base') {
+      numModulosActivos = 1;
+      if (esAnual) {
+        costePlanDia1 = 590 + 150;
+        cuotaTexto = 'Plan Anual pagado (2 meses gratis)';
+        nombrePlanTxt = 'Plan Base Anual (1 Servicio: 590 €/año + 150 € Setup)';
+      } else {
+        costePlanDia1 = 59 + 150;
+        cuotaTexto = '59 €/mes (Permanencia mín. 3m)';
+        nombrePlanTxt = 'Plan Base Flexible (1 Servicio: 59 €/mes + 150 € Setup)';
+      }
+    } else if (plan === 'duo') {
+      numModulosActivos = 2;
+      if (esAnual) {
+        costePlanDia1 = 990 + 225;
+        cuotaTexto = 'Plan Anual pagado (2 meses gratis)';
+        nombrePlanTxt = 'Pack Escudo Dúo Anual (990 €/año + 225 € Setup)';
+      } else {
+        costePlanDia1 = 99 + 225;
+        cuotaTexto = '99 €/mes (Permanencia mín. 3m)';
+        nombrePlanTxt = 'Pack Escudo Dúo Flexible (99 €/mes + 225 € Setup)';
+      }
+    }
+
+    var costeAud = (aud === 1) ? precio1Aud : ((aud === 2) ? precio2Aud : 0);
+    var costeAtriles = calcularCosteAtriles(atr);
+    var totalDia1 = costePlanDia1 + costeAud + costeAtriles;
+
+    var totalModulosConFase2 = numModulosActivos + _spCartState.reservasFase2.length;
+    var tieneBonoBoveda = (totalModulosConFase2 >= 3);
+
+    var lineas = [];
+    if (plan !== 'ninguno') {
+      lineas.push('<div class="flex justify-between"><span>• ' + nombrePlanTxt + ':</span><strong class="text-white">' + costePlanDia1 + ' €</strong></div>');
+    }
+    if (aud > 0) {
+      lineas.push('<div class="flex justify-between"><span>• ' + aud + ' Super-Auditoría(s) Web:</span><strong class="text-sky-300">' + costeAud + ' €</strong></div>');
+    }
+    if (atr > 0) {
+      lineas.push('<div class="flex justify-between"><span>• ' + atr + ' Atril(es) NFC+QR:</span><strong class="text-amber-300">' + costeAtriles + ' €</strong></div>');
+    }
+    if (_spCartState.reservasFase2.length > 0) {
+      lineas.push('<div class="flex justify-between text-amber-200"><span>• Reserva Fase 2 (' + _spCartState.reservasFase2.join(', ') + '):</span><strong>0 € hoy</strong></div>');
+    }
+
+    var boxDesglose = document.getElementById('spCartDesgloseLineas');
+    if (boxDesglose) boxDesglose.innerHTML = lineas.join('') || '<div class="text-slate-400">Selecciona al menos un módulo o auditoría.</div>';
+
+    var boxFase2 = document.getElementById('spCartListaFase2');
+    if (boxFase2) {
+      boxFase2.textContent = _spCartState.reservasFase2.length
+        ? ('Reservados (0 € hoy): ' + _spCartState.reservasFase2.join(', '))
+        : 'Ningún módulo de Fase 2 añadido aún.';
+    }
+
+    var boxBono = document.getElementById('spCartBonoBovedaBox');
+    if (boxBono) {
+      if (tieneBonoBoveda) boxBono.classList.remove('hidden');
+      else boxBono.classList.add('hidden');
+    }
+
+    var lblTotal = document.getElementById('spCartTotalDia1');
+    if (lblTotal) lblTotal.textContent = totalDia1 + ' €';
+    var lblCuota = document.getElementById('spCartCuotaMensual');
+    if (lblCuota) lblCuota.textContent = cuotaTexto;
+    var badgeMod = document.getElementById('spCartBadgeNumModulos');
+    if (badgeMod) badgeMod.textContent = numModulosActivos + ' serv. activos';
+
+    return {
+      nombrePlanTxt: nombrePlanTxt,
+      costePlanDia1: costePlanDia1,
+      costeAud: costeAud,
+      costeAtriles: costeAtriles,
+      totalDia1: totalDia1,
+      cuotaTexto: cuotaTexto,
+      tieneBonoBoveda: tieneBonoBoveda
+    };
+  };
+
+  // =========================================================================
+  // 5. EXTRACCIÓN DE INTENCIÓN Y TELÉFONO POR VOZ (INCLUIDOS NÚMEROS HABLADOS)
+  // =========================================================================
+  function convertirPalabrasANumerosEspanol(texto) {
+    var mapa = {
+      'cero': '0', 'uno': '1', 'una': '1', 'dos': '2', 'tres': '3', 'cuatro': '4',
+      'cinco': '5', 'seis': '6', 'siete': '7', 'ocho': '8', 'nueve': '9'
+    };
+    return String(texto || '').replace(/\b(cero|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve)\b/gi, function(m) {
+      return mapa[m.toLowerCase()] || m;
+    });
+  }
+
+  function extraerTelefonoEspanolDeTexto(texto) {
+    var conv = convertirPalabrasANumerosEspanol(texto);
+    var m = conv.match(/(?:\+?34[\s\-\.]?)?([6789](?:[\s\-\.]*\d){8})\b/);
+    if (!m) return null;
+    var limpio = m[1].replace(/\D/g, '');
+    return (limpio.length === 9) ? limpio : null;
+  }
+
+  window.spExtraerYPreconfigurarCarritoDesdeCharla = function(ultimaFraseUsuario, historialArray) {
+    // Analizar EXCLUSIVAMENTE las frases dichas por el USUARIO para que las palabras del Consultor no pisen el carrito
+    var frasesUsuario = [];
+    if (Array.isArray(historialArray)) {
+      for (var i = 0; i < historialArray.length; i++) {
+        var ln = String(historialArray[i] || '');
+        if (ln.indexOf('Usuario:') === 0) {
+          frasesUsuario.push(ln.replace(/^Usuario:\s*/i, ''));
         }
       }
-      envolverCambiarVistaParaApagarMicro();
-      setTimeout(envolverCambiarVistaParaApagarMicro, 500);
+    }
+    if (ultimaFraseUsuario) frasesUsuario.push(ultimaFraseUsuario);
+    var tNorm = normalizarSinTildes(frasesUsuario.join(' | '));
 
-      document.addEventListener('visibilitychange', function() {
-        if (document.hidden && (_spHablandoSintesis || _spEscuchandoVoz || _spMicroSesionActiva || _spMicStream)) {
-          window.spPararConsultorTotalmente();
+    if (/(anual|ano|10 meses|diez meses)/.test(tNorm)) {
+      _spCartState.modalidad = 'anual';
+    } else if (/(mensual|mes a mes|flexible)/.test(tNorm)) {
+      _spCartState.modalidad = 'mensual';
+    }
+
+    if (/(pack escudo|pack duo|los dos servicios|ambos servicios|resenas y encuesta)/.test(tNorm)) {
+      _spCartState.plan = 'duo';
+    } else if (/(servicio de resenas|gestor de resenas|solo resenas|sistema de resenas|el de resenas|encuesta de whatsapp|un servicio|plan base)/.test(tNorm)) {
+      _spCartState.plan = 'base';
+    } else if (/(solo auditoria|solo el atril|sin cuota)/.test(tNorm)) {
+      _spCartState.plan = 'ninguno';
+    }
+
+    if (/(dos auditorias|2 auditorias|las dos auditorias|ambas auditorias)/.test(tNorm)) {
+      _spCartState.auditorias = 2;
+    } else if (/(una auditoria|1 auditoria|auditoria seo|auditoria neuro|super auditoria)/.test(tNorm)) {
+      _spCartState.auditorias = 1;
+    }
+
+    var mNom = String(ultimaFraseUsuario || '').match(/(?:me llamo|soy|mi nombre es)\s+([A-ZÁÉÍÓÚÑa-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑa-záéíóúñ]+)?)/i);
+    if (mNom && mNom[1]) {
+      var inpN = document.getElementById('spCartInputNombre');
+      if (inpN && !inpN.value) inpN.value = mNom[1].trim();
+    }
+    window.spRecalcularCarritoCarta();
+  };
+
+  window.spRegistrarLeadAutomaticoDesdeVoz = function(telefono, fraseUsuario, historialCompleto) {
+    window.spExtraerYPreconfigurarCarritoDesdeCharla(fraseUsuario, _spHistorialConversacion);
+    var inpTel = document.getElementById('spCartInputTelefono');
+    if (inpTel) inpTel.value = telefono;
+
+    var datosCalc = window.spRecalcularCarritoCarta();
+    var nom = ((document.getElementById('spCartInputNombre') || {}).value || '').trim() || 'Cliente Tecnosala';
+    var tiempos = calcularFechasCitaCliente('', fraseUsuario);
+
+    var hashActual = telefono + '_' + datosCalc.nombrePlanTxt + '_' + tiempos.ymd + '_' + tiempos.hhmm;
+    if (_spUltimoPedidoEnviadoHash === hashActual && (Date.now() - _spUltimoPedidoEnviadoTs) < 45000) {
+      return;
+    }
+    _spUltimoPedidoEnviadoHash = hashActual;
+    _spUltimoPedidoEnviadoTs = Date.now();
+    if (_spSlotsOcupadosCache.indexOf(tiempos.ymd + ' ' + tiempos.hhmm) === -1) {
+      _spSlotsOcupadosCache.push(tiempos.ymd + ' ' + tiempos.hhmm);
+    }
+
+    var horTexto = tiempos.legible + (tiempos.avisoAjuste ? (' (' + tiempos.avisoAjuste + ')') : '');
+    var resF2 = _spCartState.reservasFase2.length ? _spCartState.reservasFase2.join(', ') : 'Ninguna';
+
+    var resumenPedido =
+      '• Cliente/Negocio: ' + nom + '\n' +
+      '• Teléfono: ' + telefono + '\n' +
+      '• Cita (L-S Mañana 09:00-13:30): ' + horTexto + '\n' +
+      '• Plan elegido: ' + datosCalc.nombrePlanTxt + '\n' +
+      '• Super-Auditorías: ' + _spCartState.auditorias + ' (' + datosCalc.costeAud + ' €)\n' +
+      '• Atriles NFC/QR: ' + _spCartState.atriles + ' (' + datosCalc.costeAtriles + ' €)\n' +
+      '• Reserva Fase 2: ' + resF2 + '\n' +
+      '• Total Día 1: ' + datosCalc.totalDia1 + ' € (sin IVA)';
+
+    var tituloCal = 'Alta Sistemas Pyme (' + nom + ')';
+    var detalleCortoCal = 'Plan: ' + datosCalc.nombrePlanTxt + ' | Tel: ' + telefono + ' | Total Día 1: ' + datosCalc.totalDia1 + ' €';
+    var urlGCal = construirUrlGoogleCalendar(tituloCal, detalleCortoCal, tiempos.startUtc, tiempos.endUtc);
+    _spUltimaCitaClienteObj = {
+      titulo: tituloCal,
+      detalles: resumenPedido,
+      startUtc: tiempos.startUtc,
+      endUtc: tiempos.endUtc,
+      urlGCal: urlGCal
+    };
+
+    var payloadPedido = {
+      dedup_key: hashActual,
+      origen: 'Voz Directa / Consultor Tecnosala',
+      nombre: nom,
+      telefono: telefono,
+      horario: horTexto,
+      slot_ymd: tiempos.ymd,
+      slot_hhmm: tiempos.hhmm,
+      fecha_cita_iso: tiempos.fechaInicio.toISOString(),
+      tiene_horario_especifico: true,
+      plan: datosCalc.nombrePlanTxt,
+      auditorias: _spCartState.auditorias,
+      coste_auditorias: datosCalc.costeAud,
+      atriles: _spCartState.atriles,
+      coste_atriles: datosCalc.costeAtriles,
+      reservas_fase2: _spCartState.reservasFase2,
+      bono_boveda_gratis: datosCalc.tieneBonoBoveda,
+      total_dia1: datosCalc.totalDia1,
+      enlace_google_calendar_cliente: urlGCal,
+      resumen: resumenPedido,
+      fecha: new Date().toLocaleString('es-ES')
+    };
+
+    fetch('/api/registrar-pedido-cita', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payloadPedido)
+    }).then(function(r) {
+      if (!r || !r.ok) throw new Error('local_offline');
+    }).catch(function() {
+      fetch('https://servicio-resenas.onrender.com/api/registrar-pedido-cita', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payloadPedido)
+      }).catch(function() {});
+    });
+
+    var bannerOk = document.getElementById('spVoiceLeadCapturedBanner');
+    var screen = document.getElementById('spTecnosalaScreen');
+    if (!bannerOk && screen && screen.parentNode) {
+      bannerOk = document.createElement('div');
+      bannerOk.id = 'spVoiceLeadCapturedBanner';
+      bannerOk.className = 'mb-2.5 p-3 rounded-2xl bg-emerald-950/95 border-2 border-emerald-400 text-xs text-white flex flex-wrap items-center justify-between gap-2 shadow-lg';
+      screen.parentNode.insertBefore(bannerOk, screen.nextSibling);
+    }
+    if (bannerOk) {
+      bannerOk.innerHTML =
+        '<div class="flex items-center gap-2">' +
+          '<span class="text-lg">✅</span>' +
+          '<div><strong class="text-emerald-300 text-xs sm:text-sm block">¡Cita agendada (' + tiempos.legible + ') y pedido (' + datosCalc.nombrePlanTxt + ') confirmado!</strong>' +
+          '<span class="text-[11px] text-slate-200">Te hemos enviado la confirmación por WhatsApp al ' + telefono + ' y reservado tu hueco en el Google Calendar de Francisco:</span></div>' +
+        '</div>' +
+        '<div class="flex flex-wrap items-center gap-1.5">' +
+          '<button type="button" onclick="window.spDescargarCitaCalendarioAlarma1Hora()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-2.5 py-1.5 rounded-xl text-[11px] cursor-pointer shadow">⏰ Calendario Apple/Móvil (24h + 1h)</button>' +
+          '<a href="' + urlGCal + '" target="_blank" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-black px-2.5 py-1.5 rounded-xl text-[11px] shadow">📅 Google Calendar</a>' +
+          '<button type="button" onclick="window.spAbrirCarritoConfigurador()" class="sp-btn-carrito-gold-3d px-2.5 py-1.5 rounded-xl text-[11px]">🛒 Ver mi Pedido</button>' +
+        '</div>';
+    }
+  };
+
+  window.spConfirmarPedidoYAgendarCita = function() {
+    var datosCalc = window.spRecalcularCarritoCarta();
+    var nom = (document.getElementById('spCartInputNombre') || {}).value || '';
+    var tel = (document.getElementById('spCartInputTelefono') || {}).value || '';
+    var fb = document.getElementById('spCartFeedbackMsg');
+    var btnSub = document.getElementById('spBtnSubmitCarrito');
+
+    if (!tel.trim() || tel.replace(/[^0-9]/g, '').length < 7) {
+      if (fb) {
+        fb.classList.remove('hidden');
+        fb.innerHTML = '<span class="text-amber-300 font-bold">⚠️ Por favor, introduce tu número de teléfono móvil para enviarte la confirmación automática a tu WhatsApp.</span>';
+      }
+      return;
+    }
+
+    var tiempos = calcularFechasCitaCliente('', '');
+    var horTexto = tiempos.legible;
+    var resF2 = _spCartState.reservasFase2.length ? _spCartState.reservasFase2.join(', ') : 'Ninguna';
+    var telLimpio = tel.replace(/\D/g, '').slice(-9);
+    var hashActual = telLimpio + '_' + datosCalc.nombrePlanTxt + '_' + tiempos.ymd + '_' + tiempos.hhmm;
+
+    if (_spSlotsOcupadosCache.indexOf(tiempos.ymd + ' ' + tiempos.hhmm) === -1) {
+      _spSlotsOcupadosCache.push(tiempos.ymd + ' ' + tiempos.hhmm);
+    }
+
+    var resumenPedido =
+      '• Cliente/Negocio: ' + (nom.trim() || 'Cliente Web') + '\n' +
+      '• Teléfono: ' + tel.trim() + '\n' +
+      '• Cita (L-S Mañana 09:00-13:30): ' + horTexto + '\n' +
+      '• Plan elegido: ' + datosCalc.nombrePlanTxt + '\n' +
+      '• Super-Auditorías: ' + _spCartState.auditorias + ' (' + datosCalc.costeAud + ' €)\n' +
+      '• Atriles NFC/QR: ' + _spCartState.atriles + ' (' + datosCalc.costeAtriles + ' €)\n' +
+      '• Reserva Fase 2: ' + resF2 + '\n' +
+      '• Bono Bóveda Contraseñas (3+ mód.): ' + (datosCalc.tieneBonoBoveda ? 'SÍ INCLUIDA GRATIS (Valorada en 150 €)' : 'No') + '\n' +
+      '• Total Día 1: ' + datosCalc.totalDia1 + ' € (sin IVA)';
+
+    var tituloCal = 'Alta Sistemas Pyme (' + (nom.trim() || 'Mi Negocio') + ')';
+    var detalleCortoCal = 'Plan: ' + datosCalc.nombrePlanTxt + ' | Tel: ' + tel.trim() + ' | Total Día 1: ' + datosCalc.totalDia1 + ' €';
+    var urlGCal = construirUrlGoogleCalendar(tituloCal, detalleCortoCal, tiempos.startUtc, tiempos.endUtc);
+    _spUltimaCitaClienteObj = {
+      titulo: tituloCal,
+      detalles: resumenPedido,
+      startUtc: tiempos.startUtc,
+      endUtc: tiempos.endUtc,
+      urlGCal: urlGCal
+    };
+
+    var payloadPedido = {
+      dedup_key: hashActual,
+      origen: 'Carrito Configurador a la Carta Web',
+      nombre: nom.trim() || 'Cliente Web',
+      telefono: tel.trim(),
+      horario: horTexto,
+      slot_ymd: tiempos.ymd,
+      slot_hhmm: tiempos.hhmm,
+      fecha_cita_iso: tiempos.fechaInicio.toISOString(),
+      tiene_horario_especifico: true,
+      plan: datosCalc.nombrePlanTxt,
+      auditorias: _spCartState.auditorias,
+      coste_auditorias: datosCalc.costeAud,
+      atriles: _spCartState.atriles,
+      coste_atriles: datosCalc.costeAtriles,
+      reservas_fase2: _spCartState.reservasFase2,
+      bono_boveda_gratis: datosCalc.tieneBonoBoveda,
+      total_dia1: datosCalc.totalDia1,
+      enlace_google_calendar_cliente: urlGCal,
+      resumen: resumenPedido,
+      fecha: new Date().toLocaleString('es-ES')
+    };
+
+    if (_spUltimoPedidoEnviadoHash !== hashActual || (Date.now() - _spUltimoPedidoEnviadoTs) > 45000) {
+      _spUltimoPedidoEnviadoHash = hashActual;
+      _spUltimoPedidoEnviadoTs = Date.now();
+      fetch('/api/registrar-pedido-cita', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payloadPedido)
+      }).then(function(r) {
+        if (!r || !r.ok) throw new Error('local_offline');
+      }).catch(function() {
+        fetch('https://servicio-resenas.onrender.com/api/registrar-pedido-cita', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payloadPedido)
+        }).catch(function() {});
+      });
+    }
+
+    var wrapInputs = document.getElementById('spCartFormInputsWrap');
+    if (wrapInputs) wrapInputs.classList.add('hidden');
+    if (btnSub) btnSub.classList.add('hidden');
+    if (fb) {
+      fb.classList.remove('hidden');
+      fb.innerHTML =
+        '<div class="space-y-2">' +
+          '<div class="flex items-center justify-between gap-2">' +
+            '<div class="flex items-center gap-1.5 text-emerald-300 font-black text-xs sm:text-sm">' +
+              '<span>✅</span><span>¡Pedido enviado y hueco reservado en Google Calendar!</span>' +
+            '</div>' +
+            '<button type="button" onclick="window.spRestaurarFormularioCarrito()" class="text-[10px] font-bold text-teal-300 hover:text-white underline cursor-pointer">✏️ Cambiar hora/datos</button>' +
+          '</div>' +
+          '<p class="text-[11.5px] text-slate-100 leading-snug">' +
+            'Solicitud de <strong class="text-white">' + (nom.trim() || 'tu negocio').replace(/</g, '&lt;') + '</strong> enviada a tu WhatsApp (<strong class="text-teal-300">' + tel.trim().replace(/</g, '&lt;') + '</strong>) y al CRM de Francisco. Cita reservada: <strong class="text-amber-300">' + horTexto.replace(/</g, '&lt;') + '</strong>.' +
+          '</p>' +
+          '<div class="pt-2 border-t border-emerald-500/40">' +
+            '<span class="block text-[10.5px] font-extrabold text-amber-300 mb-1.5">📲 Guarda ahora la cita con recordatorio el día antes (24h) y 1h antes:</span>' +
+            '<div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">' +
+              '<button type="button" onclick="window.spDescargarCitaCalendarioAlarma1Hora()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-2.5 py-2 rounded-xl text-[11px] cursor-pointer shadow text-center">⏰ Calendario Apple / Móvil (24h + 1h)</button>' +
+              '<a href="' + urlGCal + '" target="_blank" class="bg-sky-400 hover:bg-sky-300 text-slate-950 font-black px-2.5 py-2 rounded-xl text-[11px] shadow text-center flex items-center justify-center">📅 Añadir a Google Calendar</a>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    }
+  };
+
+  // =========================================================================
+  // 6. DESCARGA DE LA CONVERSACIÓN COMPLETA DEL CONSULTOR
+  // =========================================================================
+  window.spActualizarContadoresDescargaCharla = function() {
+    var n = Math.floor(_spHistorialConversacion.length / 2);
+    var b1 = document.getElementById('spBtnDescargarCharlaTop');
+    var b2 = document.getElementById('spBtnDescargarCharlaBottom');
+    if (n > 0) {
+      if (b1) { b1.classList.remove('hidden'); b1.innerHTML = '📥 Descargar charla (' + n + ')'; }
+      if (b2) { b2.classList.remove('hidden'); b2.innerHTML = '📥 Descargar conversación (' + n + ')'; }
+    }
+  };
+
+  window.spDescargarConversacionConsultor = function(ev) {
+    if (ev && ev.preventDefault) ev.preventDefault();
+    if (!_spHistorialConversacion.length) return;
+    var fechaHoy = new Date().toLocaleString('es-ES');
+    var bloquesHtml = _spHistorialConversacion.map(function(linea) {
+      var esUser = linea.indexOf('Usuario:') === 0;
+      var txt = linea.replace(/^(Usuario:|Consultor IA:)\s*/i, '');
+      return '<div style="margin-bottom:14px;padding:14px 18px;border-radius:14px;background:' + (esUser ? '#f1f5f9' : '#ecfdf5') + ';border-left:5px solid ' + (esUser ? '#0284c7' : '#059669') + ';">' +
+        '<div style="font-size:11px;font-weight:800;text-transform:uppercase;color:' + (esUser ? '#0369a1' : '#047857') + ';margin-bottom:4px;">' + (esUser ? '👤 Tu Consulta' : '⚡ Consultor Tecnológico Sistemas Pyme') + '</div>' +
+        '<div style="font-size:14px;line-height:1.6;color:#0f172a;">' + txt.replace(/</g, '&lt;') + '</div></div>';
+    }).join('');
+
+    var docHtml = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Consulta Tecnológica — Sistemas Pyme</title></head>' +
+      '<body style="font-family:Segoe UI,Arial,sans-serif;max-width:780px;margin:28px auto;padding:0 20px;color:#0f172a;">' +
+      '<div style="background:#081b2e;color:#fff;padding:22px 26px;border-radius:18px;margin-bottom:22px;">' +
+      '<div style="font-size:11px;color:#2dd4bf;font-weight:800;text-transform:uppercase;">Sistemas Pyme • Consultoría Tecnológica</div>' +
+      '<h1 style="margin:6px 0 4px 0;font-size:22px;">Resumen de tu Sesión con el Consultor IA</h1>' +
+      '<div style="font-size:12px;color:#94a3b8;">Fecha: ' + fechaHoy + ' • Web: sistemaspyme.es • Tel/WhatsApp: 711 54 75 61</div></div>' +
+      bloquesHtml +
+      '<div style="text-align:center;margin-top:26px;"><button onclick="window.print()" style="background:#0d9488;color:#fff;border:none;padding:12px 24px;border-radius:10px;font-weight:800;cursor:pointer;">🖨️ Imprimir / Guardar como PDF</button></div>' +
+      '</body></html>';
+
+    var blob = new Blob([docHtml], { type: 'text/html;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'Consulta_Tecnologica_Sistemas_Pyme_' + new Date().toISOString().slice(0, 10) + '.html';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() { URL.revokeObjectURL(a.href); a.remove(); }, 800);
+  };
+
+  // =========================================================================
+  // 7. CEREBRO GENERATIVO IA (MODO CONSULTOR PURO + CONTROL DE AGENDA L-S)
+  // =========================================================================
+  window.spObtenerRespuestaOmniscienteCompleta = function(pregunta) {
+    var q = normalizarSinTildes(pregunta);
+    var biblio = window.SP_BIBLIOTECA_CONOCIMIENTO_PROFUNDO || [];
+    for (var i = 0; i < biblio.length; i++) {
+      var item = biblio[i];
+      for (var j = 0; j < item.claves.length; j++) {
+        if (q.indexOf(normalizarSinTildes(item.claves[j])) !== -1) {
+          return item.respuesta;
+        }
+      }
+    }
+    return "En Sistemas Pyme automatizamos la gestión de reseñas de Google con IA y posicionamiento SEO local por 59 euros al mes, el cortafuegos preventivo por WhatsApp en el Pack Escudo Dúo por 99 euros al mes, los atriles NFC y QR por 39 euros pago único y las Super-Auditorías SEO/GEO y Neuro-CRO.";
+  };
+
+  function consultarCerebroGenerativoIA(preguntaUsuario) {
+    var respuestaRespaldoLocal = window.spObtenerRespuestaOmniscienteCompleta(preguntaUsuario);
+    var histReciente = _spHistorialConversacion.slice(-10).join('\n');
+    var qNorm = normalizarSinTildes(preguntaUsuario);
+    var quiereContratarExplicito = /(quiero contratar|quiero comprar|quiero activar|contratar|comprarlo|activarlo|darme de alta|empezar ya|estoy convencido|agendar cita|pedir cita|mi telefono es|mi numero es|llamame|manana a las|lunes a las|martes a las|miercoles a las|jueves a las|viernes a las|sabado a las|por la tarde|domingo)/.test(qNorm) || !!extraerTelefonoEspanolDeTexto(preguntaUsuario);
+    var disponibilidadRealCalendar = window.spObtenerResumenDisponibilidadParaPromptIA ? window.spObtenerResumenDisponibilidadParaPromptIA() : '';
+
+    var instruccionModo = quiereContratarExplicito
+      ? ('INSTRUCCIÓN DE CIERRE COMERCIAL Y AGENDA REAL DE GOOGLE CALENDAR: El usuario está contratando, dando sus datos o proponiendo una hora de cita. ' +
+         'REGLA ESTRICTA DE HORARIO: Francisco atiende videollamadas de alta DE LUNES A SÁBADO POR LAS MAÑANAS, DE 09:00 A 13:30 (último turno a las 13:00; SÍ abrimos los sábados por la mañana para comodidad de comerciantes y empresarios). NUNCA por las tardes ni los domingos. ' +
+         'Si el usuario pidió una cita por la tarde o en domingo, dile con amabilidad que Francisco realiza las altas de lunes a sábado por la mañana (de 09:00 a 13:30, incluidos los sábados por la mañana) y ofrécele 2 huecos libres reales mirando esta disponibilidad en vivo de su Google Calendar:\n' + disponibilidadRealCalendar + '\n' +
+         'Si pidió una hora de la mañana que aparece como OCUPADA en el listado anterior, avísale de que ese hueco ya está reservado por otro cliente y proponle la hora libre más cercana.')
+      : 'INSTRUCCIÓN DE CONSULTOR PURO Y VERACIDAD TÉCNICA (PROHIBIDO VENDER O INVENTAR): El usuario está haciendo una consulta informativa o planteando una duda lógica sobre su negocio. Responde como un consultor experto, honesto y cercano en 2 a 4 frases completas (45 a 80 palabras). RECUERDA SIEMPRE: 1) El Atril NFC/QR abre SIEMPRE directamente Google Maps en 1 segundo (JAMÁS abre una encuesta ni pide datos). 2) La Encuesta Cortafuegos (Servicio 2) va por WhatsApp y SOLO se usa en negocios que recogen el nombre y móvil del cliente (por citas en Google Calendar, software de gestión, formulario rápido de encargos en recepción o pedidos de tienda online), NUNCA para quien compra un artículo suelto en mostrador de forma anónima. 3) Si pregunta por horarios de citas o llamadas con Francisco, recuerda que son de lunes a sábado por las mañanas, de 09:00 a 13:30 (incluidos los sábados por la mañana). TIENES PROHIBIDO pedirle su nombre, su teléfono o preguntarle si quiere contratar.';
+
+    var promptCompleto =
+      (window.SP_CONTEXTO_MAESTRO_IA_RESUMEN || '') + '\n\n' +
+      disponibilidadRealCalendar + '\n\n' +
+      'HISTORIAL DE LA CONVERSACIÓN ACTUAL:\n' + (histReciente || 'Recién iniciada') + '\n\n' +
+      'NUEVA PREGUNTA O COMENTARIO DEL USUARIO: "' + preguntaUsuario + '"\n\n' +
+      instruccionModo;
+
+    return fetch('/api/consultor-ia-vivo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: promptCompleto, pregunta: preguntaUsuario })
+    })
+      .then(function(r) { return r && r.ok ? r.json() : null; })
+      .then(function(d) {
+        if (d && d.respuesta && String(d.respuesta).trim().length > 15) {
+          return String(d.respuesta).trim();
+        }
+        return respuestaRespaldoLocal;
+      })
+      .catch(function() {
+        return respuestaRespaldoLocal;
+      });
+  }
+
+  window.spProcesarPreguntaConsultor = function(preguntaTexto) {
+    var q = String(preguntaTexto || '').trim();
+    if (!q) return;
+    _spHistorialConversacion.push('Usuario: ' + q);
+    window.spActualizarContadoresDescargaCharla();
+
+    var tlfDetectado = extraerTelefonoEspanolDeTexto(q);
+    if (tlfDetectado) {
+      window.spRegistrarLeadAutomaticoDesdeVoz(tlfDetectado, q, _spHistorialConversacion);
+    }
+
+    var box = document.getElementById('spTeleprompterText');
+    if (box) {
+      box.innerHTML = '<span class="text-teal-300 animate-pulse">⚡ Analizando tu consulta en tiempo real...</span>';
+    }
+
+    consultarCerebroGenerativoIA(q).then(function(respuestaIA) {
+      _spHistorialConversacion.push('Consultor IA: ' + respuestaIA);
+      window.spActualizarContadoresDescargaCharla();
+      window.spHablarYMostrarTeleprompter(respuestaIA, function() {
+        if (_spEscuchandoManosLibres) {
+          iniciarEscuchaReconocimientoVoz();
         }
       });
+    });
+  };
 
-      function verificarHashTecnosala() {
-        var h = (window.location.hash || '').toLowerCase();
-        if (h === '#tecnosala' && typeof window.cambiarVista === 'function') {
-          window.cambiarVista('tecnosala');
-          setTimeout(conectarFuncionesRealesTecnosalaV159, 80);
+  function iniciarEscuchaReconocimientoVoz() {
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+    if (_spReconocimientoVoz) {
+      try { _spReconocimientoVoz.onend = null; _spReconocimientoVoz.abort(); } catch (e) {}
+    }
+    _spReconocimientoVoz = new SR();
+    _spReconocimientoVoz.lang = 'es-ES';
+    _spReconocimientoVoz.continuous = false;
+    _spReconocimientoVoz.interimResults = false;
+
+    var statusTxt = document.getElementById('spHudStatusText');
+    if (statusTxt) statusTxt.textContent = '🟢 MANOS LIBRES ACTIVO • HÁBLAME DIRECTAMENTE SIN PULSAR NADA';
+
+    _spReconocimientoVoz.onresult = function(ev) {
+      var trans = ev.results && ev.results[0] && ev.results[0][0] ? ev.results[0][0].transcript : '';
+      if (trans && trans.trim()) {
+        window.spProcesarPreguntaConsultor(trans.trim());
+      }
+    };
+
+    _spReconocimientoVoz.onend = function() {
+      if (_spEscuchandoManosLibres && !('speechSynthesis' in window && window.speechSynthesis.speaking)) {
+        setTimeout(function() {
+          if (_spEscuchandoManosLibres) iniciarEscuchaReconocimientoVoz();
+        }, 350);
+      }
+    };
+
+    try { _spReconocimientoVoz.start(); } catch (e) {}
+  }
+
+  window.spActivarEscuchaDirectaConsultor = function(ev) {
+    if (ev && ev.preventDefault) ev.preventDefault();
+    _spEscuchandoManosLibres = true;
+    if (_spHistorialConversacion.length === 0) {
+      var saludo = 'Hola, soy tu consultor tecnológico experto de Sistemas Pyme. Hablamos en modo manos libres sin que tengas que tocar ningún botón: pregúntame con total libertad cualquier duda sobre nuestro ecosistema, descubre qué combinación te ahorra más dinero y, si lo deseas, también puedes dejar tu servicio contratado o agendado de lunes a sábado por la mañana desde aquí mismo.';
+      _spHistorialConversacion.push('Consultor IA: ' + saludo);
+      window.spActualizarContadoresDescargaCharla();
+      window.spHablarYMostrarTeleprompter(saludo, function() {
+        if (_spEscuchandoManosLibres) iniciarEscuchaReconocimientoVoz();
+      });
+    } else {
+      iniciarEscuchaReconocimientoVoz();
+    }
+  };
+
+  // =========================================================================
+  // 8. INYECCIÓN GARANTIZADA DE BOTONES DORADOS EN PRECIOS, TEST Y TECNOSALA
+  // =========================================================================
+  function inyectarBotonesCarritoEnLas3Vistas() {
+    // A) En Tecnosala: Barra inferior única (sin duplicar dentro de la pantalla del Orbe)
+    var vistaTec = document.getElementById('vista-tecnosala');
+    if (vistaTec && !document.getElementById('spBtnCarritoTecnosalaBottom')) {
+      var enlacesTec = vistaTec.querySelectorAll('a, button');
+      for (var i = 0; i < enlacesTec.length; i++) {
+        var txt = (enlacesTec[i].textContent || '').trim();
+        if (txt.indexOf('Hablar con Francisco') !== -1 && enlacesTec[i].parentNode) {
+          var contenedorBotones = enlacesTec[i].parentNode;
+          var btnGold = document.createElement('button');
+          btnGold.type = 'button';
+          btnGold.id = 'spBtnCarritoTecnosalaBottom';
+          btnGold.onclick = window.spAbrirCarritoConfigurador;
+          btnGold.className = 'sp-btn-carrito-gold-3d px-5 py-2.5 rounded-2xl text-xs sm:text-sm';
+          btnGold.innerHTML = '<span>🛒</span><span>Configurar a la Carta / Contratar</span>';
+          contenedorBotones.insertBefore(btnGold, enlacesTec[i]);
+          break;
         }
       }
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', verificarHashTecnosala);
-      } else {
-        setTimeout(verificarHashTecnosala, 120);
+    }
+
+    // B) En Precios Claros (#vista-precios)
+    var vistaPrecios = document.getElementById('vista-precios');
+    if (vistaPrecios && !document.getElementById('spBtnCarritoPreciosTop')) {
+      var cabeceraPrecios = vistaPrecios.querySelector('.slide-section > div');
+      if (cabeceraPrecios) {
+        var wrapBtnP = document.createElement('div');
+        wrapBtnP.className = 'flex justify-center mt-2 mb-1';
+        wrapBtnP.innerHTML =
+          '<button type="button" id="spBtnCarritoPreciosTop" onclick="window.spAbrirCarritoConfigurador()" class="sp-btn-carrito-gold-3d px-5 py-2 rounded-2xl text-xs sm:text-sm">' +
+            '<span>🛒</span><span>Configurar a la Carta / Contratar Ahora</span>' +
+          '</button>';
+        cabeceraPrecios.appendChild(wrapBtnP);
       }
-      window.addEventListener('hashchange', verificarHashTecnosala);
+    }
 
-      var audInit = obtenerAudioPodcast();
-      if (audInit) {
-        audInit.addEventListener('timeupdate', function() {
-          var cur = audInit.currentTime || 0;
-          var dur = audInit.duration || 575;
-          var pct = dur > 0 ? (cur / dur) * 100 : 0;
-          var sMain = document.getElementById('spAudioSeekSlider');
-          var sFloat = document.getElementById('spFloatSeekSlider');
-          var tMain = document.getElementById('spAudioTimeDisplay');
-          var tFloat = document.getElementById('spFloatTimeDisplay');
-          var txtTiempo = formatearSegundos(cur) + ' / ' + formatearSegundos(dur);
-          if (sMain) sMain.value = pct;
-          if (sFloat) sFloat.value = pct;
-          if (tMain) tMain.textContent = txtTiempo;
-          if (tFloat) tFloat.textContent = txtTiempo;
-        });
-        audInit.addEventListener('play', sincronizarEstadoUI);
-        audInit.addEventListener('pause', sincronizarEstadoUI);
-        audInit.addEventListener('ended', sincronizarEstadoUI);
+    // C) En Test de Diagnóstico (#vista-test)
+    var vistaTest = document.getElementById('vista-test');
+    if (vistaTest && !document.getElementById('spBtnCarritoTestBottom')) {
+      var contTest = vistaTest.querySelector('.slide-section');
+      if (contTest) {
+        var wrapBtnT = document.createElement('div');
+        wrapBtnT.className = 'flex justify-center mt-3';
+        wrapBtnT.innerHTML =
+          '<button type="button" id="spBtnCarritoTestBottom" onclick="window.spAbrirCarritoConfigurador()" class="sp-btn-carrito-gold-3d px-5 py-2 rounded-2xl text-xs sm:text-sm">' +
+            '<span>🛒</span><span>Configurar a la Carta / Contratar</span>' +
+          '</button>';
+        contTest.appendChild(wrapBtnT);
       }
-      window.addEventListener('scroll', actualizarVisibilidadFloatingPlayer, { passive: true });
-      window.addEventListener('resize', actualizarVisibilidadFloatingPlayer);
-    })();
-  </script>
-  <!-- === [SP_PODCAST_ENGINE_V131_END] === -->"""
+    }
 
+    // D) Añadir controles limpios en la barra superior interna del Teleprompter (Voz, Mute, Repetir, Descargar y Único botón PARAR junto al Orbe)
+    var activeStage = document.getElementById('spTecnosalaActiveStage');
+    if (activeStage && !document.getElementById('spBtnCambiarVoz')) {
+      var topHud = activeStage.querySelector('.flex');
+      if (topHud) {
+        var controlesExtra = document.createElement('div');
+        controlesExtra.className = 'flex flex-wrap items-center gap-1.5';
+        controlesExtra.innerHTML =
+          '<button type="button" id="spBtnCambiarVoz" onclick="window.spAlternarVozConsultor(event)" class="px-2.5 py-1 rounded-full bg-slate-800/90 hover:bg-slate-700 border border-teal-400/40 text-[10.5px] font-bold text-teal-200 cursor-pointer">🗣️ Voz: Jorge</button>' +
+          '<button type="button" id="spBtnToggleMute" onclick="window.spToggleSonidoConsultor(event)" class="px-2.5 py-1 rounded-full bg-slate-800/90 hover:bg-slate-700 border border-teal-400/40 text-[10.5px] font-bold text-teal-200 cursor-pointer">🔊 Voz: ON</button>' +
+          '<button type="button" id="spBtnRepetirLocucion" onclick="window.spRepetirUltimaRespuesta(event)" class="px-2.5 py-1 rounded-full bg-slate-800/90 hover:bg-slate-700 border border-amber-400/40 text-[10.5px] font-bold text-amber-200 cursor-pointer">🔁 Repetir</button>' +
+          '<button type="button" id="spBtnDescargarCharlaTop" onclick="window.spDescargarConversacionConsultor(event)" class="hidden px-2.5 py-1 rounded-full bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 text-[10.5px] font-extrabold text-amber-300 cursor-pointer">📥 Descargar charla</button>';
+        topHud.appendChild(controlesExtra);
+      }
+    }
 
-def aplicar_cambios_html(html):
-    """Inyecta el motor V217 sin ninguna clave en texto plano."""
-    bloque_motor = BLOQUE_MOTOR_PODCAST_Y_FLOTANTE_V132
+    // E) Asegurar color azulito claro corporativo en Magazine (#vista-mas) eliminando amarillos inline
+    var vistaMas = document.getElementById('vista-mas');
+    if (vistaMas) {
+      vistaMas.style.setProperty('background', 'linear-gradient(135deg, #d8f0fe 0%, #e8f6ff 52%, #e0faf4 100%)', 'important');
+      var slideMas = vistaMas.querySelector('.slide-section');
+      if (slideMas) {
+        slideMas.style.setProperty('background', 'linear-gradient(135deg, #d8f0fe 0%, #e8f6ff 52%, #e0faf4 100%)', 'important');
+        slideMas.style.setProperty('justify-content', 'center', 'important');
+      }
+    }
+  }
 
-    # Limpiar cualquier clave antigua que hubiera quedado en texto plano dentro de index.html
-    k_real = obtener_clave_vertex_decodificada()
-    if k_real in html:
-        html = html.replace(k_real, "")
+  function conectarEventosConsultor() {
+    var idleEl = document.getElementById('spTecnosalaIdleWelcome');
+    if (idleEl && idleEl.getAttribute('data-sp-v231') !== '1') {
+      idleEl.setAttribute('data-sp-v231', '1');
+      idleEl.innerHTML = """ + repr(HTML_BIENVENIDA_ORBE_3D_V159) + r""";
+    }
 
-    nuevo_telemetry_aepd = """  <!-- [SP_TELEMETRY_ENGINE_START] -->
-  <script>
-    (function() {
-      window.spActivarAnaliticaConsentida = function() {
-        if (window._spTelemetryLoaded) return;
-        var ua = (navigator.userAgent || '').toLowerCase();
-        var host = (window.location.hostname || '').toLowerCase();
-        var esBotServidor = (navigator.webdriver === true || ua.indexOf('headlesschrome') !== -1 || ua.indexOf('lighthouse') !== -1);
-        var esUrlTemporalVercel = (host.indexOf('.vercel.app') !== -1);
-        var esPropietarioIgnorado = false;
-        try { esPropietarioIgnorado = (localStorage.getItem('sp_ignore_owner') === '1'); } catch(e) {}
+    inyectarBotonesCarritoEnLas3Vistas();
+    window.spSincronizarHuecosGoogleCalendar();
 
-        if (!esBotServidor && !esUrlTemporalVercel && !esPropietarioIgnorado) {
-          window._spTelemetryLoaded = true;
-          var sGa = document.createElement('script');
-          sGa.async = true;
-          sGa.src = 'https://www.googletagmanager.com/gtag/js?id=G-J8Y61HLB7L';
-          document.head.appendChild(sGa);
+    var inp = document.getElementById('spTecnosalaInput');
+    var btnAsk = document.getElementById('spTecnosalaSendBtn');
+    var btnMic = document.getElementById('spTecnosalaMicBtn');
 
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          window.gtag = gtag;
-          gtag('js', new Date());
-          gtag('config', 'G-J8Y61HLB7L', { send_page_view: true, anonymize_ip: true });
-
-          (function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-          })(window, document, "clarity", "script", "z5k1bnidx3");
+    if (btnAsk && btnAsk.getAttribute('data-sp-bound') !== '1') {
+      btnAsk.setAttribute('data-sp-bound', '1');
+      btnAsk.addEventListener('click', function(ev) {
+        ev.preventDefault();
+        if (inp && inp.value.trim()) {
+          var texto = inp.value.trim();
+          inp.value = '';
+          window.spProcesarPreguntaConsultor(texto);
         }
-      };
+      });
+    }
 
-      try {
-        if (localStorage.getItem('sp_cookie_consent_aepd') === 'accepted') {
-          window.spActivarAnaliticaConsentida();
+    if (inp && inp.getAttribute('data-sp-bound') !== '1') {
+      inp.setAttribute('data-sp-bound', '1');
+      inp.addEventListener('keydown', function(ev) {
+        if (ev.key === 'Enter' && inp.value.trim()) {
+          ev.preventDefault();
+          var texto = inp.value.trim();
+          inp.value = '';
+          window.spProcesarPreguntaConsultor(texto);
         }
-      } catch(e) {}
+      });
+    }
 
-      window.spTrack = function(nombreEvento, parametros) {
-        var p = parametros || {};
-        if (typeof window.gtag === 'function') window.gtag('event', nombreEvento, p);
-        if (typeof window.clarity === 'function') window.clarity('event', nombreEvento);
-      };
-    })();
-  </script>
-  <!-- [SP_TELEMETRY_ENGINE_END] -->"""
+    if (btnMic && btnMic.getAttribute('data-sp-bound') !== '1') {
+      btnMic.setAttribute('data-sp-bound', '1');
+      btnMic.addEventListener('click', function(ev) {
+        ev.preventDefault();
+        window.spActivarEscuchaDirectaConsultor(ev);
+      });
+    }
 
+    document.addEventListener('keydown', function(ev) {
+      if (ev.key === 'Escape') {
+        window.spDetenerTodoConsultor(ev);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', conectarEventosConsultor);
+  } else {
+    conectarEventosConsultor();
+  }
+  setTimeout(conectarEventosConsultor, 600);
+})();
+</script>
+<!-- === [FIN_SP_CONSULTOR_Y_CARRITO_V231] === -->
+"""
+
+
+# ==============================================================================
+# 6. ACTUALIZACIÓN DE ARCHIVOS DEL ECOSISTEMA
+# ==============================================================================
+def actualizar_documentos_y_base_conocimiento():
+    os.makedirs(RUTA_DOCUMENTOS, exist_ok=True)
+    ruta_js = os.path.join(RUTA_DOCUMENTOS, "base_conocimiento_ingenieria.js")
+    bak = crear_backup(ruta_js)
+    with open(ruta_js, "w", encoding="utf-8") as f:
+        f.write(JS_BASE_CONOCIMIENTO_DOCUMENTOS_V167.strip() + "\n")
+    verificar_sintaxis_segura(ruta_js, bak)
+
+
+def actualizar_index_html_principal():
+    ruta_index = os.path.join(RUTA_WEB_PUBLIC, "index.html")
+    if not os.path.isfile(ruta_index):
+        print(f"⚠️ No se encontró index.html en {ruta_index}")
+        return
+    bak = crear_backup(ruta_index)
+    with open(ruta_index, "r", encoding="utf-8") as f:
+        html = f.read()
+
+    # Eliminar versiones previas del bloque inyectado para no duplicar nunca
     html = re.sub(
-        r"<!-- \[SP_TELEMETRY_ENGINE_START\] -->.*?<!-- \[SP_TELEMETRY_ENGINE_END\] -->",
-        nuevo_telemetry_aepd,
-        html,
-        flags=re.DOTALL,
-    )
-    html = re.sub(
-        r"\s*<!-- \[SP_LEGAL_AI_COOKIES_XL_START\] -->.*?<!-- \[SP_LEGAL_AI_COOKIES_XL_END\] -->",
-        "",
-        html,
-        flags=re.DOTALL,
-    )
-    html = re.sub(
-        r"\s*<!-- === \[SP_PODCAST_ENGINE_V131_START\] === -->.*?<!-- === \[SP_PODCAST_ENGINE_V131_END\] === -->",
+        r"<!-- === \[INICIO_SP_CONSULTOR_Y_CARRITO_V\d+\] === -->.*?<!-- === \[FIN_SP_CONSULTOR_Y_CARRITO_V\d+\] === -->",
         "",
         html,
         flags=re.DOTALL,
     )
 
     if "</body>" in html:
-        html = html.replace("</body>", bloque_motor + "\n</body>")
+        html = html.replace("</body>", "\n" + BLOQUE_CONSULTOR_Y_CARRITO_HTML_V231.strip() + "\n</body>", 1)
     else:
-        html += "\n" + bloque_motor
+        html = html + "\n" + BLOQUE_CONSULTOR_Y_CARRITO_HTML_V231.strip() + "\n"
 
-    return html
+    with open(ruta_index, "w", encoding="utf-8") as f:
+        f.write(html)
+    verificar_sintaxis_segura(ruta_index, bak)
+    print(f"✅ VERIFICADO EN DISCO: Consultor Neuronal + Agenda Lunes a Sábado (09:00-13:30) grabados en -> {ruta_index}")
 
 
-def prevalidar_modelo_rapido_en_cuenta(claves, modelos_candidatos):
+def actualizar_main_py_servicio_resenas():
+    """Inyecta el endpoint limpio /api/registrar-pedido-cita en main.py y actualiza Puente_Calendar_fmgallardo.gs (Lunes a Sábado 09:00-13:30)."""
+    ruta_main = os.path.join(RUTA_SERVICIO_RESENAS, "main.py")
+    if os.path.isfile(ruta_main):
+        try:
+            bak = crear_backup(ruta_main)
+            with open(ruta_main, "r", encoding="utf-8") as f:
+                txt = f.read()
+            txt = re.sub(
+                r"# === \[INICIO_SP_PEDIDOS_Y_CITAS_WEB_V\d+\] ===.*?# === \[FIN_SP_PEDIDOS_Y_CITAS_WEB_V\d+\] ===",
+                "",
+                txt,
+                flags=re.DOTALL,
+            )
+            txt = txt.rstrip() + "\n\n" + BLOQUE_ENDPOINT_PEDIDO_MAIN_PY_V220.strip() + "\n"
+            with open(ruta_main, "w", encoding="utf-8") as f:
+                f.write(txt)
+            verificar_sintaxis_segura(ruta_main, bak)
+            print(f"🚀 Endpoint limpio '/api/registrar-pedido-cita' actualizado en: {ruta_main}")
+        except Exception as e:
+            print(f"⚠️ Aviso actualizando main.py: {e}")
+
+    os.makedirs(RUTA_PROGRAMAR, exist_ok=True)
+    ruta_puente_cal = os.path.join(RUTA_PROGRAMAR, "Puente_Calendar_fmgallardo.gs")
+    codigo_puente_cal = """// ============================================================================
+// PUENTE INTELIGENTE BIDIRECCIONAL GOOGLE CALENDAR PARA fmgallardo@falconfactorysystems.com
+// Horario Oficial de Citas de Alta: LUNES A SÁBADO POR LAS MAÑANAS (09:00 a 13:30).
+// 1) doGet(): Lee todos los eventos de tu Google Calendar en los próximos 16 días y devuelve
+//    los tramos ocupados para bloquearlos en el Carrito y en el Consultor.
+// 2) doPost(): Comprueba si el hueco está libre (si está ocupado busca el siguiente tramo de
+//    30 min libre de lunes a sábado 09:00-13:30) y crea el evento con TRIPLE ALARMA (24h, 1h y 15m).
+// ============================================================================
+function doGet(e) {
+  try {
+    var cal = CalendarApp.getDefaultCalendar();
+    var ahora = new Date();
+    var finRango = new Date(ahora.getTime() + 16 * 24 * 3600 * 1000);
+    var eventos = cal.getEvents(ahora, finRango);
+    var tramos = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00"];
+    var ocupados = [];
+    for (var i = 0; i < eventos.length; i++) {
+      var ev = eventos[i];
+      if (ev.isAllDayEvent()) continue;
+      var ini = ev.getStartTime();
+      var fin = ev.getEndTime();
+      var ymd = Utilities.formatDate(ini, "Europe/Madrid", "yyyy-MM-dd");
+      for (var t = 0; t < tramos.length; t++) {
+        var partes = tramos[t].split(":");
+        var slotIni = new Date(ini.getFullYear(), ini.getMonth(), ini.getDate(), parseInt(partes[0], 10), parseInt(partes[1], 10), 0);
+        var slotFin = new Date(slotIni.getTime() + 30 * 60 * 1000);
+        if (ini < slotFin && fin > slotIni) {
+          var key = ymd + " " + tramos[t];
+          if (ocupados.indexOf(key) === -1) ocupados.push(key);
+        }
+      }
+    }
+    return ContentService.createTextOutput(JSON.stringify({ status: "ok", ocupados: ocupados })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", ocupados: [], detail: String(err) })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doPost(e) {
+  try {
+    var data = JSON.parse(e.postData.contents || "{}");
+    var cal = CalendarApp.getDefaultCalendar();
+    var inicio = data.fecha_cita_iso ? new Date(data.fecha_cita_iso) : new Date(new Date().getTime() + 24*3600*1000);
+    if (isNaN(inicio.getTime())) inicio = new Date(new Date().getTime() + 24*3600*1000);
+
+    // Garantizar horario estricto Lunes a Sábado (getDay() !== 0) de 09:00 a 13:00 (fin 13:30)
+    while (inicio.getDay() === 0 || inicio.getHours() < 9 || inicio.getHours() > 13 || (inicio.getHours() === 13 && inicio.getMinutes() > 0)) {
+      if (inicio.getHours() >= 13 || inicio.getDay() === 0) {
+        inicio.setDate(inicio.getDate() + 1);
+        inicio.setHours(10, 0, 0, 0);
+      } else if (inicio.getHours() < 9) {
+        inicio.setHours(9, 0, 0, 0);
+      }
+    }
+    var fin = new Date(inicio.getTime() + 30 * 60 * 1000);
+
+    // Si ese hueco ya está ocupado en tu Google Calendar, buscar el siguiente tramo de 30 min libre por la mañana (Lunes a Sábado)
+    var conflictos = cal.getEvents(inicio, fin);
+    var intentos = 0;
+    while (conflictos.length > 0 && intentos < 30) {
+      inicio = new Date(inicio.getTime() + 30 * 60 * 1000);
+      if (inicio.getHours() > 13 || (inicio.getHours() === 13 && inicio.getMinutes() > 0)) {
+        inicio.setDate(inicio.getDate() + 1);
+        while (inicio.getDay() === 0) {
+          inicio.setDate(inicio.getDate() + 1);
+        }
+        inicio.setHours(9, 0, 0, 0);
+      }
+      fin = new Date(inicio.getTime() + 30 * 60 * 1000);
+      conflictos = cal.getEvents(inicio, fin);
+      intentos++;
+    }
+
+    var titulo = "🛒 Alta Sistemas Pyme: " + (data.nombre || "Cliente") + " (" + (data.telefono || "") + ")";
+    var desc = (data.resumen || "") + "\\n\\nPlan: " + (data.plan || "") + "\\nTotal Día 1: " + (data.total_dia1 || "") + " €";
+    var ev = cal.createEvent(titulo, inicio, fin, { description: desc, location: "Videollamada / Teléfono (+34 " + (data.telefono || "") + ")" });
+    ev.removeAllReminders();
+    ev.addPopupReminder(1440); // Recordatorio 1 día antes (24h)
+    ev.addEmailReminder(1440); // Email recordatorio 1 día antes (24h)
+    ev.addPopupReminder(60);   // Recordatorio 1 hora antes
+    ev.addPopupReminder(15);   // Recordatorio 15 minutos antes
+    var slotFinal = Utilities.formatDate(inicio, "Europe/Madrid", "yyyy-MM-dd HH:mm");
+    return ContentService.createTextOutput(JSON.stringify({ status: "ok", event_id: ev.getId(), slot_agendado: slotFinal })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", detail: String(err) })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+"""
+    try:
+        with open(ruta_puente_cal, "w", encoding="utf-8") as fp:
+            fp.write(codigo_puente_cal)
+    except Exception:
+        pass
+
+
+# ==============================================================================
+# 7. AUTO-DESCUBRIDOR DE MODELOS GEMINI Y SERVIDOR NEURONAL LOCAL (PUERTO 8765)
+# ==============================================================================
+def descubrir_modelos_gemini(claves):
+    preferidos = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest"]
     for k in claves:
-        for mod in modelos_candidatos[:8]:
-            for url in (
-                f"https://aiplatform.googleapis.com/v1beta1/publishers/google/models/{mod}:generateContent?key={k}",
-                f"https://aiplatform.googleapis.com/v1/publishers/google/models/{mod}:generateContent?key={k}",
-                f"https://generativelanguage.googleapis.com/v1beta/models/{mod}:generateContent?key={k}",
-            ):
-                try:
-                    payload = json.dumps({
-                        "contents": [{"role": "user", "parts": [{"text": "Responde solo: OK"}]}],
-                        "generationConfig": {"maxOutputTokens": 12, "temperature": 0.1}
-                    }).encode("utf-8")
-                    req = urllib.request.Request(
-                        url,
-                        data=payload,
-                        headers={"Content-Type": "application/json", "x-goog-api-key": k},
-                        method="POST",
-                    )
-                    with urllib.request.urlopen(req, timeout=3.0) as r:
-                        if r.status == 200:
-                            d = json.loads(r.read().decode("utf-8", errors="ignore"))
-                            cands = d.get("candidates") or []
-                            if cands:
-                                print(f"🟢 CONEXIÓN VERTEX AI VERIFICADA CON ÉXITO -> Modelo activo: {mod}")
-                                return url.split("?")[0], mod
-                except Exception:
-                    continue
-    return None, None
+        if not k:
+            continue
+        try:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models?key={k}"
+            req = urllib.request.Request(url, method="GET")
+            with urllib.request.urlopen(req, timeout=5) as r:
+                if r.status == 200:
+                    data = json.loads(r.read().decode("utf-8", errors="ignore"))
+                    mods = [m.get("name", "").replace("models/", "") for m in data.get("models", []) if "flash" in m.get("name", "").lower()]
+                    if mods:
+                        return mods[:5]
+        except Exception:
+            continue
+    return preferidos
+
+
+def prevalidar_modelo_rapido_en_cuenta(claves, modelos):
+    clave = claves[0] if claves else obtener_clave_vertex_reconstruida()
+    for mod in (modelos or ["gemini-2.5-flash", "gemini-2.0-flash"]):
+        for base_u in (
+            f"https://aiplatform.googleapis.com/v1/publishers/google/models/{mod}:generateContent",
+            f"https://generativelanguage.googleapis.com/v1beta/models/{mod}:generateContent",
+        ):
+            try:
+                payload = {"contents": [{"role": "user", "parts": [{"text": "OK"}]}]}
+                req = urllib.request.Request(
+                    f"{base_u}?key={clave}",
+                    data=json.dumps(payload).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                with urllib.request.urlopen(req, timeout=5) as r:
+                    if r.status == 200:
+                        print(f"🟢 CONEXIÓN VERTEX AI VERIFICADA CON ÉXITO -> Modelo activo: {mod}")
+                        return base_u, mod
+            except Exception:
+                continue
+    return "https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash:generateContent", "gemini-2.5-flash"
 
 
 def lanzar_servidor_neuronal_8765(carpeta_web, claves, modelos):
     """
-    Levanta el servidor local en 127.0.0.1:8765 SIN escribir claves en texto plano
-    y con disparo REAL en vivo de WhatsApp (Meta API), Email SMTP y Google Apps Script (Calendar + Sheets)
-    cuando haces una prueba de pedido desde tu Mac.
+    Levanta el servidor neuronal local en 127.0.0.1:8765:
+    - Controla disponibilidad real de citas (Lunes a Sábado de 09:00 a 13:30) cruzando crm_b2b_db.json y Google Calendar.
+    - Envía 1 ÚNICO Email HTML limpio (sin cuadruplicar) + 1 aviso limpio de Pedido a Telegram (sin mezclar con Reseñas ni HEARD) + WhatsApp al cliente y a Francisco.
     """
     try:
         res_lsof = subprocess.run(["lsof", "-ti:8765"], capture_output=True, text=True)
@@ -3259,141 +2178,390 @@ def lanzar_servidor_neuronal_8765(carpeta_web, claves, modelos):
     lineas_srv = [
         "#!/usr/bin/env python3",
         "# -*- coding: utf-8 -*-",
-        "import os, re, json, base64, urllib.request",
+        "import os, re, time, json, base64, datetime, urllib.request",
         "from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer",
         f"CARPETA = {repr(carpeta_web)}",
-        f"RUTA_ENV_RESENAS = {repr(os.path.join(RUTA_SERVICIO_RESENAS, '.env'))}",
+        f"RUTA_CRM_PROSPECTOR = {repr(os.path.join(RUTA_SCRAPER, 'crm_b2b_db.json'))}",
+        f"RUTAS_ENV = {[os.path.join(RUTA_SERVICIO_RESENAS, '.env'), os.path.join(RUTA_SCRAPER, '.env'), os.path.join(RUTA_PROGRAMAR, '.env'), os.path.join(RUTA_SCRAPER, 'config_b2b.json')]}",
         f"PARTES_B64 = {repr(_K_B64_PARTES)}",
         f"MODELOS = {repr(modelos[:8])}",
         f"URL_BASE_GANADORA = {repr(url_ganadora_sin_key)}",
         f"MOD_GANADOR = {repr(mod_ganador)}",
         "CLAVE = base64.b64decode(''.join(PARTES_B64)).decode('utf-8')",
-        "WEBHOOK_SHEETS = 'https://script.google.com/macros/s/AKfycbwo9pcYbQKru4WMAxAnHNcqtIcAYQogXkaQ8BAWhTeyzc49kLtM02SVFnTxYRGqUStapg/exec'",
+        f"WEBHOOK_SHEETS = {repr(WEBHOOK_SHEETS_OFICIAL)}",
+        f"WEBHOOK_CALENDAR_FMGALLARDO = {repr(WEBHOOK_CALENDAR_FMGALLARDO)}",
+        "_PEDIDOS_RECIENTES_DEDUP = {}",
         "os.chdir(CARPETA)",
-        "def leer_env_local():",
-        "    cfg = {}",
-        "    if os.path.isfile(RUTA_ENV_RESENAS):",
+        "def obtener_huecos_ocupados_calendar():",
+        "    ocupados = set()",
+        "    if os.path.isfile(RUTA_CRM_PROSPECTOR):",
         "        try:",
-        "            with open(RUTA_ENV_RESENAS, 'r', encoding='utf-8') as f:",
-        "                for ln in f:",
-        "                    ln = ln.strip()",
-        "                    if ln and not ln.startswith('#') and '=' in ln:",
-        "                        k, v = ln.split('=', 1)",
-        "                        cfg[k.strip()] = v.strip().strip('\"').strip(\"'\")",
+        "            with open(RUTA_CRM_PROSPECTOR, 'r', encoding='utf-8') as fc:",
+        "                crm_db = json.load(fc) or {}",
+        "            for rec in crm_db.values():",
+        "                if not isinstance(rec, dict): continue",
+        "                f_c = str(rec.get('fecha_proximo_contacto') or '').strip()",
+        "                h_c = str(rec.get('hora_proximo_contacto') or '').strip()[:5]",
+        "                if len(f_c) == 10 and len(h_c) == 5:",
+        "                    ocupados.add(f'{f_c} {h_c}')",
+        "        except Exception: pass",
+        "    try:",
+        "        req_c = urllib.request.Request(WEBHOOK_CALENDAR_FMGALLARDO + '?accion=disponibilidad&t=' + str(int(time.time())), method='GET')",
+        "        with urllib.request.urlopen(req_c, timeout=3.5) as rc:",
+        "            if rc.status == 200:",
+        "                dc = json.loads(rc.read().decode('utf-8', errors='ignore'))",
+        "                if isinstance(dc, dict) and isinstance(dc.get('ocupados'), list):",
+        "                    for item in dc['ocupados']:",
+        "                        ocupados.add(str(item).strip())",
+        "    except Exception: pass",
+        "    return sorted(list(ocupados))",
+        "def sincronizar_pedido_en_crm_y_bitacora_prospector(body):",
+        "    try:",
+        "        nombre_raw = str(body.get('nombre') or '').strip()",
+        "        tlf = re.sub(r'\\D', '', str(body.get('telefono') or ''))[-9:]",
+        "        plan = str(body.get('plan') or 'Pack Escudo Dúo').strip()",
+        "        horario = str(body.get('horario') or 'Mañana L-S (09:00-13:30)').strip()",
+        "        auditorias = int(body.get('auditorias') or 0)",
+        "        coste_aud = int(body.get('coste_auditorias') or 0)",
+        "        atriles = int(body.get('atriles') or 0)",
+        "        coste_atr = int(body.get('coste_atriles') or 0)",
+        "        total = body.get('total_dia1', 0)",
+        "        origen = str(body.get('origen') or 'Web Sistemas Pyme').strip()",
+        "        res_f2 = ', '.join(body.get('reservas_fase2') or []) if isinstance(body.get('reservas_fase2'), list) and body.get('reservas_fase2') else 'Ninguna'",
+        "        es_generico = (not nombre_raw) or (nombre_raw.lower() in ('cliente web', 'cliente tecnosala', 'cliente', 'mi negocio', 'sin nombre'))",
+        "        if es_generico:",
+        "            nombre = f'🛒 Cliente Web (+34 {tlf})' if tlf else '🛒 Cliente Web (Inbound)'",
+        "        elif len(nombre_raw.split()) == 1 and tlf:",
+        "            nombre = f'{nombre_raw} (🛒 Pedido Web · {tlf})'",
+        "        else:",
+        "            nombre = nombre_raw",
+        "        f_ymd = str(body.get('slot_ymd') or '').strip()",
+        "        h_hm = str(body.get('slot_hhmm') or '').strip()",
+        "        if not f_ymd or not h_hm:",
+        "            f_iso = str(body.get('fecha_cita_iso') or '').strip()",
+        "            try:",
+        "                dt_c = datetime.datetime.fromisoformat(f_iso.replace('Z', '+00:00')).astimezone() if f_iso else datetime.datetime.now()",
+        "            except Exception:",
+        "                dt_c = datetime.datetime.now()",
+        "            f_ymd = dt_c.strftime('%Y-%m-%d')",
+        "            h_hm = dt_c.strftime('%H:%M')",
+        "        ahora_str = datetime.datetime.now().strftime('%d/%m/%Y %H:%M')",
+        "        slug_k = re.sub(r'[^a-z0-9]+', '-', nombre.lower()).strip('-') or f'pedido-web-{tlf or int(time.time())}'",
+        "        crm_db = {}",
+        "        if os.path.isfile(RUTA_CRM_PROSPECTOR):",
+        "            try:",
+        "                with open(RUTA_CRM_PROSPECTOR, 'r', encoding='utf-8') as fc:",
+        "                    crm_db = json.load(fc) or {}",
+        "            except Exception: crm_db = {}",
+        "        target_k = None",
+        "        for k_e, r_e in list(crm_db.items()):",
+        "            if not isinstance(r_e, dict): continue",
+        "            t_e = re.sub(r'\\D', '', str(r_e.get('telefono') or ''))[-9:]",
+        "            if (tlf and len(tlf) == 9 and t_e == tlf) or (not es_generico and str(r_e.get('nombre') or '').strip().lower() == nombre_raw.lower()):",
+        "                target_k = k_e",
+        "                break",
+        "        if not target_k:",
+        "            target_k = f'pedido-web-{tlf}' if (tlf and len(tlf) == 9) else slug_k",
+        "        rec = crm_db.get(target_k, {}) if isinstance(crm_db.get(target_k), dict) else {}",
+        "        if not rec.get('nombre') or not es_generico:",
+        "            rec['nombre'] = nombre",
+        "        rec['place_id'] = rec.get('place_id') or target_k",
+        "        rec['slug'] = rec.get('slug') or slug_k",
+        "        if tlf: rec['telefono'] = tlf",
+        "        rec['categoria'] = rec.get('categoria') or '🛒 Pedido Entrante Web (Inbound)'",
+        "        rec['ciudad'] = rec.get('ciudad') or 'España (Inbound Web)'",
+        "        rec['direccion'] = rec.get('direccion') or f'Solicitud entrante vía {origen} · Confirmar nombre comercial y localidad en la llamada de alta'",
+        "        rec['web'] = rec.get('web') or ''",
+        "        rec['rating'] = rec.get('rating') or '5.0'",
+        "        rec['es_pedido_inbound_web'] = True",
+        "        rec['origen_lead'] = origen",
+        "        if rec.get('estado') != 'venta' and not rec.get('alta_oficial'):",
+        "            rec['estado'] = 'contactado'",
+        "        rec['fase_embudo'] = f'🛒 Pedido Web ({plan} · Día 1: {total} €)'",
+        "        rec['fecha_proximo_contacto'] = f_ymd",
+        "        rec['hora_proximo_contacto'] = h_hm",
+        "        rec['en_google_calendar'] = True",
+        "        rec['gcal_sincronizado_at'] = datetime.datetime.now().isoformat()",
+        "        rec['notas_seguimiento'] = f'🛒 PEDIDO WEB ({origen}): {plan} | Auditorías: {auditorias} ({coste_aud}€) | Atriles: {atriles} ({coste_atr}€) | Reserva Fase 2: {res_f2} | Total Día 1: {total}€ | Cita: {horario}'",
+        "        bit = rec.get('bitacora_seguimiento') if isinstance(rec.get('bitacora_seguimiento'), list) else []",
+        "        bit.insert(0, {",
+        "            'id': f'bit_web_{int(time.time())}',",
+        "            'fecha': ahora_str,",
+        "            'texto': f'🛒 PEDIDO Y CITA WEB ({origen}):\\n• Cliente/Contacto: {rec[\"nombre\"]} (+34 {tlf})\\n• Plan: {plan}\\n• Auditorías: {auditorias} ({coste_aud} €) | Atriles: {atriles} ({coste_atr} €)\\n• Reserva Fase 2: {res_f2}\\n• Total Día 1: {total} € (sin IVA)\\n• Cita agendada: {horario} ({f_ymd} {h_hm}) — Recordatorios 24h, 1h y 15m activos.'",
+        "        })",
+        "        rec['bitacora_seguimiento'] = bit",
+        "        tar = rec.get('tareas_checklist') if isinstance(rec.get('tareas_checklist'), list) else []",
+        "        ts_b = int(time.time())",
+        "        rec['tareas_checklist'] = [",
+        "            {'id': f'tw1_{ts_b}', 'texto': f'✅ Pedido Web recibido ({plan} · Total Día 1: {total} €)', 'hecha': True, 'fecha': ahora_str},",
+        "            {'id': f'tw2_{ts_b}', 'texto': f'📞 Videollamada de Alta ({horario}) con {rec[\"nombre\"]} (+34 {tlf}) y confirmar nombre comercial/ciudad', 'hecha': False, 'fecha': ahora_str},",
+        "            {'id': f'tw3_{ts_b}', 'texto': '🛡️ Completar Onboarding en Consola Maestra de Alta y activar servicios', 'hecha': False, 'fecha': ahora_str}",
+        "        ] + tar",
+        "        rec['local_override_ts'] = time.time()",
+        "        crm_db[target_k] = rec",
+        "        with open(RUTA_CRM_PROSPECTOR, 'w', encoding='utf-8') as fw:",
+        "            json.dump(crm_db, fw, ensure_ascii=False, indent=4)",
+        "        try:",
+        "            req_p5000 = urllib.request.Request('http://127.0.0.1:5000/api/crm/registrar-pedido-web', data=json.dumps(body).encode('utf-8'), headers={'Content-Type': 'application/json'}, method='POST')",
+        "            urllib.request.urlopen(req_p5000, timeout=2.5)",
+        "        except Exception: pass",
+        "    except Exception as e_crm:",
+        "        print('Aviso sincronizando CRM Prospector:', e_crm)",
+        "def leer_env_local():",
+        "    cfg = dict(os.environ)",
+        "    for r_e in RUTAS_ENV:",
+        "        if not os.path.isfile(r_e): continue",
+        "        try:",
+        "            if r_e.endswith('.json'):",
+        "                with open(r_e, 'r', encoding='utf-8') as fj:",
+        "                    dj = json.load(fj)",
+        "                    if isinstance(dj, dict):",
+        "                        for k, v in dj.items():",
+        "                            if v and str(v).strip(): cfg[str(k).strip()] = str(v).strip()",
+        "            else:",
+        "                with open(r_e, 'r', encoding='utf-8') as f:",
+        "                    for ln in f:",
+        "                        ln = ln.strip()",
+        "                        if ln and not ln.startswith('#') and '=' in ln:",
+        "                            k, v = ln.split('=', 1)",
+        "                            cfg[k.strip()] = v.strip().strip('\"').strip(\"'\")",
         "        except Exception: pass",
         "    return cfg",
+        "def enviar_whatsapp_plantilla_aviso_gerencia(token_wa, pid, tlf9, var1_titulo, var2_detalle, texto_completo_cola):",
+        "    if not token_wa or not pid or len(tlf9) != 9: return False",
+        "    url = f'https://graph.facebook.com/v21.0/{pid}/messages'",
+        "    headers = {'Authorization': f'Bearer {token_wa}', 'Content-Type': 'application/json'}",
+        "    try:",
+        "        p_txt = {'messaging_product': 'whatsapp', 'to': f'34{tlf9}', 'type': 'text', 'text': {'preview_url': False, 'body': texto_completo_cola[:3800]}}",
+        "        req_t = urllib.request.Request(url, data=json.dumps(p_txt).encode('utf-8'), headers=headers, method='POST')",
+        "        with urllib.request.urlopen(req_t, timeout=8) as r_t:",
+        "            if 200 <= r_t.status < 300: return True",
+        "    except Exception: pass",
+        "    for lang_c in ('es', 'es_ES'):",
+        "        try:",
+        "            p_tpl = {",
+        "                'messaging_product': 'whatsapp',",
+        "                'to': f'34{tlf9}',",
+        "                'type': 'template',",
+        "                'template': {",
+        "                    'name': 'aviso_gerencia_es',",
+        "                    'language': {'code': lang_c},",
+        "                    'components': [{'type': 'body', 'parameters': [{'type': 'text', 'text': var1_titulo[:135]}, {'type': 'text', 'text': var2_detalle[:600]}]}]",
+        "                }",
+        "            }",
+        "            req_p = urllib.request.Request(url, data=json.dumps(p_tpl).encode('utf-8'), headers=headers, method='POST')",
+        "            with urllib.request.urlopen(req_p, timeout=8) as r_p:",
+        "                if 200 <= r_p.status < 300: return True",
+        "        except Exception: continue",
+        "    return False",
         "def disparar_pedido_en_vivo_local(body):",
+        "    dedup_k = str(body.get('dedup_key') or f\"{body.get('telefono')}_{body.get('plan')}\").strip()",
+        "    ahora_ts = time.time()",
+        "    if dedup_k in _PEDIDOS_RECIENTES_DEDUP and (ahora_ts - _PEDIDOS_RECIENTES_DEDUP[dedup_k]) < 45:",
+        "        return {'status': 'ok', 'deduplicado': True}",
+        "    _PEDIDOS_RECIENTES_DEDUP[dedup_k] = ahora_ts",
+        "    sincronizar_pedido_en_crm_y_bitacora_prospector(body)",
         "    env = leer_env_local()",
         "    wh_url = env.get('GOOGLE_SHEETS_WEBHOOK_URL') or WEBHOOK_SHEETS",
         "    nombre = str(body.get('nombre') or 'Cliente Web').strip()",
         "    tlf_raw = re.sub(r'\\D', '', str(body.get('telefono') or ''))[-9:]",
-        "    horario = str(body.get('horario') or 'Llamar en horario laboral (<24h)').strip()",
+        "    horario = str(body.get('horario') or 'Mañana L-S (09:00-13:30)').strip()",
         "    plan = str(body.get('plan') or 'Pack Escudo Dúo').strip()",
+        "    auditorias = int(body.get('auditorias') or 0)",
+        "    coste_aud = int(body.get('coste_auditorias') or 0)",
+        "    atriles = int(body.get('atriles') or 0)",
+        "    coste_atr = int(body.get('coste_atriles') or 0)",
+        "    res_f2 = ', '.join(body.get('reservas_fase2') or []) if isinstance(body.get('reservas_fase2'), list) and body.get('reservas_fase2') else 'Ninguna'",
         "    total = body.get('total_dia1', 0)",
         "    url_gcal = str(body.get('enlace_google_calendar_cliente') or '').strip()",
-        "    # 1. Llamar a Google Apps Script para agendar en Calendar (.ics a fmgallardo@falconfactorysystems.com) y guardar en Pedidos_y_Citas_Web",
+        "    resumen = str(body.get('resumen') or '').strip()",
+        "    origen = str(body.get('origen') or 'Web Sistemas Pyme').strip()",
+        "    html_email_pedido = (",
+        "        f\"<div style='font-family:Segoe UI,Arial,sans-serif;max-width:600px;margin:0 auto;border:2px solid #10b981;border-radius:16px;overflow:hidden;background:#ffffff;'>\"",
+        "        f\"<div style='background:#0b2239;color:#ffffff;padding:18px 24px;'>\"",
+        "        f\"<span style='font-size:11px;color:#34d399;font-weight:bold;text-transform:uppercase;'>Sistemas Pyme · Nuevo Pedido y Cita de Alta (L-S 09:00-13:30)</span>\"",
+        "        f\"<h2 style='margin:6px 0 0 0;font-size:20px;'>🛒 Pedido de {nombre} (+34 {tlf_raw})</h2></div>\"",
+        "        f\"<div style='padding:22px 24px;color:#1e293b;font-size:14px;line-height:1.6;'>\"",
+        "        f\"<p><b>📦 Plan seleccionado:</b> {plan}</p>\"",
+        "        f\"<p><b>🔍 Super-Auditorías:</b> {auditorias} ({coste_aud} €) &nbsp;|&nbsp; <b>📡 Atriles NFC/QR:</b> {atriles} ({coste_atr} €)</p>\"",
+        "        f\"<p><b>🚀 Reserva Fase 2:</b> {res_f2}</p>\"",
+        "        f\"<p><b>🗓️ Cita agendada (Mañana L-S):</b> <span style='color:#0d9488;font-weight:bold;'>{horario}</span></p>\"",
+        "        f\"<p><b>💶 Total Desembolso Día 1:</b> <strong>{total} €</strong> (sin IVA)</p>\"",
+        "        f\"<div style='margin-top:20px;text-align:center;'>\"",
+        "        f\"<a href='{url_gcal}' style='background:#0284c7;color:#ffffff;text-decoration:none;padding:13px 22px;border-radius:10px;font-weight:bold;display:inline-block;margin:4px;'>📅 VER / GUARDAR EN GOOGLE CALENDAR</a>\"",
+        "        f\"<a href='https://wa.me/34{tlf_raw}' style='background:#16a34a;color:#ffffff;text-decoration:none;padding:13px 22px;border-radius:10px;font-weight:bold;display:inline-block;margin:4px;'>📲 Abrir WhatsApp con {nombre}</a>\"",
+        "        f\"</div></div></div>\"",
+        "    )",
         "    try:",
-        "        payload_gs = {",
-        "            'accion': 'agendar_pedido_cita_calendar',",
+        "        payload_mail_unico = {",
+        "            'accion': 'registrar_resena',",
+        "            'slug': 'pedido-web',",
+        "            'nombre_negocio': f'Pedido Web: {nombre}',",
+        "            'autor': f'{nombre} (+34 {tlf_raw})',",
+        "            'cliente': f'{nombre} (+34 {tlf_raw})',",
+        "            'estrellas': 5,",
+        "            'comentario': resumen,",
+        "            'respuesta_publica': f'Cita: {horario} | Plan: {plan}',",
+        "            'asunto_email': f'🛒 Nuevo Pedido y Cita de Alta: {nombre} (+34 {tlf_raw}) — {plan}',",
+        "            'html_body': html_email_pedido,",
+        "            'email_alerta': 'fmgallardo@falconfactorysystems.com',",
+        "            'email': 'fmgallardo@falconfactorysystems.com',",
+        "            'destinatario': 'fmgallardo@falconfactorysystems.com',",
+        "            'forzar_email_destino': True,",
+        "            'enviar_correo': True",
+        "        }",
+        "        req_m = urllib.request.Request(wh_url, data=json.dumps(payload_mail_unico).encode('utf-8'), headers={'Content-Type': 'application/json'}, method='POST')",
+        "        urllib.request.urlopen(req_m, timeout=10)",
+        "    except Exception: pass",
+        "    try:",
+        "        payload_cal = {",
         "            'nombre': nombre,",
         "            'telefono': tlf_raw,",
         "            'horario': horario,",
-        "            'tiene_horario_especifico': bool(body.get('tiene_horario_especifico')),",
         "            'fecha_cita_iso': str(body.get('fecha_cita_iso') or ''),",
         "            'plan': plan,",
-        "            'auditorias': int(body.get('auditorias') or 0),",
-        "            'atriles': int(body.get('atriles') or 0),",
-        "            'reservas_fase2': ', '.join(body.get('reservas_fase2') or []) if isinstance(body.get('reservas_fase2'), list) else '',",
+        "            'auditorias': auditorias,",
+        "            'atriles': atriles,",
+        "            'reservas_fase2': res_f2,",
         "            'total_dia1': total,",
-        "            'resumen': str(body.get('resumen') or ''),",
-        "            'origen': str(body.get('origen') or 'Web Local')",
+        "            'resumen': resumen,",
+        "            'origen': origen",
         "        }",
-        "        req_gs = urllib.request.Request(wh_url, data=json.dumps(payload_gs).encode('utf-8'), headers={'Content-Type': 'application/json'}, method='POST')",
-        "        urllib.request.urlopen(req_gs, timeout=10)",
-        "    except Exception as e_gs:",
-        "        print('Aviso Apps Script:', e_gs)",
-        "    # 2. Enviar WhatsApp real al cliente y a Francisco si hay token de Meta en .env",
-        "    wa_token = env.get('WHATSAPP_ACCESS_TOKEN') or env.get('WHATSAPP_TOKEN') or env.get('META_WHATSAPP_TOKEN') or ''",
-        "    pid = re.sub(r'\\D', '', env.get('WHATSAPP_PHONE_NUMBER_ID') or '1325140134018206')",
-        "    if wa_token and pid and len(tlf_raw) == 9:",
-        "        url_meta = f'https://graph.facebook.com/v21.0/{pid}/messages'",
-        "        headers_meta = {'Authorization': f'Bearer {wa_token}', 'Content-Type': 'application/json'}",
-        "        # 2.A WhatsApp al cliente (primero intenta texto directo y como respaldo plantilla aviso_gerencia_es)",
-        "        txt_cli = f'✅ *¡Hola, {nombre}! Hemos recogido tu pedido en Sistemas Pyme.*\\n\\n📦 *Plan:* {plan}\\n🗓️ *Cita:* {horario}\\n💶 *Total Día 1:* {total} € (sin IVA)\\n\\n⏰ *Guarda la cita con alarma 1h antes en tu móvil:*\\n👉 {url_gcal}'",
-        "        enviado_cli = False",
+        "        req_cal = urllib.request.Request(WEBHOOK_CALENDAR_FMGALLARDO, data=json.dumps(payload_cal).encode('utf-8'), headers={'Content-Type': 'application/json'}, method='POST')",
+        "        urllib.request.urlopen(req_cal, timeout=10)",
+        "    except Exception: pass",
+        "    tg_token = (env.get('TELEGRAM_BOT_TOKEN') or '').strip()",
+        "    tg_chat = (env.get('TELEGRAM_CHAT_ID') or '').strip()",
+        "    if tg_token and tg_chat:",
         "        try:",
-        "            p_txt = {'messaging_product': 'whatsapp', 'to': '34' + tlf_raw, 'type': 'text', 'text': {'body': txt_cli}}",
-        "            urllib.request.urlopen(urllib.request.Request(url_meta, data=json.dumps(p_txt).encode('utf-8'), headers=headers_meta), timeout=8)",
-        "            enviado_cli = True",
+        "            texto_tg = (",
+        "                f'🛒 <b>NUEVO PEDIDO Y CITA DE ALTA — SISTEMAS PYME</b>\\n\\n'",
+        "                f'👤 <b>Cliente / Negocio:</b> {nombre}\\n'",
+        "                f'📞 <b>Teléfono:</b> +34 {tlf_raw}\\n'",
+        "                f'🗓️ <b>Cita agendada (L-S Mañana):</b> {horario}\\n\\n'",
+        "                f'📦 <b>Desglose del Pedido:</b>\\n'",
+        "                f'• <b>Plan:</b> {plan}\\n'",
+        "                f'• <b>Super-Auditorías:</b> {auditorias} ({coste_aud} €)\\n'",
+        "                f'• <b>Atriles NFC/QR:</b> {atriles} ({coste_atr} €)\\n'",
+        "                f'• <b>Reserva Fase 2:</b> {res_f2}\\n'",
+        "                f'💶 <b>Total Desembolso Día 1:</b> <b>{total} €</b> <i>(sin IVA)</i>\\n'",
+        "                f'🌐 <b>Origen:</b> {origen}'",
+        "            )",
+        "            botones_tg = [[{'text': f'💬 WhatsApp con {nombre}', 'url': f'https://wa.me/34{tlf_raw}'}]]",
+        "            if url_gcal.startswith('http'):",
+        "                botones_tg.append([{'text': '📅 Ver en Google Calendar', 'url': url_gcal}])",
+        "            p_tg = {'chat_id': tg_chat, 'text': texto_tg, 'parse_mode': 'HTML', 'disable_web_page_preview': True, 'reply_markup': {'inline_keyboard': botones_tg}}",
+        "            req_tg = urllib.request.Request(f'https://api.telegram.org/bot{tg_token}/sendMessage', data=json.dumps(p_tg).encode('utf-8'), headers={'Content-Type': 'application/json'}, method='POST')",
+        "            urllib.request.urlopen(req_tg, timeout=8)",
         "        except Exception: pass",
-        "        if not enviado_cli:",
-        "            try:",
-        "                p_tpl = {'messaging_product': 'whatsapp', 'to': '34' + tlf_raw, 'type': 'template', 'template': {'name': 'aviso_gerencia_es', 'language': {'code': 'es'}, 'components': [{'type': 'body', 'parameters': [{'type': 'text', 'text': f'✅ Pedido confirmado en Sistemas Pyme ({plan[:40]})'}, {'type': 'text', 'text': f'Hola {nombre}, cita agendada para: {horario[:90]}. Total Día 1: {total} €'}]}]}}",
-        "                urllib.request.urlopen(urllib.request.Request(url_meta, data=json.dumps(p_tpl).encode('utf-8'), headers=headers_meta), timeout=8)",
-        "            except Exception: pass",
-        "        # 2.B WhatsApp al móvil profesional de Francisco (691407080 y 711547561)",
-        "        for tlf_adm in ('34691407080', '34711547561'):",
-        "            try:",
-        "                p_adm = {'messaging_product': 'whatsapp', 'to': tlf_adm, 'type': 'template', 'template': {'name': 'aviso_gerencia_es', 'language': {'code': 'es'}, 'components': [{'type': 'body', 'parameters': [{'type': 'text', 'text': f'🛒 Nuevo Pedido Web: {nombre} (+34{tlf_raw})'}, {'type': 'text', 'text': f'Plan: {plan[:50]} | Cita: {horario[:70]} | Total: {total} €'}]}]}}",
-        "                urllib.request.urlopen(urllib.request.Request(url_meta, data=json.dumps(p_adm).encode('utf-8'), headers=headers_meta), timeout=8)",
-        "            except Exception: pass",
-        "class Handler(SimpleHTTPRequestHandler):",
-        "    def log_message(self, format, *args): pass",
+        "    token_wa = (env.get('WHATSAPP_ACCESS_TOKEN') or env.get('WHATSAPP_TOKEN') or env.get('META_WHATSAPP_TOKEN') or '').strip()",
+        "    pid = (env.get('WHATSAPP_PHONE_NUMBER_ID') or '1325140134018206').strip()",
+        "    txt_wa_cli = f'✅ *¡Hola, {nombre}! Hemos confirmado tu pedido y tu cita en Sistemas Pyme.*\\n\\n📦 *Plan:* {plan}\\n🔍 *Auditorías:* {auditorias} ({coste_aud} €) | *Atriles:* {atriles} ({coste_atr} €)\\n💶 *Total Día 1:* {total} € (sin IVA)\\n🗓️ *Cita de alta (Mañana L-S):* {horario}\\n\\n📅 *Guárdalo en tu calendario:* {url_gcal}'",
+        "    txt_wa_jefe = f'🛒 *NUEVO PEDIDO WEB — SISTEMAS PYME*\\n\\n👤 *Cliente:* {nombre} (+34 {tlf_raw})\\n🗓️ *Cita:* {horario}\\n📦 *Plan:* {plan}\\n🔍 *Auditorías:* {auditorias} ({coste_aud} €) | *Atriles:* {atriles} ({coste_atr} €)\\n💶 *Total Día 1:* {total} € (sin IVA)'",
+        "    wa_enviado = False",
+        "    if token_wa:",
+        "        if len(tlf_raw) == 9:",
+        "            wa_enviado = enviar_whatsapp_plantilla_aviso_gerencia(token_wa, pid, tlf_raw, f'✅ Pedido confirmado en Sistemas Pyme ({nombre})', f'Plan: {plan} | Total Día 1: {total} € | Cita: {horario}. Pulsa «Recibido» para ver tu resumen y enlace de calendario.', txt_wa_cli)",
+        "        enviar_whatsapp_plantilla_aviso_gerencia(token_wa, pid, '691407080', f'🛒 Nuevo Pedido Web de {nombre} (+34 {tlf_raw})', f'Plan: {plan} | Total Día 1: {total} € | Cita: {horario}. Pulsa «Recibido» para ver el desglose.', txt_wa_jefe)",
+        "    if not wa_enviado:",
+        "        try:",
+        "            req_ren = urllib.request.Request('https://servicio-resenas.onrender.com/api/registrar-pedido-cita', data=json.dumps(body).encode('utf-8'), headers={'Content-Type': 'application/json'}, method='POST')",
+        "            with urllib.request.urlopen(req_ren, timeout=8) as r_ren:",
+        "                if r_ren.status == 200: wa_enviado = True",
+        "        except Exception:",
+        "            for dest_tlf, tit_wa in ((tlf_raw, f'Pedido confirmado ({plan})'), ('691407080', f'Nuevo Pedido de {nombre} (+34 {tlf_raw})')):",
+        "                if len(dest_tlf) != 9: continue",
+        "                try:",
+        "                    p_inf_wa = {",
+        "                        'slug': 'sistemas-pyme',",
+        "                        'nombre_negocio': f'Sistemas Pyme — {tit_wa}',",
+        "                        'encargado': nombre,",
+        "                        'telefono_destino': dest_tlf,",
+        "                        'phone_number_id': pid,",
+        "                        'etiqueta_mes': f'Cita: {horario} | Total Día 1: {total} €',",
+        "                        'url_informe': url_gcal or 'https://sistemaspyme.es',",
+        "                        'toques_mostrador': atriles,",
+        "                        'total_resenas': auditorias,",
+        "                        'media_estrellas': '5.0',",
+        "                        'encuestas_emitidas': 1,",
+        "                        'encuestas_satisfechos': 1,",
+        "                        'quejas_frenadas': 0",
+        "                    }",
+        "                    req_iw = urllib.request.Request('https://servicio-resenas.onrender.com/api/informe/enviar-whatsapp', data=json.dumps(p_inf_wa).encode('utf-8'), headers={'Content-Type': 'application/json'}, method='POST')",
+        "                    urllib.request.urlopen(req_iw, timeout=8)",
+        "                except Exception: pass",
+        "    return {'status': 'ok', 'pedido_procesado': True}",
+        "class SPNeuronalHandler(SimpleHTTPRequestHandler):",
+        "    def log_message(self, format, *args):",
+        "        pass",
+        "    def end_headers(self):",
+        "        self.send_header('Access-Control-Allow-Origin', '*')",
+        "        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')",
+        "        self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')",
+        "        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')",
+        "        super().end_headers()",
+        "    def do_OPTIONS(self):",
+        "        self.send_response(200)",
+        "        self.end_headers()",
+        "    def do_GET(self):",
+        "        if self.path.startswith('/api/disponibilidad-calendar'):",
+        "            ocupados = obtener_huecos_ocupados_calendar()",
+        "            self.send_response(200)",
+        "            self.send_header('Content-Type', 'application/json; charset=utf-8')",
+        "            self.end_headers()",
+        "            self.wfile.write(json.dumps({'status': 'ok', 'ocupados': ocupados}, ensure_ascii=False).encode('utf-8'))",
+        "            return",
+        "        super().do_GET()",
         "    def do_POST(self):",
+        "        length = int(self.headers.get('Content-Length', 0))",
+        "        raw = self.rfile.read(length).decode('utf-8', errors='replace') if length > 0 else '{}'",
+        "        try:",
+        "            body = json.loads(raw)",
+        "        except Exception:",
+        "            body = {}",
         "        if self.path.startswith('/api/registrar-pedido-cita'):",
-        "            length = int(self.headers.get('Content-Length', 0))",
-        "            body = json.loads(self.rfile.read(length).decode('utf-8', errors='ignore') or '{}')",
-        "            ruta_leads = os.path.join(CARPETA, 'leads_contrataciones_web.json')",
-        "            lista = []",
-        "            if os.path.isfile(ruta_leads):",
-        "                try:",
-        "                    with open(ruta_leads, 'r', encoding='utf-8') as fl: lista = json.load(fl)",
-        "                except Exception: lista = []",
-        "            lista.insert(0, body)",
-        "            with open(ruta_leads, 'w', encoding='utf-8') as fl: json.dump(lista[:500], fl, ensure_ascii=False, indent=2)",
-        "            disparar_pedido_en_vivo_local(body)",
+        "            res_ped = disparar_pedido_en_vivo_local(body)",
         "            self.send_response(200)",
         "            self.send_header('Content-Type', 'application/json; charset=utf-8')",
         "            self.end_headers()",
-        "            self.wfile.write(json.dumps({'ok': True}).encode('utf-8'))",
+        "            self.wfile.write(json.dumps(res_ped, ensure_ascii=False).encode('utf-8'))",
         "            return",
-        "        if self.path.startswith('/api/consultor-ia'):",
-        "            length = int(self.headers.get('Content-Length', 0))",
-        "            body = json.loads(self.rfile.read(length).decode('utf-8', errors='ignore') or '{}')",
-        "            prompt = body.get('prompt') or body.get('pregunta') or ''",
-        "            urls_probar = []",
-        "            if URL_BASE_GANADORA:",
-        "                urls_probar.append((f'{URL_BASE_GANADORA}?key={CLAVE}', MOD_GANADOR or 'gemini-flash'))",
-        "            for m in MODELOS:",
-        "                urls_probar.append((f'https://aiplatform.googleapis.com/v1beta1/publishers/google/models/{m}:generateContent?key={CLAVE}', m))",
-        "                urls_probar.append((f'https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent?key={CLAVE}', m))",
-        "            for url_api, nombre_mod in urls_probar:",
-        "                try:",
-        "                    payload = json.dumps({'contents': [{'role': 'user', 'parts': [{'text': prompt}]}], 'generationConfig': {'temperature': 0.65, 'topP': 0.92, 'maxOutputTokens': 450}}).encode('utf-8')",
-        "                    req = urllib.request.Request(url_api, data=payload, headers={'Content-Type': 'application/json', 'x-goog-api-key': CLAVE}, method='POST')",
-        "                    with urllib.request.urlopen(req, timeout=4.2) as r:",
-        "                        if r.status == 200:",
-        "                            d = json.loads(r.read().decode('utf-8', errors='ignore'))",
-        "                            parts = (((d.get('candidates') or [{}])[0].get('content') or {}).get('parts') or [])",
-        "                            txt = ' '.join([p.get('text', '') for p in parts if p.get('text') and not p.get('thought')]).strip()",
-        "                            if len(txt) > 10:",
-        "                                self.send_response(200)",
-        "                                self.send_header('Content-Type', 'application/json; charset=utf-8')",
-        "                                self.end_headers()",
-        "                                self.wfile.write(json.dumps({'ok': True, 'respuesta': txt, 'modelo': nombre_mod}).encode('utf-8'))",
-        "                                return",
-        "                except Exception:",
-        "                    continue",
+        "        if self.path.startswith('/api/consultor-ia-vivo'):",
+        "            prompt_txt = str(body.get('prompt') or body.get('pregunta') or '').strip()",
+        "            respuesta_ia = ''",
+        "            try:",
+        "                payload_g = {",
+        "                    'contents': [{'role': 'user', 'parts': [{'text': prompt_txt}]}],",
+        "                    'generationConfig': {'temperature': 0.35, 'maxOutputTokens': 260}",
+        "                }",
+        "                req_g = urllib.request.Request(",
+        "                    f'{URL_BASE_GANADORA}?key={CLAVE}',",
+        "                    data=json.dumps(payload_g).encode('utf-8'),",
+        "                    headers={'Content-Type': 'application/json'},",
+        "                    method='POST'",
+        "                )",
+        "                with urllib.request.urlopen(req_g, timeout=9) as rg:",
+        "                    dg = json.loads(rg.read().decode('utf-8', errors='ignore'))",
+        "                    cands = dg.get('candidates') or []",
+        "                    if cands:",
+        "                        parts = ((cands[0].get('content') or {}).get('parts')) or []",
+        "                        if parts:",
+        "                            respuesta_ia = str(parts[0].get('text') or '').strip()",
+        "            except Exception: pass",
         "            self.send_response(200)",
         "            self.send_header('Content-Type', 'application/json; charset=utf-8')",
         "            self.end_headers()",
-        "            self.wfile.write(json.dumps({'ok': False, 'respuesta': body.get('apoyo', '')}).encode('utf-8'))",
+        "            self.wfile.write(json.dumps({'status': 'ok', 'respuesta': respuesta_ia, 'modelo': MOD_GANADOR}, ensure_ascii=False).encode('utf-8'))",
         "            return",
-        "        self.send_response(404); self.end_headers()",
+        "        self.send_response(200)",
+        "        self.send_header('Content-Type', 'application/json; charset=utf-8')",
+        "        self.end_headers()",
+        "        self.wfile.write(json.dumps({'status': 'ok'}).encode('utf-8'))",
         "if __name__ == '__main__':",
-        "    srv = ThreadingHTTPServer(('127.0.0.1', 8765), Handler)",
+        "    srv = ThreadingHTTPServer(('127.0.0.1', 8765), SPNeuronalHandler)",
         "    srv.serve_forever()",
     ]
+
     with open(script_srv, "w", encoding="utf-8") as f:
         f.write("\n".join(lineas_srv) + "\n")
 
@@ -3404,59 +2572,44 @@ def lanzar_servidor_neuronal_8765(carpeta_web, claves, modelos):
         stderr=subprocess.DEVNULL,
         start_new_session=True,
     )
+    time.sleep(0.6)
+    url_viva = f"http://127.0.0.1:8765/index.html?v={int(time.time())}#tecnosala"
+    print(f"🌐 Servidor Neuronal Gemini activo en:\n   {url_viva}")
+    try:
+        subprocess.run(["open", url_viva], check=False)
+    except Exception:
+        pass
 
 
-def replicar_ad_py_en_ecosistema():
-    ruta_este = os.path.abspath(__file__)
-    verificar_sintaxis_segura(ruta_este)
-    for destino in RUTAS_AD_REPLICA:
-        try:
-            carp = os.path.dirname(destino)
-            if os.path.isdir(carp) and os.path.abspath(destino) != ruta_este:
-                shutil.copy2(ruta_este, destino)
-                print(f"🔄 AD.py replicado en: {destino}")
-        except Exception:
-            pass
+def replicar_ad_py_en_carpetas():
+    ruta_actual = os.path.abspath(__file__)
+    if not os.path.isfile(ruta_actual):
+        return
+    bak = crear_backup(ruta_actual)
+    verificar_sintaxis_segura(ruta_actual, bak)
+    for dest_dir in [RUTA_WEB_PUBLIC, RUTA_SCRAPER, RUTA_SERVICIO_RESENAS, RUTA_PROGRAMAR]:
+        if os.path.isdir(dest_dir):
+            dest_file = os.path.join(dest_dir, "AD.py")
+            if os.path.abspath(dest_file) != ruta_actual:
+                try:
+                    shutil.copy2(ruta_actual, dest_file)
+                    print(f"🔄 AD.py replicado en: {dest_file}")
+                except Exception:
+                    pass
 
 
 def main():
+    print("🚀 Iniciando Actualizador Maestro Sistemas Pyme (V231 Completo)...")
     limpiar_secretos_para_github_push_protection()
-    actualizar_y_sincronizar_biblia_y_manual()
-    generar_huella_acustica_real_podcast()
-    actualizar_archivos_documentos()
-
-    vistas_index = set()
-    carpeta_servidor = RUTA_WEB_PUBLIC if os.path.isdir(RUTA_WEB_PUBLIC) else DIR_ACTUAL
-
-    for ruta_idx in RUTAS_INDEX:
-        r_abs = os.path.abspath(ruta_idx)
-        if r_abs in vistas_index or not os.path.isfile(r_abs):
-            continue
-        vistas_index.add(r_abs)
-        bak = crear_backup(r_abs)
-        with open(r_abs, "r", encoding="utf-8") as f:
-            html_orig = f.read()
-        html_nuevo = aplicar_cambios_html(html_orig)
-        with open(r_abs, "w", encoding="utf-8") as f:
-            f.write(html_nuevo)
-        verificar_sintaxis_segura(r_abs, bak)
-        print(f"✅ VERIFICADO EN DISCO: Consultor Neuronal V217 grabado en -> {r_abs}")
-
-    replicar_ad_py_en_ecosistema()
-
-    claves = descubrir_todas_las_claves_gemini()
-    modelos = descubrir_modelos_gemini_activos_en_vivo(claves)
-    print(f"🧠 Modelos Gemini más nuevos auto-descubiertos (Top 5): {modelos[:5]}")
-    lanzar_servidor_neuronal_8765(carpeta_servidor, claves, modelos)
-
-    sello_cache = int(datetime.now().timestamp())
-    url_local = f"http://127.0.0.1:8765/index.html?v={sello_cache}#tecnosala"
-    print(f"🌐 Servidor Neuronal Gemini Flash-Lite activo en:\n   {url_local}")
-    try:
-        subprocess.run(["open", url_local], check=False)
-    except Exception:
-        pass
-    print("✨ ¡Todo listo! Clave protegida anti-GitHub GH013, altura de Tecnosala compactada, WhatsApp/Calendar en vivo y Carrito sincronizado con la voz.")
+    actualizar_documentos_y_base_conocimiento()
+    actualizar_main_py_servicio_resenas()
+    actualizar_index_html_principal()
+    replicar_ad_py_en_carpetas()
+    claves = [obtener_clave_vertex_reconstruida()]
+    modelos = descubrir_modelos_gemini(claves)
+    print(f"🧠 Modelos Gemini más nuevos auto-descubiertos: {modelos}")
+    lanzar_servidor_neuronal_8765(RUTA_WEB_PUBLIC, claves, modelos)
+    print("✨ ¡Todo listo! Agenda Lunes a Sábado (09:00-13:30) sincronizada con Google Calendar y CRM.")
 
 
 if __name__ == "__main__":

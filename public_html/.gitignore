@@ -9,3 +9,7 @@ leads_contrataciones_web.json
 **/__pycache__/
 __pycache__/
 *.pyc
+
+.env
+*.backup_*
+*.bak
