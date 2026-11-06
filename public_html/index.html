@@ -16183,7 +16183,223 @@
               '<span><strong>Sistemas Pyme</strong> · Área de Santiago de Compostela (Galicia · Atención Nacional e Internacional)</span>' +
               '<span>Contacto directo: <strong>francisco@sistemaspyme.es</strong> · Tel: <strong>711 54 75 61</strong></span>' +
             '</div>' +
-          '</div></body></html>';
+          '</div><!-- [SP_AGENDA_CRM_WEB_SYNC_V145_START] -->
+<script>
+(function() {
+  window.SP_SLOTS_OCUPADOS_CRM = window.SP_SLOTS_OCUPADOS_CRM || new Set();
+  window.SP_ULTIMA_SYNC_AGENDA = 0;
+
+  function obtenerFechaIsoDeOpcionDia(optEl, textoFallback) {
+    if (optEl && optEl.getAttribute) {
+      var dIso = optEl.getAttribute('data-fecha-iso') || optEl.getAttribute('data-iso');
+      if (dIso && /^\d{4}-\d{2}-\d{2}$/.test(dIso)) return dIso;
+      var val = optEl.value || '';
+      var mIso = val.match(/\b(202\d-[01]\d-[0-3]\d)\b/);
+      if (mIso) return mIso[1];
+    }
+    var txt = String((optEl ? (optEl.textContent || optEl.value) : '') || textoFallback || '').toLowerCase();
+    var mIso2 = txt.match(/\b(202\d-[01]\d-[0-3]\d)\b/);
+    if (mIso2) return mIso2[1];
+
+    var meses = {
+      'enero': 1, 'ene': 1, 'febrero': 2, 'feb': 2, 'marzo': 3, 'mar': 3,
+      'abril': 4, 'abr': 4, 'mayo': 5, 'may': 5, 'junio': 6, 'jun': 6,
+      'julio': 7, 'jul': 7, 'agosto': 8, 'ago': 8, 'septiembre': 9, 'sep': 9,
+      'octubre': 10, 'oct': 10, 'noviembre': 11, 'nov': 11, 'diciembre': 12, 'dic': 12
+    };
+    var mDiaMes = txt.match(/\b([0-3]?\d)\s+de\s+([a-záéíóú]+)/i);
+    if (mDiaMes) {
+      var dd = parseInt(mDiaMes[1], 10);
+      var nomMes = mDiaMes[2].normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      var mm = meses[nomMes] || meses[nomMes.substring(0, 3)];
+      if (mm) {
+        var hoy = new Date();
+        var yyyy = hoy.getFullYear();
+        if (mm < (hoy.getMonth() + 1) && (hoy.getMonth() + 1 - mm) > 6) yyyy += 1;
+        return yyyy + '-' + String(mm).padStart(2, '0') + '-' + String(dd).padStart(2, '0');
+      }
+    }
+    return '';
+  }
+
+  function extraerHoraInicioHHMM(strHora) {
+    var m = String(strHora || '').match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);
+    if (!m) return '';
+    return String(parseInt(m[1], 10)).padStart(2, '0') + ':' + m[2];
+  }
+
+  window.spFiltrarHorasOcupadasEnSelectCarrito = function() {
+    var selDia = document.getElementById('spCartCitaDia');
+    var selHora = document.getElementById('spCartCitaHora');
+    if (!selDia || !selHora) return;
+
+    var optDiaSel = selDia.options[selDia.selectedIndex];
+    var fechaIsoSel = obtenerFechaIsoDeOpcionDia(optDiaSel, selDia.value);
+    if (!fechaIsoSel) return;
+
+    var primeraHoraLibre = null;
+    var horaActualBloqueada = false;
+
+    for (var i = selHora.options.length - 1; i >= 0; i--) {
+      var optH = selHora.options[i];
+      var hInicio = extraerHoraInicioHHMM(optH.value || optH.textContent);
+      if (!hInicio) continue;
+
+      if (!optH.getAttribute('data-label-original')) {
+        optH.setAttribute('data-label-original', optH.textContent.replace(/^⛔\s*/, '').replace(/\s*\(Ocupado.*\)$/i, '').trim());
+      }
+      var labelLimpio = optH.getAttribute('data-label-original');
+      var claveSlot = fechaIsoSel + '|' + hInicio;
+
+      var estaOcupado = window.SP_SLOTS_OCUPADOS_CRM.has(claveSlot);
+      if (estaOcupado) {
+        optH.disabled = true;
+        optH.hidden = true;
+        optH.style.display = 'none';
+        optH.textContent = '⛔ ' + labelLimpio + ' (Ocupado en agenda)';
+        if (selHora.selectedIndex === i) {
+          horaActualBloqueada = true;
+        }
+      } else {
+        optH.disabled = false;
+        optH.hidden = false;
+        optH.style.display = '';
+        optH.textContent = labelLimpio;
+        primeraHoraLibre = optH.value;
+      }
+    }
+
+    if (horaActualBloqueada || (selHora.options[selHora.selectedIndex] && selHora.options[selHora.selectedIndex].disabled)) {
+      for (var j = 0; j < selHora.options.length; j++) {
+        if (!selHora.options[j].disabled) {
+          selHora.selectedIndex = j;
+          break;
+        }
+      }
+    }
+  };
+
+  window.spSincronizarAgendaConCrmYBitacora = function(forzar) {
+    var ahora = Date.now();
+    if (!forzar && (ahora - window.SP_ULTIMA_SYNC_AGENDA < 4000)) {
+      window.spFiltrarHorasOcupadasEnSelectCarrito();
+      return Promise.resolve();
+    }
+    window.SP_ULTIMA_SYNC_AGENDA = ahora;
+
+    // 1) Cargar primero cualquier reserva guardada en el propio navegador (localStorage)
+    try {
+      var localSlots = JSON.parse(localStorage.getItem('sp_citas_ocupadas_local') || '[]');
+      if (Array.isArray(localSlots)) {
+        localSlots.forEach(function(s) {
+          if (s) window.SP_SLOTS_OCUPADOS_CRM.add(String(s).trim());
+        });
+      }
+    } catch (e) {}
+
+    var endpoints = [
+      'http://127.0.0.1:5000/api/horarios-ocupados-agenda?t=' + ahora,
+      'http://localhost:5000/api/horarios-ocupados-agenda?t=' + ahora,
+      'http://127.0.0.1:8765/api/horarios-ocupados-agenda?t=' + ahora
+    ];
+
+    var promesas = endpoints.map(function(url) {
+      return fetch(url, { method: 'GET', mode: 'cors' })
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(data) {
+          if (data && Array.isArray(data.slots_ocupados)) {
+            data.slots_ocupados.forEach(function(sl) {
+              if (sl) window.SP_SLOTS_OCUPADOS_CRM.add(String(sl).trim());
+            });
+          }
+        })
+        .catch(function() {});
+    });
+
+    return Promise.all(promesas).then(function() {
+      try {
+        localStorage.setItem('sp_citas_ocupadas_local', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM)));
+      } catch (e) {}
+      window.spFiltrarHorasOcupadasEnSelectCarrito();
+    });
+  };
+
+  // Enganchar cambio de día y apertura del Carrito para que siempre filtre las horas ocupadas en CRM y Bitácora
+  document.addEventListener('DOMContentLoaded', function() {
+    window.spSincronizarAgendaConCrmYBitacora(true);
+
+    var selDia = document.getElementById('spCartCitaDia');
+    if (selDia) {
+      selDia.addEventListener('change', function() {
+        setTimeout(function() {
+          window.spFiltrarHorasOcupadasEnSelectCarrito();
+        }, 20);
+      });
+    }
+
+    // Asegurar que cuando la función original repinte las horas del día seleccionado, apliquemos el filtro del CRM inmediatamente después
+    if (typeof window.spActualizarHorasCitaCarrito === 'function' && !window._spHookedActualizarHorasV145) {
+      var origActHoras = window.spActualizarHorasCitaCarrito;
+      window.spActualizarHorasCitaCarrito = function() {
+        var res = origActHoras.apply(this, arguments);
+        window.spFiltrarHorasOcupadasEnSelectCarrito();
+        return res;
+      };
+      window._spHookedActualizarHorasV145 = true;
+    }
+
+    if (typeof window.abrirModalCarritoCarta === 'function' && !window._spHookedAbrirCarritoV145) {
+      var origAbrir = window.abrirModalCarritoCarta;
+      window.abrirModalCarritoCarta = function() {
+        var r = origAbrir.apply(this, arguments);
+        window.spSincronizarAgendaConCrmYBitacora(true);
+        return r;
+      };
+      window._spHookedAbrirCarritoV145 = true;
+    }
+
+    // Cuando el cliente confirma pedido en el Carrito, bloquear inmediatamente esa fecha/hora en el CRM local (puerto 5000) y en localStorage
+    if (typeof window.spConfirmarPedidoYAgendarCarrito === 'function' && !window._spHookedConfirmarCarritoV145) {
+      var origConfirmar = window.spConfirmarPedidoYAgendarCarrito;
+      window.spConfirmarPedidoYAgendarCarrito = function() {
+        try {
+          var selD = document.getElementById('spCartCitaDia');
+          var selH = document.getElementById('spCartCitaHora');
+          var inpNom = document.getElementById('spCartInputNombre');
+          var inpNeg = document.getElementById('spCartInputNegocio');
+          var inpTel = document.getElementById('spCartInputTelefono');
+          var optD = selD && selD.options[selD.selectedIndex];
+          var fIso = obtenerFechaIsoDeOpcionDia(optD, selD ? selD.value : '');
+          var hIni = selH ? extraerHoraInicioHHMM(selH.value || selH.textContent) : '';
+          if (fIso && hIni) {
+            var slotKey = fIso + '|' + hIni;
+            window.SP_SLOTS_OCUPADOS_CRM.add(slotKey);
+            try {
+              localStorage.setItem('sp_citas_ocupadas_local', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM)));
+            } catch (e) {}
+            fetch('http://127.0.0.1:5000/api/registrar-cita-web-en-crm', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                nombre: inpNom ? inpNom.value : '',
+                negocio: inpNeg ? inpNeg.value : '',
+                telefono: inpTel ? inpTel.value : '',
+                fecha_iso: fIso,
+                dia_texto: selD ? selD.value : fIso,
+                hora_inicio: hIni
+              })
+            }).catch(function() {});
+          }
+        } catch (err) {}
+        return origConfirmar.apply(this, arguments);
+      };
+      window._spHookedConfirmarCarritoV145 = true;
+    }
+  });
+})();
+</script>
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V145_END] -->
+</body></html>';
 
         var blob = new Blob([docHtml], { type: 'text/html;charset=utf-8' });
         var url = URL.createObjectURL(blob);
@@ -17970,5 +18186,221 @@
 })();
 </script>
 <!-- === [FIN_SP_MEJORAS_V120_FIN_DE_SEMANA_Y_CARRITO_S1_S2] === -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V145_START] -->
+<script>
+(function() {
+  window.SP_SLOTS_OCUPADOS_CRM = window.SP_SLOTS_OCUPADOS_CRM || new Set();
+  window.SP_ULTIMA_SYNC_AGENDA = 0;
+
+  function obtenerFechaIsoDeOpcionDia(optEl, textoFallback) {
+    if (optEl && optEl.getAttribute) {
+      var dIso = optEl.getAttribute('data-fecha-iso') || optEl.getAttribute('data-iso');
+      if (dIso && /^\d{4}-\d{2}-\d{2}$/.test(dIso)) return dIso;
+      var val = optEl.value || '';
+      var mIso = val.match(/\b(202\d-[01]\d-[0-3]\d)\b/);
+      if (mIso) return mIso[1];
+    }
+    var txt = String((optEl ? (optEl.textContent || optEl.value) : '') || textoFallback || '').toLowerCase();
+    var mIso2 = txt.match(/\b(202\d-[01]\d-[0-3]\d)\b/);
+    if (mIso2) return mIso2[1];
+
+    var meses = {
+      'enero': 1, 'ene': 1, 'febrero': 2, 'feb': 2, 'marzo': 3, 'mar': 3,
+      'abril': 4, 'abr': 4, 'mayo': 5, 'may': 5, 'junio': 6, 'jun': 6,
+      'julio': 7, 'jul': 7, 'agosto': 8, 'ago': 8, 'septiembre': 9, 'sep': 9,
+      'octubre': 10, 'oct': 10, 'noviembre': 11, 'nov': 11, 'diciembre': 12, 'dic': 12
+    };
+    var mDiaMes = txt.match(/\b([0-3]?\d)\s+de\s+([a-záéíóú]+)/i);
+    if (mDiaMes) {
+      var dd = parseInt(mDiaMes[1], 10);
+      var nomMes = mDiaMes[2].normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      var mm = meses[nomMes] || meses[nomMes.substring(0, 3)];
+      if (mm) {
+        var hoy = new Date();
+        var yyyy = hoy.getFullYear();
+        if (mm < (hoy.getMonth() + 1) && (hoy.getMonth() + 1 - mm) > 6) yyyy += 1;
+        return yyyy + '-' + String(mm).padStart(2, '0') + '-' + String(dd).padStart(2, '0');
+      }
+    }
+    return '';
+  }
+
+  function extraerHoraInicioHHMM(strHora) {
+    var m = String(strHora || '').match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);
+    if (!m) return '';
+    return String(parseInt(m[1], 10)).padStart(2, '0') + ':' + m[2];
+  }
+
+  window.spFiltrarHorasOcupadasEnSelectCarrito = function() {
+    var selDia = document.getElementById('spCartCitaDia');
+    var selHora = document.getElementById('spCartCitaHora');
+    if (!selDia || !selHora) return;
+
+    var optDiaSel = selDia.options[selDia.selectedIndex];
+    var fechaIsoSel = obtenerFechaIsoDeOpcionDia(optDiaSel, selDia.value);
+    if (!fechaIsoSel) return;
+
+    var primeraHoraLibre = null;
+    var horaActualBloqueada = false;
+
+    for (var i = selHora.options.length - 1; i >= 0; i--) {
+      var optH = selHora.options[i];
+      var hInicio = extraerHoraInicioHHMM(optH.value || optH.textContent);
+      if (!hInicio) continue;
+
+      if (!optH.getAttribute('data-label-original')) {
+        optH.setAttribute('data-label-original', optH.textContent.replace(/^⛔\s*/, '').replace(/\s*\(Ocupado.*\)$/i, '').trim());
+      }
+      var labelLimpio = optH.getAttribute('data-label-original');
+      var claveSlot = fechaIsoSel + '|' + hInicio;
+
+      var estaOcupado = window.SP_SLOTS_OCUPADOS_CRM.has(claveSlot);
+      if (estaOcupado) {
+        optH.disabled = true;
+        optH.hidden = true;
+        optH.style.display = 'none';
+        optH.textContent = '⛔ ' + labelLimpio + ' (Ocupado en agenda)';
+        if (selHora.selectedIndex === i) {
+          horaActualBloqueada = true;
+        }
+      } else {
+        optH.disabled = false;
+        optH.hidden = false;
+        optH.style.display = '';
+        optH.textContent = labelLimpio;
+        primeraHoraLibre = optH.value;
+      }
+    }
+
+    if (horaActualBloqueada || (selHora.options[selHora.selectedIndex] && selHora.options[selHora.selectedIndex].disabled)) {
+      for (var j = 0; j < selHora.options.length; j++) {
+        if (!selHora.options[j].disabled) {
+          selHora.selectedIndex = j;
+          break;
+        }
+      }
+    }
+  };
+
+  window.spSincronizarAgendaConCrmYBitacora = function(forzar) {
+    var ahora = Date.now();
+    if (!forzar && (ahora - window.SP_ULTIMA_SYNC_AGENDA < 4000)) {
+      window.spFiltrarHorasOcupadasEnSelectCarrito();
+      return Promise.resolve();
+    }
+    window.SP_ULTIMA_SYNC_AGENDA = ahora;
+
+    // 1) Cargar primero cualquier reserva guardada en el propio navegador (localStorage)
+    try {
+      var localSlots = JSON.parse(localStorage.getItem('sp_citas_ocupadas_local') || '[]');
+      if (Array.isArray(localSlots)) {
+        localSlots.forEach(function(s) {
+          if (s) window.SP_SLOTS_OCUPADOS_CRM.add(String(s).trim());
+        });
+      }
+    } catch (e) {}
+
+    var endpoints = [
+      'http://127.0.0.1:5000/api/horarios-ocupados-agenda?t=' + ahora,
+      'http://localhost:5000/api/horarios-ocupados-agenda?t=' + ahora,
+      'http://127.0.0.1:8765/api/horarios-ocupados-agenda?t=' + ahora
+    ];
+
+    var promesas = endpoints.map(function(url) {
+      return fetch(url, { method: 'GET', mode: 'cors' })
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(data) {
+          if (data && Array.isArray(data.slots_ocupados)) {
+            data.slots_ocupados.forEach(function(sl) {
+              if (sl) window.SP_SLOTS_OCUPADOS_CRM.add(String(sl).trim());
+            });
+          }
+        })
+        .catch(function() {});
+    });
+
+    return Promise.all(promesas).then(function() {
+      try {
+        localStorage.setItem('sp_citas_ocupadas_local', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM)));
+      } catch (e) {}
+      window.spFiltrarHorasOcupadasEnSelectCarrito();
+    });
+  };
+
+  // Enganchar cambio de día y apertura del Carrito para que siempre filtre las horas ocupadas en CRM y Bitácora
+  document.addEventListener('DOMContentLoaded', function() {
+    window.spSincronizarAgendaConCrmYBitacora(true);
+
+    var selDia = document.getElementById('spCartCitaDia');
+    if (selDia) {
+      selDia.addEventListener('change', function() {
+        setTimeout(function() {
+          window.spFiltrarHorasOcupadasEnSelectCarrito();
+        }, 20);
+      });
+    }
+
+    // Asegurar que cuando la función original repinte las horas del día seleccionado, apliquemos el filtro del CRM inmediatamente después
+    if (typeof window.spActualizarHorasCitaCarrito === 'function' && !window._spHookedActualizarHorasV145) {
+      var origActHoras = window.spActualizarHorasCitaCarrito;
+      window.spActualizarHorasCitaCarrito = function() {
+        var res = origActHoras.apply(this, arguments);
+        window.spFiltrarHorasOcupadasEnSelectCarrito();
+        return res;
+      };
+      window._spHookedActualizarHorasV145 = true;
+    }
+
+    if (typeof window.abrirModalCarritoCarta === 'function' && !window._spHookedAbrirCarritoV145) {
+      var origAbrir = window.abrirModalCarritoCarta;
+      window.abrirModalCarritoCarta = function() {
+        var r = origAbrir.apply(this, arguments);
+        window.spSincronizarAgendaConCrmYBitacora(true);
+        return r;
+      };
+      window._spHookedAbrirCarritoV145 = true;
+    }
+
+    // Cuando el cliente confirma pedido en el Carrito, bloquear inmediatamente esa fecha/hora en el CRM local (puerto 5000) y en localStorage
+    if (typeof window.spConfirmarPedidoYAgendarCarrito === 'function' && !window._spHookedConfirmarCarritoV145) {
+      var origConfirmar = window.spConfirmarPedidoYAgendarCarrito;
+      window.spConfirmarPedidoYAgendarCarrito = function() {
+        try {
+          var selD = document.getElementById('spCartCitaDia');
+          var selH = document.getElementById('spCartCitaHora');
+          var inpNom = document.getElementById('spCartInputNombre');
+          var inpNeg = document.getElementById('spCartInputNegocio');
+          var inpTel = document.getElementById('spCartInputTelefono');
+          var optD = selD && selD.options[selD.selectedIndex];
+          var fIso = obtenerFechaIsoDeOpcionDia(optD, selD ? selD.value : '');
+          var hIni = selH ? extraerHoraInicioHHMM(selH.value || selH.textContent) : '';
+          if (fIso && hIni) {
+            var slotKey = fIso + '|' + hIni;
+            window.SP_SLOTS_OCUPADOS_CRM.add(slotKey);
+            try {
+              localStorage.setItem('sp_citas_ocupadas_local', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM)));
+            } catch (e) {}
+            fetch('http://127.0.0.1:5000/api/registrar-cita-web-en-crm', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                nombre: inpNom ? inpNom.value : '',
+                negocio: inpNeg ? inpNeg.value : '',
+                telefono: inpTel ? inpTel.value : '',
+                fecha_iso: fIso,
+                dia_texto: selD ? selD.value : fIso,
+                hora_inicio: hIni
+              })
+            }).catch(function() {});
+          }
+        } catch (err) {}
+        return origConfirmar.apply(this, arguments);
+      };
+      window._spHookedConfirmarCarritoV145 = true;
+    }
+  });
+})();
+</script>
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V145_END] -->
 </body>
 </html>
