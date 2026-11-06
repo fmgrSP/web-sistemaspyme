@@ -31,7 +31,7 @@ window.SP_CONTEXTO_MAESTRO_IA_RESUMEN =
   "- 1 Servicio (Plan Base: por ejemplo solo Servicio 1 Gestor de Reseñas IA) = 59 €/mes (+150 € setup; Día 1 = 209 €). Permanencia mínima inicial de 3 meses en modalidad mensual flexible.\n" +
   "- 2 Servicios (Pack Escudo Dúo S1+S2) = 99 €/mes (+225 € setup; Día 1 = 324 €).\n" +
   "- Plan Anual = pagas 10 meses y llevas 2 meses gratis (Base Anual 590 €/año + 150 € setup; Dúo Anual 990 €/año + 225 € setup).\n" +
-  "- Super-Auditorías Web (pago único sin cuotas): 350 € por 1 (650 € las 2) en tarifa estándar; 250 € por 1 (450 € las 2) con Pack Escudo Dúo flexible; y 195 € por 1 o 350 € las 2 en 2x1 con el Plan Anual.\n" +
+  "- Super-Auditorías Web (pago único sin cuotas): 350 € por 1 (590 € las 2) en tarifa estándar; 250 € por 1 (390 € las 2) con Pack Escudo Dúo flexible; y 195 € por 1 o 350 € las 2 en 2x1 con el Plan Anual.\n" +
   "- Atril NFC/QR de mostrador = 39 € pago único sin cuotas (2ª a 4ª ud a 29 €; 5+ uds a 25 €).";
 
 window.SP_BIBLIOTECA_CONOCIMIENTO_PROFUNDO = [

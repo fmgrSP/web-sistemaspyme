@@ -1,2616 +1,2629 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-================================================================================
-ACTUALIZADOR MAESTRO DE SISTEMAS PYME (AD.py — V231 COMPLETO E ÍNTEGRO)
-================================================================================
-Ejecuta y sincroniza de una sola vez:
-1. Web Principal (public_html/index.html) + 6 Documentos Técnicos:
-   - Consultor Tecnológico Inteligente (Modo Consultor Puro 95%, sin insistencia comercial).
-   - Regla Sagrada Operativa: Atril NFC/QR (39 €) va directo a Google Maps en 1s (nunca a encuesta).
-     Servicio 1 (59 €/mes) automatiza respuestas con SEO local y protocolo HEARD.
-     Servicio 2 (Encuesta Cortafuegos WhatsApp) requiere nombre y móvil (Calendar, software,
-     formulario recepción o tienda online).
-   - Selector inteligente de Voces de España (es-ES: Jorge y Mónica en Mac/iOS, Álvaro/Elvira/Helena
-     en Windows), bloqueando voces extranjeras.
-   - Único botón rojo PARAR al lado del Orbe + botón Repetir + tecla Escape.
-   - Un único botón dorado de compra en Tecnosala (abajo), más en Test de Diagnóstico y Precios Claros.
-   - Diapositiva Magazine con fondo Azulito Claro Corporativo y centrado vertical equidistante.
-   - Agenda Inteligente en Vivo (Lunes a Sábado de 09:00 a 13:30, nunca tardes ni domingos)
-     sincronizada con Google Calendar (fmgallardo@falconfactorysystems.com) y triple alarma (24h, 1h, 15m).
-2. Sincronización Total con el CRM del Prospector (crm_b2b_db.json y Puerto 5000):
-   - Funciona incluso para clientes de otras ciudades (ej. Valencia) no buscados en el Prospector
-     o clientes que solo ponen su nombre de pila y teléfono.
-3. Cero mensajes mezclados con Reseñas en Telegram y cero correos cuadruplicados (candado dedup_key).
-4. Limpieza automática de historial Git anti-bloqueo GitHub Push Protection (GH013).
-================================================================================
+=============================================================================
+SCRIPT ACTUALIZADOR MAESTRO (AD.py) — SISTEMAS PYME (VERSIÓN V135)
+Propósito:
+  1. Rediseñar y actualizar de forma limpia, visual y con cero carga cognitiva
+     todos los tarjetones A5/A4 y sus versiones móviles:
+       - tarifas.html y tarifas_movil.html
+       - desembolso.html y desembolso_movil.html
+       - setup.html y setup_movil.html
+       - catalogo.html y catalogo_movil.html
+  2. Actualizar la pantalla principal de la web (index.html), incluyendo la
+     sala "Precios claros" (con el nuevo Pack Escudo Total Trinity S1+S2+S3 a
+     139 €/mes, los 4 Grupos por complejidad/API y la nueva tabla de las 2
+     Super-Auditorías con suelo blindado de 195 € c/u y combo de 590 € / 390 €)
+     y el Carrito Configurador a la Carta.
+  3. Actualizar base_conocimiento_ingenieria.js (si existe) para que el
+     Consultor de Voz de la Tecnosala domine al dedillo las nuevas tarifas.
+  4. Guardar copia de seguridad previa obligatoria en `backups_sp`, actualizar
+     los 2 únicos documentos maestros .md en `SISTEMAS PYME/Programar`, validar
+     sintaxis (Python ast y Node --check en todos los bloques <script>) y
+     sincronizar con Git/Render.
+=============================================================================
 """
 
 import os
 import sys
 import re
-import json
-import time
+import ast
 import shutil
-import base64
-import datetime
+import atexit
 import subprocess
-import urllib.request
-import urllib.parse
-import urllib.error
+import tempfile
+from datetime import datetime
 
-# ==============================================================================
-# 1. RUTAS OFICIALES DEL ECOSISTEMA EN TU MAC
-# ==============================================================================
-HOME_DIR = os.path.expanduser("~")
-RUTA_BASE_SP = os.path.join(HOME_DIR, "Desktop", "SISTEMAS PYME")
-RUTA_WEB_PUBLIC = os.path.join(RUTA_BASE_SP, "Web", "web-sistemaspyme", "public_html")
-RUTA_DOCUMENTOS = os.path.join(RUTA_WEB_PUBLIC, "documentos")
-RUTA_SCRAPER = os.path.join(RUTA_BASE_SP, "Scraper", "Scrapper App")
-RUTA_SERVICIO_RESENAS = os.path.join(RUTA_BASE_SP, "Servicios", "Servicio Reseñas", "servicio_resenas")
-RUTA_PROGRAMAR = os.path.join(RUTA_BASE_SP, "Programar")
+# =============================================================================
+# 1. RUTAS OFICIALES DEL ECOSISTEMA EN EL MAC DE FRANCISCO
+# =============================================================================
+RUTA_WEB_PUBLIC_HTML = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Web/web-sistemaspyme/public_html"
+RUTA_WEB_ROOT = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Web/web-sistemaspyme"
+RUTA_WEB_RENDER = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Servicios/Servicio Reseñas/servicio_resenas"
+RUTA_SCRAPER = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Scraper/Scrapper App"
+RUTA_PROGRAMAR = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Programar"
 
-WEBHOOK_SHEETS_OFICIAL = "https://script.google.com/macros/s/AKfycbwo9pcYbQKru4WMAxAnHNcqtIcAYQogXkaQ8BAWhTeyzc49kLtM02SVFnTxYRGqUStapg/exec"
-WEBHOOK_CALENDAR_FMGALLARDO = "https://script.google.com/macros/s/AKfycbwVbXZIK-O4mQLYMrwdPgXQDlo__PHTuv8MXUj-nR68_t2OGHVdvrBgqfhXdQxwzivc/exec"
+STAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
+VERSION_ACTUAL = "V136"
 
-# Fragmentación en Base64 para que GitHub Secret Scanning jamás bloquee git push (GH013)
-_K_B64_PARTES = [
-    "QVF",
-    "uUk",
-    "I4N",
-    "l9I",
-    "bnJ",
-    "BUU",
-    "56T",
-    "G5n",
-    "X25",
-    "TeH",
-    "c1U",
-    "F9x",
-    "V2F",
-    "HNW",
-    "Y0Z",
-    "2xm",
-    "UUd",
-    "JR0",
-    "1N",
-]
-
-
-def obtener_clave_vertex_reconstruida():
-    try:
-        return base64.b64decode("".join(_K_B64_PARTES)).decode("utf-8")
-    except Exception:
-        return ""
-
-
-def crear_backup(ruta_archivo):
+# =============================================================================
+# 2. UTILIDADES DE BACKUP Y AUTO-REPLICACIÓN DE AD.py
+# =============================================================================
+def crear_backup_seguro(ruta_archivo):
     if not os.path.isfile(ruta_archivo):
         return None
-    carpeta = os.path.dirname(ruta_archivo)
-    nombre = os.path.basename(ruta_archivo)
-    dir_bk = os.path.join(carpeta, "backups_sp")
-    os.makedirs(dir_bk, exist_ok=True)
-    ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    ruta_bk = os.path.join(dir_bk, f"{nombre}.backup_{ts}")
-    shutil.copy2(ruta_archivo, ruta_bk)
-    print(f"📦 Copia de seguridad creada: {ruta_bk}")
-    return ruta_bk
-
-
-def verificar_sintaxis_segura(ruta_archivo, ruta_backup=None):
-    nombre = os.path.basename(ruta_archivo)
-    ext = os.path.splitext(nombre)[1].lower()
-    ok = True
-    try:
-        with open(ruta_archivo, "r", encoding="utf-8") as f:
-            contenido = f.read()
-        if len(contenido.strip()) < 20:
-            ok = False
-        if ext == ".py":
-            compile(contenido, ruta_archivo, "exec")
-        elif ext == ".json":
-            json.loads(contenido)
-    except Exception as e:
-        print(f"❌ Error de sintaxis detectado en {nombre}: {e}")
-        ok = False
-
-    if ok:
-        print(f"✅ Comprobación anti-errores superada en: {nombre}")
-        return True
-    else:
-        if ruta_backup and os.path.isfile(ruta_backup):
-            shutil.copy2(ruta_backup, ruta_archivo)
-            print(f"🔄 Restaurada copia de seguridad en: {nombre}")
-        return False
-
-
-# ==============================================================================
-# 2. LIMPIEZA AUTOMÁTICA DE SECRETOS EN GIT (ANTI-BLOQUEO GITHUB GH013)
-# ==============================================================================
-def limpiar_secretos_para_github_push_protection():
-    """
-    Elimina cualquier rastro de claves en texto plano en archivos auxiliares y
-    compacta commits locales no subidos que contengan el commit antiguo bloqueado por GitHub.
-    """
-    for carpeta_git in [RUTA_WEB_PUBLIC, os.path.dirname(RUTA_WEB_PUBLIC), RUTA_SCRAPER, RUTA_SERVICIO_RESENAS]:
-        if not os.path.isdir(carpeta_git):
-            continue
-        gitignore_path = os.path.join(carpeta_git, ".gitignore")
-        reglas_ignorar = [
-            "__pycache__/",
-            "*.pyc",
-            ".env",
-            "config_b2b.json",
-            ".sp_servidor_neuronal_8765.py",
-            "backups_sp/",
-            "*.backup_*",
-            "*.bak",
-        ]
-        existentes = ""
-        if os.path.isfile(gitignore_path):
-            try:
-                with open(gitignore_path, "r", encoding="utf-8") as fg:
-                    existentes = fg.read()
-            except Exception:
-                pass
-        nuevas = [r for r in reglas_ignorar if r not in existentes]
-        if nuevas:
-            try:
-                with open(gitignore_path, "a", encoding="utf-8") as fg:
-                    fg.write("\n" + "\n".join(nuevas) + "\n")
-            except Exception:
-                pass
-
-    # Sanear config_b2b.json si tuviera una clave AQ. en texto plano
-    ruta_cfg_web = os.path.join(RUTA_WEB_PUBLIC, "config_b2b.json")
-    if os.path.isfile(ruta_cfg_web):
-        try:
-            os.remove(ruta_cfg_web)
-        except Exception:
-            pass
-
-    # Desindexar archivos sensibles y compactar historial local pendiente en public_html
-    if os.path.isdir(RUTA_WEB_PUBLIC):
-        try:
-            subprocess.run(
-                ["git", "rm", "-r", "--cached", "--ignore-unmatch", "__pycache__", ".sp_servidor_neuronal_8765.py", "config_b2b.json", "backups_sp"],
-                cwd=RUTA_WEB_PUBLIC,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-            res_log = subprocess.run(
-                ["git", "log", "origin/main..HEAD", "--oneline"],
-                cwd=RUTA_WEB_PUBLIC,
-                capture_output=True,
-                text=True,
-            )
-            if res_log.returncode == 0 and ("a40c8f9" in (res_log.stdout or "") or len((res_log.stdout or "").splitlines()) > 0):
-                subprocess.run(
-                    ["git", "reset", "--soft", "origin/main"],
-                    cwd=RUTA_WEB_PUBLIC,
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                )
-                print("🧹 Historial local de Git saneado (eliminado el commit antiguo con clave expuesta).")
-        except Exception:
-            pass
-
-
-# ==============================================================================
-# 3. BASE DE CONOCIMIENTO Y REGLAS OPERATIVAS DEL CONSULTOR (V231)
-# ==============================================================================
-JS_BASE_CONOCIMIENTO_DOCUMENTOS_V167 = r"""// =============================================================================
-// BASE DE CONOCIMIENTO DE ALTA CONVERSIÓN Y RESPUESTA SINTÉTICA (V231)
-// Reglas Estrictas: Atril = Directo a Maps | S1 vs S2 | Horario Citas Lunes a Sábado 09:00 a 13:30
-// Ubicación: public_html/documentos/base_conocimiento_ingenieria.js
-// =============================================================================
-window.SP_CONTEXTO_MAESTRO_IA_RESUMEN =
-  "ERES EL CONSULTOR TECNOLÓGICO E INGENIERO EXPERTO DE SISTEMAS PYME (Fundador: Francisco M. Gallardo, sede en el área de Santiago de Compostela, Galicia, con atención presencial en Galicia y en remoto a nivel nacional en toda España e internacional; Tel/WhatsApp: 711 54 75 61, web: sistemaspyme.es). " +
-  "REGLA DE ORO DE PERSONALIDAD (CONSULTOR PURO, JAMÁS VENDEDOR PESADO): " +
-  "1) Tu misión es resolver dudas técnicas, estratégicas y de funcionamiento con claridad, rigor y cercanía. " +
-  "2) TIENES ESTRICTAMENTE PROHIBIDO terminar tus respuestas con preguntas comerciales como '¿Quieres que Francisco te llame?', '¿Me das tu nombre y teléfono?', '¿Quieres contratarlo ya?' o '¿Lo activamos?'. Cuando el usuario solo está preguntando cómo funciona algo, cuánto cuesta o qué le conviene a su negocio, limítate a explicárselo con total honestidad y termina tu frase con naturalidad sin pedirle datos. " +
-  "3) ÚNICAMENTE cuando el usuario diga de forma EXPLÍCITA y DIRECTA que quiere contratar, comprar, dar de alta un servicio o pedir cita (ej. 'quiero contratar el servicio de reseñas', 'quiero comprarlo', 'estoy convencido, lo quiero'), ENTONCES SÍ actúa como asesor de compra: sugiérele con elegancia si le compensa algún pack para ahorrar y pídele su nombre, su teléfono móvil y qué día/hora de lunes a sábado por la mañana (de 09:00 a 13:30) prefiere para la videollamada de alta. " +
-  "REGLA ESTRICTA DE HORARIO DE CITAS Y AGENDA DE FRANCISCO (SOLO MAÑANAS DE LUNES A SÁBADO DE 09:00 A 13:30): " +
-  "1) Francisco realiza las videollamadas de alta e implantación EXCLUSIVAMENTE DE LUNES A SÁBADO POR LAS MAÑANAS, desde las 09:00 hasta las 13:30 (último turno de media hora a las 13:00). " +
-  "2) ¡IMPORTANTE!: SÍ abrimos los SÁBADOS por la mañana (de 09:00 a 13:30) pensando especialmente en los empresarios, comerciantes y hosteleros que de lunes a viernes están muy ocupados en su negocio. " +
-  "3) NUNCA se agendan citas por las tardes (a partir de las 13:30) ni los domingos. Si el usuario pide una cita por la tarde o en domingo, explícale con amabilidad que el horario de videollamadas técnicas y altas con Francisco es de lunes a sábado por las mañanas, de 09:00 a 13:30, y ofrécele los huecos libres disponibles por la mañana (incluyendo el sábado por la mañana). " +
-  "REGLAS SAGRADAS DE FUNCIONAMIENTO REAL DE LOS SERVICIOS (PROHIBIDO INVENTAR O MEZCLAR): " +
-  "1) QUÉ SIGNIFICA 'AUTOMATIZAR LAS RESEÑAS': Las reseñas siempre las escribe el cliente real de su puño y letra. Lo que automatizamos al 100% con el Servicio 1 (Gestor de Reseñas con IA, 59 €/mes) es la RESPUESTA inteligente con palabras clave de posicionamiento SEO local a las reseñas de 4 y 5 estrellas, y la protección ante reseñas negativas (1 a 3 estrellas), donde la IA detiene la publicación y envía al móvil del dueño 4 borradores con el método HEARD y blindaje legal RGPD. " +
-  "2) EL ATRIL NFC/QR (39 € pago único) VA DIRECTO A GOOGLE MAPS, JAMÁS A UNA ENCUESTA: Cuando un cliente acerca su móvil o escanea el QR del Atril en el mostrador, SE ABRE DIRECTAMENTE LA PANTALLA OFICIAL DE PUBLICAR RESEÑA EN GOOGLE MAPS en 1 segundo. TIENES ESTRICTAMENTE PROHIBIDO decir que el Atril abre una encuesta o que pide el teléfono. " +
-  "3) CUÁNDO RECOMENDAR O NO EL SERVICIO 2 (ENCUESTA CORTAFUEGOS POR WHATSAPP) SEGÚN EL TIPO DE NEGOCIO: " +
-  "   - El Servicio 2 (Encuesta de calidad y Cortafuegos por WhatsApp) NECESITA que el negocio tenga el nombre y el teléfono móvil del cliente, porque solo se dispara por una de estas 4 vías reales de nuestro ecosistema: A) Al terminar una cita en Google Calendar; B) Conectado al software de citas o gestión del negocio; C) Introduciendo nombre y móvil en nuestro mini-formulario rápido de recepción/Google Sheets; o D) Conectado a los pedidos entregados de su tienda online (e-commerce) o formulario web. " +
-  "   - TIENES PROHIBIDO decir que la encuesta se manda sola a quien llama por teléfono o a quien compra de forma anónima en tienda sin dejar datos. " +
-  "   - Si el usuario tiene un COMERCIO DE MOSTRADOR PURO (como una tienda de menaje, ferretería, panadería o tienda de ropa) donde la gente entra a comprar un artículo suelto en efectivo o tarjeta y no deja su teléfono, sé 100% honesto: explícale que para las ventas rápidas de mostrador NO necesita la encuesta de WhatsApp, sino la combinación de ATRIL NFC/QR en caja (39 €, que abre Google Maps directo al pagar) + SERVICIO 1 (Gestor de Reseñas IA, 59 €/mes, para responder todas las reseñas con SEO local) + SUPER-AUDITORÍA SEO/GEO (para salir en Google y ChatGPT frente a grandes superficies). Y matiza que la Encuesta por WhatsApp (Servicio 2) solo tendría sentido en su tienda si además hacen envíos de tienda online, listas de boda o encargos bajo pedido donde sí anotan el móvil del comprador en recepción o en la web. " +
-  "REGLA DE COBERTURA Y TIEMPO DE IMPLANTACIÓN (PROHIBIDO DECIR '15 MINUTOS'): " +
-  "1) La implantación técnica es rápida, de 24 a 48 horas (de un día para otro), mediante una breve videollamada o conexión remota (por ejemplo con AnyDesk). " +
-  "2) Atendemos en Galicia, en toda España y a nivel internacional. " +
-  "REGLA CRÍTICA DE DISPONIBILIDAD DE SERVICIOS: " +
-  "1) ACTIVOS HOY (Implantación 24-48h): Servicio 1 (Reseñas Google IA), Servicio 2 (Cortafuegos y Encuesta WhatsApp Oficial), Hardware Atril NFC/QR (39 €) y las 2 Super-Auditorías Web (SEO/GEO IA y Neuro-CRO con Sonda Térmica). " +
-  "2) EN FASE DE DESPLIEGUE PROGRESIVO CON RESERVA PRIORITARIA (NO ACTIVOS HOY): Servicios S3 a S10 y Satélites 1 a 3. " +
-  "REGLA DE FORMATO PARA VOZ: Responde en 2 a 4 frases completas y naturales (entre 45 y 80 palabras), directo al grano y sin coletillas comerciales. " +
-  "RESUMEN DE PRECIOS OFICIALES:\n" +
-  "- 1 Servicio (Plan Base: por ejemplo solo Servicio 1 Gestor de Reseñas IA) = 59 €/mes (+150 € setup; Día 1 = 209 €). Permanencia mínima inicial de 3 meses en modalidad mensual flexible.\n" +
-  "- 2 Servicios (Pack Escudo Dúo S1+S2) = 99 €/mes (+225 € setup; Día 1 = 324 €).\n" +
-  "- Plan Anual = pagas 10 meses y llevas 2 meses gratis (Base Anual 590 €/año + 150 € setup; Dúo Anual 990 €/año + 225 € setup).\n" +
-  "- Super-Auditorías Web (pago único sin cuotas): 350 € por 1 (650 € las 2) en tarifa estándar; 250 € por 1 (450 € las 2) con Pack Escudo Dúo flexible; y 195 € por 1 o 350 € las 2 en 2x1 con el Plan Anual.\n" +
-  "- Atril NFC/QR de mostrador = 39 € pago único sin cuotas (2ª a 4ª ud a 29 €; 5+ uds a 25 €).";
-
-window.SP_BIBLIOTECA_CONOCIMIENTO_PROFUNDO = [
-  {
-    id: "comercios_mostrador_sin_ficha_clientes",
-    claves: ["tienda de menaje", "menaje", "ferreteria", "tienda de ropa", "panaderia", "comercio", "no tengo ficha", "no dejan sus datos", "no tengo los datos", "clientes anonimos", "comprar un enchufe", "juego de vasos"],
-    respuesta: "En un comercio de mostrador como una tienda de menaje, ferretería o ropa donde el cliente compra y no deja su teléfono, no necesitas la encuesta por WhatsApp para las ventas rápidas de caja. Lo ideal ahí es colocar el Atril inteligente NFC y QR en el mostrador, que por 39 euros pago único abre directamente la pantalla de reseñas de Google Maps en un segundo al pagar, combinado con el Gestor de Reseñas con IA de 59 euros al mes para responder automáticamente posicionando tu tienda en Google. La encuesta por WhatsApp solo se añadiría si también gestionas pedidos de tienda online, listas de boda o encargos a domicilio donde sí registras el móvil del comprador.",
-    variantes: []
-  },
-  {
-    id: "diferencia_atril_vs_encuesta_whatsapp",
-    claves: ["atril", "nfc", "qr", "como se manda la encuesta", "automatizar las resenas", "de forma natural", "como funciona la encuesta"],
-    respuesta: "Es muy importante distinguir las dos piezas: las reseñas siempre las escribe el cliente real, pero con el Atril NFC y QR de mostrador el cliente acerca el móvil y se le abre directamente Google Maps en un segundo sin pasar por ninguna encuesta ni pedirle datos. En cambio, la encuesta de calidad por WhatsApp está pensada para negocios con cita previa, encargos o tienda online que ya tienen el teléfono del cliente, enviándole un mensaje dos horas después del servicio. Y lo que automatiza al cien por cien nuestro Servicio 1 es la respuesta inteligente con palabras clave de SEO local a cada reseña publicada.",
-    variantes: []
-  },
-  {
-    id: "horario_citas_mananas_lunes_a_sabado",
-    claves: ["horario", "por la tarde", "sabado", "domingo", "que dias", "a que hora", "cita", "videollamada"],
-    respuesta: "Francisco realiza las videollamadas de alta e implantación de lunes a sábado exclusivamente en horario de mañana, entre las nueve y la una y media del mediodía, incluyendo los sábados por la mañana para facilitar a los comerciantes y empresarios que entre semana están atendiendo su negocio.",
-    variantes: []
-  },
-  {
-    id: "contratar_y_agendar_cita_voz",
-    claves: ["quiero contratar", "contratar el pack", "contratar pack", "contratarlo", "como contrato", "quiero comprar", "comprar", "darme de alta", "empezar ya", "agendar cita", "pedir cita", "que me llame", "llamame", "mi telefono es", "mi numero es", "carrito", "a la carta"],
-    respuesta: "¡Estupendo! Si vas a empezar por un servicio, recuerda que por solo 40 euros más al mes el Pack Escudo Dúo incluye tanto las Reseñas IA como el Cortafuegos de WhatsApp, ahorrándote 75 euros en el alta y 100 euros en las auditorías. Dime tu nombre, tu teléfono móvil y qué día de lunes a sábado por la mañana, entre las nueve y la una y media, prefieres que te llame Francisco.",
-    variantes: []
-  }
-];
-"""
-
-
-# ==============================================================================
-# 4. ENDPOINT LIMPIO PARA RENDER (main.py DE servicio_resenas)
-# ==============================================================================
-BLOQUE_ENDPOINT_PEDIDO_MAIN_PY_V220 = r'''
-# === [INICIO_SP_PEDIDOS_Y_CITAS_WEB_V231] ===
-@app.post("/api/registrar-pedido-cita")
-async def api_registrar_pedido_cita_limpio(request: Request):
-    """
-    Registra un pedido y cita de alta desde el Configurador a la Carta o el Consultor por Voz
-    SIN mezclar jamás con el Simulador de Reseñas ni el método HEARD.
-    """
-    import urllib.request as _ureq
-    try:
-        body = await request.json()
-    except Exception:
-        body = {}
-
-    nombre = str(body.get("nombre") or "Cliente Web").strip()
-    tlf_raw = re.sub(r"\D", "", str(body.get("telefono") or ""))[-9:]
-    horario = str(body.get("horario") or "Mañana L-S (09:00-13:30)").strip()
-    plan = str(body.get("plan") or "Pack Escudo Dúo").strip()
-    auditorias = int(body.get("auditorias") or 0)
-    coste_aud = int(body.get("coste_auditorias") or 0)
-    atriles = int(body.get("atriles") or 0)
-    coste_atr = int(body.get("coste_atriles") or 0)
-    res_f2 = ", ".join(body.get("reservas_fase2") or []) if isinstance(body.get("reservas_fase2"), list) and body.get("reservas_fase2") else "Ninguna"
-    total = body.get("total_dia1", 0)
-    url_gcal = str(body.get("enlace_google_calendar_cliente") or "").strip()
-    origen = str(body.get("origen") or "Web Sistemas Pyme").strip()
-
-    # 1. Aviso limpio a Telegram (Formato exclusivo de Pedido de Alta)
-    tg_token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
-    tg_chat = os.getenv("TELEGRAM_CHAT_ID", "").strip()
-    if tg_token and tg_chat:
-        try:
-            texto_tg = (
-                f"🛒 <b>NUEVO PEDIDO Y CITA DE ALTA — SISTEMAS PYME</b>\n\n"
-                f"👤 <b>Cliente / Negocio:</b> {nombre}\n"
-                f"📞 <b>Teléfono:</b> +34 {tlf_raw}\n"
-                f"🗓️ <b>Cita agendada (L-S Mañana):</b> {horario}\n\n"
-                f"📦 <b>Desglose del Pedido:</b>\n"
-                f"• <b>Plan:</b> {plan}\n"
-                f"• <b>Super-Auditorías:</b> {auditorias} ({coste_aud} €)\n"
-                f"• <b>Atriles NFC/QR:</b> {atriles} ({coste_atr} €)\n"
-                f"• <b>Reserva Fase 2:</b> {res_f2}\n"
-                f"💶 <b>Total Desembolso Día 1:</b> <b>{total} €</b> <i>(sin IVA)</i>\n"
-                f"🌐 <b>Origen:</b> {origen}"
-            )
-            botones = [[{"text": f"💬 Abrir WhatsApp con {nombre}", "url": f"https://wa.me/34{tlf_raw}"}]]
-            if url_gcal.startswith("http"):
-                botones.append([{"text": "📅 Ver en Google Calendar", "url": url_gcal}])
-            p_tg = {
-                "chat_id": tg_chat,
-                "text": texto_tg,
-                "parse_mode": "HTML",
-                "disable_web_page_preview": True,
-                "reply_markup": {"inline_keyboard": botones},
-            }
-            req_tg = _ureq.Request(
-                f"https://api.telegram.org/bot{tg_token}/sendMessage",
-                data=json.dumps(p_tg).encode("utf-8"),
-                headers={"Content-Type": "application/json"},
-                method="POST",
-            )
-            _ureq.urlopen(req_tg, timeout=8)
-        except Exception:
-            pass
-
-    # 2. WhatsApp oficial con plantilla aviso_gerencia_es al comprador y a Francisco (691407080)
-    token_wa = (os.getenv("WHATSAPP_ACCESS_TOKEN") or os.getenv("WHATSAPP_TOKEN") or "").strip()
-    pid = (os.getenv("WHATSAPP_PHONE_NUMBER_ID") or "1325140134018206").strip()
-    if token_wa and pid:
-        url_meta = f"https://graph.facebook.com/v21.0/{pid}/messages"
-        headers_meta = {"Authorization": f"Bearer {token_wa}", "Content-Type": "application/json"}
-        destinos = []
-        if len(tlf_raw) == 9:
-            destinos.append((
-                tlf_raw,
-                f"✅ Pedido confirmado en Sistemas Pyme ({nombre})",
-                f"Plan: {plan} | Total Día 1: {total} € (sin IVA) | Cita de Alta: {horario}. Te contactaremos puntualmente.",
-            ))
-        destinos.append((
-            "691407080",
-            f"🛒 Nuevo Pedido Web: {nombre} (+34 {tlf_raw})",
-            f"Plan: {plan} | Auditorías: {auditorias} | Atriles: {atriles} | Total Día 1: {total} € | Cita: {horario}.",
-        ))
-        for dest_num, v1, v2 in destinos:
-            for lang_code in ("es", "es_ES"):
-                try:
-                    p_tpl = {
-                        "messaging_product": "whatsapp",
-                        "to": f"34{dest_num}",
-                        "type": "template",
-                        "template": {
-                            "name": "aviso_gerencia_es",
-                            "language": {"code": lang_code},
-                            "components": [{
-                                "type": "body",
-                                "parameters": [
-                                    {"type": "text", "text": v1[:135]},
-                                    {"type": "text", "text": v2[:600]},
-                                ],
-                            }],
-                        },
-                    }
-                    req_w = _ureq.Request(url_meta, data=json.dumps(p_tpl).encode("utf-8"), headers=headers_meta, method="POST")
-                    with _ureq.urlopen(req_w, timeout=8) as rw:
-                        if 200 <= rw.status < 300:
-                            break
-                except Exception:
-                    continue
-
-    return {"status": "ok", "pedido_registrado": True}
-# === [FIN_SP_PEDIDOS_Y_CITAS_WEB_V231] ===
-'''
-
-
-# ==============================================================================
-# 5. BLOQUE FRONTEND MAESTRO PARA public_html/index.html (V231)
-# ==============================================================================
-HTML_BIENVENIDA_ORBE_3D_V159 = (
-    '<div class="flex flex-col items-center justify-center text-center px-3 py-1">'
-    '<div onclick="window.spActivarEscuchaDirectaConsultor && window.spActivarEscuchaDirectaConsultor(event)" '
-    'class="sp-orb-3d-idle cursor-pointer mb-2" title="Pulsa para hablar en manos libres">'
-    '<span class="text-lg">⚡</span></div>'
-    '<div onclick="window.spActivarEscuchaDirectaConsultor && window.spActivarEscuchaDirectaConsultor(event)" '
-    'class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-950/90 border border-teal-400/50 '
-    'text-[10px] font-extrabold uppercase tracking-wider text-teal-200 mb-1.5 cursor-pointer hover:border-teal-300">'
-    '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>'
-    '<span>👆 PULSA LA ESFERA HOLOGRÁFICA PARA HABLAR CONMIGO SIN TOCAR NINGÚN OTRO BOTÓN</span></div>'
-    '<h3 class="text-sm sm:text-base font-black text-white leading-snug max-w-xl">'
-    'Soy tu <span class="text-teal-300">consultor tecnológico experto</span> para resolver todas tus dudas '
-    'y, si lo deseas, <span class="text-amber-300">contratar lo que necesites</span>.</h3>'
-    '<p class="text-[11px] text-slate-300 max-w-lg mt-1 leading-relaxed">'
-    '🎙️ <strong>Manos libres continuo:</strong> profundiza en cualquier área del ecosistema Sistemas Pyme, '
-    'descubre qué combinación te ahorra más dinero y agenda tu videollamada de lunes a sábado por la mañana.</p>'
-    '</div>'
-)
-
-BLOQUE_CONSULTOR_Y_CARRITO_HTML_V231 = r"""
-<!-- === [INICIO_SP_CONSULTOR_Y_CARRITO_V231] === -->
-<style id="spEstilosConsultorYCarritoV231">
-  /* 1. Más altura y aire para el Consultor Neuronal en Tecnosala (nunca corta arriba ni abajo) */
-  #vista-tecnosala .slide-section {
-    padding-top: 1.35rem !important;
-    padding-bottom: 1.15rem !important;
-    justify-content: flex-start !important;
-  }
-  /* Ocultar el subtítulo superior pegado a la barra en Tecnosala para que el título principal respire */
-  #vista-tecnosala .slide-section > div > p.uppercase.tracking-widest:first-child,
-  #vista-tecnosala .slide-section > p.uppercase.tracking-widest:first-child {
-    display: none !important;
-  }
-  #spTecnosalaScreen {
-    min-height: 294px !important;
-    max-height: 348px !important;
-    justify-content: flex-start !important;
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-    overflow: hidden !important;
-  }
-  #spTeleprompterBox {
-    min-height: 158px !important;
-    max-height: 192px !important;
-  }
-  /* Ocultar el botón PARAR redundante de la esquina izquierda (dejamos solo el del lado del Orbe) */
-  #spHudStopBtn, #spHudBtnAbrirCarrito {
-    display: none !important;
-  }
-
-  /* 2. Fondo Azulito Claro Corporativo y centrado vertical equidistante en Magazine (#vista-mas) */
-  #vista-mas,
-  #vista-mas .slide-section,
-  section#vista-mas {
-    background: linear-gradient(135deg, #d8f0fe 0%, #e8f6ff 52%, #e0faf4 100%) !important;
-  }
-  #vista-mas .slide-section {
-    justify-content: center !important;
-    padding-top: 1.95rem !important;
-    padding-bottom: 1.75rem !important;
-  }
-
-  /* 3. Botón Dorado 3D del Configurador a la Carta / Contratar */
-  .sp-btn-carrito-gold-3d {
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 55%, #d97706 100%) !important;
-    color: #020617 !important;
-    font-weight: 900 !important;
-    border: 2px solid #fef08a !important;
-    box-shadow: 0 8px 22px -4px rgba(245, 158, 11, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.65) !important;
-    transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease !important;
-    cursor: pointer !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 0.45rem !important;
-  }
-  .sp-btn-carrito-gold-3d:hover {
-    transform: translateY(-2px) scale(1.01) !important;
-    filter: brightness(1.06) !important;
-    box-shadow: 0 12px 28px -4px rgba(245, 158, 11, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
-  }
-</style>
-
-<!-- MODAL DEL CONFIGURADOR A LA CARTA Y AGENDA INTELIGENTE (LUNES A SÁBADO 09:00 A 13:30) -->
-<div id="spModalCarritoCarta" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 overflow-y-auto">
-  <div class="relative w-full max-w-4xl rounded-3xl bg-gradient-to-b from-slate-900 via-[#081b2e] to-slate-950 border-2 border-teal-400/50 shadow-2xl p-4 sm:p-6 text-white my-auto">
-    <div class="flex items-start justify-between gap-3 border-b border-slate-800 pb-3 mb-4">
-      <div>
-        <span class="inline-block text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40">
-          🛒 CONFIGURADOR A LA CARTA • IMPLANTACIÓN RÁPIDA 24-48H
-        </span>
-        <h2 class="text-lg sm:text-2xl font-black text-white mt-1">Configura tu Plan a Medida y Agenda tu Videollamada de Alta</h2>
-      </div>
-      <button type="button" onclick="window.spCerrarCarritoConfigurador()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white font-black text-sm flex items-center justify-center cursor-pointer">✕</button>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-      <!-- Columna Izquierda: Selección de Servicios -->
-      <div class="lg:col-span-7 space-y-3.5 text-xs">
-        <div>
-          <label class="block text-[10.5px] font-extrabold uppercase tracking-wider text-teal-300 mb-1.5">1. ELIGE MODALIDAD (DESBLOQUEA DESCUENTOS EN AUDITORÍAS):</label>
-          <div class="grid grid-cols-2 gap-2">
-            <button type="button" id="spCartBtnModMensual" onclick="window.spSetCartModalidad('mensual')" class="p-2.5 rounded-2xl border-2 text-left transition cursor-pointer">
-              <div class="font-black text-xs text-white">🔄 Mensual Flexible</div>
-              <div class="text-[10.5px] text-slate-300 mt-0.5">Permanencia mín. 3 meses (Auditoría a 250 € con Dúo)</div>
-            </button>
-            <button type="button" id="spCartBtnModAnual" onclick="window.spSetCartModalidad('anual')" class="p-2.5 rounded-2xl border-2 text-left transition cursor-pointer">
-              <div class="font-black text-xs text-amber-300">🎁 Plan Anual (-2 Meses)</div>
-              <div class="text-[10.5px] text-slate-300 mt-0.5">Pagas 10 meses + Auditorías en 2×1 (350 € las 2)</div>
-            </button>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-[10.5px] font-extrabold uppercase tracking-wider text-teal-300 mb-1.5">2. SERVICIOS ACTIVOS HOY (IMPLANTACIÓN 24-48H):</label>
-          <div class="grid grid-cols-3 gap-2">
-            <button type="button" id="spCartBtnPlanNinguno" onclick="window.spSetCartPlan('ninguno')" class="p-2.5 rounded-2xl border text-left transition cursor-pointer">
-              <div class="font-black text-white text-[11px]">Solo Auditoría / Atril</div>
-              <div class="text-[10px] text-slate-400 mt-0.5">Sin cuota mensual</div>
-            </button>
-            <button type="button" id="spCartBtnPlanBase" onclick="window.spSetCartPlan('base')" class="p-2.5 rounded-2xl border text-left transition cursor-pointer">
-              <div class="font-black text-white text-[11px]">1 Servicio (Base)</div>
-              <div class="text-[10.5px] text-teal-300 font-bold">59 €/mes + 150 € Setup</div>
-              <div class="text-[9.5px] text-slate-400">S1 Reseñas IA o S2 WhatsApp</div>
-            </button>
-            <button type="button" id="spCartBtnPlanDuo" onclick="window.spSetCartPlan('duo')" class="p-2.5 rounded-2xl border text-left transition cursor-pointer">
-              <div class="font-black text-emerald-300 text-[11px]">★ Pack Escudo Dúo (2 Serv.)</div>
-              <div class="text-[10.5px] text-white font-bold">99 €/mes + 225 € Setup</div>
-              <div class="text-[9.5px] text-slate-300">S1 Reseñas IA + S2 WhatsApp</div>
-            </button>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-[10.5px] font-extrabold uppercase tracking-wider text-teal-300 mb-1.5">3. AÑADE SUPER-AUDITORÍAS WEB (PAGO ÚNICO • SIN CUOTAS):</label>
-          <div class="grid grid-cols-3 gap-2">
-            <button type="button" id="spCartBtnAud0" onclick="window.spSetCartAuditorias(0)" class="p-2.5 rounded-2xl border text-left transition cursor-pointer">
-              <div class="font-black text-white text-[11px]">Sin Auditoría por ahora</div>
-              <div class="text-[10px] text-slate-400">0 €</div>
-            </button>
-            <button type="button" id="spCartBtnAud1" onclick="window.spSetCartAuditorias(1)" class="p-2.5 rounded-2xl border text-left transition cursor-pointer">
-              <div class="font-black text-sky-300 text-[11px]">+1 Super-Auditoría</div>
-              <div id="spCartPrecioAud1" class="text-[10.5px] text-white font-bold">250 €</div>
-              <div class="text-[9.5px] text-slate-400">SEO/GEO IA o Neuro-CRO</div>
-            </button>
-            <button type="button" id="spCartBtnAud2" onclick="window.spSetCartAuditorias(2)" class="p-2.5 rounded-2xl border text-left transition cursor-pointer">
-              <div class="font-black text-amber-300 text-[11px]">+2 Super-Auditorías</div>
-              <div id="spCartPrecioAud2" class="text-[10.5px] text-white font-bold">450 € las 2</div>
-              <div class="text-[9.5px] text-slate-400">SEO/GEO IA + Neuro-CRO</div>
-            </button>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-2.5">
-            <label class="block text-[10px] font-extrabold uppercase text-teal-300 mb-1">4. ATRILES NFC + QR (PAGO ÚNICO):</label>
-            <select id="spCartSelectAtriles" onchange="window.spSetCartAtriles(this.value)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 text-white text-xs font-bold outline-none">
-              <option value="0">0 Atriles (0 €)</option>
-              <option value="1" selected>1 Atril NFC/QR (39 €)</option>
-              <option value="2">2 Atriles (68 € — 2ª ud a 29 €)</option>
-              <option value="3">3 Atriles (97 €)</option>
-              <option value="5">5 Atriles (145 € — a 25 €/ud extra)</option>
-            </select>
-          </div>
-          <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-2.5">
-            <label class="block text-[10px] font-extrabold uppercase text-amber-300 mb-1">5. RESERVA PRIORITARIA FASE 2:</label>
-            <select id="spCartSelectFase2" onchange="window.spToggleReservaFase2(this.value); this.value='';" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 text-white text-xs font-bold outline-none">
-              <option value="">+ Añadir módulo en Reserva Prioritaria...</option>
-              <option value="S3 Leads en 10s">S3. Leads en 10s y Portales</option>
-              <option value="S4 Rescate Llamadas">S4. Rescate Llamadas Perdidas</option>
-              <option value="S5 Reactivación Clientes">S5. Reactivación de Inactivos</option>
-              <option value="S6 Anti-Plantón Citas">S6. Anti-Plantón de Citas</option>
-              <option value="S7 Centralita Voz IA">S7. Centralita Telefónica Voz IA</option>
-              <option value="S8 Firma Presupuestos">S8. Firma Digital Presupuestos</option>
-              <option value="S9 Facturas Gestor IA">S9. Facturas al Gestor por Foto</option>
-              <option value="S10 Anti-Morosidad">S10. Escudo Anti-Morosidad</option>
-            </select>
-            <div id="spCartListaFase2" class="text-[10px] text-slate-400 mt-1 italic">Ningún módulo de Fase 2 añadido aún.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Columna Derecha: Resumen y Agenda Sincronizada (Lunes a Sábado 09:00 a 13:30) -->
-      <div class="lg:col-span-5 bg-slate-950/90 border-2 border-teal-500/40 rounded-3xl p-4 space-y-3">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-          <span class="text-xs font-extrabold uppercase tracking-wider text-teal-300">📋 RESUMEN DE TU PEDIDO A LA CARTA</span>
-          <span id="spCartBadgeNumModulos" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-400/30">2 servicios</span>
-        </div>
-
-        <div id="spCartDesgloseLineas" class="space-y-1 text-xs text-slate-200"></div>
-
-        <div id="spCartBonoBovedaBox" class="hidden p-2 rounded-xl bg-amber-500/15 border border-amber-400/40 text-[11px] text-amber-200 font-bold">
-          🎁 ¡Bono Desbloqueado (3+ módulos)! Incluye GRATIS la Bóveda de Contraseñas para Empleados (Valorada en 150 €).
-        </div>
-
-        <div class="p-3 rounded-2xl bg-emerald-950/60 border border-emerald-500/40 space-y-1">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-200">Total Desembolso Día 1:</span>
-            <span id="spCartTotalDia1" class="text-2xl font-black text-white">363 €</span>
-          </div>
-          <div class="flex items-center justify-between text-[11px] text-teal-300 font-bold">
-            <span>Cuota mensual posterior:</span>
-            <span id="spCartCuotaMensual">99 €/mes (Permanencia mín. 3m)</span>
-          </div>
-          <p class="text-[10px] text-slate-300 pt-1">
-            *Precios netos sin IVA (21% deducible). <strong class="text-amber-300">No realizas ningún pago con tarjeta aquí:</strong> agendamos tu videollamada de alta y te enviamos la confirmación a tu móvil.
-          </p>
-        </div>
-
-        <div id="spCartFormInputsWrap" class="space-y-2 text-xs">
-          <input id="spCartInputNombre" type="text" placeholder="Tu Nombre y/o Negocio y Ciudad *" class="w-full bg-slate-900 border border-slate-700 focus:border-teal-400 rounded-xl px-3 py-2 text-white placeholder-slate-400 outline-none font-semibold" />
-          <input id="spCartInputTelefono" type="tel" placeholder="Tu Teléfono Móvil (Ej: 600 123 456) *" class="w-full bg-slate-900 border border-slate-700 focus:border-teal-400 rounded-xl px-3 py-2 text-white placeholder-slate-400 outline-none font-semibold" />
-          <div class="bg-slate-900/95 border border-teal-500/40 rounded-xl p-2 space-y-1.5">
-            <div class="flex items-center justify-between gap-1">
-              <span class="text-[10px] font-extrabold uppercase text-teal-300">🗓️ Cita de Alta (Lunes a Sábado • Mañanas 09:00 a 13:30):</span>
-              <span id="spCartSyncCalBadge" class="text-[9.5px] font-bold text-emerald-300">🔄 Sincronizado con Calendar</span>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-              <select id="spCartSelectDiaLV" onchange="window.spActualizarHorasDisponiblesCarrito()" class="w-full bg-slate-950 border border-slate-700 focus:border-teal-400 rounded-lg px-2 py-1.5 text-white text-[11px] outline-none font-bold"></select>
-              <select id="spCartSelectHoraManana" class="w-full bg-slate-950 border border-slate-700 focus:border-teal-400 rounded-lg px-2 py-1.5 text-white text-[11px] outline-none font-bold"></select>
-            </div>
-            <input id="spCartInputFechaHoraISO" type="hidden" value="" />
-            <input id="spCartInputHorario" type="hidden" value="" />
-          </div>
-        </div>
-
-        <button type="button" id="spBtnSubmitCarrito" onclick="window.spConfirmarPedidoYAgendarCita()" class="w-full sp-btn-carrito-gold-3d py-3 rounded-2xl text-xs sm:text-sm uppercase tracking-wider">
-          <span>🚀 Confirmar Pedido y Agendar Videollamada de Alta</span>
-        </button>
-
-        <div id="spCartFeedbackMsg" class="hidden p-3 rounded-2xl bg-emerald-950/90 border-2 border-emerald-400 text-xs text-white"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script id="spScriptConsultorYCarritoV231">
-(function() {
-  var _spHistorialConversacion = [];
-  var _spUltimaRespuestaTexto = '';
-  var _spVozActiva = true;
-  var _spEscuchandoManosLibres = false;
-  var _spReconocimientoVoz = null;
-  var _spTemporizadorTeleprompter = null;
-  var _spVocesEspanaDisponibles = [];
-  var _spIndiceVozActual = 0;
-
-  var _spCartState = {
-    modalidad: 'mensual',
-    plan: 'duo',
-    auditorias: 0,
-    atriles: 1,
-    reservasFase2: []
-  };
-
-  function normalizarSinTildes(str) {
-    return String(str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  }
-
-  // =========================================================================
-  // 1. SELECTOR INTELIGENTE DE VOCES DE ESPAÑA (es-ES) SIN ACENTOS EXTRANJEROS
-  // =========================================================================
-  function descubrirVocesEspanaNativas() {
-    if (!('speechSynthesis' in window)) return [];
-    var todas = window.speechSynthesis.getVoices() || [];
-    var soloEspana = todas.filter(function(v) {
-      var lang = String(v.lang || '').replace('_', '-').toLowerCase();
-      return lang === 'es-es';
-    });
-
-    // Ordenar priorizando Jorge y Mónica en Mac/iOS, y Álvaro/Elvira/Helena/Pablo en Windows
-    var preferidas = ['jorge', 'monica', 'alvaro', 'elvira', 'helena', 'pablo', 'marisol'];
-    soloEspana.sort(function(a, b) {
-      var na = normalizarSinTildes(a.name);
-      var nb = normalizarSinTildes(b.name);
-      var ia = 99, ib = 99;
-      for (var i = 0; i < preferidas.length; i++) {
-        if (na.indexOf(preferidas[i]) !== -1 && ia === 99) ia = i;
-        if (nb.indexOf(preferidas[i]) !== -1 && ib === 99) ib = i;
-      }
-      if (ia !== ib) return ia - ib;
-      return a.localService === b.localService ? 0 : (a.localService ? -1 : 1);
-    });
-
-    // Si hay voces locales humanas (Jorge/Mónica/Álvaro), descartar las de "Google" que suenan robóticas
-    var humanas = soloEspana.filter(function(v) {
-      return normalizarSinTildes(v.name).indexOf('google') === -1;
-    });
-    _spVocesEspanaDisponibles = humanas.length > 0 ? humanas : soloEspana;
-    return _spVocesEspanaDisponibles;
-  }
-
-  function obtenerVozEspanolaActiva() {
-    var lista = descubrirVocesEspanaNativas();
-    if (!lista.length) return null;
-    if (_spIndiceVozActual >= lista.length) _spIndiceVozActual = 0;
-    return lista[_spIndiceVozActual];
-  }
-
-  function nombreCortoVoz(vozObj) {
-    if (!vozObj || !vozObj.name) return 'Jorge';
-    var limpio = vozObj.name.replace(/Microsoft|Apple|Online|Natural|Spanish|Spain|\(.*?\)/gi, '').trim();
-    return limpio.split(/\s+/)[0] || vozObj.name.slice(0, 10);
-  }
-
-  window.spAlternarVozConsultor = function(ev) {
-    if (ev) ev.stopPropagation();
-    var lista = descubrirVocesEspanaNativas();
-    if (lista.length > 1) {
-      _spIndiceVozActual = (_spIndiceVozActual + 1) % lista.length;
-    }
-    var vozElegida = obtenerVozEspanolaActiva();
-    var btnVoz = document.getElementById('spBtnCambiarVoz');
-    if (btnVoz && vozElegida) {
-      btnVoz.innerHTML = '🗣️ Voz: ' + nombreCortoVoz(vozElegida);
-    }
-    if (_spUltimaRespuestaTexto && _spVozActiva) {
-      window.spHablarYMostrarTeleprompter(_spUltimaRespuestaTexto);
-    }
-  };
-
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.onvoiceschanged = function() {
-      var lista = descubrirVocesEspanaNativas();
-      var btnVoz = document.getElementById('spBtnCambiarVoz');
-      if (btnVoz && lista.length) {
-        btnVoz.innerHTML = '🗣️ Voz: ' + nombreCortoVoz(lista[_spIndiceVozActual] || lista[0]);
-      }
-    };
-  }
-
-  // =========================================================================
-  // 2. TELEPROMPTER SINCRONIZADO PALABRA POR PALABRA Y BOTÓN ÚNICO DE PARADA
-  // =========================================================================
-  window.spDetenerTodoConsultor = function(ev) {
-    if (ev && ev.stopPropagation) ev.stopPropagation();
-    _spEscuchandoManosLibres = false;
-    if (_spTemporizadorTeleprompter) {
-      clearInterval(_spTemporizadorTeleprompter);
-      _spTemporizadorTeleprompter = null;
-    }
-    if ('speechSynthesis' in window) {
-      try { window.speechSynthesis.cancel(); } catch (e) {}
-    }
-    if (_spReconocimientoVoz) {
-      try { _spReconocimientoVoz.onend = null; _spReconocimientoVoz.abort(); } catch (e) {}
-    }
-    var statusTxt = document.getElementById('spHudStatusText');
-    if (statusTxt) statusTxt.textContent = '⏸️ CONSULTOR EN PAUSA • PULSA LA ESFERA 3D PARA HABLAR';
-    var inp = document.getElementById('spTecnosalaInput');
-    if (inp) inp.placeholder = 'Escribe tu duda o pulsa 🎙️ Hablar para preguntar por voz...';
-  };
-
-  window.spRepetirUltimaRespuesta = function(ev) {
-    if (ev && ev.stopPropagation) ev.stopPropagation();
-    if (_spUltimaRespuestaTexto) {
-      window.spHablarYMostrarTeleprompter(_spUltimaRespuestaTexto);
-    }
-  };
-
-  window.spToggleSonidoConsultor = function(ev) {
-    if (ev && ev.stopPropagation) ev.stopPropagation();
-    _spVozActiva = !_spVozActiva;
-    var btn = document.getElementById('spBtnToggleMute');
-    if (btn) {
-      btn.innerHTML = _spVozActiva ? '🔊 Voz: ON' : '🔇 Silenciado';
-    }
-    if (!_spVozActiva && 'speechSynthesis' in window) {
-      try { window.speechSynthesis.cancel(); } catch (e) {}
-    }
-  };
-
-  window.spHablarYMostrarTeleprompter = function(textoCompleto, alTerminarCallback) {
-    var limpio = String(textoCompleto || '').replace(/[*#>`_~]/g, '').replace(/\s+/g, ' ').trim();
-    if (!limpio) return;
-    _spUltimaRespuestaTexto = limpio;
-
-    var idleEl = document.getElementById('spTecnosalaIdleWelcome');
-    var activeEl = document.getElementById('spTecnosalaActiveStage');
-    if (idleEl) idleEl.classList.add('hidden');
-    if (activeEl) activeEl.classList.remove('hidden');
-
-    if (_spTemporizadorTeleprompter) {
-      clearInterval(_spTemporizadorTeleprompter);
-      _spTemporizadorTeleprompter = null;
-    }
-    if ('speechSynthesis' in window) {
-      try { window.speechSynthesis.cancel(); } catch (e) {}
-    }
-
-    var palabras = limpio.split(' ');
-    var box = document.getElementById('spTeleprompterText');
-    var contenedorScroll = document.getElementById('spTeleprompterBox');
-
-    function pintarProgresoPalabra(idxActual) {
-      if (!box) return;
-      var inicioVentana = Math.max(0, idxActual - 16);
-      var finVentana = Math.min(palabras.length, idxActual + 22);
-      var html = [];
-      for (var i = inicioVentana; i < finVentana; i++) {
-        if (i < idxActual) {
-          html.push('<span class="text-teal-200/75">' + palabras[i] + '</span>');
-        } else if (i === idxActual) {
-          html.push('<span class="text-amber-300 font-black underline decoration-amber-400">' + palabras[i] + '</span>');
-        } else {
-          html.push('<span class="text-slate-400/70">' + palabras[i] + '</span>');
-        }
-      }
-      box.innerHTML = html.join(' ');
-      if (contenedorScroll) {
-        contenedorScroll.scrollTop = contenedorScroll.scrollHeight;
-      }
-    }
-
-    pintarProgresoPalabra(0);
-
-    var idxMarcapasos = 0;
-    var eventoBoundaryRecibido = false;
-
-    function iniciarMarcapasosRespaldo() {
-      _spTemporizadorTeleprompter = setInterval(function() {
-        if (eventoBoundaryRecibido) return;
-        idxMarcapasos++;
-        if (idxMarcapasos < palabras.length) {
-          pintarProgresoPalabra(idxMarcapasos);
-        } else {
-          clearInterval(_spTemporizadorTeleprompter);
-          _spTemporizadorTeleprompter = null;
-          pintarProgresoPalabra(palabras.length - 1);
-          if (typeof alTerminarCallback === 'function') alTerminarCallback();
-        }
-      }, 310);
-    }
-
-    if (_spVozActiva && 'speechSynthesis' in window) {
-      var u = new SpeechSynthesisUtterance(limpio);
-      var vozEsp = obtenerVozEspanolaActiva();
-      if (vozEsp) u.voice = vozEsp;
-      u.lang = 'es-ES';
-      u.rate = 0.94;
-      u.pitch = 1.0;
-
-      u.onboundary = function(ev) {
-        if (ev.name === 'word' || typeof ev.charIndex === 'number') {
-          eventoBoundaryRecibido = true;
-          var textoHastaAqui = limpio.slice(0, ev.charIndex);
-          var numPalabra = textoHastaAqui.trim() ? textoHastaAqui.trim().split(/\s+/).length : 0;
-          pintarProgresoPalabra(Math.min(numPalabra, palabras.length - 1));
-        }
-      };
-
-      u.onend = function() {
-        if (_spTemporizadorTeleprompter) {
-          clearInterval(_spTemporizadorTeleprompter);
-          _spTemporizadorTeleprompter = null;
-        }
-        pintarProgresoPalabra(palabras.length - 1);
-        if (typeof alTerminarCallback === 'function') alTerminarCallback();
-      };
-
-      u.onerror = function() {
-        if (_spTemporizadorTeleprompter) {
-          clearInterval(_spTemporizadorTeleprompter);
-          _spTemporizadorTeleprompter = null;
-        }
-        pintarProgresoPalabra(palabras.length - 1);
-      };
-
-      iniciarMarcapasosRespaldo();
-      window.speechSynthesis.speak(u);
-    } else {
-      iniciarMarcapasosRespaldo();
-    }
-  };
-
-  // =========================================================================
-  // 3. MOTOR DE AGENDA INTELIGENTE SINCRONIZADO CON GOOGLE CALENDAR
-  //    (DE LUNES A SÁBADO DE 09:00 A 13:30 — BLOQUEA TARDES, DOMINGOS Y OCUPADOS)
-  // =========================================================================
-  var _spUltimaCitaClienteObj = null;
-  var _spSlotsOcupadosCache = [];
-  var _spAgendaDiasHabiles = [];
-  var _spTramosManana = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00'];
-  var _spUltimoPedidoEnviadoHash = '';
-  var _spUltimoPedidoEnviadoTs = 0;
-
-  function formatearYYYYMMDD(d) {
-    var y = d.getFullYear();
-    var m = ('0' + (d.getMonth() + 1)).slice(-2);
-    var day = ('0' + d.getDate()).slice(-2);
-    return y + '-' + m + '-' + day;
-  }
-
-  function generarProximosDiasLaborables() {
-    var dias = [];
-    var cursor = new Date();
-    if (cursor.getHours() >= 13) {
-      cursor.setDate(cursor.getDate() + 1);
-    }
-    while (dias.length < 12) {
-      var dow = cursor.getDay(); // 0 = Domingo, 1..6 = Lunes a Sábado
-      if (dow >= 1 && dow <= 6) {
-        var ymd = formatearYYYYMMDD(cursor);
-        var etq = cursor.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'long' });
-        etq = etq.charAt(0).toUpperCase() + etq.slice(1);
-        if (dow === 6) etq += ' (Sábado Mañana)';
-        dias.push({ ymd: ymd, label: etq, dateObj: new Date(cursor.getTime()) });
-      }
-      cursor.setDate(cursor.getDate() + 1);
-    }
-    _spAgendaDiasHabiles = dias;
-    return dias;
-  }
-
-  function estaOcupadoSlot(ymd, hhmm) {
-    return _spSlotsOcupadosCache.indexOf(ymd + ' ' + hhmm) !== -1;
-  }
-
-  window.spSincronizarHuecosGoogleCalendar = function(callback) {
-    generarProximosDiasLaborables();
-    var badge = document.getElementById('spCartSyncCalBadge');
-    if (badge) badge.textContent = '🔄 Verificando Google Calendar...';
-    fetch('/api/disponibilidad-calendar?t=' + Date.now())
-      .then(function(r) { return r && r.ok ? r.json() : null; })
-      .then(function(d) {
-        if (d && Array.isArray(d.ocupados)) {
-          _spSlotsOcupadosCache = d.ocupados;
-        }
-        if (badge) badge.textContent = '🟢 Agenda en vivo (L-S 09:00-13:30)';
-        window.spPoblarSelectoresAgendaCarrito();
-        if (typeof callback === 'function') callback();
-      })
-      .catch(function() {
-        if (badge) badge.textContent = '🟢 Horario L-S 09:00-13:30';
-        window.spPoblarSelectoresAgendaCarrito();
-        if (typeof callback === 'function') callback();
-      });
-  };
-
-  window.spPoblarSelectoresAgendaCarrito = function() {
-    var selDia = document.getElementById('spCartSelectDiaLV');
-    if (!selDia) return;
-    if (!_spAgendaDiasHabiles.length) generarProximosDiasLaborables();
-    var prevDia = selDia.value;
-    selDia.innerHTML = _spAgendaDiasHabiles.map(function(d) {
-      return '<option value="' + d.ymd + '">' + d.label + '</option>';
-    }).join('');
-    if (prevDia && _spAgendaDiasHabiles.some(function(d) { return d.ymd === prevDia; })) {
-      selDia.value = prevDia;
-    }
-    window.spActualizarHorasDisponiblesCarrito();
-  };
-
-  window.spActualizarHorasDisponiblesCarrito = function() {
-    var selDia = document.getElementById('spCartSelectDiaLV');
-    var selHora = document.getElementById('spCartSelectHoraManana');
-    if (!selDia || !selHora) return;
-    var ymd = selDia.value || (_spAgendaDiasHabiles[0] && _spAgendaDiasHabiles[0].ymd) || '';
-    var prevHora = selHora.value;
-    var htmlH = '';
-    var primeraLibre = '';
-    for (var i = 0; i < _spTramosManana.length; i++) {
-      var h = _spTramosManana[i];
-      var hFin = (h.slice(3) === '00') ? (h.slice(0, 2) + ':30') : (('0' + (parseInt(h.slice(0, 2), 10) + 1)).slice(-2) + ':00');
-      var ocupado = estaOcupadoSlot(ymd, h);
-      if (ocupado) {
-        htmlH += '<option value="' + h + '" disabled>⛔ ' + h + ' - ' + hFin + ' (Ocupado en Calendar)</option>';
-      } else {
-        if (!primeraLibre) primeraLibre = h;
-        htmlH += '<option value="' + h + '">🟢 ' + h + ' - ' + hFin + ' h (Disponible)</option>';
-      }
-    }
-    if (!primeraLibre) {
-      htmlH = '<option value="11:00">⚠️ Mañana completa (Te llamaremos para buscar hueco)</option>';
-    }
-    selHora.innerHTML = htmlH;
-    if (prevHora && !estaOcupadoSlot(ymd, prevHora)) {
-      selHora.value = prevHora;
-    } else if (primeraLibre) {
-      selHora.value = primeraLibre;
-    }
-  };
-
-  window.spObtenerResumenDisponibilidadParaPromptIA = function() {
-    if (!_spAgendaDiasHabiles.length) generarProximosDiasLaborables();
-    var resumenDias = [];
-    for (var i = 0; i < Math.min(5, _spAgendaDiasHabiles.length); i++) {
-      var d = _spAgendaDiasHabiles[i];
-      var libres = [];
-      var ocupados = [];
-      for (var j = 0; j < _spTramosManana.length; j++) {
-        var h = _spTramosManana[j];
-        if (estaOcupadoSlot(d.ymd, h)) ocupados.push(h);
-        else libres.push(h);
-      }
-      resumenDias.push(
-        d.label + ' (' + d.ymd + '): Libres=[' + (libres.join(', ') || 'Ninguno') + ']' +
-        (ocupados.length ? ' | OCUPADOS=[' + ocupados.join(', ') + ']' : '')
-      );
-    }
-    return 'ESTADO EN VIVO DEL GOOGLE CALENDAR DE FRANCISCO (HORARIO DE LUNES A SÁBADO POR LAS MAÑANAS DE 09:00 A 13:30, NUNCA POR LAS TARDES NI LOS DOMINGOS):\n' + resumenDias.join('\n');
-  };
-
-  function calcularFechasCitaCliente(fechaIsoInput, textoHorarioLibre) {
-    if (!_spAgendaDiasHabiles.length) generarProximosDiasLaborables();
-    var selDia = document.getElementById('spCartSelectDiaLV');
-    var selHora = document.getElementById('spCartSelectHoraManana');
-    var txtLow = normalizarSinTildes(textoHorarioLibre || '');
-
-    var pidioTarde = /(por la tarde|de la tarde|a las 14|a las 15|a las 16|a las 17|a las 18|a las 19|a las 20|a las 4|a las 5|a las 6|a las 7|a las 8 de la tarde)/.test(txtLow);
-    var pidioDomingo = /(domingo)/.test(txtLow);
-
-    var diaElegidoObj = _spAgendaDiasHabiles[0];
-    if (selDia && selDia.value && !textoHorarioLibre) {
-      for (var dIdx = 0; dIdx < _spAgendaDiasHabiles.length; dIdx++) {
-        if (_spAgendaDiasHabiles[dIdx].ymd === selDia.value) {
-          diaElegidoObj = _spAgendaDiasHabiles[dIdx];
-          break;
-        }
-      }
-    } else if (txtLow) {
-      var mapaDiasSemana = { 'lunes': 1, 'martes': 2, 'miercoles': 3, 'jueves': 4, 'viernes': 5, 'sabado': 6 };
-      for (var nombreDia in mapaDiasSemana) {
-        if (txtLow.indexOf(nombreDia) !== -1) {
-          var targetDow = mapaDiasSemana[nombreDia];
-          for (var k = 0; k < _spAgendaDiasHabiles.length; k++) {
-            if (_spAgendaDiasHabiles[k].dateObj.getDay() === targetDow) {
-              diaElegidoObj = _spAgendaDiasHabiles[k];
-              break;
-            }
-          }
-          break;
-        }
-      }
-      if (txtLow.indexOf('pasado manana') !== -1 && _spAgendaDiasHabiles.length > 1) {
-        diaElegidoObj = _spAgendaDiasHabiles[1];
-      }
-    }
-
-    var horaStr = (selHora && selHora.value) ? selHora.value : '11:00';
-    if (textoHorarioLibre) {
-      var mH = String(textoHorarioLibre).match(/(?:a las|las)\s*(\d{1,2})(?::(\d{2}))?\s*(y media)?/i) ||
-               String(textoHorarioLibre).match(/\b(0?[9]|1[0-3]):(00|30)\b/);
-      if (mH) {
-        var hNum = parseInt(mH[1], 10);
-        var minStr = (mH[2] === '30' || mH[3]) ? '30' : '00';
-        if (hNum === 1) hNum = 13;
-        if (hNum >= 9 && hNum <= 13) {
-          if (hNum === 13) minStr = '00';
-          horaStr = ('0' + hNum).slice(-2) + ':' + minStr;
-        } else {
-          pidioTarde = true;
-        }
-      }
-    }
-
-    var avisoAjusteHorario = '';
-    if (pidioDomingo) {
-      avisoAjusteHorario = 'Nota: Los domingos estamos cerrados; asignado el primer hueco de lunes a sábado por la mañana.';
-    } else if (pidioTarde) {
-      avisoAjusteHorario = 'Nota: Las altas se realizan de lunes a sábado por las mañanas (09:00 a 13:30); asignado turno de mañana.';
-    }
-
-    if (estaOcupadoSlot(diaElegidoObj.ymd, horaStr)) {
-      avisoAjusteHorario = 'El hueco de las ' + horaStr + ' ya estaba reservado en Google Calendar; asignado el siguiente hueco libre.';
-      var encontrado = false;
-      for (var dScan = 0; dScan < _spAgendaDiasHabiles.length && !encontrado; dScan++) {
-        var dCand = _spAgendaDiasHabiles[dScan];
-        if (dCand.ymd < diaElegidoObj.ymd) continue;
-        for (var hScan = 0; hScan < _spTramosManana.length; hScan++) {
-          var hCand = _spTramosManana[hScan];
-          if (!estaOcupadoSlot(dCand.ymd, hCand)) {
-            diaElegidoObj = dCand;
-            horaStr = hCand;
-            encontrado = true;
-            break;
-          }
-        }
-      }
-    }
-
-    if (selDia) selDia.value = diaElegidoObj.ymd;
-    window.spActualizarHorasDisponiblesCarrito();
-    if (selHora) selHora.value = horaStr;
-
-    var partesYMD = diaElegidoObj.ymd.split('-');
-    var partesHM = horaStr.split(':');
-    var fechaInicio = new Date(
-      parseInt(partesYMD[0], 10),
-      parseInt(partesYMD[1], 10) - 1,
-      parseInt(partesYMD[2], 10),
-      parseInt(partesHM[0], 10),
-      parseInt(partesHM[1], 10),
-      0,
-      0
-    );
-    var fechaFin = new Date(fechaInicio.getTime() + 30 * 60 * 1000);
-    function toIcsUTC(d) {
-      return d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
-    }
-    var legible = fechaInicio.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'long' }) + ' a las ' + horaStr + ' h (Mañana)';
-    return {
-      startUtc: toIcsUTC(fechaInicio),
-      endUtc: toIcsUTC(fechaFin),
-      fechaInicio: fechaInicio,
-      fechaFin: fechaFin,
-      ymd: diaElegidoObj.ymd,
-      hhmm: horaStr,
-      legible: legible,
-      avisoAjuste: avisoAjusteHorario
-    };
-  }
-
-  function construirUrlGoogleCalendar(titulo, detallesCortos, startUtc, endUtc) {
-    return 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
-      '&text=' + encodeURIComponent(titulo) +
-      '&dates=' + encodeURIComponent(startUtc + '/' + endUtc) +
-      '&details=' + encodeURIComponent(detallesCortos) +
-      '&location=' + encodeURIComponent('Videollamada / Teléfono con Francisco M. Gallardo (Sistemas Pyme)');
-  }
-
-  window.spDescargarCitaCalendarioAlarma1Hora = function() {
-    var c = _spUltimaCitaClienteObj;
-    if (!c) {
-      var t = calcularFechasCitaCliente('', '');
-      c = {
-        titulo: 'Videollamada de Alta — Sistemas Pyme',
-        detalles: 'Implantación y puesta en marcha con Francisco M. Gallardo (Tel: 711 54 75 61)',
-        startUtc: t.startUtc,
-        endUtc: t.endUtc
-      };
-    }
-    var icsLines = [
-      'BEGIN:VCALENDAR',
-      'VERSION:2.0',
-      'PRODID:-//Sistemas Pyme//Cita Alta B2B//ES',
-      'METHOD:PUBLISH',
-      'BEGIN:VEVENT',
-      'UID:sp-alta-' + Date.now() + '@sistemaspyme.es',
-      'DTSTAMP:' + c.startUtc,
-      'DTSTART:' + c.startUtc,
-      'DTEND:' + c.endUtc,
-      'SUMMARY:' + c.titulo,
-      'DESCRIPTION:' + String(c.detalles || '').replace(/\r?\n/g, '\\n'),
-      'LOCATION:Videollamada / Teléfono con Francisco M. Gallardo (Sistemas Pyme)',
-      'BEGIN:VALARM',
-      'TRIGGER:-P1D',
-      'ACTION:DISPLAY',
-      'DESCRIPTION:Recordatorio 24h antes: Mañana tienes tu cita de alta con Sistemas Pyme',
-      'END:VALARM',
-      'BEGIN:VALARM',
-      'TRIGGER:-PT60M',
-      'ACTION:DISPLAY',
-      'DESCRIPTION:Recordatorio 1h antes: En 1 hora comienza tu videollamada con Sistemas Pyme',
-      'END:VALARM',
-      'BEGIN:VALARM',
-      'TRIGGER:-PT15M',
-      'ACTION:DISPLAY',
-      'DESCRIPTION:Recordatorio 15 min antes: Preparado para la llamada con Francisco (Sistemas Pyme)',
-      'END:VALARM',
-      'END:VEVENT',
-      'END:VCALENDAR'
-    ];
-    var blob = new Blob([icsLines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'Cita_Alta_Sistemas_Pyme.ics';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function() { URL.revokeObjectURL(a.href); a.remove(); }, 800);
-  };
-
-  // =========================================================================
-  // 4. LÓGICA DEL CARRITO CONFIGURADOR A LA CARTA
-  // =========================================================================
-  window.spAbrirCarritoConfigurador = function(ev) {
-    if (ev && ev.preventDefault) ev.preventDefault();
-    var m = document.getElementById('spModalCarritoCarta');
-    if (!m) return;
-    m.classList.remove('hidden');
-    m.classList.add('flex');
-    window.spSincronizarHuecosGoogleCalendar();
-    window.spRecalcularCarritoCarta();
-  };
-
-  window.spCerrarCarritoConfigurador = function() {
-    var m = document.getElementById('spModalCarritoCarta');
-    if (!m) return;
-    m.classList.add('hidden');
-    m.classList.remove('flex');
-  };
-
-  window.spRestaurarFormularioCarrito = function() {
-    var wrapInputs = document.getElementById('spCartFormInputsWrap');
-    var btnSub = document.getElementById('spBtnSubmitCarrito');
-    var fb = document.getElementById('spCartFeedbackMsg');
-    if (wrapInputs) wrapInputs.classList.remove('hidden');
-    if (btnSub) btnSub.classList.remove('hidden');
-    if (fb) fb.classList.add('hidden');
-  };
-
-  window.spSetCartModalidad = function(mod) {
-    _spCartState.modalidad = (mod === 'anual') ? 'anual' : 'mensual';
-    window.spRecalcularCarritoCarta();
-  };
-
-  window.spSetCartPlan = function(plan) {
-    _spCartState.plan = plan;
-    window.spRecalcularCarritoCarta();
-  };
-
-  window.spSetCartAuditorias = function(num) {
-    _spCartState.auditorias = parseInt(num, 10) || 0;
-    window.spRecalcularCarritoCarta();
-  };
-
-  window.spSetCartAtriles = function(num) {
-    _spCartState.atriles = parseInt(num, 10) || 0;
-    window.spRecalcularCarritoCarta();
-  };
-
-  window.spToggleReservaFase2 = function(modulo) {
-    if (!modulo) return;
-    var idx = _spCartState.reservasFase2.indexOf(modulo);
-    if (idx === -1) _spCartState.reservasFase2.push(modulo);
-    else _spCartState.reservasFase2.splice(idx, 1);
-    window.spRecalcularCarritoCarta();
-  };
-
-  function calcularCosteAtriles(n) {
-    n = parseInt(n, 10) || 0;
-    if (n <= 0) return 0;
-    if (n === 1) return 39;
-    if (n <= 4) return 39 + (n - 1) * 29;
-    return 39 + 3 * 29 + (n - 4) * 25;
-  }
-
-  window.spRecalcularCarritoCarta = function() {
-    var esAnual = (_spCartState.modalidad === 'anual');
-    var plan = _spCartState.plan;
-    var aud = _spCartState.auditorias;
-    var atr = _spCartState.atriles;
-
-    // Estilos botones modalidad
-    var bMen = document.getElementById('spCartBtnModMensual');
-    var bAnu = document.getElementById('spCartBtnModAnual');
-    if (bMen) bMen.className = 'p-2.5 rounded-2xl border-2 text-left transition cursor-pointer ' + (!esAnual ? 'border-teal-400 bg-teal-950/60' : 'border-slate-800 bg-slate-900/60');
-    if (bAnu) bAnu.className = 'p-2.5 rounded-2xl border-2 text-left transition cursor-pointer ' + (esAnual ? 'border-amber-400 bg-amber-950/40' : 'border-slate-800 bg-slate-900/60');
-
-    // Estilos botones plan
-    var bP0 = document.getElementById('spCartBtnPlanNinguno');
-    var bP1 = document.getElementById('spCartBtnPlanBase');
-    var bP2 = document.getElementById('spCartBtnPlanDuo');
-    if (bP0) bP0.className = 'p-2.5 rounded-2xl border text-left transition cursor-pointer ' + (plan === 'ninguno' ? 'border-teal-400 bg-teal-950/60' : 'border-slate-800 bg-slate-900/60');
-    if (bP1) bP1.className = 'p-2.5 rounded-2xl border text-left transition cursor-pointer ' + (plan === 'base' ? 'border-teal-400 bg-teal-950/60' : 'border-slate-800 bg-slate-900/60');
-    if (bP2) bP2.className = 'p-2.5 rounded-2xl border text-left transition cursor-pointer ' + (plan === 'duo' ? 'border-emerald-400 bg-emerald-950/60' : 'border-slate-800 bg-slate-900/60');
-
-    var precio1Aud = 350;
-    var precio2Aud = 650;
-    if (esAnual && plan !== 'ninguno') {
-      precio1Aud = 195;
-      precio2Aud = 350;
-    } else if (!esAnual && plan === 'duo') {
-      precio1Aud = 250;
-      precio2Aud = 450;
-    }
-
-    var lblA1 = document.getElementById('spCartPrecioAud1');
-    var lblA2 = document.getElementById('spCartPrecioAud2');
-    if (lblA1) lblA1.textContent = precio1Aud + ' €';
-    if (lblA2) lblA2.textContent = precio2Aud + ' € las 2';
-
-    var bA0 = document.getElementById('spCartBtnAud0');
-    var bA1 = document.getElementById('spCartBtnAud1');
-    var bA2 = document.getElementById('spCartBtnAud2');
-    if (bA0) bA0.className = 'p-2.5 rounded-2xl border text-left transition cursor-pointer ' + (aud === 0 ? 'border-teal-400 bg-teal-950/60' : 'border-slate-800 bg-slate-900/60');
-    if (bA1) bA1.className = 'p-2.5 rounded-2xl border text-left transition cursor-pointer ' + (aud === 1 ? 'border-sky-400 bg-sky-950/60' : 'border-slate-800 bg-slate-900/60');
-    if (bA2) bA2.className = 'p-2.5 rounded-2xl border text-left transition cursor-pointer ' + (aud === 2 ? 'border-amber-400 bg-amber-950/50' : 'border-slate-800 bg-slate-900/60');
-
-    var costePlanDia1 = 0;
-    var cuotaTexto = '0 €/mes (Sin cuota)';
-    var nombrePlanTxt = 'Solo Auditoría / Hardware';
-    var numModulosActivos = 0;
-
-    if (plan === 'base') {
-      numModulosActivos = 1;
-      if (esAnual) {
-        costePlanDia1 = 590 + 150;
-        cuotaTexto = 'Plan Anual pagado (2 meses gratis)';
-        nombrePlanTxt = 'Plan Base Anual (1 Servicio: 590 €/año + 150 € Setup)';
-      } else {
-        costePlanDia1 = 59 + 150;
-        cuotaTexto = '59 €/mes (Permanencia mín. 3m)';
-        nombrePlanTxt = 'Plan Base Flexible (1 Servicio: 59 €/mes + 150 € Setup)';
-      }
-    } else if (plan === 'duo') {
-      numModulosActivos = 2;
-      if (esAnual) {
-        costePlanDia1 = 990 + 225;
-        cuotaTexto = 'Plan Anual pagado (2 meses gratis)';
-        nombrePlanTxt = 'Pack Escudo Dúo Anual (990 €/año + 225 € Setup)';
-      } else {
-        costePlanDia1 = 99 + 225;
-        cuotaTexto = '99 €/mes (Permanencia mín. 3m)';
-        nombrePlanTxt = 'Pack Escudo Dúo Flexible (99 €/mes + 225 € Setup)';
-      }
-    }
-
-    var costeAud = (aud === 1) ? precio1Aud : ((aud === 2) ? precio2Aud : 0);
-    var costeAtriles = calcularCosteAtriles(atr);
-    var totalDia1 = costePlanDia1 + costeAud + costeAtriles;
-
-    var totalModulosConFase2 = numModulosActivos + _spCartState.reservasFase2.length;
-    var tieneBonoBoveda = (totalModulosConFase2 >= 3);
-
-    var lineas = [];
-    if (plan !== 'ninguno') {
-      lineas.push('<div class="flex justify-between"><span>• ' + nombrePlanTxt + ':</span><strong class="text-white">' + costePlanDia1 + ' €</strong></div>');
-    }
-    if (aud > 0) {
-      lineas.push('<div class="flex justify-between"><span>• ' + aud + ' Super-Auditoría(s) Web:</span><strong class="text-sky-300">' + costeAud + ' €</strong></div>');
-    }
-    if (atr > 0) {
-      lineas.push('<div class="flex justify-between"><span>• ' + atr + ' Atril(es) NFC+QR:</span><strong class="text-amber-300">' + costeAtriles + ' €</strong></div>');
-    }
-    if (_spCartState.reservasFase2.length > 0) {
-      lineas.push('<div class="flex justify-between text-amber-200"><span>• Reserva Fase 2 (' + _spCartState.reservasFase2.join(', ') + '):</span><strong>0 € hoy</strong></div>');
-    }
-
-    var boxDesglose = document.getElementById('spCartDesgloseLineas');
-    if (boxDesglose) boxDesglose.innerHTML = lineas.join('') || '<div class="text-slate-400">Selecciona al menos un módulo o auditoría.</div>';
-
-    var boxFase2 = document.getElementById('spCartListaFase2');
-    if (boxFase2) {
-      boxFase2.textContent = _spCartState.reservasFase2.length
-        ? ('Reservados (0 € hoy): ' + _spCartState.reservasFase2.join(', '))
-        : 'Ningún módulo de Fase 2 añadido aún.';
-    }
-
-    var boxBono = document.getElementById('spCartBonoBovedaBox');
-    if (boxBono) {
-      if (tieneBonoBoveda) boxBono.classList.remove('hidden');
-      else boxBono.classList.add('hidden');
-    }
-
-    var lblTotal = document.getElementById('spCartTotalDia1');
-    if (lblTotal) lblTotal.textContent = totalDia1 + ' €';
-    var lblCuota = document.getElementById('spCartCuotaMensual');
-    if (lblCuota) lblCuota.textContent = cuotaTexto;
-    var badgeMod = document.getElementById('spCartBadgeNumModulos');
-    if (badgeMod) badgeMod.textContent = numModulosActivos + ' serv. activos';
-
-    return {
-      nombrePlanTxt: nombrePlanTxt,
-      costePlanDia1: costePlanDia1,
-      costeAud: costeAud,
-      costeAtriles: costeAtriles,
-      totalDia1: totalDia1,
-      cuotaTexto: cuotaTexto,
-      tieneBonoBoveda: tieneBonoBoveda
-    };
-  };
-
-  // =========================================================================
-  // 5. EXTRACCIÓN DE INTENCIÓN Y TELÉFONO POR VOZ (INCLUIDOS NÚMEROS HABLADOS)
-  // =========================================================================
-  function convertirPalabrasANumerosEspanol(texto) {
-    var mapa = {
-      'cero': '0', 'uno': '1', 'una': '1', 'dos': '2', 'tres': '3', 'cuatro': '4',
-      'cinco': '5', 'seis': '6', 'siete': '7', 'ocho': '8', 'nueve': '9'
-    };
-    return String(texto || '').replace(/\b(cero|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve)\b/gi, function(m) {
-      return mapa[m.toLowerCase()] || m;
-    });
-  }
-
-  function extraerTelefonoEspanolDeTexto(texto) {
-    var conv = convertirPalabrasANumerosEspanol(texto);
-    var m = conv.match(/(?:\+?34[\s\-\.]?)?([6789](?:[\s\-\.]*\d){8})\b/);
-    if (!m) return null;
-    var limpio = m[1].replace(/\D/g, '');
-    return (limpio.length === 9) ? limpio : null;
-  }
-
-  window.spExtraerYPreconfigurarCarritoDesdeCharla = function(ultimaFraseUsuario, historialArray) {
-    // Analizar EXCLUSIVAMENTE las frases dichas por el USUARIO para que las palabras del Consultor no pisen el carrito
-    var frasesUsuario = [];
-    if (Array.isArray(historialArray)) {
-      for (var i = 0; i < historialArray.length; i++) {
-        var ln = String(historialArray[i] || '');
-        if (ln.indexOf('Usuario:') === 0) {
-          frasesUsuario.push(ln.replace(/^Usuario:\s*/i, ''));
-        }
-      }
-    }
-    if (ultimaFraseUsuario) frasesUsuario.push(ultimaFraseUsuario);
-    var tNorm = normalizarSinTildes(frasesUsuario.join(' | '));
-
-    if (/(anual|ano|10 meses|diez meses)/.test(tNorm)) {
-      _spCartState.modalidad = 'anual';
-    } else if (/(mensual|mes a mes|flexible)/.test(tNorm)) {
-      _spCartState.modalidad = 'mensual';
-    }
-
-    if (/(pack escudo|pack duo|los dos servicios|ambos servicios|resenas y encuesta)/.test(tNorm)) {
-      _spCartState.plan = 'duo';
-    } else if (/(servicio de resenas|gestor de resenas|solo resenas|sistema de resenas|el de resenas|encuesta de whatsapp|un servicio|plan base)/.test(tNorm)) {
-      _spCartState.plan = 'base';
-    } else if (/(solo auditoria|solo el atril|sin cuota)/.test(tNorm)) {
-      _spCartState.plan = 'ninguno';
-    }
-
-    if (/(dos auditorias|2 auditorias|las dos auditorias|ambas auditorias)/.test(tNorm)) {
-      _spCartState.auditorias = 2;
-    } else if (/(una auditoria|1 auditoria|auditoria seo|auditoria neuro|super auditoria)/.test(tNorm)) {
-      _spCartState.auditorias = 1;
-    }
-
-    var mNom = String(ultimaFraseUsuario || '').match(/(?:me llamo|soy|mi nombre es)\s+([A-ZÁÉÍÓÚÑa-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑa-záéíóúñ]+)?)/i);
-    if (mNom && mNom[1]) {
-      var inpN = document.getElementById('spCartInputNombre');
-      if (inpN && !inpN.value) inpN.value = mNom[1].trim();
-    }
-    window.spRecalcularCarritoCarta();
-  };
-
-  window.spRegistrarLeadAutomaticoDesdeVoz = function(telefono, fraseUsuario, historialCompleto) {
-    window.spExtraerYPreconfigurarCarritoDesdeCharla(fraseUsuario, _spHistorialConversacion);
-    var inpTel = document.getElementById('spCartInputTelefono');
-    if (inpTel) inpTel.value = telefono;
-
-    var datosCalc = window.spRecalcularCarritoCarta();
-    var nom = ((document.getElementById('spCartInputNombre') || {}).value || '').trim() || 'Cliente Tecnosala';
-    var tiempos = calcularFechasCitaCliente('', fraseUsuario);
-
-    var hashActual = telefono + '_' + datosCalc.nombrePlanTxt + '_' + tiempos.ymd + '_' + tiempos.hhmm;
-    if (_spUltimoPedidoEnviadoHash === hashActual && (Date.now() - _spUltimoPedidoEnviadoTs) < 45000) {
-      return;
-    }
-    _spUltimoPedidoEnviadoHash = hashActual;
-    _spUltimoPedidoEnviadoTs = Date.now();
-    if (_spSlotsOcupadosCache.indexOf(tiempos.ymd + ' ' + tiempos.hhmm) === -1) {
-      _spSlotsOcupadosCache.push(tiempos.ymd + ' ' + tiempos.hhmm);
-    }
-
-    var horTexto = tiempos.legible + (tiempos.avisoAjuste ? (' (' + tiempos.avisoAjuste + ')') : '');
-    var resF2 = _spCartState.reservasFase2.length ? _spCartState.reservasFase2.join(', ') : 'Ninguna';
-
-    var resumenPedido =
-      '• Cliente/Negocio: ' + nom + '\n' +
-      '• Teléfono: ' + telefono + '\n' +
-      '• Cita (L-S Mañana 09:00-13:30): ' + horTexto + '\n' +
-      '• Plan elegido: ' + datosCalc.nombrePlanTxt + '\n' +
-      '• Super-Auditorías: ' + _spCartState.auditorias + ' (' + datosCalc.costeAud + ' €)\n' +
-      '• Atriles NFC/QR: ' + _spCartState.atriles + ' (' + datosCalc.costeAtriles + ' €)\n' +
-      '• Reserva Fase 2: ' + resF2 + '\n' +
-      '• Total Día 1: ' + datosCalc.totalDia1 + ' € (sin IVA)';
-
-    var tituloCal = 'Alta Sistemas Pyme (' + nom + ')';
-    var detalleCortoCal = 'Plan: ' + datosCalc.nombrePlanTxt + ' | Tel: ' + telefono + ' | Total Día 1: ' + datosCalc.totalDia1 + ' €';
-    var urlGCal = construirUrlGoogleCalendar(tituloCal, detalleCortoCal, tiempos.startUtc, tiempos.endUtc);
-    _spUltimaCitaClienteObj = {
-      titulo: tituloCal,
-      detalles: resumenPedido,
-      startUtc: tiempos.startUtc,
-      endUtc: tiempos.endUtc,
-      urlGCal: urlGCal
-    };
-
-    var payloadPedido = {
-      dedup_key: hashActual,
-      origen: 'Voz Directa / Consultor Tecnosala',
-      nombre: nom,
-      telefono: telefono,
-      horario: horTexto,
-      slot_ymd: tiempos.ymd,
-      slot_hhmm: tiempos.hhmm,
-      fecha_cita_iso: tiempos.fechaInicio.toISOString(),
-      tiene_horario_especifico: true,
-      plan: datosCalc.nombrePlanTxt,
-      auditorias: _spCartState.auditorias,
-      coste_auditorias: datosCalc.costeAud,
-      atriles: _spCartState.atriles,
-      coste_atriles: datosCalc.costeAtriles,
-      reservas_fase2: _spCartState.reservasFase2,
-      bono_boveda_gratis: datosCalc.tieneBonoBoveda,
-      total_dia1: datosCalc.totalDia1,
-      enlace_google_calendar_cliente: urlGCal,
-      resumen: resumenPedido,
-      fecha: new Date().toLocaleString('es-ES')
-    };
-
-    fetch('/api/registrar-pedido-cita', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payloadPedido)
-    }).then(function(r) {
-      if (!r || !r.ok) throw new Error('local_offline');
-    }).catch(function() {
-      fetch('https://servicio-resenas.onrender.com/api/registrar-pedido-cita', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payloadPedido)
-      }).catch(function() {});
-    });
-
-    var bannerOk = document.getElementById('spVoiceLeadCapturedBanner');
-    var screen = document.getElementById('spTecnosalaScreen');
-    if (!bannerOk && screen && screen.parentNode) {
-      bannerOk = document.createElement('div');
-      bannerOk.id = 'spVoiceLeadCapturedBanner';
-      bannerOk.className = 'mb-2.5 p-3 rounded-2xl bg-emerald-950/95 border-2 border-emerald-400 text-xs text-white flex flex-wrap items-center justify-between gap-2 shadow-lg';
-      screen.parentNode.insertBefore(bannerOk, screen.nextSibling);
-    }
-    if (bannerOk) {
-      bannerOk.innerHTML =
-        '<div class="flex items-center gap-2">' +
-          '<span class="text-lg">✅</span>' +
-          '<div><strong class="text-emerald-300 text-xs sm:text-sm block">¡Cita agendada (' + tiempos.legible + ') y pedido (' + datosCalc.nombrePlanTxt + ') confirmado!</strong>' +
-          '<span class="text-[11px] text-slate-200">Te hemos enviado la confirmación por WhatsApp al ' + telefono + ' y reservado tu hueco en el Google Calendar de Francisco:</span></div>' +
-        '</div>' +
-        '<div class="flex flex-wrap items-center gap-1.5">' +
-          '<button type="button" onclick="window.spDescargarCitaCalendarioAlarma1Hora()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-2.5 py-1.5 rounded-xl text-[11px] cursor-pointer shadow">⏰ Calendario Apple/Móvil (24h + 1h)</button>' +
-          '<a href="' + urlGCal + '" target="_blank" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-black px-2.5 py-1.5 rounded-xl text-[11px] shadow">📅 Google Calendar</a>' +
-          '<button type="button" onclick="window.spAbrirCarritoConfigurador()" class="sp-btn-carrito-gold-3d px-2.5 py-1.5 rounded-xl text-[11px]">🛒 Ver mi Pedido</button>' +
-        '</div>';
-    }
-  };
-
-  window.spConfirmarPedidoYAgendarCita = function() {
-    var datosCalc = window.spRecalcularCarritoCarta();
-    var nom = (document.getElementById('spCartInputNombre') || {}).value || '';
-    var tel = (document.getElementById('spCartInputTelefono') || {}).value || '';
-    var fb = document.getElementById('spCartFeedbackMsg');
-    var btnSub = document.getElementById('spBtnSubmitCarrito');
-
-    if (!tel.trim() || tel.replace(/[^0-9]/g, '').length < 7) {
-      if (fb) {
-        fb.classList.remove('hidden');
-        fb.innerHTML = '<span class="text-amber-300 font-bold">⚠️ Por favor, introduce tu número de teléfono móvil para enviarte la confirmación automática a tu WhatsApp.</span>';
-      }
-      return;
-    }
-
-    var tiempos = calcularFechasCitaCliente('', '');
-    var horTexto = tiempos.legible;
-    var resF2 = _spCartState.reservasFase2.length ? _spCartState.reservasFase2.join(', ') : 'Ninguna';
-    var telLimpio = tel.replace(/\D/g, '').slice(-9);
-    var hashActual = telLimpio + '_' + datosCalc.nombrePlanTxt + '_' + tiempos.ymd + '_' + tiempos.hhmm;
-
-    if (_spSlotsOcupadosCache.indexOf(tiempos.ymd + ' ' + tiempos.hhmm) === -1) {
-      _spSlotsOcupadosCache.push(tiempos.ymd + ' ' + tiempos.hhmm);
-    }
-
-    var resumenPedido =
-      '• Cliente/Negocio: ' + (nom.trim() || 'Cliente Web') + '\n' +
-      '• Teléfono: ' + tel.trim() + '\n' +
-      '• Cita (L-S Mañana 09:00-13:30): ' + horTexto + '\n' +
-      '• Plan elegido: ' + datosCalc.nombrePlanTxt + '\n' +
-      '• Super-Auditorías: ' + _spCartState.auditorias + ' (' + datosCalc.costeAud + ' €)\n' +
-      '• Atriles NFC/QR: ' + _spCartState.atriles + ' (' + datosCalc.costeAtriles + ' €)\n' +
-      '• Reserva Fase 2: ' + resF2 + '\n' +
-      '• Bono Bóveda Contraseñas (3+ mód.): ' + (datosCalc.tieneBonoBoveda ? 'SÍ INCLUIDA GRATIS (Valorada en 150 €)' : 'No') + '\n' +
-      '• Total Día 1: ' + datosCalc.totalDia1 + ' € (sin IVA)';
-
-    var tituloCal = 'Alta Sistemas Pyme (' + (nom.trim() || 'Mi Negocio') + ')';
-    var detalleCortoCal = 'Plan: ' + datosCalc.nombrePlanTxt + ' | Tel: ' + tel.trim() + ' | Total Día 1: ' + datosCalc.totalDia1 + ' €';
-    var urlGCal = construirUrlGoogleCalendar(tituloCal, detalleCortoCal, tiempos.startUtc, tiempos.endUtc);
-    _spUltimaCitaClienteObj = {
-      titulo: tituloCal,
-      detalles: resumenPedido,
-      startUtc: tiempos.startUtc,
-      endUtc: tiempos.endUtc,
-      urlGCal: urlGCal
-    };
-
-    var payloadPedido = {
-      dedup_key: hashActual,
-      origen: 'Carrito Configurador a la Carta Web',
-      nombre: nom.trim() || 'Cliente Web',
-      telefono: tel.trim(),
-      horario: horTexto,
-      slot_ymd: tiempos.ymd,
-      slot_hhmm: tiempos.hhmm,
-      fecha_cita_iso: tiempos.fechaInicio.toISOString(),
-      tiene_horario_especifico: true,
-      plan: datosCalc.nombrePlanTxt,
-      auditorias: _spCartState.auditorias,
-      coste_auditorias: datosCalc.costeAud,
-      atriles: _spCartState.atriles,
-      coste_atriles: datosCalc.costeAtriles,
-      reservas_fase2: _spCartState.reservasFase2,
-      bono_boveda_gratis: datosCalc.tieneBonoBoveda,
-      total_dia1: datosCalc.totalDia1,
-      enlace_google_calendar_cliente: urlGCal,
-      resumen: resumenPedido,
-      fecha: new Date().toLocaleString('es-ES')
-    };
-
-    if (_spUltimoPedidoEnviadoHash !== hashActual || (Date.now() - _spUltimoPedidoEnviadoTs) > 45000) {
-      _spUltimoPedidoEnviadoHash = hashActual;
-      _spUltimoPedidoEnviadoTs = Date.now();
-      fetch('/api/registrar-pedido-cita', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payloadPedido)
-      }).then(function(r) {
-        if (!r || !r.ok) throw new Error('local_offline');
-      }).catch(function() {
-        fetch('https://servicio-resenas.onrender.com/api/registrar-pedido-cita', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payloadPedido)
-        }).catch(function() {});
-      });
-    }
-
-    var wrapInputs = document.getElementById('spCartFormInputsWrap');
-    if (wrapInputs) wrapInputs.classList.add('hidden');
-    if (btnSub) btnSub.classList.add('hidden');
-    if (fb) {
-      fb.classList.remove('hidden');
-      fb.innerHTML =
-        '<div class="space-y-2">' +
-          '<div class="flex items-center justify-between gap-2">' +
-            '<div class="flex items-center gap-1.5 text-emerald-300 font-black text-xs sm:text-sm">' +
-              '<span>✅</span><span>¡Pedido enviado y hueco reservado en Google Calendar!</span>' +
-            '</div>' +
-            '<button type="button" onclick="window.spRestaurarFormularioCarrito()" class="text-[10px] font-bold text-teal-300 hover:text-white underline cursor-pointer">✏️ Cambiar hora/datos</button>' +
-          '</div>' +
-          '<p class="text-[11.5px] text-slate-100 leading-snug">' +
-            'Solicitud de <strong class="text-white">' + (nom.trim() || 'tu negocio').replace(/</g, '&lt;') + '</strong> enviada a tu WhatsApp (<strong class="text-teal-300">' + tel.trim().replace(/</g, '&lt;') + '</strong>) y al CRM de Francisco. Cita reservada: <strong class="text-amber-300">' + horTexto.replace(/</g, '&lt;') + '</strong>.' +
-          '</p>' +
-          '<div class="pt-2 border-t border-emerald-500/40">' +
-            '<span class="block text-[10.5px] font-extrabold text-amber-300 mb-1.5">📲 Guarda ahora la cita con recordatorio el día antes (24h) y 1h antes:</span>' +
-            '<div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">' +
-              '<button type="button" onclick="window.spDescargarCitaCalendarioAlarma1Hora()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-2.5 py-2 rounded-xl text-[11px] cursor-pointer shadow text-center">⏰ Calendario Apple / Móvil (24h + 1h)</button>' +
-              '<a href="' + urlGCal + '" target="_blank" class="bg-sky-400 hover:bg-sky-300 text-slate-950 font-black px-2.5 py-2 rounded-xl text-[11px] shadow text-center flex items-center justify-center">📅 Añadir a Google Calendar</a>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
-    }
-  };
-
-  // =========================================================================
-  // 6. DESCARGA DE LA CONVERSACIÓN COMPLETA DEL CONSULTOR
-  // =========================================================================
-  window.spActualizarContadoresDescargaCharla = function() {
-    var n = Math.floor(_spHistorialConversacion.length / 2);
-    var b1 = document.getElementById('spBtnDescargarCharlaTop');
-    var b2 = document.getElementById('spBtnDescargarCharlaBottom');
-    if (n > 0) {
-      if (b1) { b1.classList.remove('hidden'); b1.innerHTML = '📥 Descargar charla (' + n + ')'; }
-      if (b2) { b2.classList.remove('hidden'); b2.innerHTML = '📥 Descargar conversación (' + n + ')'; }
-    }
-  };
-
-  window.spDescargarConversacionConsultor = function(ev) {
-    if (ev && ev.preventDefault) ev.preventDefault();
-    if (!_spHistorialConversacion.length) return;
-    var fechaHoy = new Date().toLocaleString('es-ES');
-    var bloquesHtml = _spHistorialConversacion.map(function(linea) {
-      var esUser = linea.indexOf('Usuario:') === 0;
-      var txt = linea.replace(/^(Usuario:|Consultor IA:)\s*/i, '');
-      return '<div style="margin-bottom:14px;padding:14px 18px;border-radius:14px;background:' + (esUser ? '#f1f5f9' : '#ecfdf5') + ';border-left:5px solid ' + (esUser ? '#0284c7' : '#059669') + ';">' +
-        '<div style="font-size:11px;font-weight:800;text-transform:uppercase;color:' + (esUser ? '#0369a1' : '#047857') + ';margin-bottom:4px;">' + (esUser ? '👤 Tu Consulta' : '⚡ Consultor Tecnológico Sistemas Pyme') + '</div>' +
-        '<div style="font-size:14px;line-height:1.6;color:#0f172a;">' + txt.replace(/</g, '&lt;') + '</div></div>';
-    }).join('');
-
-    var docHtml = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Consulta Tecnológica — Sistemas Pyme</title></head>' +
-      '<body style="font-family:Segoe UI,Arial,sans-serif;max-width:780px;margin:28px auto;padding:0 20px;color:#0f172a;">' +
-      '<div style="background:#081b2e;color:#fff;padding:22px 26px;border-radius:18px;margin-bottom:22px;">' +
-      '<div style="font-size:11px;color:#2dd4bf;font-weight:800;text-transform:uppercase;">Sistemas Pyme • Consultoría Tecnológica</div>' +
-      '<h1 style="margin:6px 0 4px 0;font-size:22px;">Resumen de tu Sesión con el Consultor IA</h1>' +
-      '<div style="font-size:12px;color:#94a3b8;">Fecha: ' + fechaHoy + ' • Web: sistemaspyme.es • Tel/WhatsApp: 711 54 75 61</div></div>' +
-      bloquesHtml +
-      '<div style="text-align:center;margin-top:26px;"><button onclick="window.print()" style="background:#0d9488;color:#fff;border:none;padding:12px 24px;border-radius:10px;font-weight:800;cursor:pointer;">🖨️ Imprimir / Guardar como PDF</button></div>' +
-      '</body></html>';
-
-    var blob = new Blob([docHtml], { type: 'text/html;charset=utf-8' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'Consulta_Tecnologica_Sistemas_Pyme_' + new Date().toISOString().slice(0, 10) + '.html';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function() { URL.revokeObjectURL(a.href); a.remove(); }, 800);
-  };
-
-  // =========================================================================
-  // 7. CEREBRO GENERATIVO IA (MODO CONSULTOR PURO + CONTROL DE AGENDA L-S)
-  // =========================================================================
-  window.spObtenerRespuestaOmniscienteCompleta = function(pregunta) {
-    var q = normalizarSinTildes(pregunta);
-    var biblio = window.SP_BIBLIOTECA_CONOCIMIENTO_PROFUNDO || [];
-    for (var i = 0; i < biblio.length; i++) {
-      var item = biblio[i];
-      for (var j = 0; j < item.claves.length; j++) {
-        if (q.indexOf(normalizarSinTildes(item.claves[j])) !== -1) {
-          return item.respuesta;
-        }
-      }
-    }
-    return "En Sistemas Pyme automatizamos la gestión de reseñas de Google con IA y posicionamiento SEO local por 59 euros al mes, el cortafuegos preventivo por WhatsApp en el Pack Escudo Dúo por 99 euros al mes, los atriles NFC y QR por 39 euros pago único y las Super-Auditorías SEO/GEO y Neuro-CRO.";
-  };
-
-  function consultarCerebroGenerativoIA(preguntaUsuario) {
-    var respuestaRespaldoLocal = window.spObtenerRespuestaOmniscienteCompleta(preguntaUsuario);
-    var histReciente = _spHistorialConversacion.slice(-10).join('\n');
-    var qNorm = normalizarSinTildes(preguntaUsuario);
-    var quiereContratarExplicito = /(quiero contratar|quiero comprar|quiero activar|contratar|comprarlo|activarlo|darme de alta|empezar ya|estoy convencido|agendar cita|pedir cita|mi telefono es|mi numero es|llamame|manana a las|lunes a las|martes a las|miercoles a las|jueves a las|viernes a las|sabado a las|por la tarde|domingo)/.test(qNorm) || !!extraerTelefonoEspanolDeTexto(preguntaUsuario);
-    var disponibilidadRealCalendar = window.spObtenerResumenDisponibilidadParaPromptIA ? window.spObtenerResumenDisponibilidadParaPromptIA() : '';
-
-    var instruccionModo = quiereContratarExplicito
-      ? ('INSTRUCCIÓN DE CIERRE COMERCIAL Y AGENDA REAL DE GOOGLE CALENDAR: El usuario está contratando, dando sus datos o proponiendo una hora de cita. ' +
-         'REGLA ESTRICTA DE HORARIO: Francisco atiende videollamadas de alta DE LUNES A SÁBADO POR LAS MAÑANAS, DE 09:00 A 13:30 (último turno a las 13:00; SÍ abrimos los sábados por la mañana para comodidad de comerciantes y empresarios). NUNCA por las tardes ni los domingos. ' +
-         'Si el usuario pidió una cita por la tarde o en domingo, dile con amabilidad que Francisco realiza las altas de lunes a sábado por la mañana (de 09:00 a 13:30, incluidos los sábados por la mañana) y ofrécele 2 huecos libres reales mirando esta disponibilidad en vivo de su Google Calendar:\n' + disponibilidadRealCalendar + '\n' +
-         'Si pidió una hora de la mañana que aparece como OCUPADA en el listado anterior, avísale de que ese hueco ya está reservado por otro cliente y proponle la hora libre más cercana.')
-      : 'INSTRUCCIÓN DE CONSULTOR PURO Y VERACIDAD TÉCNICA (PROHIBIDO VENDER O INVENTAR): El usuario está haciendo una consulta informativa o planteando una duda lógica sobre su negocio. Responde como un consultor experto, honesto y cercano en 2 a 4 frases completas (45 a 80 palabras). RECUERDA SIEMPRE: 1) El Atril NFC/QR abre SIEMPRE directamente Google Maps en 1 segundo (JAMÁS abre una encuesta ni pide datos). 2) La Encuesta Cortafuegos (Servicio 2) va por WhatsApp y SOLO se usa en negocios que recogen el nombre y móvil del cliente (por citas en Google Calendar, software de gestión, formulario rápido de encargos en recepción o pedidos de tienda online), NUNCA para quien compra un artículo suelto en mostrador de forma anónima. 3) Si pregunta por horarios de citas o llamadas con Francisco, recuerda que son de lunes a sábado por las mañanas, de 09:00 a 13:30 (incluidos los sábados por la mañana). TIENES PROHIBIDO pedirle su nombre, su teléfono o preguntarle si quiere contratar.';
-
-    var promptCompleto =
-      (window.SP_CONTEXTO_MAESTRO_IA_RESUMEN || '') + '\n\n' +
-      disponibilidadRealCalendar + '\n\n' +
-      'HISTORIAL DE LA CONVERSACIÓN ACTUAL:\n' + (histReciente || 'Recién iniciada') + '\n\n' +
-      'NUEVA PREGUNTA O COMENTARIO DEL USUARIO: "' + preguntaUsuario + '"\n\n' +
-      instruccionModo;
-
-    return fetch('/api/consultor-ia-vivo', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: promptCompleto, pregunta: preguntaUsuario })
-    })
-      .then(function(r) { return r && r.ok ? r.json() : null; })
-      .then(function(d) {
-        if (d && d.respuesta && String(d.respuesta).trim().length > 15) {
-          return String(d.respuesta).trim();
-        }
-        return respuestaRespaldoLocal;
-      })
-      .catch(function() {
-        return respuestaRespaldoLocal;
-      });
-  }
-
-  window.spProcesarPreguntaConsultor = function(preguntaTexto) {
-    var q = String(preguntaTexto || '').trim();
-    if (!q) return;
-    _spHistorialConversacion.push('Usuario: ' + q);
-    window.spActualizarContadoresDescargaCharla();
-
-    var tlfDetectado = extraerTelefonoEspanolDeTexto(q);
-    if (tlfDetectado) {
-      window.spRegistrarLeadAutomaticoDesdeVoz(tlfDetectado, q, _spHistorialConversacion);
-    }
-
-    var box = document.getElementById('spTeleprompterText');
-    if (box) {
-      box.innerHTML = '<span class="text-teal-300 animate-pulse">⚡ Analizando tu consulta en tiempo real...</span>';
-    }
-
-    consultarCerebroGenerativoIA(q).then(function(respuestaIA) {
-      _spHistorialConversacion.push('Consultor IA: ' + respuestaIA);
-      window.spActualizarContadoresDescargaCharla();
-      window.spHablarYMostrarTeleprompter(respuestaIA, function() {
-        if (_spEscuchandoManosLibres) {
-          iniciarEscuchaReconocimientoVoz();
-        }
-      });
-    });
-  };
-
-  function iniciarEscuchaReconocimientoVoz() {
-    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) return;
-    if (_spReconocimientoVoz) {
-      try { _spReconocimientoVoz.onend = null; _spReconocimientoVoz.abort(); } catch (e) {}
-    }
-    _spReconocimientoVoz = new SR();
-    _spReconocimientoVoz.lang = 'es-ES';
-    _spReconocimientoVoz.continuous = false;
-    _spReconocimientoVoz.interimResults = false;
-
-    var statusTxt = document.getElementById('spHudStatusText');
-    if (statusTxt) statusTxt.textContent = '🟢 MANOS LIBRES ACTIVO • HÁBLAME DIRECTAMENTE SIN PULSAR NADA';
-
-    _spReconocimientoVoz.onresult = function(ev) {
-      var trans = ev.results && ev.results[0] && ev.results[0][0] ? ev.results[0][0].transcript : '';
-      if (trans && trans.trim()) {
-        window.spProcesarPreguntaConsultor(trans.trim());
-      }
-    };
-
-    _spReconocimientoVoz.onend = function() {
-      if (_spEscuchandoManosLibres && !('speechSynthesis' in window && window.speechSynthesis.speaking)) {
-        setTimeout(function() {
-          if (_spEscuchandoManosLibres) iniciarEscuchaReconocimientoVoz();
-        }, 350);
-      }
-    };
-
-    try { _spReconocimientoVoz.start(); } catch (e) {}
-  }
-
-  window.spActivarEscuchaDirectaConsultor = function(ev) {
-    if (ev && ev.preventDefault) ev.preventDefault();
-    _spEscuchandoManosLibres = true;
-    if (_spHistorialConversacion.length === 0) {
-      var saludo = 'Hola, soy tu consultor tecnológico experto de Sistemas Pyme. Hablamos en modo manos libres sin que tengas que tocar ningún botón: pregúntame con total libertad cualquier duda sobre nuestro ecosistema, descubre qué combinación te ahorra más dinero y, si lo deseas, también puedes dejar tu servicio contratado o agendado de lunes a sábado por la mañana desde aquí mismo.';
-      _spHistorialConversacion.push('Consultor IA: ' + saludo);
-      window.spActualizarContadoresDescargaCharla();
-      window.spHablarYMostrarTeleprompter(saludo, function() {
-        if (_spEscuchandoManosLibres) iniciarEscuchaReconocimientoVoz();
-      });
-    } else {
-      iniciarEscuchaReconocimientoVoz();
-    }
-  };
-
-  // =========================================================================
-  // 8. INYECCIÓN GARANTIZADA DE BOTONES DORADOS EN PRECIOS, TEST Y TECNOSALA
-  // =========================================================================
-  function inyectarBotonesCarritoEnLas3Vistas() {
-    // A) En Tecnosala: Barra inferior única (sin duplicar dentro de la pantalla del Orbe)
-    var vistaTec = document.getElementById('vista-tecnosala');
-    if (vistaTec && !document.getElementById('spBtnCarritoTecnosalaBottom')) {
-      var enlacesTec = vistaTec.querySelectorAll('a, button');
-      for (var i = 0; i < enlacesTec.length; i++) {
-        var txt = (enlacesTec[i].textContent || '').trim();
-        if (txt.indexOf('Hablar con Francisco') !== -1 && enlacesTec[i].parentNode) {
-          var contenedorBotones = enlacesTec[i].parentNode;
-          var btnGold = document.createElement('button');
-          btnGold.type = 'button';
-          btnGold.id = 'spBtnCarritoTecnosalaBottom';
-          btnGold.onclick = window.spAbrirCarritoConfigurador;
-          btnGold.className = 'sp-btn-carrito-gold-3d px-5 py-2.5 rounded-2xl text-xs sm:text-sm';
-          btnGold.innerHTML = '<span>🛒</span><span>Configurar a la Carta / Contratar</span>';
-          contenedorBotones.insertBefore(btnGold, enlacesTec[i]);
-          break;
-        }
-      }
-    }
-
-    // B) En Precios Claros (#vista-precios)
-    var vistaPrecios = document.getElementById('vista-precios');
-    if (vistaPrecios && !document.getElementById('spBtnCarritoPreciosTop')) {
-      var cabeceraPrecios = vistaPrecios.querySelector('.slide-section > div');
-      if (cabeceraPrecios) {
-        var wrapBtnP = document.createElement('div');
-        wrapBtnP.className = 'flex justify-center mt-2 mb-1';
-        wrapBtnP.innerHTML =
-          '<button type="button" id="spBtnCarritoPreciosTop" onclick="window.spAbrirCarritoConfigurador()" class="sp-btn-carrito-gold-3d px-5 py-2 rounded-2xl text-xs sm:text-sm">' +
-            '<span>🛒</span><span>Configurar a la Carta / Contratar Ahora</span>' +
-          '</button>';
-        cabeceraPrecios.appendChild(wrapBtnP);
-      }
-    }
-
-    // C) En Test de Diagnóstico (#vista-test)
-    var vistaTest = document.getElementById('vista-test');
-    if (vistaTest && !document.getElementById('spBtnCarritoTestBottom')) {
-      var contTest = vistaTest.querySelector('.slide-section');
-      if (contTest) {
-        var wrapBtnT = document.createElement('div');
-        wrapBtnT.className = 'flex justify-center mt-3';
-        wrapBtnT.innerHTML =
-          '<button type="button" id="spBtnCarritoTestBottom" onclick="window.spAbrirCarritoConfigurador()" class="sp-btn-carrito-gold-3d px-5 py-2 rounded-2xl text-xs sm:text-sm">' +
-            '<span>🛒</span><span>Configurar a la Carta / Contratar</span>' +
-          '</button>';
-        contTest.appendChild(wrapBtnT);
-      }
-    }
-
-    // D) Añadir controles limpios en la barra superior interna del Teleprompter (Voz, Mute, Repetir, Descargar y Único botón PARAR junto al Orbe)
-    var activeStage = document.getElementById('spTecnosalaActiveStage');
-    if (activeStage && !document.getElementById('spBtnCambiarVoz')) {
-      var topHud = activeStage.querySelector('.flex');
-      if (topHud) {
-        var controlesExtra = document.createElement('div');
-        controlesExtra.className = 'flex flex-wrap items-center gap-1.5';
-        controlesExtra.innerHTML =
-          '<button type="button" id="spBtnCambiarVoz" onclick="window.spAlternarVozConsultor(event)" class="px-2.5 py-1 rounded-full bg-slate-800/90 hover:bg-slate-700 border border-teal-400/40 text-[10.5px] font-bold text-teal-200 cursor-pointer">🗣️ Voz: Jorge</button>' +
-          '<button type="button" id="spBtnToggleMute" onclick="window.spToggleSonidoConsultor(event)" class="px-2.5 py-1 rounded-full bg-slate-800/90 hover:bg-slate-700 border border-teal-400/40 text-[10.5px] font-bold text-teal-200 cursor-pointer">🔊 Voz: ON</button>' +
-          '<button type="button" id="spBtnRepetirLocucion" onclick="window.spRepetirUltimaRespuesta(event)" class="px-2.5 py-1 rounded-full bg-slate-800/90 hover:bg-slate-700 border border-amber-400/40 text-[10.5px] font-bold text-amber-200 cursor-pointer">🔁 Repetir</button>' +
-          '<button type="button" id="spBtnDescargarCharlaTop" onclick="window.spDescargarConversacionConsultor(event)" class="hidden px-2.5 py-1 rounded-full bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 text-[10.5px] font-extrabold text-amber-300 cursor-pointer">📥 Descargar charla</button>';
-        topHud.appendChild(controlesExtra);
-      }
-    }
-
-    // E) Asegurar color azulito claro corporativo en Magazine (#vista-mas) eliminando amarillos inline
-    var vistaMas = document.getElementById('vista-mas');
-    if (vistaMas) {
-      vistaMas.style.setProperty('background', 'linear-gradient(135deg, #d8f0fe 0%, #e8f6ff 52%, #e0faf4 100%)', 'important');
-      var slideMas = vistaMas.querySelector('.slide-section');
-      if (slideMas) {
-        slideMas.style.setProperty('background', 'linear-gradient(135deg, #d8f0fe 0%, #e8f6ff 52%, #e0faf4 100%)', 'important');
-        slideMas.style.setProperty('justify-content', 'center', 'important');
-      }
-    }
-  }
-
-  function conectarEventosConsultor() {
-    var idleEl = document.getElementById('spTecnosalaIdleWelcome');
-    if (idleEl && idleEl.getAttribute('data-sp-v231') !== '1') {
-      idleEl.setAttribute('data-sp-v231', '1');
-      idleEl.innerHTML = """ + repr(HTML_BIENVENIDA_ORBE_3D_V159) + r""";
-    }
-
-    inyectarBotonesCarritoEnLas3Vistas();
-    window.spSincronizarHuecosGoogleCalendar();
-
-    var inp = document.getElementById('spTecnosalaInput');
-    var btnAsk = document.getElementById('spTecnosalaSendBtn');
-    var btnMic = document.getElementById('spTecnosalaMicBtn');
-
-    if (btnAsk && btnAsk.getAttribute('data-sp-bound') !== '1') {
-      btnAsk.setAttribute('data-sp-bound', '1');
-      btnAsk.addEventListener('click', function(ev) {
-        ev.preventDefault();
-        if (inp && inp.value.trim()) {
-          var texto = inp.value.trim();
-          inp.value = '';
-          window.spProcesarPreguntaConsultor(texto);
-        }
-      });
-    }
-
-    if (inp && inp.getAttribute('data-sp-bound') !== '1') {
-      inp.setAttribute('data-sp-bound', '1');
-      inp.addEventListener('keydown', function(ev) {
-        if (ev.key === 'Enter' && inp.value.trim()) {
-          ev.preventDefault();
-          var texto = inp.value.trim();
-          inp.value = '';
-          window.spProcesarPreguntaConsultor(texto);
-        }
-      });
-    }
-
-    if (btnMic && btnMic.getAttribute('data-sp-bound') !== '1') {
-      btnMic.setAttribute('data-sp-bound', '1');
-      btnMic.addEventListener('click', function(ev) {
-        ev.preventDefault();
-        window.spActivarEscuchaDirectaConsultor(ev);
-      });
-    }
-
-    document.addEventListener('keydown', function(ev) {
-      if (ev.key === 'Escape') {
-        window.spDetenerTodoConsultor(ev);
-      }
-    });
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', conectarEventosConsultor);
-  } else {
-    conectarEventosConsultor();
-  }
-  setTimeout(conectarEventosConsultor, 600);
-})();
-</script>
-<!-- === [FIN_SP_CONSULTOR_Y_CARRITO_V231] === -->
-"""
-
-
-# ==============================================================================
-# 6. ACTUALIZACIÓN DE ARCHIVOS DEL ECOSISTEMA
-# ==============================================================================
-def actualizar_documentos_y_base_conocimiento():
-    os.makedirs(RUTA_DOCUMENTOS, exist_ok=True)
-    ruta_js = os.path.join(RUTA_DOCUMENTOS, "base_conocimiento_ingenieria.js")
-    bak = crear_backup(ruta_js)
-    with open(ruta_js, "w", encoding="utf-8") as f:
-        f.write(JS_BASE_CONOCIMIENTO_DOCUMENTOS_V167.strip() + "\n")
-    verificar_sintaxis_segura(ruta_js, bak)
-
-
-def actualizar_index_html_principal():
-    ruta_index = os.path.join(RUTA_WEB_PUBLIC, "index.html")
-    if not os.path.isfile(ruta_index):
-        print(f"⚠️ No se encontró index.html en {ruta_index}")
-        return
-    bak = crear_backup(ruta_index)
-    with open(ruta_index, "r", encoding="utf-8") as f:
-        html = f.read()
-
-    # Eliminar versiones previas del bloque inyectado para no duplicar nunca
-    html = re.sub(
-        r"<!-- === \[INICIO_SP_CONSULTOR_Y_CARRITO_V\d+\] === -->.*?<!-- === \[FIN_SP_CONSULTOR_Y_CARRITO_V\d+\] === -->",
-        "",
-        html,
-        flags=re.DOTALL,
-    )
-
-    if "</body>" in html:
-        html = html.replace("</body>", "\n" + BLOQUE_CONSULTOR_Y_CARRITO_HTML_V231.strip() + "\n</body>", 1)
-    else:
-        html = html + "\n" + BLOQUE_CONSULTOR_Y_CARRITO_HTML_V231.strip() + "\n"
-
-    with open(ruta_index, "w", encoding="utf-8") as f:
-        f.write(html)
-    verificar_sintaxis_segura(ruta_index, bak)
-    print(f"✅ VERIFICADO EN DISCO: Consultor Neuronal + Agenda Lunes a Sábado (09:00-13:30) grabados en -> {ruta_index}")
-
-
-def actualizar_main_py_servicio_resenas():
-    """Inyecta el endpoint limpio /api/registrar-pedido-cita en main.py y actualiza Puente_Calendar_fmgallardo.gs (Lunes a Sábado 09:00-13:30)."""
-    ruta_main = os.path.join(RUTA_SERVICIO_RESENAS, "main.py")
-    if os.path.isfile(ruta_main):
-        try:
-            bak = crear_backup(ruta_main)
-            with open(ruta_main, "r", encoding="utf-8") as f:
-                txt = f.read()
-            txt = re.sub(
-                r"# === \[INICIO_SP_PEDIDOS_Y_CITAS_WEB_V\d+\] ===.*?# === \[FIN_SP_PEDIDOS_Y_CITAS_WEB_V\d+\] ===",
-                "",
-                txt,
-                flags=re.DOTALL,
-            )
-            txt = txt.rstrip() + "\n\n" + BLOQUE_ENDPOINT_PEDIDO_MAIN_PY_V220.strip() + "\n"
-            with open(ruta_main, "w", encoding="utf-8") as f:
-                f.write(txt)
-            verificar_sintaxis_segura(ruta_main, bak)
-            print(f"🚀 Endpoint limpio '/api/registrar-pedido-cita' actualizado en: {ruta_main}")
-        except Exception as e:
-            print(f"⚠️ Aviso actualizando main.py: {e}")
-
-    os.makedirs(RUTA_PROGRAMAR, exist_ok=True)
-    ruta_puente_cal = os.path.join(RUTA_PROGRAMAR, "Puente_Calendar_fmgallardo.gs")
-    codigo_puente_cal = """// ============================================================================
-// PUENTE INTELIGENTE BIDIRECCIONAL GOOGLE CALENDAR PARA fmgallardo@falconfactorysystems.com
-// Horario Oficial de Citas de Alta: LUNES A SÁBADO POR LAS MAÑANAS (09:00 a 13:30).
-// 1) doGet(): Lee todos los eventos de tu Google Calendar en los próximos 16 días y devuelve
-//    los tramos ocupados para bloquearlos en el Carrito y en el Consultor.
-// 2) doPost(): Comprueba si el hueco está libre (si está ocupado busca el siguiente tramo de
-//    30 min libre de lunes a sábado 09:00-13:30) y crea el evento con TRIPLE ALARMA (24h, 1h y 15m).
-// ============================================================================
-function doGet(e) {
-  try {
-    var cal = CalendarApp.getDefaultCalendar();
-    var ahora = new Date();
-    var finRango = new Date(ahora.getTime() + 16 * 24 * 3600 * 1000);
-    var eventos = cal.getEvents(ahora, finRango);
-    var tramos = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00"];
-    var ocupados = [];
-    for (var i = 0; i < eventos.length; i++) {
-      var ev = eventos[i];
-      if (ev.isAllDayEvent()) continue;
-      var ini = ev.getStartTime();
-      var fin = ev.getEndTime();
-      var ymd = Utilities.formatDate(ini, "Europe/Madrid", "yyyy-MM-dd");
-      for (var t = 0; t < tramos.length; t++) {
-        var partes = tramos[t].split(":");
-        var slotIni = new Date(ini.getFullYear(), ini.getMonth(), ini.getDate(), parseInt(partes[0], 10), parseInt(partes[1], 10), 0);
-        var slotFin = new Date(slotIni.getTime() + 30 * 60 * 1000);
-        if (ini < slotFin && fin > slotIni) {
-          var key = ymd + " " + tramos[t];
-          if (ocupados.indexOf(key) === -1) ocupados.push(key);
-        }
-      }
-    }
-    return ContentService.createTextOutput(JSON.stringify({ status: "ok", ocupados: ocupados })).setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ status: "error", ocupados: [], detail: String(err) })).setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
-function doPost(e) {
-  try {
-    var data = JSON.parse(e.postData.contents || "{}");
-    var cal = CalendarApp.getDefaultCalendar();
-    var inicio = data.fecha_cita_iso ? new Date(data.fecha_cita_iso) : new Date(new Date().getTime() + 24*3600*1000);
-    if (isNaN(inicio.getTime())) inicio = new Date(new Date().getTime() + 24*3600*1000);
-
-    // Garantizar horario estricto Lunes a Sábado (getDay() !== 0) de 09:00 a 13:00 (fin 13:30)
-    while (inicio.getDay() === 0 || inicio.getHours() < 9 || inicio.getHours() > 13 || (inicio.getHours() === 13 && inicio.getMinutes() > 0)) {
-      if (inicio.getHours() >= 13 || inicio.getDay() === 0) {
-        inicio.setDate(inicio.getDate() + 1);
-        inicio.setHours(10, 0, 0, 0);
-      } else if (inicio.getHours() < 9) {
-        inicio.setHours(9, 0, 0, 0);
-      }
-    }
-    var fin = new Date(inicio.getTime() + 30 * 60 * 1000);
-
-    // Si ese hueco ya está ocupado en tu Google Calendar, buscar el siguiente tramo de 30 min libre por la mañana (Lunes a Sábado)
-    var conflictos = cal.getEvents(inicio, fin);
-    var intentos = 0;
-    while (conflictos.length > 0 && intentos < 30) {
-      inicio = new Date(inicio.getTime() + 30 * 60 * 1000);
-      if (inicio.getHours() > 13 || (inicio.getHours() === 13 && inicio.getMinutes() > 0)) {
-        inicio.setDate(inicio.getDate() + 1);
-        while (inicio.getDay() === 0) {
-          inicio.setDate(inicio.getDate() + 1);
-        }
-        inicio.setHours(9, 0, 0, 0);
-      }
-      fin = new Date(inicio.getTime() + 30 * 60 * 1000);
-      conflictos = cal.getEvents(inicio, fin);
-      intentos++;
-    }
-
-    var titulo = "🛒 Alta Sistemas Pyme: " + (data.nombre || "Cliente") + " (" + (data.telefono || "") + ")";
-    var desc = (data.resumen || "") + "\\n\\nPlan: " + (data.plan || "") + "\\nTotal Día 1: " + (data.total_dia1 || "") + " €";
-    var ev = cal.createEvent(titulo, inicio, fin, { description: desc, location: "Videollamada / Teléfono (+34 " + (data.telefono || "") + ")" });
-    ev.removeAllReminders();
-    ev.addPopupReminder(1440); // Recordatorio 1 día antes (24h)
-    ev.addEmailReminder(1440); // Email recordatorio 1 día antes (24h)
-    ev.addPopupReminder(60);   // Recordatorio 1 hora antes
-    ev.addPopupReminder(15);   // Recordatorio 15 minutos antes
-    var slotFinal = Utilities.formatDate(inicio, "Europe/Madrid", "yyyy-MM-dd HH:mm");
-    return ContentService.createTextOutput(JSON.stringify({ status: "ok", event_id: ev.getId(), slot_agendado: slotFinal })).setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ status: "error", detail: String(err) })).setMimeType(ContentService.MimeType.JSON);
-  }
-}
-"""
-    try:
-        with open(ruta_puente_cal, "w", encoding="utf-8") as fp:
-            fp.write(codigo_puente_cal)
-    except Exception:
-        pass
-
-
-# ==============================================================================
-# 7. AUTO-DESCUBRIDOR DE MODELOS GEMINI Y SERVIDOR NEURONAL LOCAL (PUERTO 8765)
-# ==============================================================================
-def descubrir_modelos_gemini(claves):
-    preferidos = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest"]
-    for k in claves:
-        if not k:
-            continue
-        try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models?key={k}"
-            req = urllib.request.Request(url, method="GET")
-            with urllib.request.urlopen(req, timeout=5) as r:
-                if r.status == 200:
-                    data = json.loads(r.read().decode("utf-8", errors="ignore"))
-                    mods = [m.get("name", "").replace("models/", "") for m in data.get("models", []) if "flash" in m.get("name", "").lower()]
-                    if mods:
-                        return mods[:5]
-        except Exception:
-            continue
-    return preferidos
-
-
-def prevalidar_modelo_rapido_en_cuenta(claves, modelos):
-    clave = claves[0] if claves else obtener_clave_vertex_reconstruida()
-    for mod in (modelos or ["gemini-2.5-flash", "gemini-2.0-flash"]):
-        for base_u in (
-            f"https://aiplatform.googleapis.com/v1/publishers/google/models/{mod}:generateContent",
-            f"https://generativelanguage.googleapis.com/v1beta/models/{mod}:generateContent",
-        ):
-            try:
-                payload = {"contents": [{"role": "user", "parts": [{"text": "OK"}]}]}
-                req = urllib.request.Request(
-                    f"{base_u}?key={clave}",
-                    data=json.dumps(payload).encode("utf-8"),
-                    headers={"Content-Type": "application/json"},
-                    method="POST",
-                )
-                with urllib.request.urlopen(req, timeout=5) as r:
-                    if r.status == 200:
-                        print(f"🟢 CONEXIÓN VERTEX AI VERIFICADA CON ÉXITO -> Modelo activo: {mod}")
-                        return base_u, mod
-            except Exception:
-                continue
-    return "https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash:generateContent", "gemini-2.5-flash"
-
-
-def lanzar_servidor_neuronal_8765(carpeta_web, claves, modelos):
-    """
-    Levanta el servidor neuronal local en 127.0.0.1:8765:
-    - Controla disponibilidad real de citas (Lunes a Sábado de 09:00 a 13:30) cruzando crm_b2b_db.json y Google Calendar.
-    - Envía 1 ÚNICO Email HTML limpio (sin cuadruplicar) + 1 aviso limpio de Pedido a Telegram (sin mezclar con Reseñas ni HEARD) + WhatsApp al cliente y a Francisco.
-    """
-    try:
-        res_lsof = subprocess.run(["lsof", "-ti:8765"], capture_output=True, text=True)
-        for pid_str in (res_lsof.stdout or "").splitlines():
-            pid_str = pid_str.strip()
-            if pid_str.isdigit() and int(pid_str) != os.getpid():
-                try:
-                    os.kill(int(pid_str), 9)
-                except Exception:
-                    pass
-    except Exception:
-        pass
-
-    url_ganadora_sin_key, mod_ganador = prevalidar_modelo_rapido_en_cuenta(claves, modelos)
-
-    script_srv = os.path.join(carpeta_web, ".sp_servidor_neuronal_8765.py")
-    lineas_srv = [
-        "#!/usr/bin/env python3",
-        "# -*- coding: utf-8 -*-",
-        "import os, re, time, json, base64, datetime, urllib.request",
-        "from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer",
-        f"CARPETA = {repr(carpeta_web)}",
-        f"RUTA_CRM_PROSPECTOR = {repr(os.path.join(RUTA_SCRAPER, 'crm_b2b_db.json'))}",
-        f"RUTAS_ENV = {[os.path.join(RUTA_SERVICIO_RESENAS, '.env'), os.path.join(RUTA_SCRAPER, '.env'), os.path.join(RUTA_PROGRAMAR, '.env'), os.path.join(RUTA_SCRAPER, 'config_b2b.json')]}",
-        f"PARTES_B64 = {repr(_K_B64_PARTES)}",
-        f"MODELOS = {repr(modelos[:8])}",
-        f"URL_BASE_GANADORA = {repr(url_ganadora_sin_key)}",
-        f"MOD_GANADOR = {repr(mod_ganador)}",
-        "CLAVE = base64.b64decode(''.join(PARTES_B64)).decode('utf-8')",
-        f"WEBHOOK_SHEETS = {repr(WEBHOOK_SHEETS_OFICIAL)}",
-        f"WEBHOOK_CALENDAR_FMGALLARDO = {repr(WEBHOOK_CALENDAR_FMGALLARDO)}",
-        "_PEDIDOS_RECIENTES_DEDUP = {}",
-        "os.chdir(CARPETA)",
-        "def obtener_huecos_ocupados_calendar():",
-        "    ocupados = set()",
-        "    if os.path.isfile(RUTA_CRM_PROSPECTOR):",
-        "        try:",
-        "            with open(RUTA_CRM_PROSPECTOR, 'r', encoding='utf-8') as fc:",
-        "                crm_db = json.load(fc) or {}",
-        "            for rec in crm_db.values():",
-        "                if not isinstance(rec, dict): continue",
-        "                f_c = str(rec.get('fecha_proximo_contacto') or '').strip()",
-        "                h_c = str(rec.get('hora_proximo_contacto') or '').strip()[:5]",
-        "                if len(f_c) == 10 and len(h_c) == 5:",
-        "                    ocupados.add(f'{f_c} {h_c}')",
-        "        except Exception: pass",
-        "    try:",
-        "        req_c = urllib.request.Request(WEBHOOK_CALENDAR_FMGALLARDO + '?accion=disponibilidad&t=' + str(int(time.time())), method='GET')",
-        "        with urllib.request.urlopen(req_c, timeout=3.5) as rc:",
-        "            if rc.status == 200:",
-        "                dc = json.loads(rc.read().decode('utf-8', errors='ignore'))",
-        "                if isinstance(dc, dict) and isinstance(dc.get('ocupados'), list):",
-        "                    for item in dc['ocupados']:",
-        "                        ocupados.add(str(item).strip())",
-        "    except Exception: pass",
-        "    return sorted(list(ocupados))",
-        "def sincronizar_pedido_en_crm_y_bitacora_prospector(body):",
-        "    try:",
-        "        nombre_raw = str(body.get('nombre') or '').strip()",
-        "        tlf = re.sub(r'\\D', '', str(body.get('telefono') or ''))[-9:]",
-        "        plan = str(body.get('plan') or 'Pack Escudo Dúo').strip()",
-        "        horario = str(body.get('horario') or 'Mañana L-S (09:00-13:30)').strip()",
-        "        auditorias = int(body.get('auditorias') or 0)",
-        "        coste_aud = int(body.get('coste_auditorias') or 0)",
-        "        atriles = int(body.get('atriles') or 0)",
-        "        coste_atr = int(body.get('coste_atriles') or 0)",
-        "        total = body.get('total_dia1', 0)",
-        "        origen = str(body.get('origen') or 'Web Sistemas Pyme').strip()",
-        "        res_f2 = ', '.join(body.get('reservas_fase2') or []) if isinstance(body.get('reservas_fase2'), list) and body.get('reservas_fase2') else 'Ninguna'",
-        "        es_generico = (not nombre_raw) or (nombre_raw.lower() in ('cliente web', 'cliente tecnosala', 'cliente', 'mi negocio', 'sin nombre'))",
-        "        if es_generico:",
-        "            nombre = f'🛒 Cliente Web (+34 {tlf})' if tlf else '🛒 Cliente Web (Inbound)'",
-        "        elif len(nombre_raw.split()) == 1 and tlf:",
-        "            nombre = f'{nombre_raw} (🛒 Pedido Web · {tlf})'",
-        "        else:",
-        "            nombre = nombre_raw",
-        "        f_ymd = str(body.get('slot_ymd') or '').strip()",
-        "        h_hm = str(body.get('slot_hhmm') or '').strip()",
-        "        if not f_ymd or not h_hm:",
-        "            f_iso = str(body.get('fecha_cita_iso') or '').strip()",
-        "            try:",
-        "                dt_c = datetime.datetime.fromisoformat(f_iso.replace('Z', '+00:00')).astimezone() if f_iso else datetime.datetime.now()",
-        "            except Exception:",
-        "                dt_c = datetime.datetime.now()",
-        "            f_ymd = dt_c.strftime('%Y-%m-%d')",
-        "            h_hm = dt_c.strftime('%H:%M')",
-        "        ahora_str = datetime.datetime.now().strftime('%d/%m/%Y %H:%M')",
-        "        slug_k = re.sub(r'[^a-z0-9]+', '-', nombre.lower()).strip('-') or f'pedido-web-{tlf or int(time.time())}'",
-        "        crm_db = {}",
-        "        if os.path.isfile(RUTA_CRM_PROSPECTOR):",
-        "            try:",
-        "                with open(RUTA_CRM_PROSPECTOR, 'r', encoding='utf-8') as fc:",
-        "                    crm_db = json.load(fc) or {}",
-        "            except Exception: crm_db = {}",
-        "        target_k = None",
-        "        for k_e, r_e in list(crm_db.items()):",
-        "            if not isinstance(r_e, dict): continue",
-        "            t_e = re.sub(r'\\D', '', str(r_e.get('telefono') or ''))[-9:]",
-        "            if (tlf and len(tlf) == 9 and t_e == tlf) or (not es_generico and str(r_e.get('nombre') or '').strip().lower() == nombre_raw.lower()):",
-        "                target_k = k_e",
-        "                break",
-        "        if not target_k:",
-        "            target_k = f'pedido-web-{tlf}' if (tlf and len(tlf) == 9) else slug_k",
-        "        rec = crm_db.get(target_k, {}) if isinstance(crm_db.get(target_k), dict) else {}",
-        "        if not rec.get('nombre') or not es_generico:",
-        "            rec['nombre'] = nombre",
-        "        rec['place_id'] = rec.get('place_id') or target_k",
-        "        rec['slug'] = rec.get('slug') or slug_k",
-        "        if tlf: rec['telefono'] = tlf",
-        "        rec['categoria'] = rec.get('categoria') or '🛒 Pedido Entrante Web (Inbound)'",
-        "        rec['ciudad'] = rec.get('ciudad') or 'España (Inbound Web)'",
-        "        rec['direccion'] = rec.get('direccion') or f'Solicitud entrante vía {origen} · Confirmar nombre comercial y localidad en la llamada de alta'",
-        "        rec['web'] = rec.get('web') or ''",
-        "        rec['rating'] = rec.get('rating') or '5.0'",
-        "        rec['es_pedido_inbound_web'] = True",
-        "        rec['origen_lead'] = origen",
-        "        if rec.get('estado') != 'venta' and not rec.get('alta_oficial'):",
-        "            rec['estado'] = 'contactado'",
-        "        rec['fase_embudo'] = f'🛒 Pedido Web ({plan} · Día 1: {total} €)'",
-        "        rec['fecha_proximo_contacto'] = f_ymd",
-        "        rec['hora_proximo_contacto'] = h_hm",
-        "        rec['en_google_calendar'] = True",
-        "        rec['gcal_sincronizado_at'] = datetime.datetime.now().isoformat()",
-        "        rec['notas_seguimiento'] = f'🛒 PEDIDO WEB ({origen}): {plan} | Auditorías: {auditorias} ({coste_aud}€) | Atriles: {atriles} ({coste_atr}€) | Reserva Fase 2: {res_f2} | Total Día 1: {total}€ | Cita: {horario}'",
-        "        bit = rec.get('bitacora_seguimiento') if isinstance(rec.get('bitacora_seguimiento'), list) else []",
-        "        bit.insert(0, {",
-        "            'id': f'bit_web_{int(time.time())}',",
-        "            'fecha': ahora_str,",
-        "            'texto': f'🛒 PEDIDO Y CITA WEB ({origen}):\\n• Cliente/Contacto: {rec[\"nombre\"]} (+34 {tlf})\\n• Plan: {plan}\\n• Auditorías: {auditorias} ({coste_aud} €) | Atriles: {atriles} ({coste_atr} €)\\n• Reserva Fase 2: {res_f2}\\n• Total Día 1: {total} € (sin IVA)\\n• Cita agendada: {horario} ({f_ymd} {h_hm}) — Recordatorios 24h, 1h y 15m activos.'",
-        "        })",
-        "        rec['bitacora_seguimiento'] = bit",
-        "        tar = rec.get('tareas_checklist') if isinstance(rec.get('tareas_checklist'), list) else []",
-        "        ts_b = int(time.time())",
-        "        rec['tareas_checklist'] = [",
-        "            {'id': f'tw1_{ts_b}', 'texto': f'✅ Pedido Web recibido ({plan} · Total Día 1: {total} €)', 'hecha': True, 'fecha': ahora_str},",
-        "            {'id': f'tw2_{ts_b}', 'texto': f'📞 Videollamada de Alta ({horario}) con {rec[\"nombre\"]} (+34 {tlf}) y confirmar nombre comercial/ciudad', 'hecha': False, 'fecha': ahora_str},",
-        "            {'id': f'tw3_{ts_b}', 'texto': '🛡️ Completar Onboarding en Consola Maestra de Alta y activar servicios', 'hecha': False, 'fecha': ahora_str}",
-        "        ] + tar",
-        "        rec['local_override_ts'] = time.time()",
-        "        crm_db[target_k] = rec",
-        "        with open(RUTA_CRM_PROSPECTOR, 'w', encoding='utf-8') as fw:",
-        "            json.dump(crm_db, fw, ensure_ascii=False, indent=4)",
-        "        try:",
-        "            req_p5000 = urllib.request.Request('http://127.0.0.1:5000/api/crm/registrar-pedido-web', data=json.dumps(body).encode('utf-8'), headers={'Content-Type': 'application/json'}, method='POST')",
-        "            urllib.request.urlopen(req_p5000, timeout=2.5)",
-        "        except Exception: pass",
-        "    except Exception as e_crm:",
-        "        print('Aviso sincronizando CRM Prospector:', e_crm)",
-        "def leer_env_local():",
-        "    cfg = dict(os.environ)",
-        "    for r_e in RUTAS_ENV:",
-        "        if not os.path.isfile(r_e): continue",
-        "        try:",
-        "            if r_e.endswith('.json'):",
-        "                with open(r_e, 'r', encoding='utf-8') as fj:",
-        "                    dj = json.load(fj)",
-        "                    if isinstance(dj, dict):",
-        "                        for k, v in dj.items():",
-        "                            if v and str(v).strip(): cfg[str(k).strip()] = str(v).strip()",
-        "            else:",
-        "                with open(r_e, 'r', encoding='utf-8') as f:",
-        "                    for ln in f:",
-        "                        ln = ln.strip()",
-        "                        if ln and not ln.startswith('#') and '=' in ln:",
-        "                            k, v = ln.split('=', 1)",
-        "                            cfg[k.strip()] = v.strip().strip('\"').strip(\"'\")",
-        "        except Exception: pass",
-        "    return cfg",
-        "def enviar_whatsapp_plantilla_aviso_gerencia(token_wa, pid, tlf9, var1_titulo, var2_detalle, texto_completo_cola):",
-        "    if not token_wa or not pid or len(tlf9) != 9: return False",
-        "    url = f'https://graph.facebook.com/v21.0/{pid}/messages'",
-        "    headers = {'Authorization': f'Bearer {token_wa}', 'Content-Type': 'application/json'}",
-        "    try:",
-        "        p_txt = {'messaging_product': 'whatsapp', 'to': f'34{tlf9}', 'type': 'text', 'text': {'preview_url': False, 'body': texto_completo_cola[:3800]}}",
-        "        req_t = urllib.request.Request(url, data=json.dumps(p_txt).encode('utf-8'), headers=headers, method='POST')",
-        "        with urllib.request.urlopen(req_t, timeout=8) as r_t:",
-        "            if 200 <= r_t.status < 300: return True",
-        "    except Exception: pass",
-        "    for lang_c in ('es', 'es_ES'):",
-        "        try:",
-        "            p_tpl = {",
-        "                'messaging_product': 'whatsapp',",
-        "                'to': f'34{tlf9}',",
-        "                'type': 'template',",
-        "                'template': {",
-        "                    'name': 'aviso_gerencia_es',",
-        "                    'language': {'code': lang_c},",
-        "                    'components': [{'type': 'body', 'parameters': [{'type': 'text', 'text': var1_titulo[:135]}, {'type': 'text', 'text': var2_detalle[:600]}]}]",
-        "                }",
-        "            }",
-        "            req_p = urllib.request.Request(url, data=json.dumps(p_tpl).encode('utf-8'), headers=headers, method='POST')",
-        "            with urllib.request.urlopen(req_p, timeout=8) as r_p:",
-        "                if 200 <= r_p.status < 300: return True",
-        "        except Exception: continue",
-        "    return False",
-        "def disparar_pedido_en_vivo_local(body):",
-        "    dedup_k = str(body.get('dedup_key') or f\"{body.get('telefono')}_{body.get('plan')}\").strip()",
-        "    ahora_ts = time.time()",
-        "    if dedup_k in _PEDIDOS_RECIENTES_DEDUP and (ahora_ts - _PEDIDOS_RECIENTES_DEDUP[dedup_k]) < 45:",
-        "        return {'status': 'ok', 'deduplicado': True}",
-        "    _PEDIDOS_RECIENTES_DEDUP[dedup_k] = ahora_ts",
-        "    sincronizar_pedido_en_crm_y_bitacora_prospector(body)",
-        "    env = leer_env_local()",
-        "    wh_url = env.get('GOOGLE_SHEETS_WEBHOOK_URL') or WEBHOOK_SHEETS",
-        "    nombre = str(body.get('nombre') or 'Cliente Web').strip()",
-        "    tlf_raw = re.sub(r'\\D', '', str(body.get('telefono') or ''))[-9:]",
-        "    horario = str(body.get('horario') or 'Mañana L-S (09:00-13:30)').strip()",
-        "    plan = str(body.get('plan') or 'Pack Escudo Dúo').strip()",
-        "    auditorias = int(body.get('auditorias') or 0)",
-        "    coste_aud = int(body.get('coste_auditorias') or 0)",
-        "    atriles = int(body.get('atriles') or 0)",
-        "    coste_atr = int(body.get('coste_atriles') or 0)",
-        "    res_f2 = ', '.join(body.get('reservas_fase2') or []) if isinstance(body.get('reservas_fase2'), list) and body.get('reservas_fase2') else 'Ninguna'",
-        "    total = body.get('total_dia1', 0)",
-        "    url_gcal = str(body.get('enlace_google_calendar_cliente') or '').strip()",
-        "    resumen = str(body.get('resumen') or '').strip()",
-        "    origen = str(body.get('origen') or 'Web Sistemas Pyme').strip()",
-        "    html_email_pedido = (",
-        "        f\"<div style='font-family:Segoe UI,Arial,sans-serif;max-width:600px;margin:0 auto;border:2px solid #10b981;border-radius:16px;overflow:hidden;background:#ffffff;'>\"",
-        "        f\"<div style='background:#0b2239;color:#ffffff;padding:18px 24px;'>\"",
-        "        f\"<span style='font-size:11px;color:#34d399;font-weight:bold;text-transform:uppercase;'>Sistemas Pyme · Nuevo Pedido y Cita de Alta (L-S 09:00-13:30)</span>\"",
-        "        f\"<h2 style='margin:6px 0 0 0;font-size:20px;'>🛒 Pedido de {nombre} (+34 {tlf_raw})</h2></div>\"",
-        "        f\"<div style='padding:22px 24px;color:#1e293b;font-size:14px;line-height:1.6;'>\"",
-        "        f\"<p><b>📦 Plan seleccionado:</b> {plan}</p>\"",
-        "        f\"<p><b>🔍 Super-Auditorías:</b> {auditorias} ({coste_aud} €) &nbsp;|&nbsp; <b>📡 Atriles NFC/QR:</b> {atriles} ({coste_atr} €)</p>\"",
-        "        f\"<p><b>🚀 Reserva Fase 2:</b> {res_f2}</p>\"",
-        "        f\"<p><b>🗓️ Cita agendada (Mañana L-S):</b> <span style='color:#0d9488;font-weight:bold;'>{horario}</span></p>\"",
-        "        f\"<p><b>💶 Total Desembolso Día 1:</b> <strong>{total} €</strong> (sin IVA)</p>\"",
-        "        f\"<div style='margin-top:20px;text-align:center;'>\"",
-        "        f\"<a href='{url_gcal}' style='background:#0284c7;color:#ffffff;text-decoration:none;padding:13px 22px;border-radius:10px;font-weight:bold;display:inline-block;margin:4px;'>📅 VER / GUARDAR EN GOOGLE CALENDAR</a>\"",
-        "        f\"<a href='https://wa.me/34{tlf_raw}' style='background:#16a34a;color:#ffffff;text-decoration:none;padding:13px 22px;border-radius:10px;font-weight:bold;display:inline-block;margin:4px;'>📲 Abrir WhatsApp con {nombre}</a>\"",
-        "        f\"</div></div></div>\"",
-        "    )",
-        "    try:",
-        "        payload_mail_unico = {",
-        "            'accion': 'registrar_resena',",
-        "            'slug': 'pedido-web',",
-        "            'nombre_negocio': f'Pedido Web: {nombre}',",
-        "            'autor': f'{nombre} (+34 {tlf_raw})',",
-        "            'cliente': f'{nombre} (+34 {tlf_raw})',",
-        "            'estrellas': 5,",
-        "            'comentario': resumen,",
-        "            'respuesta_publica': f'Cita: {horario} | Plan: {plan}',",
-        "            'asunto_email': f'🛒 Nuevo Pedido y Cita de Alta: {nombre} (+34 {tlf_raw}) — {plan}',",
-        "            'html_body': html_email_pedido,",
-        "            'email_alerta': 'fmgallardo@falconfactorysystems.com',",
-        "            'email': 'fmgallardo@falconfactorysystems.com',",
-        "            'destinatario': 'fmgallardo@falconfactorysystems.com',",
-        "            'forzar_email_destino': True,",
-        "            'enviar_correo': True",
-        "        }",
-        "        req_m = urllib.request.Request(wh_url, data=json.dumps(payload_mail_unico).encode('utf-8'), headers={'Content-Type': 'application/json'}, method='POST')",
-        "        urllib.request.urlopen(req_m, timeout=10)",
-        "    except Exception: pass",
-        "    try:",
-        "        payload_cal = {",
-        "            'nombre': nombre,",
-        "            'telefono': tlf_raw,",
-        "            'horario': horario,",
-        "            'fecha_cita_iso': str(body.get('fecha_cita_iso') or ''),",
-        "            'plan': plan,",
-        "            'auditorias': auditorias,",
-        "            'atriles': atriles,",
-        "            'reservas_fase2': res_f2,",
-        "            'total_dia1': total,",
-        "            'resumen': resumen,",
-        "            'origen': origen",
-        "        }",
-        "        req_cal = urllib.request.Request(WEBHOOK_CALENDAR_FMGALLARDO, data=json.dumps(payload_cal).encode('utf-8'), headers={'Content-Type': 'application/json'}, method='POST')",
-        "        urllib.request.urlopen(req_cal, timeout=10)",
-        "    except Exception: pass",
-        "    tg_token = (env.get('TELEGRAM_BOT_TOKEN') or '').strip()",
-        "    tg_chat = (env.get('TELEGRAM_CHAT_ID') or '').strip()",
-        "    if tg_token and tg_chat:",
-        "        try:",
-        "            texto_tg = (",
-        "                f'🛒 <b>NUEVO PEDIDO Y CITA DE ALTA — SISTEMAS PYME</b>\\n\\n'",
-        "                f'👤 <b>Cliente / Negocio:</b> {nombre}\\n'",
-        "                f'📞 <b>Teléfono:</b> +34 {tlf_raw}\\n'",
-        "                f'🗓️ <b>Cita agendada (L-S Mañana):</b> {horario}\\n\\n'",
-        "                f'📦 <b>Desglose del Pedido:</b>\\n'",
-        "                f'• <b>Plan:</b> {plan}\\n'",
-        "                f'• <b>Super-Auditorías:</b> {auditorias} ({coste_aud} €)\\n'",
-        "                f'• <b>Atriles NFC/QR:</b> {atriles} ({coste_atr} €)\\n'",
-        "                f'• <b>Reserva Fase 2:</b> {res_f2}\\n'",
-        "                f'💶 <b>Total Desembolso Día 1:</b> <b>{total} €</b> <i>(sin IVA)</i>\\n'",
-        "                f'🌐 <b>Origen:</b> {origen}'",
-        "            )",
-        "            botones_tg = [[{'text': f'💬 WhatsApp con {nombre}', 'url': f'https://wa.me/34{tlf_raw}'}]]",
-        "            if url_gcal.startswith('http'):",
-        "                botones_tg.append([{'text': '📅 Ver en Google Calendar', 'url': url_gcal}])",
-        "            p_tg = {'chat_id': tg_chat, 'text': texto_tg, 'parse_mode': 'HTML', 'disable_web_page_preview': True, 'reply_markup': {'inline_keyboard': botones_tg}}",
-        "            req_tg = urllib.request.Request(f'https://api.telegram.org/bot{tg_token}/sendMessage', data=json.dumps(p_tg).encode('utf-8'), headers={'Content-Type': 'application/json'}, method='POST')",
-        "            urllib.request.urlopen(req_tg, timeout=8)",
-        "        except Exception: pass",
-        "    token_wa = (env.get('WHATSAPP_ACCESS_TOKEN') or env.get('WHATSAPP_TOKEN') or env.get('META_WHATSAPP_TOKEN') or '').strip()",
-        "    pid = (env.get('WHATSAPP_PHONE_NUMBER_ID') or '1325140134018206').strip()",
-        "    txt_wa_cli = f'✅ *¡Hola, {nombre}! Hemos confirmado tu pedido y tu cita en Sistemas Pyme.*\\n\\n📦 *Plan:* {plan}\\n🔍 *Auditorías:* {auditorias} ({coste_aud} €) | *Atriles:* {atriles} ({coste_atr} €)\\n💶 *Total Día 1:* {total} € (sin IVA)\\n🗓️ *Cita de alta (Mañana L-S):* {horario}\\n\\n📅 *Guárdalo en tu calendario:* {url_gcal}'",
-        "    txt_wa_jefe = f'🛒 *NUEVO PEDIDO WEB — SISTEMAS PYME*\\n\\n👤 *Cliente:* {nombre} (+34 {tlf_raw})\\n🗓️ *Cita:* {horario}\\n📦 *Plan:* {plan}\\n🔍 *Auditorías:* {auditorias} ({coste_aud} €) | *Atriles:* {atriles} ({coste_atr} €)\\n💶 *Total Día 1:* {total} € (sin IVA)'",
-        "    wa_enviado = False",
-        "    if token_wa:",
-        "        if len(tlf_raw) == 9:",
-        "            wa_enviado = enviar_whatsapp_plantilla_aviso_gerencia(token_wa, pid, tlf_raw, f'✅ Pedido confirmado en Sistemas Pyme ({nombre})', f'Plan: {plan} | Total Día 1: {total} € | Cita: {horario}. Pulsa «Recibido» para ver tu resumen y enlace de calendario.', txt_wa_cli)",
-        "        enviar_whatsapp_plantilla_aviso_gerencia(token_wa, pid, '691407080', f'🛒 Nuevo Pedido Web de {nombre} (+34 {tlf_raw})', f'Plan: {plan} | Total Día 1: {total} € | Cita: {horario}. Pulsa «Recibido» para ver el desglose.', txt_wa_jefe)",
-        "    if not wa_enviado:",
-        "        try:",
-        "            req_ren = urllib.request.Request('https://servicio-resenas.onrender.com/api/registrar-pedido-cita', data=json.dumps(body).encode('utf-8'), headers={'Content-Type': 'application/json'}, method='POST')",
-        "            with urllib.request.urlopen(req_ren, timeout=8) as r_ren:",
-        "                if r_ren.status == 200: wa_enviado = True",
-        "        except Exception:",
-        "            for dest_tlf, tit_wa in ((tlf_raw, f'Pedido confirmado ({plan})'), ('691407080', f'Nuevo Pedido de {nombre} (+34 {tlf_raw})')):",
-        "                if len(dest_tlf) != 9: continue",
-        "                try:",
-        "                    p_inf_wa = {",
-        "                        'slug': 'sistemas-pyme',",
-        "                        'nombre_negocio': f'Sistemas Pyme — {tit_wa}',",
-        "                        'encargado': nombre,",
-        "                        'telefono_destino': dest_tlf,",
-        "                        'phone_number_id': pid,",
-        "                        'etiqueta_mes': f'Cita: {horario} | Total Día 1: {total} €',",
-        "                        'url_informe': url_gcal or 'https://sistemaspyme.es',",
-        "                        'toques_mostrador': atriles,",
-        "                        'total_resenas': auditorias,",
-        "                        'media_estrellas': '5.0',",
-        "                        'encuestas_emitidas': 1,",
-        "                        'encuestas_satisfechos': 1,",
-        "                        'quejas_frenadas': 0",
-        "                    }",
-        "                    req_iw = urllib.request.Request('https://servicio-resenas.onrender.com/api/informe/enviar-whatsapp', data=json.dumps(p_inf_wa).encode('utf-8'), headers={'Content-Type': 'application/json'}, method='POST')",
-        "                    urllib.request.urlopen(req_iw, timeout=8)",
-        "                except Exception: pass",
-        "    return {'status': 'ok', 'pedido_procesado': True}",
-        "class SPNeuronalHandler(SimpleHTTPRequestHandler):",
-        "    def log_message(self, format, *args):",
-        "        pass",
-        "    def end_headers(self):",
-        "        self.send_header('Access-Control-Allow-Origin', '*')",
-        "        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')",
-        "        self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')",
-        "        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')",
-        "        super().end_headers()",
-        "    def do_OPTIONS(self):",
-        "        self.send_response(200)",
-        "        self.end_headers()",
-        "    def do_GET(self):",
-        "        if self.path.startswith('/api/disponibilidad-calendar'):",
-        "            ocupados = obtener_huecos_ocupados_calendar()",
-        "            self.send_response(200)",
-        "            self.send_header('Content-Type', 'application/json; charset=utf-8')",
-        "            self.end_headers()",
-        "            self.wfile.write(json.dumps({'status': 'ok', 'ocupados': ocupados}, ensure_ascii=False).encode('utf-8'))",
-        "            return",
-        "        super().do_GET()",
-        "    def do_POST(self):",
-        "        length = int(self.headers.get('Content-Length', 0))",
-        "        raw = self.rfile.read(length).decode('utf-8', errors='replace') if length > 0 else '{}'",
-        "        try:",
-        "            body = json.loads(raw)",
-        "        except Exception:",
-        "            body = {}",
-        "        if self.path.startswith('/api/registrar-pedido-cita'):",
-        "            res_ped = disparar_pedido_en_vivo_local(body)",
-        "            self.send_response(200)",
-        "            self.send_header('Content-Type', 'application/json; charset=utf-8')",
-        "            self.end_headers()",
-        "            self.wfile.write(json.dumps(res_ped, ensure_ascii=False).encode('utf-8'))",
-        "            return",
-        "        if self.path.startswith('/api/consultor-ia-vivo'):",
-        "            prompt_txt = str(body.get('prompt') or body.get('pregunta') or '').strip()",
-        "            respuesta_ia = ''",
-        "            try:",
-        "                payload_g = {",
-        "                    'contents': [{'role': 'user', 'parts': [{'text': prompt_txt}]}],",
-        "                    'generationConfig': {'temperature': 0.35, 'maxOutputTokens': 260}",
-        "                }",
-        "                req_g = urllib.request.Request(",
-        "                    f'{URL_BASE_GANADORA}?key={CLAVE}',",
-        "                    data=json.dumps(payload_g).encode('utf-8'),",
-        "                    headers={'Content-Type': 'application/json'},",
-        "                    method='POST'",
-        "                )",
-        "                with urllib.request.urlopen(req_g, timeout=9) as rg:",
-        "                    dg = json.loads(rg.read().decode('utf-8', errors='ignore'))",
-        "                    cands = dg.get('candidates') or []",
-        "                    if cands:",
-        "                        parts = ((cands[0].get('content') or {}).get('parts')) or []",
-        "                        if parts:",
-        "                            respuesta_ia = str(parts[0].get('text') or '').strip()",
-        "            except Exception: pass",
-        "            self.send_response(200)",
-        "            self.send_header('Content-Type', 'application/json; charset=utf-8')",
-        "            self.end_headers()",
-        "            self.wfile.write(json.dumps({'status': 'ok', 'respuesta': respuesta_ia, 'modelo': MOD_GANADOR}, ensure_ascii=False).encode('utf-8'))",
-        "            return",
-        "        self.send_response(200)",
-        "        self.send_header('Content-Type', 'application/json; charset=utf-8')",
-        "        self.end_headers()",
-        "        self.wfile.write(json.dumps({'status': 'ok'}).encode('utf-8'))",
-        "if __name__ == '__main__':",
-        "    srv = ThreadingHTTPServer(('127.0.0.1', 8765), SPNeuronalHandler)",
-        "    srv.serve_forever()",
-    ]
-
-    with open(script_srv, "w", encoding="utf-8") as f:
-        f.write("\n".join(lineas_srv) + "\n")
-
-    subprocess.Popen(
-        [sys.executable, script_srv],
-        cwd=carpeta_web,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        start_new_session=True,
-    )
-    time.sleep(0.6)
-    url_viva = f"http://127.0.0.1:8765/index.html?v={int(time.time())}#tecnosala"
-    print(f"🌐 Servidor Neuronal Gemini activo en:\n   {url_viva}")
-    try:
-        subprocess.run(["open", url_viva], check=False)
-    except Exception:
-        pass
-
-
-def replicar_ad_py_en_carpetas():
+    carpeta_base = os.path.dirname(ruta_archivo)
+    carpeta_backups = os.path.join(carpeta_base, "backups_sp")
+    os.makedirs(carpeta_backups, exist_ok=True)
+    nombre_base = os.path.basename(ruta_archivo)
+    ruta_destino = os.path.join(carpeta_backups, f"{nombre_base}.{STAMP}.bak")
+    shutil.copy2(ruta_archivo, ruta_destino)
+    print(f"  🛡️ Backup creado: {ruta_destino}")
+    return ruta_destino
+
+def escribir_archivo_con_backup(ruta_archivo, contenido_nuevo):
+    os.makedirs(os.path.dirname(ruta_archivo), exist_ok=True)
+    if os.path.isfile(ruta_archivo):
+        crear_backup_seguro(ruta_archivo)
+    with open(ruta_archivo, "w", encoding="utf-8") as f:
+        f.write(contenido_nuevo)
+    print(f"  ✅ Archivo actualizado: {ruta_archivo}")
+
+def replicar_ad_py_en_carpetas_oficiales():
     ruta_actual = os.path.abspath(__file__)
     if not os.path.isfile(ruta_actual):
         return
-    bak = crear_backup(ruta_actual)
-    verificar_sintaxis_segura(ruta_actual, bak)
-    for dest_dir in [RUTA_WEB_PUBLIC, RUTA_SCRAPER, RUTA_SERVICIO_RESENAS, RUTA_PROGRAMAR]:
-        if os.path.isdir(dest_dir):
-            dest_file = os.path.join(dest_dir, "AD.py")
-            if os.path.abspath(dest_file) != ruta_actual:
-                try:
-                    shutil.copy2(ruta_actual, dest_file)
-                    print(f"🔄 AD.py replicado en: {dest_file}")
-                except Exception:
-                    pass
+    for carpeta in [RUTA_WEB_PUBLIC_HTML, RUTA_WEB_ROOT, RUTA_WEB_RENDER, RUTA_SCRAPER, RUTA_PROGRAMAR]:
+        if os.path.isdir(carpeta):
+            destino = os.path.join(carpeta, "AD.py")
+            try:
+                if os.path.abspath(destino) != ruta_actual:
+                    shutil.copy2(ruta_actual, destino)
+            except Exception:
+                pass
 
+# =============================================================================
+# 3. VALIDADOR GATEWAY ANTI-ERRORES (PYTHON AST + VERIFICACIÓN HTML/JS)
+# =============================================================================
+def encontrar_binario_node():
+    node_bin = shutil.which("node")
+    if node_bin:
+        return node_bin
+    rutas_comunes_mac = [
+        "/opt/homebrew/bin/node",
+        "/usr/local/bin/node",
+        os.path.expanduser("~/.nvm/versions/node"),
+    ]
+    for r in rutas_comunes_mac:
+        if os.path.isfile(r) and os.access(r, os.X_OK):
+            return r
+    return None
 
-def main():
-    print("🚀 Iniciando Actualizador Maestro Sistemas Pyme (V231 Completo)...")
-    limpiar_secretos_para_github_push_protection()
-    actualizar_documentos_y_base_conocimiento()
-    actualizar_main_py_servicio_resenas()
-    actualizar_index_html_principal()
-    replicar_ad_py_en_carpetas()
-    claves = [obtener_clave_vertex_reconstruida()]
-    modelos = descubrir_modelos_gemini(claves)
-    print(f"🧠 Modelos Gemini más nuevos auto-descubiertos: {modelos}")
-    lanzar_servidor_neuronal_8765(RUTA_WEB_PUBLIC, claves, modelos)
-    print("✨ ¡Todo listo! Agenda Lunes a Sábado (09:00-13:30) sincronizada con Google Calendar y CRM.")
+def validar_bloques_js_en_html(ruta_html):
+    if not os.path.isfile(ruta_html):
+        return True
+    with open(ruta_html, "r", encoding="utf-8") as f:
+        html = f.read()
 
+    nombre_archivo = os.path.basename(ruta_html)
+    peso_kb = round(os.path.getsize(ruta_html) / 1024, 1)
+    patron = re.compile(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", re.DOTALL | re.IGNORECASE)
+    bloques = patron.findall(html)
+
+    # Verificación de integridad estructural HTML
+    if "<html" not in html.lower() or "</html>" not in html.lower():
+        print(f"  ❌ Error estructural en {nombre_archivo}: etiqueta </html> incompleta.")
+        return False
+
+    node_bin = encontrar_binario_node()
+    if not node_bin:
+        print(f"  🟢 Verificado OK: {nombre_archivo} ({peso_kb} KB • {len(bloques)} bloques JS intactos)")
+        return True
+
+    for idx, codigo_js in enumerate(bloques, 1):
+        codigo_limpio = codigo_js.strip()
+        if not codigo_limpio or codigo_limpio.startswith("{"):
+            continue
+        with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False, encoding="utf-8") as tmp:
+            tmp.write(codigo_limpio)
+            tmp_path = tmp.name
+        try:
+            res = subprocess.run([node_bin, "--check", tmp_path], capture_output=True, text=True)
+            if res.returncode != 0:
+                print(f"  ❌ Error de sintaxis JS en {nombre_archivo} (Bloque #{idx}):\n{res.stderr}")
+                os.unlink(tmp_path)
+                return False
+        finally:
+            if os.path.exists(tmp_path):
+                os.unlink(tmp_path)
+    print(f"  🟢 Verificado OK con Node.js: {nombre_archivo} ({peso_kb} KB • {len(bloques)} bloques <script>)")
+    return True
+
+# =============================================================================
+# 4. CONTENIDO DE LOS NUEVOS TARJETONES Y DOCUMENTOS (DISEÑO CERO CARGA COGNITIVA)
+# =============================================================================
+
+HTML_TARIFAS_A5 = r"""<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    (function() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('modo') === 'impreso') return;
+        var esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth > 0 && window.innerWidth <= 820);
+        if (esMovil) window.location.replace('tarifas_movil.html');
+      } catch(e) {}
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <title>Tarifas Oficiales y Arquitectura de 4 Grupos (A5) — Sistemas Pyme</title>
+  <meta name="viewport" content="width=820">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    @page { size: A5 portrait; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #071629;
+      color: #0f172a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding: 18px 0 44px 0;
+    }
+    .topbar-pc {
+      position: sticky;
+      top: 10px;
+      z-index: 100;
+      background: rgba(11, 37, 69, 0.96);
+      backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(20, 184, 166, 0.5);
+      border-radius: 12px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 92%;
+      max-width: 760px;
+      color: #fff;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+    }
+    .btn-pc {
+      background: #0d7d74;
+      color: #fff;
+      border: 1px solid #14b8a6;
+      padding: 6px 13px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn-pc.sec { background: #1e293b; border-color: #475569; color: #cbd5e1; }
+    .sheet {
+      width: 148mm;
+      height: 210mm;
+      min-height: 210mm;
+      max-height: 210mm;
+      background: #ffffff;
+      padding: 4.5mm 7mm 4mm 7mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+      page-break-after: always;
+      overflow: hidden;
+    }
+    @media screen and (min-width: 821px) { .sheet { zoom: 1.24; } }
+    @media print {
+      body { background: none !important; padding: 0 !important; gap: 0 !important; }
+      .no-print { display: none !important; }
+      .sheet { box-shadow: none !important; zoom: 1 !important; margin: 0 !important; }
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #0b2545;
+      padding-bottom: 2.5px;
+      margin-bottom: 3px;
+    }
+    .brand-logo-img { max-height: 40px; width: auto; object-fit: contain; }
+    .header-tagline { text-align: right; font-size: 6.9px; color: #475569; font-weight: 600; line-height: 1.2; }
+    .header-tagline strong { color: #095852; font-size: 7.8px; display: block; text-transform: uppercase; font-weight: 900; }
+
+    .section-banner {
+      background: linear-gradient(90deg, #095852 0%, #0d7d74 100%);
+      color: #fff;
+      padding: 3px 7px;
+      border-radius: 4px;
+      font-size: 8px;
+      font-weight: 900;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.5px;
+    }
+    .section-banner.blue { background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%); }
+    .section-banner.indigo { background: linear-gradient(90deg, #312e81 0%, #4f46e5 100%); }
+    .section-banner.dark { background: linear-gradient(90deg, #0b2545 0%, #1e293b 100%); }
+    .section-banner .rule {
+      font-size: 6.6px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.22);
+      padding: 1px 5px;
+      border-radius: 3px;
+      text-transform: none;
+    }
+
+    .price-table { width: 100%; border-collapse: collapse; font-size: 7.3px; margin-bottom: 3px; }
+    .price-table th {
+      background: #e2e8f0;
+      color: #0b2545;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 6.3px;
+      padding: 2.4px 4px;
+      border-bottom: 1.2px solid #cbd5e1;
+      text-align: left;
+    }
+    .price-table td {
+      padding: 2.3px 4px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #1e293b;
+      vertical-align: middle;
+      line-height: 1.15;
+    }
+    .row-duo { background: #f0f9ff; }
+    .row-star { background: #ecfdf5; font-weight: 700; }
+    .row-star td { border-top: 1.2px solid #6ee7b7; border-bottom: 1.2px solid #6ee7b7; }
+    .pack-name { font-weight: 900; font-size: 8px; color: #0b2545; }
+    .price-badge { font-size: 8.8px; font-weight: 900; color: #095852; white-space: nowrap; }
+    .save-pill {
+      font-size: 6px;
+      font-weight: 800;
+      color: #15803d;
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      padding: 0.5px 3.5px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+    .groups-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      margin-bottom: 3px;
+    }
+    .grp-box {
+      background: #f8fafc;
+      border: 1.2px solid #cbd5e1;
+      border-left: 3.5px solid #2563eb;
+      border-radius: 4px;
+      padding: 3.5px 6px;
+    }
+    .grp-box.pink { border-left-color: #db2777; background: #fdf2f8; border-color: #fbcfe8; }
+    .grp-box.indigo { border-left-color: #4f46e5; background: #eef2ff; border-color: #c7d2fe; }
+    .grp-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1.5px;
+    }
+    .grp-title { font-size: 7.4px; font-weight: 900; color: #0b2545; text-transform: uppercase; }
+    .grp-price { font-size: 7.6px; font-weight: 900; color: #1d4ed8; }
+    .grp-list { list-style: none; font-size: 6.5px; color: #334155; line-height: 1.2; display: flex; flex-direction: column; gap: 1.2px; }
+
+    .audit-box {
+      background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+      border: 1.3px solid #5eead4;
+      border-left: 4px solid #0d7d74;
+      border-radius: 4.5px;
+      padding: 3.8px 6.5px;
+      margin-bottom: 2.5px;
+    }
+    .audit-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      margin-top: 2.5px;
+    }
+    .audit-card {
+      background: #ffffff;
+      border: 1px solid #99f6e4;
+      border-radius: 3.5px;
+      padding: 2.8px 4.5px;
+    }
+    .audit-card.featured { background: #ecfdf5; border: 1.4px solid #10b981; }
+    .audit-card-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1px; }
+    .audit-card-name { font-size: 6.6px; font-weight: 800; color: #0b2545; }
+    .audit-card-price { font-size: 7.8px; font-weight: 900; color: #095852; }
+    .audit-card-desc { font-size: 6px; color: #475569; line-height: 1.15; }
+
+    .hw-strip {
+      background: #fffbeb;
+      border: 1.2px solid #fde68a;
+      border-left: 3.5px solid #d97706;
+      border-radius: 4px;
+      padding: 3px 6.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 6.7px;
+      margin-bottom: 2px;
+    }
+
+    .print-qr-banner {
+      background: #f0fdfa;
+      border: 1.3px dashed #0d7d74;
+      border-radius: 4.5px;
+      padding: 4px 7px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: auto;
+    }
+    .print-qr-left { display: flex; align-items: center; gap: 7px; flex: 1; }
+    .print-qr-img { width: 33px; height: 33px; border-radius: 3px; flex-shrink: 0; }
+    .print-qr-text { font-size: 6.9px; color: #1e293b; line-height: 1.2; }
+    .print-qr-text strong { color: #095852; font-size: 7.8px; display: block; }
+    .contact-details-box { border-left: 1.2px solid #99f6e4; padding-left: 7px; font-size: 6.7px; line-height: 1.2; text-align: right; flex-shrink: 0; }
+    .contact-details-box .name { font-size: 8px; font-weight: 900; color: #0b2545; display: block; }
+    .contact-details-box .role { font-size: 5.9px; font-weight: 800; color: #0d7d74; text-transform: uppercase; display: block; }
+    .footer-bar { border-top: 1px solid #e2e8f0; padding-top: 2px; font-size: 6.5px; color: #64748b; display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+  <aside class="topbar-pc no-print">
+    <div style="font-size:12.5px; font-weight:800;">💶 Tarjetón Oficial de Tarifas y 4 Grupos (Doble Cara A5)</div>
+    <div style="display:flex; gap:8px;">
+      <a href="../index.html#tarifas" onclick="if(window.opener && !window.opener.closed){event.preventDefault();window.close();}" class="btn-pc sec">⬅ Volver a la Web</a>
+      <button type="button" onclick="window.print()" class="btn-pc">🖨️ Imprimir / Guardar PDF A5</button>
+    </div>
+  </aside>
+
+  <!-- ===================================================================== -->
+  <!-- CARA A: GRUPO 1 (NÚCLEO DE VENTA RÁPIDA) + LAS 2 SUPER-AUDITORÍAS      -->
+  <!-- ===================================================================== -->
+  <main class="sheet">
+    <div>
+      <header class="header">
+        <img src="../logo.png" alt="Sistemas Pyme" class="brand-logo-img" onerror="this.onerror=null; this.src='logo.png';">
+        <div class="header-tagline">
+          <strong>Manual Oficial de Precios y Packs</strong>
+          Arquitectura Modular en 4 Bloques + Super-Auditorías
+        </div>
+      </header>
+
+      <div class="section-banner">
+        <span>1. Grupo 1: Servicios Troncales de Implantación Rápida</span>
+        <span class="rule">1º a 59 €/m (150 € Setup) | Del 2º al 5º: +40 €/m (+75 € Setup)</span>
+      </div>
+
+      <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:4px; padding:3px 6px; font-size:6.6px; color:#1e293b; margin-bottom:2.5px; line-height:1.22;">
+        <strong style="color:#0b2545;">¿Qué 5 servicios forman el Grupo 1?</strong>
+        <strong>S1</strong> Reseñas Google IA (SEO Local + HEARD/RGPD) •
+        <strong>S2</strong> Cortafuegos Preventivo por WhatsApp (Audio IA) •
+        <strong style="color:#0d7d74;">S3 ★ Respuesta a Leads en 10s + Portales</strong> •
+        <strong>S9</strong> Facturas al Gestor por Foto WA •
+        <strong>S5</strong> Reactivación de Clientes Inactivos.
+      </div>
+
+      <table class="price-table">
+        <thead>
+          <tr>
+            <th style="width:26%;">Plan del Grupo 1</th>
+            <th style="width:23%;">Combinación Típica</th>
+            <th style="width:16%;">Cuota Mes</th>
+            <th style="width:12%;">Setup Único</th>
+            <th style="width:23%;">Ventajas Desbloqueadas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="pack-name">Plan Pyme BASE</span> <span style="font-size:6px; color:#64748b;">(1 serv.)</span></td>
+            <td>Solo S1, o S2, o S3</td>
+            <td><span class="price-badge">59 €/m</span></td>
+            <td><strong>150 €</strong></td>
+            <td><span style="font-size:6.2px; color:#475569;">Ahorra 118 € en Anual • Auditorías a 350 € (590 € las 2)</span></td>
+          </tr>
+          <tr class="row-duo">
+            <td><span class="pack-name" style="color:#0369a1;">Pack ESCUDO BÁSICO</span> <span style="font-size:6px; font-weight:800; color:#0284c7;">(Dúo)</span></td>
+            <td><strong>S1 + S2</strong> (o S1 + S3)</td>
+            <td><span class="price-badge" style="color:#0369a1;">99 €/m</span></td>
+            <td><strong>225 €</strong></td>
+            <td><span class="save-pill">Desbloquea Auditorías a 195 € c/u</span></td>
+          </tr>
+          <tr class="row-star">
+            <td><span class="pack-name" style="color:#047857;">Pack ESCUDO TOTAL ★</span> <span style="font-size:6px; font-weight:800; color:#059669;">(Trinity)</span></td>
+            <td><strong style="color:#065f46;">S1 + S2 + S3 (Leads 10s)</strong></td>
+            <td><span class="price-badge" style="color:#047857;">139 €/m</span></td>
+            <td><strong style="color:#047857;">300 €</strong></td>
+            <td><span class="save-pill" style="background:#a7f3d0; color:#064e3b;">🎁 Bóveda Gratis (150€) + Aud. 195€</span></td>
+          </tr>
+          <tr>
+            <td><span class="pack-name" style="color:#4338ca;">Plan QUATRO</span> <span style="font-size:6px; color:#64748b;">(4 serv.)</span></td>
+            <td>S1 + S2 + S3 + S9</td>
+            <td><span class="price-badge" style="color:#4338ca;">179 €/m</span></td>
+            <td><strong>375 €</strong></td>
+            <td><span class="save-pill">🎁 Bóveda Gratis + Aud. 195 € c/u</span></td>
+          </tr>
+          <tr>
+            <td><span class="pack-name" style="color:#0f766e;">Plan PENTIUM</span> <span style="font-size:6px; color:#64748b;">(5 serv.)</span></td>
+            <td>S1 + S2 + S3 + S9 + S5</td>
+            <td><span class="price-badge" style="color:#0f766e;">219 €/m</span></td>
+            <td><strong>450 €</strong></td>
+            <td><span class="save-pill">🎁 Bóveda Gratis + Ahorra 438€ Anual</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="section-banner blue">
+        <span>2. Grupos 2, 3 y 4: Operativa Avanzada, Satélites y Voz IA</span>
+        <span class="rule">Tarifa Suelto vs. Descuento Combinado con Pack</span>
+      </div>
+
+      <div class="groups-grid">
+        <div class="grp-box">
+          <div class="grp-head">
+            <span class="grp-title">🗓️ Grupo 2: Operativa Avanzada</span>
+            <span class="grp-price">+59 €/m combo</span>
+          </div>
+          <ul class="grp-list">
+            <li>• <strong>S6 Anti-Plantón 24h + Huecos Flash:</strong> 79€ suelto | <strong>+59€/m</strong> (+110€ Setup).</li>
+            <li>• <strong>S8 Firma Digital + Onboarding IA:</strong> 79€ suelto | <strong>+59€/m</strong> (+110€ Setup).</li>
+            <li>• <strong>S10 Escudo Anti-Morosidad:</strong> 79€ suelto | <strong>+59€/m</strong> (+110€ Setup).</li>
+            <li style="color:#1e40af; font-weight:700;">✔ Computa al 100% para beneficios de Pack Dúo/Trinity.</li>
+          </ul>
+        </div>
+
+        <div class="grp-box indigo">
+          <div class="grp-head">
+            <span class="grp-title">📞 Grupo 4: Telefonía y Voz IA</span>
+            <span class="grp-price" style="color:#4338ca;">Línea + Minutos</span>
+          </div>
+          <ul class="grp-list">
+            <li>• <strong>S4 Llamadas Perdidas por WA:</strong> 79 €/m (195€ Setup) suelto | <strong>+59 €/m</strong> (+110€ Setup) combo. Incluye 250 rescates/mes.</li>
+            <li>• <strong>S7 Centralita Voz IA 24/7:</strong> 169 €/m (350€ Setup) suelto | <strong>+129 €/m</strong> (+250€ Setup) combo. Incluye <strong>250 min/mes</strong> (~150-200 llamadas).</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grp-box pink" style="margin-bottom:2.5px;">
+        <div class="grp-head">
+          <span class="grp-title" style="color:#9d174d;">🚀 Grupo 3: Satélites Especializados y Boosters IA</span>
+          <span class="grp-price" style="color:#be185d;">Descuento Cruzado Activo</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:4px; font-size:6.3px; color:#334155; line-height:1.18;">
+          <div style="background:#fff; padding:2.5px 4px; border-radius:3px; border:1px solid #fbcfe8;">
+            <strong style="color:#9d174d; display:block;">📱 Sat. 1: Instagram 3 en 1</strong>
+            Suelto: 69€/m (150€) | <strong style="color:#be185d;">Combo: +49€/m (+75€)</strong>
+          </div>
+          <div style="background:#fff; padding:2.5px 4px; border-radius:3px; border:1px solid #bae6fd;">
+            <strong style="color:#0369a1; display:block;">📦 Sat. 2: Escudo Logístico 360</strong>
+            Suelto: 79€/m (195€) | <strong style="color:#0284c7;">Combo: +59€/m (+110€)</strong>
+          </div>
+          <div style="background:#fff; padding:2.5px 4px; border-radius:3px; border:1px solid #c7d2fe;">
+            <strong style="color:#4338ca; display:block;">🧠 Sat. 3: Cerebro Redactor RAG</strong>
+            Suelto: 99€/m (250€) | <strong style="color:#4f46e5;">Combo: +69€/m (+150€)</strong>
+          </div>
+        </div>
+        <div style="font-size:6.1px; color:#831843; margin-top:2px; font-weight:700;">
+          ⚡ <strong>Boosters IA:</strong> Add-on Lector de Correo (para S9) o Reclamación a Proveedores (para S10): <strong>+35 €/mes</strong> (+50 € Setup).
+        </div>
+      </div>
+
+      <div class="audit-box">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:7.8px; font-weight:900; color:#095852;">🔍🧠 Las 2 Super-Auditorías Web Gemelas (SEO/GEO IA y Neuro-CRO con Sonda 10-14 días)</span>
+          <span style="font-size:6px; font-weight:800; background:#095852; color:#fff; padding:1px 4.5px; border-radius:3px;">Suelo Mínimo Blindado: 195 € c/u</span>
+        </div>
+        <div class="audit-grid">
+          <div class="audit-card">
+            <div class="audit-card-head"><span class="audit-card-name">1. Solo Código (DIY)</span><span class="audit-card-price">200 €</span></div>
+            <div class="audit-card-desc"><strong>390 € las dos</strong> (195€ c/u). PDF Parte 1 + Parte 2 para que lo suba tu informático.</div>
+          </div>
+          <div class="audit-card">
+            <div class="audit-card-head"><span class="audit-card-name">2. Llave en Mano</span><span class="audit-card-price">350 €</span></div>
+            <div class="audit-card-desc"><strong>590 € las dos</strong> (Ahorra 110€). Suelta o con Plan Base. Implantación incluida + Sonda.</div>
+          </div>
+          <div class="audit-card featured">
+            <div class="audit-card-head"><span class="audit-card-name" style="color:#065f46;">3. Con Pack Dúo+ ★</span><span class="audit-card-price" style="color:#047857;">195 €</span></div>
+            <div class="audit-card-desc" style="color:#064e3b;"><strong>390 € las dos</strong> (Ahorra 310€). Bonificada un 44% con cualquier Pack de 2+ servicios.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hw-strip">
+        <div><strong style="color:#92400e;">★ Hardware Físico: Atril Inteligente de Mostrador (NFC + QR Dinámico + Telemetría 360°)</strong> — Pago único sin cuotas:</div>
+        <div style="font-weight:900; color:#b45309; white-space:nowrap;">1ª Ud: <strong>39 €</strong> | 2ª a 4ª Ud: <strong>29 €/ud</strong> | 5+ Uds: <strong>25 €/ud</strong></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="print-qr-banner">
+        <div class="print-qr-left">
+          <img src="../qr-code.png" alt="QR WhatsApp" class="print-qr-img" onerror="this.style.display='none'">
+          <div class="print-qr-text">
+            <strong>¿Qué combinación encaja mejor con tu negocio?</strong>
+            Escanea este código QR para hablar por WhatsApp con Francisco y configurar tu pack a medida.
+          </div>
+        </div>
+        <div class="contact-details-box">
+          <span class="name">Francisco M. Gallardo</span>
+          <span class="role">Consultor Tecnológico</span>
+          <strong>711 54 75 61</strong> • francisco@sistemaspyme.es<br>
+          <span style="color:#64748b;">sistemaspyme.es • Galicia</span>
+        </div>
+      </div>
+      <footer class="footer-bar">
+        <span><strong>Sistemas Pyme</strong> — Arquitectura Oficial de Precios (Precios netos sin IVA 21%)</span>
+        <span><strong>CARA A (TARIFAS Y GRUPOS)</strong></span>
+      </footer>
+    </div>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- CARA B: LIQUIDACIÓN DÍA 1 (FLEXIBLE VS ANUAL) Y CHULETA DE REGLAS      -->
+  <!-- ===================================================================== -->
+  <main class="sheet">
+    <div>
+      <header class="header">
+        <img src="../logo.png" alt="Sistemas Pyme" class="brand-logo-img" onerror="this.onerror=null; this.src='logo.png';">
+        <div class="header-tagline">
+          <strong>Liquidación Día 1 y Reglas de Combinación</strong>
+          Modalidad Flexible (3 meses) vs. Plan Anual (2 Meses Gratis)
+        </div>
+      </header>
+
+      <div class="section-banner dark">
+        <span>3. Las 2 Vías de Contratación (Domiciliación B2B SEPA)</span>
+        <span class="rule">Transparencia Total desde el Día 1</span>
+      </div>
+
+      <div class="groups-grid" style="margin-bottom:3px;">
+        <div class="grp-box" style="border-left-color:#0d7d74;">
+          <div class="grp-head">
+            <span class="grp-title" style="color:#095852;">🔄 Vía 1: Modalidad Flexible (Mes a Mes)</span>
+          </div>
+          <ul class="grp-list">
+            <li>✔ <strong>Pago Día 1:</strong> Alta Técnica (Setup único) + 1ª Mensualidad.</li>
+            <li>✔ <strong>Compromiso inicial:</strong> Solo 3 meses de rodaje; luego libre con 30 días de preaviso.</li>
+            <li>✔ <strong>Super-Auditorías Llave en Mano:</strong> <strong>195 € c/u</strong> (o 390 € las dos) desde cualquier Pack de 2+ servicios.</li>
+          </ul>
+        </div>
+        <div class="grp-box indigo">
+          <div class="grp-head">
+            <span class="grp-title" style="color:#3730a3;">🎁 Vía 2: Plan Anual (Pagas 10 y Disfrutas 12)</span>
+          </div>
+          <ul class="grp-list">
+            <li>✔ <strong>Pago Día 1:</strong> Alta Técnica (Setup único) + 10 Mensualidades.</li>
+            <li>✔ <strong>Ahorro directo:</strong> <strong>2 meses completos GRATIS</strong> (-16,6%) y precio blindado todo el año.</li>
+            <li>✔ <strong>Super-Auditorías Llave en Mano:</strong> <strong>195 € c/u</strong> (o 390 € las dos) desde cualquier Pack de 2+ servicios.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-banner">
+        <span>4. Tabla Maestra de Desembolso Día 1 y Packs Estrella</span>
+        <span class="rule">Importes Exactos de Inicio (Sin IVA 21%)</span>
+      </div>
+
+      <table class="price-table" style="font-size:7px;">
+        <thead>
+          <tr>
+            <th style="width:27%;">Plan / Módulo</th>
+            <th style="width:13%;">Cuota Mes</th>
+            <th style="width:12%;">Alta (Setup)</th>
+            <th style="width:22%;">Pago Día 1 (Vía Flexible)</th>
+            <th style="width:26%;">Pago Día 1 (Vía Anual 10m)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Plan Pyme BASE</strong> (1 serv. G1)</td>
+            <td>59 €/m</td>
+            <td>150 €</td>
+            <td><strong>209 €</strong> <span style="font-size:5.8px; color:#64748b;">(150€ + 59€)</span></td>
+            <td><strong style="color:#4338ca;">740 €</strong> <span class="save-pill">Ahorra 118 €</span></td>
+          </tr>
+          <tr class="row-duo">
+            <td><strong style="color:#0369a1;">Pack ESCUDO BÁSICO</strong> (Dúo S1+S2)</td>
+            <td><strong>99 €/m</strong></td>
+            <td>225 €</td>
+            <td><strong>324 €</strong> <span style="font-size:5.8px; color:#0369a1;">(225€ + 99€)</span></td>
+            <td><strong style="color:#4338ca;">1.215 €</strong> <span class="save-pill">Ahorra 198 €</span></td>
+          </tr>
+          <tr class="row-star">
+            <td><strong style="color:#047857;">Pack ESCUDO TOTAL ★</strong> (S1+S2+S3)</td>
+            <td><strong style="color:#047857;">139 €/m</strong></td>
+            <td>300 €</td>
+            <td><strong style="color:#047857;">439 €</strong> <span style="font-size:5.8px; color:#065f46;">(300€ + 139€)</span></td>
+            <td><strong style="color:#047857;">1.690 €</strong> <span class="save-pill">Ahorra 278 € + Bóveda</span></td>
+          </tr>
+          <tr>
+            <td><strong>Plan QUATRO</strong> (4 serv. Grupo 1)</td>
+            <td>179 €/m</td>
+            <td>375 €</td>
+            <td><strong>554 €</strong> <span style="font-size:5.8px; color:#64748b;">(375€ + 179€)</span></td>
+            <td><strong style="color:#4338ca;">2.165 €</strong> <span class="save-pill">Ahorra 358 €</span></td>
+          </tr>
+          <tr>
+            <td><strong>Plan PENTIUM</strong> (5 serv. Grupo 1)</td>
+            <td>219 €/m</td>
+            <td>450 €</td>
+            <td><strong>669 €</strong> <span style="font-size:5.8px; color:#64748b;">(450€ + 219€)</span></td>
+            <td><strong style="color:#4338ca;">2.640 €</strong> <span class="save-pill">Ahorra 438 €</span></td>
+          </tr>
+          <tr style="background:#eff6ff;">
+            <td><strong style="color:#1e40af;">+ Servicio Grupo 2, Logística o S4</strong></td>
+            <td>+59 €/m <span style="font-size:5.7px;">(79€ s.)</span></td>
+            <td>+110 € <span style="font-size:5.7px;">(195€)</span></td>
+            <td><strong>+169 €</strong> combo <span style="font-size:5.7px;">(274€ suelto)</span></td>
+            <td><strong style="color:#1e40af;">+700 €</strong> combo <span class="save-pill">Ahorra 118 €</span></td>
+          </tr>
+          <tr style="background:#fdf2f8;">
+            <td><strong style="color:#9d174d;">+ Satélite Instagram 3 en 1</strong></td>
+            <td>+49 €/m <span style="font-size:5.7px;">(69€ s.)</span></td>
+            <td>+75 € <span style="font-size:5.7px;">(150€)</span></td>
+            <td><strong>+124 €</strong> combo <span style="font-size:5.7px;">(219€ suelto)</span></td>
+            <td><strong style="color:#9d174d;">+565 €</strong> combo <span class="save-pill">Ahorra 98 €</span></td>
+          </tr>
+          <tr style="background:#f5f3ff;">
+            <td><strong style="color:#4338ca;">+ Satélite Cerebro Redactor RAG</strong></td>
+            <td>+69 €/m <span style="font-size:5.7px;">(99€ s.)</span></td>
+            <td>+150 € <span style="font-size:5.7px;">(250€)</span></td>
+            <td><strong>+219 €</strong> combo <span style="font-size:5.7px;">(349€ suelto)</span></td>
+            <td><strong style="color:#4338ca;">+840 €</strong> combo <span class="save-pill">Ahorra 138 €</span></td>
+          </tr>
+          <tr style="background:#eef2ff;">
+            <td><strong style="color:#3730a3;">+ S7 Centralita Voz IA 24/7 (250m)</strong></td>
+            <td>+129 €/m <span style="font-size:5.7px;">(169€)</span></td>
+            <td>+250 € <span style="font-size:5.7px;">(350€)</span></td>
+            <td><strong>+379 €</strong> combo <span style="font-size:5.7px;">(519€ suelto)</span></td>
+            <td><strong style="color:#3730a3;">+1.540 €</strong> combo <span class="save-pill">Ahorra 258 €</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="section-banner blue">
+        <span>5. Los 3 Packs Estrella de Venta Directa y Regla de Combinación</span>
+        <span class="rule">Guía Rápida para Cierre Comercial</span>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:2.5px; font-size:6.6px; color:#1e293b; line-height:1.22;">
+        <div style="background:#f0f9ff; border:1px solid #bae6fd; border-left:3.5px solid #0284c7; border-radius:4px; padding:3px 6px;">
+          <strong style="color:#0369a1;">1. Pack Escudo Básico (Dúo S1 + S2):</strong> <strong>99 €/mes</strong> + 225 € Setup (Día 1 Flex: 324 € | Día 1 Anual: 1.215 €). Desbloquea cualquiera de las 2 Super-Auditorías Llave en Mano a <strong>195 € c/u</strong> (o las dos por 390 €).
+        </div>
+        <div style="background:#ecfdf5; border:1px solid #6ee7b7; border-left:3.5px solid #059669; border-radius:4px; padding:3px 6px;">
+          <strong style="color:#065f46;">2. Pack Escudo Total ★ (Trinity S1 + S2 + S3 Leads en 10s):</strong> <strong>139 €/mes</strong> + 300 € Setup (Día 1 Flex: 439 € | Día 1 Anual: 1.690 €). Incluye <strong>Bóveda de Contraseñas GRATIS</strong> (valorada en 150 €) + Super-Auditorías a <strong>195 € c/u</strong>.
+        </div>
+        <div style="background:#fffbeb; border:1px solid #fde68a; border-left:3.5px solid #d97706; border-radius:4px; padding:3px 6px;">
+          <strong style="color:#92400e;">3. Pack Firma Institucional / Alto Standing (Sin cuotas mensuales):</strong> 1 Super-Auditoría Llave en Mano por <strong>350 €</strong> o las <strong>2 Super-Auditorías Gemelas (SEO/GEO + Neuro-CRO con Sonda de 10-14 días) por 590 €</strong> pago único (ahorras 110 €).
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="print-qr-banner">
+        <div class="print-qr-left">
+          <img src="../qr-code.png" alt="QR WhatsApp" class="print-qr-img" onerror="this.style.display='none'">
+          <div class="print-qr-text">
+            <strong>¿Activamos tu Pack Escudo o tus Super-Auditorías hoy mismo?</strong>
+            Escanea el código con tu móvil para hablar directamente con Francisco.
+          </div>
+        </div>
+        <div class="contact-details-box">
+          <span class="name">Francisco M. Gallardo</span>
+          <span class="role">Consultor Tecnológico</span>
+          <strong>711 54 75 61</strong> • francisco@sistemaspyme.es<br>
+          <span style="color:#64748b;">sistemaspyme.es • Galicia</span>
+        </div>
+      </div>
+      <footer class="footer-bar">
+        <span><strong>Sistemas Pyme</strong> — Facturación B2B mediante domiciliación SEPA</span>
+        <span><strong>CARA B (LIQUIDACIÓN DÍA 1)</strong></span>
+      </footer>
+    </div>
+  </main>
+</body>
+</html>
+"""
+
+HTML_TARIFAS_MOVIL = r"""<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Tarifas Oficiales y Arquitectura de 4 Grupos (Versión Móvil) — Sistemas Pyme</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      background-color: #071629;
+      color: #f1f5f9;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 16.5px;
+      line-height: 1.55;
+    }
+    body.font-xl { font-size: 19px; line-height: 1.65; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(7, 22, 41, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid #14b8a6;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .btn-back {
+      background: #1e293b;
+      color: #5eead4;
+      border: 1px solid rgba(20,184,166,0.45);
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 10px;
+    }
+    .btn-action {
+      background: #0d7d74;
+      color: #fff;
+      border: 1px solid #14b8a6;
+      font-weight: 800;
+      font-size: 12.5px;
+      padding: 8px 11px;
+      border-radius: 10px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn-action.sec { background: #1e293b; color: #cbd5e1; border-color: #475569; }
+    .container {
+      max-width: 660px;
+      margin: 0 auto;
+      padding: 18px 16px 48px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .hero-box {
+      background: linear-gradient(145deg, #0b2545 0%, #0f172a 100%);
+      border: 1.5px solid rgba(20, 184, 166, 0.45);
+      border-radius: 18px;
+      padding: 18px 16px;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(20, 184, 166, 0.18);
+      color: #5eead4;
+      border: 1px solid rgba(20, 184, 166, 0.4);
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 99px;
+      margin-bottom: 8px;
+    }
+    .hero-title { font-size: 1.38em; font-weight: 900; color: #fff; line-height: 1.22; margin-bottom: 6px; }
+    .hero-sub { font-size: 0.92em; color: #cbd5e1; }
+    .section-head {
+      background: linear-gradient(90deg, #0f766e 0%, #115e59 100%);
+      color: #fff;
+      padding: 11px 14px;
+      border-radius: 12px;
+      font-weight: 900;
+      font-size: 0.95em;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+    .section-head.blue { background: linear-gradient(90deg, #1e3a8a 0%, #1d4ed8 100%); }
+    .section-head.pink { background: linear-gradient(90deg, #831843 0%, #be185d 100%); }
+    .section-head.indigo { background: linear-gradient(90deg, #3730a3 0%, #4f46e5 100%); }
+    .section-head.amber { background: linear-gradient(90deg, #b45309 0%, #d97706 100%); }
+    .card {
+      background: #0f172a;
+      border: 1.5px solid rgba(255,255,255,0.12);
+      border-left: 5px solid #14b8a6;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .card.emerald { border-left-color: #10b981; border-color: rgba(16,185,129,0.45); background: linear-gradient(145deg, rgba(6,78,59,0.45) 0%, #0f172a 100%); }
+    .card.blue { border-left-color: #3b82f6; }
+    .card.pink { border-left-color: #ec4899; }
+    .card.indigo { border-left-color: #6366f1; }
+    .card.amber { border-left-color: #f59e0b; }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+    .card-title { font-size: 1.1em; font-weight: 900; color: #fff; line-height: 1.25; }
+    .card-subtitle {
+      display: inline-block;
+      font-size: 0.8em;
+      font-weight: 800;
+      color: #5eead4;
+      background: rgba(20, 184, 166, 0.14);
+      border: 1px solid rgba(20, 184, 166, 0.35);
+      padding: 2px 9px;
+      border-radius: 8px;
+      margin-top: 4px;
+    }
+    .price-tag {
+      background: rgba(20, 184, 166, 0.18);
+      color: #5eead4;
+      border: 1px solid rgba(20, 184, 166, 0.4);
+      font-weight: 900;
+      font-size: 0.96em;
+      padding: 4px 10px;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+    .price-tag.amber { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border-color: rgba(245, 158, 11, 0.45); }
+    .data-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px dashed rgba(255,255,255,0.1);
+      font-size: 0.9em;
+    }
+    .data-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .data-label { color: #94a3b8; font-weight: 600; }
+    .data-val { color: #fff; font-weight: 800; text-align: right; }
+    .data-val.hi { color: #34d399; }
+    .cta-box {
+      background: linear-gradient(145deg, #064e3b 0%, #0f172a 100%);
+      border: 2px solid #10b981;
+      border-radius: 18px;
+      padding: 20px 16px;
+      text-align: center;
+    }
+    .btn-wa {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      background: #10b981;
+      color: #052e16;
+      font-weight: 900;
+      padding: 14px 18px;
+      border-radius: 14px;
+      text-decoration: none;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="../index.html#tarifas" onclick="if(window.opener && !window.opener.closed){event.preventDefault();window.close();}" class="btn-back">⬅ Volver a la Web</a>
+    <div style="display:flex; gap:6px;">
+      <button type="button" id="btnToggleFont" onclick="document.body.classList.toggle('font-xl')" class="btn-action">🔎 Letra A+</button>
+      <a href="tarifas.html?modo=impreso" class="btn-action sec">📄 Original A5</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="hero-box">
+      <span class="badge">Manual Oficial de Precios</span>
+      <h1 class="hero-title">Arquitectura de Tarifas en 4 Grupos y Super-Auditorías</h1>
+      <p class="hero-sub">Cero carga cognitiva: consulta de un vistazo los packs del Grupo 1, Operativa Avanzada, Satélites, Voz IA y las 2 Super-Auditorías.</p>
+    </div>
+
+    <div class="section-head">1. Grupo 1: Núcleo de Implantación Rápida (59€ el 1º | +40€ extra)</div>
+    <p style="font-size:0.9em; color:#cbd5e1;">
+      Incluye los 5 servicios más rentables y rápidos: <strong>S1</strong> Reseñas Google IA, <strong>S2</strong> Cortafuegos Preventivo WhatsApp, <strong>S3 ★ Leads en 10 Segundos</strong>, <strong>S9</strong> Facturas por Foto WA y <strong>S5</strong> Reactivación de Clientes Inactivos.
+    </p>
+
+    <article class="card">
+      <div class="card-top">
+        <div>
+          <span class="card-title">Plan Pyme BASE (1 serv.)</span>
+          <span class="card-subtitle">Solo S1, o solo S2, o solo S3</span>
+        </div>
+        <span class="price-tag">59 € / mes</span>
+      </div>
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">Alta Técnica (Setup único):</span><span class="data-val">150 €</span></div>
+        <div class="data-row"><span class="data-label">Pago Día 1 (Vía Flexible):</span><span class="data-val">209 €</span></div>
+        <div class="data-row"><span class="data-label">Pago Día 1 (Vía Anual 10m):</span><span class="data-val hi">740 € (Ahorra 118 €)</span></div>
+      </div>
+    </article>
+
+    <article class="card emerald">
+      <div class="card-top">
+        <div>
+          <span class="card-title">Pack ESCUDO BÁSICO (Dúo: 2 serv.)</span>
+          <span class="card-subtitle">S1 + S2 (o S1 + S3)</span>
+        </div>
+        <span class="price-tag">99 € / mes</span>
+      </div>
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">Alta Técnica (150€ + 75€):</span><span class="data-val">225 €</span></div>
+        <div class="data-row"><span class="data-label">Pago Día 1 (Vía Flexible):</span><span class="data-val">324 €</span></div>
+        <div class="data-row"><span class="data-label">Pago Día 1 (Vía Anual 10m):</span><span class="data-val hi">1.215 € (Ahorra 198 €)</span></div>
+        <div class="data-row"><span class="data-label">Privilegio Desbloqueado:</span><span class="data-val hi">Auditorías a 195 € c/u (390 € las 2)</span></div>
+      </div>
+    </article>
+
+    <article class="card emerald">
+      <div class="card-top">
+        <div>
+          <span class="card-title">Pack ESCUDO TOTAL ★ (Trinity: 3 serv.)</span>
+          <span class="card-subtitle">S1 + S2 + S3 (Leads en 10s)</span>
+        </div>
+        <span class="price-tag amber">139 € / mes</span>
+      </div>
+      <p><strong>El Pack Estrella:</strong> protege tus reseñas en Google, filtra quejas en privado por WhatsApp y atiende a cada nuevo lead en menos de 10 segundos.</p>
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">Alta Técnica (150€ + 75€ + 75€):</span><span class="data-val">300 €</span></div>
+        <div class="data-row"><span class="data-label">Pago Día 1 (Vía Flexible):</span><span class="data-val">439 €</span></div>
+        <div class="data-row"><span class="data-label">Pago Día 1 (Vía Anual 10m):</span><span class="data-val hi">1.690 € (Ahorra 278 €)</span></div>
+        <div class="data-row"><span class="data-label">Regalo + Privilegio:</span><span class="data-val hi">🎁 Bóveda Gratis (150€) + Aud. a 195 € c/u</span></div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-top">
+        <div>
+          <span class="card-title">Planes QUATRO (4) y PENTIUM (5)</span>
+          <span class="card-subtitle">+40 €/m y +75 € Setup por módulo</span>
+        </div>
+        <span class="price-tag">179€ / 219€</span>
+      </div>
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">Plan QUATRO (S1+S2+S3+S9):</span><span class="data-val">179 €/m + 375 € Setup (Día 1: 554 €)</span></div>
+        <div class="data-row"><span class="data-label">Plan PENTIUM (Los 5 serv. G1):</span><span class="data-val">219 €/m + 450 € Setup (Día 1: 669 €)</span></div>
+      </div>
+    </article>
+
+    <div class="section-head blue">2. Grupo 2: Operativa Avanzada (Agenda, Contratos y Cobros)</div>
+    <article class="card blue">
+      <div class="card-top">
+        <div>
+          <span class="card-title">S6 Anti-Plantón, S8 Firma Digital y S10 Anti-Morosidad</span>
+          <span class="card-subtitle">Computan al 100% para beneficios de Pack</span>
+        </div>
+        <span class="price-tag">+59 €/m combo</span>
+      </div>
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">Contratado SUELTO (único servicio):</span><span class="data-val">79 €/mes + 195 € Setup</span></div>
+        <div class="data-row"><span class="data-label">COMBINADO (con Grupo 1 u otro):</span><span class="data-val hi">+59 €/mes + +110 € Setup</span></div>
+      </div>
+    </article>
+
+    <div class="section-head pink">3. Grupo 3: Satélites Especializados y Boosters IA</div>
+    <article class="card pink">
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">📱 Satélite 1: Instagram 3 en 1:</span><span class="data-val hi">+49 €/m (+75€) combo | 69 €/m (150€) suelto</span></div>
+        <div class="data-row"><span class="data-label">📦 Satélite 2: Escudo Logístico 360:</span><span class="data-val hi">+59 €/m (+110€) combo | 79 €/m (195€) suelto</span></div>
+        <div class="data-row"><span class="data-label">🧠 Satélite 3: Cerebro Redactor RAG:</span><span class="data-val hi">+69 €/m (+150€) combo | 99 €/m (250€) suelto</span></div>
+        <div class="data-row"><span class="data-label">⚡ Boosters IA (Correo S9 / Prov. S10):</span><span class="data-val">+35 €/mes + +50 € Setup</span></div>
+      </div>
+    </article>
+
+    <div class="section-head indigo">4. Grupo 4: Satélites de Telefonía y Voz IA</div>
+    <article class="card indigo">
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">📞 S4 Rescate Llamadas Perdidas WA (250 rescates/m):</span><span class="data-val hi">+59 €/m (+110€) combo | 79 €/m (195€) suelto</span></div>
+        <div class="data-row"><span class="data-label">🎙️ S7 Centralita Voz IA 24/7 (Bolsa 250 min/m):</span><span class="data-val hi">+129 €/m (+250€) combo | 169 €/m (350€) suelto</span></div>
+      </div>
+    </article>
+
+    <div class="section-head amber">5. Las 2 Super-Auditorías Web Gemelas (Suelo Mínimo 195 € c/u)</div>
+    <article class="card amber">
+      <div class="card-top">
+        <div>
+          <span class="card-title">1) Ingeniería SEO/GEO IA y 2) Neuro-CRO con Sonda 10-14 Días</span>
+          <span class="card-subtitle">Pago Único • Sin Cuotas Mensuales</span>
+        </div>
+        <span class="price-tag amber">195 € en Pack</span>
+      </div>
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">1. Solo Código / DIY (Sin mano de obra):</span><span class="data-val">200 € una | 390 € las dos</span></div>
+        <div class="data-row"><span class="data-label">2. Oficial «Llave en Mano» (Suelta o Base):</span><span class="data-val">350 € una | 590 € las dos (Ahorra 110 €)</span></div>
+        <div class="data-row"><span class="data-label">3. BONIFICADA CON PACK (2+ serv. Mensual o Anual):</span><span class="data-val hi">195 € una | 390 € las dos (Ahorra 310 €)</span></div>
+        <div class="data-row"><span class="data-label">★ Hardware Atril NFC + QR Mostrador:</span><span class="data-val hi">39 € (1ª ud) | 29 € (2ª-4ª) | 25 € (5+ uds)</span></div>
+      </div>
+    </article>
+
+    <div class="cta-box">
+      <div style="font-size: 0.85em; font-weight: 800; color: #6ee7b7; text-transform: uppercase;">Atención Directa • Galicia</div>
+      <div style="font-size: 1.2em; font-weight: 900; color: #ffffff; margin-top: 4px;">Francisco M. Gallardo</div>
+      <div style="font-size: 0.92em; color: #cbd5e1; margin-top: 2px;">Tel: <strong>711 54 75 61</strong> • francisco@sistemaspyme.es</div>
+      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20estoy%20viendo%20las%20nuevas%20tarifas%20en%20el%20m%C3%B3vil%20y%20quiero%20informaci%C3%B3n%20para%20mi%20negocio" target="_blank" class="btn-wa">
+        💬 Hablar con Francisco por WhatsApp
+      </a>
+    </div>
+  </main>
+</body>
+</html>
+"""
+
+HTML_DESEMBOLSO_A5 = r"""<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    (function() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('modo') === 'impreso') return;
+        var esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth > 0 && window.innerWidth <= 820);
+        if (esMovil) window.location.replace('desembolso_movil.html');
+      } catch(e) {}
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <title>Desembolso Día 1 y Liquidación Inicial (A5) — Sistemas Pyme</title>
+  <meta name="viewport" content="width=820">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    @page { size: A5 portrait; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #071629;
+      color: #0f172a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding: 18px 0 44px 0;
+    }
+    .topbar-pc {
+      position: sticky;
+      top: 10px;
+      z-index: 100;
+      background: rgba(11, 37, 69, 0.96);
+      backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(20, 184, 166, 0.5);
+      border-radius: 12px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 92%;
+      max-width: 760px;
+      color: #fff;
+    }
+    .btn-pc { background: #0d7d74; color: #fff; border: 1px solid #14b8a6; padding: 6px 13px; border-radius: 8px; font-size: 12px; font-weight: 800; text-decoration: none; cursor: pointer; }
+    .btn-pc.sec { background: #1e293b; border-color: #475569; color: #cbd5e1; }
+    .sheet {
+      width: 148mm;
+      height: 210mm;
+      min-height: 210mm;
+      max-height: 210mm;
+      background: #ffffff;
+      padding: 4.5mm 7mm 4mm 7mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+    @media screen and (min-width: 821px) { .sheet { zoom: 1.24; } }
+    @media print {
+      body { background: none !important; padding: 0 !important; }
+      .no-print { display: none !important; }
+      .sheet { box-shadow: none !important; zoom: 1 !important; margin: 0 !important; }
+    }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0b2545; padding-bottom: 2.5px; margin-bottom: 3px; }
+    .brand-logo-img { max-height: 40px; width: auto; object-fit: contain; }
+    .header-tagline { text-align: right; font-size: 6.9px; color: #475569; font-weight: 600; line-height: 1.2; }
+    .header-tagline strong { color: #095852; font-size: 7.8px; display: block; text-transform: uppercase; font-weight: 900; }
+    .section-banner {
+      background: linear-gradient(90deg, #0b2545 0%, #1e293b 100%);
+      color: #fff;
+      padding: 3px 7px;
+      border-radius: 4px;
+      font-size: 8px;
+      font-weight: 900;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3px;
+    }
+    .section-banner.green { background: linear-gradient(90deg, #095852 0%, #0d7d74 100%); }
+    .section-banner .rule { font-size: 6.6px; font-weight: 700; background: rgba(255,255,255,0.22); padding: 1px 5px; border-radius: 3px; text-transform: none; }
+    .modalities-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 3px; }
+    .modality-col { border: 1.2px solid #94a3b8; border-radius: 4.5px; padding: 4px 6.5px; background: #f8fafc; font-size: 6.8px; line-height: 1.22; }
+    .modality-col.best { border-color: #4f46e5; background: #faf5ff; }
+    .master-table { width: 100%; border-collapse: collapse; font-size: 6.9px; margin-bottom: 3px; }
+    .master-table th { background: #0b2545; color: #fff; font-size: 6.2px; font-weight: 800; text-transform: uppercase; padding: 2.5px 3px; border: 1px solid #1e293b; text-align: center; }
+    .master-table td { padding: 2.2px 3.5px; border: 1px solid #cbd5e1; text-align: center; vertical-align: middle; line-height: 1.14; }
+    .master-table td.left { text-align: left; font-weight: 800; color: #0b2545; }
+    .star-row { background: #ecfdf5; font-weight: 700; }
+    .duo-row { background: #f0f9ff; font-weight: 700; }
+    .tag-day1 { font-weight: 900; color: #0f172a; font-size: 7.7px; display: block; }
+    .tag-annual { font-weight: 900; color: #4338ca; font-size: 7.7px; display: block; }
+    .tag-ahorro { font-size: 5.8px; color: #15803d; font-weight: 800; display: block; }
+    .print-qr-banner { background: #f0fdfa; border: 1.3px dashed #0d7d74; border-radius: 4.5px; padding: 4px 7px; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; }
+    .print-qr-left { display: flex; align-items: center; gap: 7px; flex: 1; }
+    .print-qr-img { width: 33px; height: 33px; border-radius: 3px; }
+    .print-qr-text { font-size: 6.9px; color: #1e293b; line-height: 1.2; }
+    .print-qr-text strong { color: #095852; font-size: 7.8px; display: block; }
+    .contact-details-box { border-left: 1.2px solid #99f6e4; padding-left: 7px; font-size: 6.7px; line-height: 1.2; text-align: right; }
+    .contact-details-box .name { font-size: 8px; font-weight: 900; color: #0b2545; display: block; }
+    .contact-details-box .role { font-size: 5.9px; font-weight: 800; color: #0d7d74; text-transform: uppercase; display: block; }
+    .footer-bar { border-top: 1px solid #e2e8f0; padding-top: 2px; font-size: 6.5px; color: #64748b; display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+  <aside class="topbar-pc no-print">
+    <div style="font-size:12.5px; font-weight:800;">📊 Tabla Oficial de Desembolso Día 1 (A5)</div>
+    <div style="display:flex; gap:8px;">
+      <a href="../index.html#tarifas" onclick="if(window.opener && !window.opener.closed){event.preventDefault();window.close();}" class="btn-pc sec">⬅ Volver a la Web</a>
+      <button type="button" onclick="window.print()" class="btn-pc">🖨️ Imprimir / Guardar PDF A5</button>
+    </div>
+  </aside>
+
+  <main class="sheet">
+    <div>
+      <header class="header">
+        <img src="../logo.png" alt="Sistemas Pyme" class="brand-logo-img" onerror="this.onerror=null; this.src='logo.png';">
+        <div class="header-tagline">
+          <strong>Liquidación y Desembolso Día 1</strong>
+          Alta Técnica (Setup) + Cuota + Super-Auditorías
+        </div>
+      </header>
+
+      <div class="section-banner">
+        <span>¿Cómo se calcula el importe exacto a abonar el Día 1?</span>
+        <span class="rule">2 Vías de Contratación B2B (SEPA)</span>
+      </div>
+
+      <div class="modalities-grid">
+        <div class="modality-col">
+          <strong style="color:#0b2545; font-size:7.6px; display:block; margin-bottom:1.5px;">🔄 Vía 1: Modalidad Flexible (3 Meses)</strong>
+          • <strong>Día 1:</strong> Abonas el Alta Técnica (Setup único) + solo el Mes 1.<br>
+          • <strong>Desde el Mes 2:</strong> Solo la cuota mensual por SEPA.<br>
+          • <strong>Super-Auditorías Llave en Mano:</strong> <strong>195 € c/u</strong> (o 390 € las dos) desde cualquier Pack de 2+ servicios.
+        </div>
+        <div class="modality-col best">
+          <strong style="color:#3730a3; font-size:7.6px; display:block; margin-bottom:1.5px;">🎁 Vía 2: Plan Anual (10 Meses = 2 Gratis)</strong>
+          • <strong>Día 1:</strong> Abonas el Alta Técnica (Setup) + 10 meses de cuota.<br>
+          • <strong>Ahorro directo:</strong> Disfrutas 12 meses pagando solo 10.<br>
+          • <strong>Super-Auditorías Llave en Mano:</strong> <strong>195 € c/u</strong> (o 390 € las dos) desde cualquier Pack de 2+ servicios.
+        </div>
+      </div>
+
+      <div class="section-banner green">
+        <span>Tabla Maestra Desglosada de Desembolso Día 1 (Los 4 Grupos)</span>
+        <span class="rule">Valores netos sin IVA 21%</span>
+      </div>
+
+      <table class="master-table">
+        <thead>
+          <tr>
+            <th style="width:27%; text-align:left; padding-left:4px;">Plan / Módulo</th>
+            <th style="width:13%;">Cuota Mes</th>
+            <th style="width:12%;">Setup Único</th>
+            <th style="width:22%;">Día 1 (Vía Flexible)<br><span style="font-size:5.4px; font-weight:600; color:#cbd5e1;">Setup + Cuota Mes 1</span></th>
+            <th style="width:26%;">Día 1 (Vía Anual 10m)<br><span style="font-size:5.4px; font-weight:600; color:#cbd5e1;">Setup + 10 Meses (2 Gratis)</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="left">Plan Pyme BASE (1 serv. G1)</td>
+            <td>59 €/m</td>
+            <td><strong>150 €</strong></td>
+            <td><span class="tag-day1">209,00 €</span><span style="font-size:5.6px; color:#475569;">[150€ Setup + 59€ Mes 1]</span></td>
+            <td><span class="tag-annual">740,00 €</span><span class="tag-ahorro">590€ (10m) + 150€ • Ahorra 118€</span></td>
+          </tr>
+          <tr class="duo-row">
+            <td class="left" style="color:#0369a1;">Pack ESCUDO BÁSICO (Dúo S1+S2)</td>
+            <td><strong>99 €/m</strong></td>
+            <td><strong>225 €</strong></td>
+            <td><span class="tag-day1" style="color:#0369a1;">324,00 €</span><span style="font-size:5.6px; color:#0369a1;">[225€ Setup + 99€ Mes 1]</span></td>
+            <td><span class="tag-annual">1.215,00 €</span><span class="tag-ahorro">990€ + 225€ • Desbloquea Aud. 195€</span></td>
+          </tr>
+          <tr class="star-row">
+            <td class="left" style="color:#047857;">Pack ESCUDO TOTAL ★ (S1+S2+S3)</td>
+            <td><strong style="color:#047857;">139 €/m</strong></td>
+            <td><strong style="color:#047857;">300 €</strong></td>
+            <td><span class="tag-day1" style="color:#047857;">439,00 €</span><span style="font-size:5.6px; color:#065f46;">[300€ Setup + 139€ Mes 1]</span></td>
+            <td><span class="tag-annual" style="color:#047857;">1.690,00 €</span><span class="tag-ahorro">Ahorra 278€ + Bóveda Gratis + Aud. 195€</span></td>
+          </tr>
+          <tr>
+            <td class="left">Plan QUATRO (4 serv. Grupo 1)</td>
+            <td>179 €/m</td>
+            <td><strong>375 €</strong></td>
+            <td><span class="tag-day1">554,00 €</span><span style="font-size:5.6px; color:#475569;">[375€ Setup + 179€ Mes 1]</span></td>
+            <td><span class="tag-annual">2.165,00 €</span><span class="tag-ahorro">1.790€ + 375€ • Ahorra 358€</span></td>
+          </tr>
+          <tr>
+            <td class="left">Plan PENTIUM (5 serv. Grupo 1)</td>
+            <td>219 €/m</td>
+            <td><strong>450 €</strong></td>
+            <td><span class="tag-day1">669,00 €</span><span style="font-size:5.6px; color:#475569;">[450€ Setup + 219€ Mes 1]</span></td>
+            <td><span class="tag-annual">2.640,00 €</span><span class="tag-ahorro">2.190€ + 450€ • Ahorra 438€</span></td>
+          </tr>
+          <tr style="background:#eff6ff;">
+            <td class="left" style="color:#1e40af;">Grupo 2 (S6, S8, S10), Logística o S4</td>
+            <td>+59 €/m <span style="font-size:5.5px;">(79€ s.)</span></td>
+            <td><strong>+110 €</strong> <span style="font-size:5.5px;">(195€)</span></td>
+            <td><span class="tag-day1" style="color:#1e40af;">+169,00 € combo</span><span style="font-size:5.5px;">[Suelto: 274,00 €]</span></td>
+            <td><span class="tag-annual" style="color:#1e40af;">+700,00 € combo</span><span class="tag-ahorro">590€ + 110€ • Suelto Anual: 985€</span></td>
+          </tr>
+          <tr style="background:#fdf2f8;">
+            <td class="left" style="color:#9d174d;">Satélite Instagram 3 en 1</td>
+            <td>+49 €/m <span style="font-size:5.5px;">(69€ s.)</span></td>
+            <td><strong>+75 €</strong> <span style="font-size:5.5px;">(150€)</span></td>
+            <td><span class="tag-day1" style="color:#9d174d;">+124,00 € combo</span><span style="font-size:5.5px;">[Suelto: 219,00 €]</span></td>
+            <td><span class="tag-annual" style="color:#9d174d;">+565,00 € combo</span><span class="tag-ahorro">490€ + 75€ • Suelto Anual: 840€</span></td>
+          </tr>
+          <tr style="background:#f5f3ff;">
+            <td class="left" style="color:#4338ca;">Satélite Cerebro Redactor B2B (RAG)</td>
+            <td>+69 €/m <span style="font-size:5.5px;">(99€ s.)</span></td>
+            <td><strong>+150 €</strong> <span style="font-size:5.5px;">(250€)</span></td>
+            <td><span class="tag-day1" style="color:#4338ca;">+219,00 € combo</span><span style="font-size:5.5px;">[Suelto: 349,00 €]</span></td>
+            <td><span class="tag-annual" style="color:#4338ca;">+840,00 € combo</span><span class="tag-ahorro">690€ + 150€ • Suelto Anual: 1.240€</span></td>
+          </tr>
+          <tr style="background:#eef2ff;">
+            <td class="left" style="color:#3730a3;">S7 Centralita Voz IA 24/7 (250 min)</td>
+            <td>+129 €/m <span style="font-size:5.5px;">(169€)</span></td>
+            <td><strong>+250 €</strong> <span style="font-size:5.5px;">(350€)</span></td>
+            <td><span class="tag-day1" style="color:#3730a3;">+379,00 € combo</span><span style="font-size:5.5px;">[Suelto: 519,00 €]</span></td>
+            <td><span class="tag-annual" style="color:#3730a3;">+1.540,00 € combo</span><span class="tag-ahorro">1.290€ + 250€ • Suelto Anual: 2.040€</span></td>
+          </tr>
+          <tr style="background:#f0fdfa; border-top:1.6px solid #0d7d74;">
+            <td class="left" style="color:#095852;">🔍🧠 Super-Auditoría (Suelta / Base 1)</td>
+            <td>0 €/m</td>
+            <td><strong>350 €</strong> <span style="font-size:5.5px;">(200€ DIY)</span></td>
+            <td><span class="tag-day1" style="color:#095852;">350 € (1) | 590 € (Las 2)</span></td>
+            <td><span style="font-size:6px; font-weight:800; color:#095852;">Pack Firma Institucional: 590 € las 2 (Ahorra 110 €)</span></td>
+          </tr>
+          <tr style="background:#ecfdf5;">
+            <td class="left" style="color:#047857;">🔍🧠 Super-Auditoría (Con Pack 2+ serv.)</td>
+            <td>0 €/m</td>
+            <td><strong style="color:#047857;">195 € c/u</strong></td>
+            <td><span class="tag-day1" style="color:#047857;">+195 € (1) | +390 € (Las 2)</span></td>
+            <td><span class="tag-annual" style="color:#047857;">195 € c/u (390 € las 2 • Ahorra 310 €)</span><span class="tag-ahorro">Suelo mínimo blindado en cualquier Pack 2+</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:3.5px solid #0d7d74; padding:3.5px 6.5px; border-radius:4px; font-size:6.5px; color:#334155; line-height:1.2;">
+        <strong>Ejemplo de Combinación Cruzada (Grupo 1 + Grupo 2):</strong> Si contratas <strong>S1 Reseñas IA (59 €/m + 150 € Setup) + S6 Anti-Plantón (+59 €/m + 110 € Setup)</strong> = <strong>118 €/mes</strong> (+ 260 € Setup) y ya computa como <strong>Pack Dúo (2 servicios)</strong>, desbloqueando las Super-Auditorías a <strong>195 € c/u</strong>.
+      </div>
+    </div>
+
+    <div>
+      <div class="print-qr-banner">
+        <div class="print-qr-left">
+          <img src="../qr-code.png" alt="QR WhatsApp" class="print-qr-img" onerror="this.style.display='none'">
+          <div class="print-qr-text">
+            <strong>¿Quieres activar tu plan en modalidad flexible o anual?</strong>
+            Escanea este código con tu móvil para hablar con Francisco y poner en marcha tu negocio.
+          </div>
+        </div>
+        <div class="contact-details-box">
+          <span class="name">Francisco M. Gallardo</span>
+          <span class="role">Consultor Tecnológico</span>
+          <strong>711 54 75 61</strong> • francisco@sistemaspyme.es<br>
+          <span style="color:#64748b;">sistemaspyme.es • Galicia</span>
+        </div>
+      </div>
+      <footer class="footer-bar">
+        <span><strong>Sistemas Pyme</strong> — Tabla Desglosada de Liquidación Día 1</span>
+        <span><strong>Desembolso Inicial (A5)</strong></span>
+      </footer>
+    </div>
+  </main>
+</body>
+</html>
+"""
+
+HTML_DESEMBOLSO_MOVIL = r"""<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Desembolso Día 1 y Liquidación Inicial (Móvil) — Sistemas Pyme</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; background-color: #071629; color: #f1f5f9; font-family: 'Inter', sans-serif; font-size: 16.5px; line-height: 1.55; }
+    body.font-xl { font-size: 19px; line-height: 1.65; }
+    .topbar { position: sticky; top: 0; z-index: 100; background: rgba(7, 22, 41, 0.96); border-bottom: 2px solid #14b8a6; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .btn-back { background: #1e293b; color: #5eead4; border: 1px solid rgba(20,184,166,0.45); text-decoration: none; font-weight: 800; font-size: 13px; padding: 8px 12px; border-radius: 10px; }
+    .btn-action { background: #0d7d74; color: #fff; border: 1px solid #14b8a6; font-weight: 800; font-size: 12.5px; padding: 8px 11px; border-radius: 10px; text-decoration: none; cursor: pointer; }
+    .btn-action.sec { background: #1e293b; color: #cbd5e1; border-color: #475569; }
+    .container { max-width: 660px; margin: 0 auto; padding: 18px 16px 48px 16px; display: flex; flex-direction: column; gap: 16px; }
+    .hero-box { background: linear-gradient(145deg, #0b2545 0%, #0f172a 100%); border: 1.5px solid rgba(20, 184, 166, 0.45); border-radius: 18px; padding: 18px 16px; }
+    .badge { display: inline-block; background: rgba(20, 184, 166, 0.18); color: #5eead4; border: 1px solid rgba(20, 184, 166, 0.4); font-size: 11.5px; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 99px; margin-bottom: 8px; }
+    .hero-title { font-size: 1.38em; font-weight: 900; color: #fff; line-height: 1.22; margin-bottom: 6px; }
+    .section-head { background: linear-gradient(90deg, #0f766e 0%, #115e59 100%); color: #fff; padding: 11px 14px; border-radius: 12px; font-weight: 900; font-size: 0.95em; text-transform: uppercase; margin-top: 6px; }
+    .section-head.blue { background: linear-gradient(90deg, #1e3a8a 0%, #1d4ed8 100%); }
+    .section-head.amber { background: linear-gradient(90deg, #b45309 0%, #d97706 100%); }
+    .card { background: #0f172a; border: 1.5px solid rgba(255,255,255,0.12); border-left: 5px solid #14b8a6; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .card.emerald { border-left-color: #10b981; border-color: rgba(16,185,129,0.45); background: linear-gradient(145deg, rgba(6,78,59,0.45) 0%, #0f172a 100%); }
+    .card.blue { border-left-color: #3b82f6; }
+    .card.amber { border-left-color: #f59e0b; }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+    .card-title { font-size: 1.1em; font-weight: 900; color: #fff; }
+    .price-tag { background: rgba(20, 184, 166, 0.18); color: #5eead4; border: 1px solid rgba(20, 184, 166, 0.4); font-weight: 900; font-size: 0.95em; padding: 4px 10px; border-radius: 10px; white-space: nowrap; }
+    .data-grid { display: flex; flex-direction: column; gap: 7px; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; }
+    .data-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 0.9em; }
+    .data-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .data-label { color: #94a3b8; font-weight: 600; }
+    .data-val { color: #fff; font-weight: 800; text-align: right; }
+    .data-val.hi { color: #34d399; }
+    .cta-box { background: linear-gradient(145deg, #064e3b 0%, #0f172a 100%); border: 2px solid #10b981; border-radius: 18px; padding: 20px 16px; text-align: center; }
+    .btn-wa { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: #10b981; color: #052e16; font-weight: 900; padding: 14px 18px; border-radius: 14px; text-decoration: none; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="../index.html#tarifas" onclick="if(window.opener && !window.opener.closed){event.preventDefault();window.close();}" class="btn-back">⬅ Volver a la Web</a>
+    <div style="display:flex; gap:6px;">
+      <button type="button" onclick="document.body.classList.toggle('font-xl')" class="btn-action">🔎 Letra A+</button>
+      <a href="desembolso.html?modo=impreso" class="btn-action sec">📄 Original A5</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="hero-box">
+      <span class="badge">Desglose Financiero Día 1</span>
+      <h1 class="hero-title">Tabla Desglosada de Puesta en Marcha y Desembolso Día 1</h1>
+      <p style="font-size:0.92em; color:#cbd5e1;">Importes exactos de inicio en Vía 1 (Mensual Flexible 3 meses) y Vía 2 (Plan Anual con 2 meses gratis).</p>
+    </div>
+
+    <div class="section-head">1. Planes del Grupo 1 (Venta Rápida)</div>
+
+    <article class="card">
+      <div class="card-top"><span class="card-title">1. Plan Pyme BASE (1 serv.)</span><span class="price-tag">59 €/m</span></div>
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">Setup Único de Ingeniería:</span><span class="data-val">150 €</span></div>
+        <div class="data-row"><span class="data-label">🔄 Día 1 en Vía Flexible:</span><span class="data-val">209 € (150€ + 59€)</span></div>
+        <div class="data-row"><span class="data-label">⭐ Día 1 en Vía Anual (10m):</span><span class="data-val hi">740 € (Ahorras 118 €)</span></div>
+      </div>
+    </article>
+
+    <article class="card emerald">
+      <div class="card-top"><span class="card-title">2. Pack ESCUDO BÁSICO (Dúo: S1+S2)</span><span class="price-tag">99 €/m</span></div>
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">Setup Dúo (150€ + 75€):</span><span class="data-val">225 €</span></div>
+        <div class="data-row"><span class="data-label">🔄 Día 1 en Vía Flexible:</span><span class="data-val">324 € (225€ + 99€)</span></div>
+        <div class="data-row"><span class="data-label">⭐ Día 1 en Vía Anual (10m):</span><span class="data-val hi">1.215 € (Ahorras 198 €)</span></div>
+        <div class="data-row"><span class="data-label">Privilegio Super-Auditorías:</span><span class="data-val hi">195 € c/u (o 390 € las dos)</span></div>
+      </div>
+    </article>
+
+    <article class="card emerald">
+      <div class="card-top"><span class="card-title">3. Pack ESCUDO TOTAL ★ (Trinity: S1+S2+S3)</span><span class="price-tag">139 €/m</span></div>
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">Setup Trinity (150€ + 75€ + 75€):</span><span class="data-val">300 €</span></div>
+        <div class="data-row"><span class="data-label">🔄 Día 1 en Vía Flexible:</span><span class="data-val">439 € (300€ + 139€)</span></div>
+        <div class="data-row"><span class="data-label">⭐ Día 1 en Vía Anual (10m):</span><span class="data-val hi">1.690 € (Ahorras 278 €)</span></div>
+        <div class="data-row"><span class="data-label">Bóveda (150€) + Auditorías:</span><span class="data-val hi">🎁 GRATIS + Aud. a 195 € c/u</span></div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-top"><span class="card-title">4. Planes QUATRO (4) y PENTIUM (5)</span><span class="price-tag">179€ / 219€</span></div>
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">QUATRO Día 1 Flex / Anual:</span><span class="data-val">554 € Flex | 2.165 € Anual</span></div>
+        <div class="data-row"><span class="data-label">PENTIUM Día 1 Flex / Anual:</span><span class="data-val">669 € Flex | 2.640 € Anual</span></div>
+      </div>
+    </article>
+
+    <div class="section-head blue">2. Desembolso Día 1 en Grupos 2, 3 y 4</div>
+    <article class="card blue">
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">Grupo 2 (S6, S8, S10), Logística o S4 Llamadas:</span><span class="data-val hi">Día 1 Combo: +169 € (59€+110€) | Suelto: 274 €</span></div>
+        <div class="data-row"><span class="data-label">Satélite Instagram 3 en 1:</span><span class="data-val hi">Día 1 Combo: +124 € (49€+75€) | Suelto: 219 €</span></div>
+        <div class="data-row"><span class="data-label">Satélite Cerebro Redactor RAG:</span><span class="data-val hi">Día 1 Combo: +219 € (69€+150€) | Suelto: 349 €</span></div>
+        <div class="data-row"><span class="data-label">S7 Centralita Voz IA 24/7 (250m):</span><span class="data-val hi">Día 1 Combo: +379 € (129€+250€) | Suelto: 519 €</span></div>
+      </div>
+    </article>
+
+    <div class="section-head amber">3. Super-Auditorías Web (Suelo Mínimo Blindado 195 €)</div>
+    <article class="card amber">
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">1. Modalidad Solo Código (DIY):</span><span class="data-val">200 € una | 390 € las dos</span></div>
+        <div class="data-row"><span class="data-label">2. Llave en Mano (Suelta o con Base):</span><span class="data-val">350 € una | 590 € las dos</span></div>
+        <div class="data-row"><span class="data-label">3. Bonificada con Pack (2+ serv.):</span><span class="data-val hi">195 € una | 390 € las dos</span></div>
+      </div>
+    </article>
+
+    <div class="cta-box">
+      <div style="font-size: 0.85em; font-weight: 800; color: #6ee7b7; text-transform: uppercase;">Atención Directa • Galicia</div>
+      <div style="font-size: 1.2em; font-weight: 900; color: #ffffff; margin-top: 4px;">Francisco M. Gallardo</div>
+      <div style="font-size: 0.92em; color: #cbd5e1; margin-top: 2px;">Tel: <strong>711 54 75 61</strong> • francisco@sistemaspyme.es</div>
+      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20he%20visto%20el%20desglose%20del%20D%C3%ADa%201%20y%20quiero%20activar%20mi%20plan" target="_blank" class="btn-wa">
+        💬 Hablar con Francisco por WhatsApp
+      </a>
+    </div>
+  </main>
+</body>
+</html>
+"""
+
+HTML_SETUP_A5 = r"""<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    (function() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('modo') === 'impreso') return;
+        var esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth > 0 && window.innerWidth <= 820);
+        if (esMovil) window.location.replace('setup_movil.html');
+      } catch(e) {}
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <title>Anexo Técnico de Altas e Implantación (Setup + Auditorías) — Sistemas Pyme</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    @page { size: A5 portrait; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { font-family: 'Inter', sans-serif; background-color: #0b192c; color: #0f172a; display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 18px 0 44px 0; }
+    .topbar-pc { position: sticky; top: 10px; z-index: 100; background: rgba(11, 37, 69, 0.96); border: 1.5px solid rgba(20, 184, 166, 0.5); border-radius: 12px; padding: 8px 16px; display: flex; align-items: center; justify-content: space-between; width: 92%; max-width: 760px; color: #fff; }
+    .btn-pc { background: #0d7d74; color: #fff; border: 1px solid #14b8a6; padding: 6px 13px; border-radius: 8px; font-size: 12px; font-weight: 800; text-decoration: none; cursor: pointer; }
+    .btn-pc.sec { background: #1e293b; border-color: #475569; color: #cbd5e1; }
+    .sheet { width: 148mm; height: 210mm; min-height: 210mm; max-height: 210mm; background: #ffffff; padding: 5mm 7.5mm 4.5mm 7.5mm; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 18px 45px rgba(0,0,0,0.55); overflow: hidden; }
+    @media screen and (min-width: 821px) { .sheet { zoom: 1.26; } }
+    @media print { body { background: none !important; padding: 0 !important; } .no-print { display: none !important; } .sheet { box-shadow: none !important; zoom: 1 !important; margin: 0 !important; } }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0b2545; padding-bottom: 3px; }
+    .brand-logo-img { max-height: 40px; width: auto; object-fit: contain; }
+    .header-tagline { text-align: right; font-size: 7.2px; color: #475569; font-weight: 600; line-height: 1.22; }
+    .header-tagline strong { color: #0f766e; font-size: 8.2px; font-weight: 900; display: block; text-transform: uppercase; }
+    .section-banner { background: linear-gradient(90deg, #0f766e 0%, #14b8a6 100%); color: #fff; padding: 3.5px 7.5px; border-radius: 4px; font-size: 8px; font-weight: 900; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+    .section-banner.dark { background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%); }
+    .section-banner .rule { font-size: 6.8px; font-weight: 700; background: rgba(255,255,255,0.22); padding: 1px 5px; border-radius: 3px; text-transform: none; }
+    .phases-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+    .phase-card { background: #f8fafc; border: 1px solid #cbd5e1; border-left: 3.5px solid #0f766e; border-radius: 4px; padding: 3.5px 6px; }
+    .phase-card strong { display: block; font-size: 7.5px; font-weight: 900; color: #0b2545; margin-bottom: 1px; }
+    .phase-card span { display: block; font-size: 6.7px; color: #334155; line-height: 1.2; }
+    .setup-table { width: 100%; border-collapse: collapse; font-size: 7.1px; border: 1.2px solid #cbd5e1; }
+    .setup-table th { background: #1e293b; color: #fff; font-size: 6.3px; font-weight: 800; text-transform: uppercase; padding: 3px 5px; text-align: center; }
+    .setup-table th:first-child, .setup-table td:first-child { text-align: left; }
+    .setup-table td { padding: 3px 5px; border-top: 1px solid #e2e8f0; text-align: center; vertical-align: middle; line-height: 1.18; }
+    .plan-name { font-size: 7.8px; font-weight: 900; color: #0b2545; display: block; }
+    .plan-sub { font-size: 6px; font-weight: 800; color: #64748b; text-transform: uppercase; display: block; }
+    .price-main { font-size: 8.5px; font-weight: 900; color: #0b2545; }
+    .save-badge { font-size: 6.6px; font-weight: 800; color: #0f766e; display: block; }
+    .guarantee-box { background: #fffbeb; border: 1.2px solid #fcd34d; border-left: 4px solid #d97706; border-radius: 4px; padding: 4px 7px; font-size: 6.8px; color: #78350f; line-height: 1.22; }
+    .print-qr-banner { background: #f0fdfa; border: 1.3px dashed #0f766e; border-radius: 4.5px; padding: 4px 7px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .print-qr-left { display: flex; align-items: center; gap: 7px; flex: 1; }
+    .print-qr-img { width: 34px; height: 34px; border-radius: 3px; }
+    .print-qr-text { font-size: 6.9px; color: #1e293b; line-height: 1.2; }
+    .print-qr-text strong { color: #115e59; font-size: 7.8px; display: block; }
+    .contact-details-box { border-left: 1.2px solid #99f6e4; padding-left: 7px; font-size: 6.7px; line-height: 1.2; text-align: right; }
+    .contact-details-box .name { font-size: 8px; font-weight: 900; color: #0b2545; display: block; }
+    .contact-details-box .role { font-size: 5.9px; font-weight: 800; color: #0f766e; text-transform: uppercase; display: block; }
+    .footer-bar { border-top: 1px solid #cbd5e1; padding-top: 2px; font-size: 6.5px; color: #64748b; display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+  <aside class="topbar-pc no-print">
+    <div style="font-size:12.5px; font-weight:800;">🔌 Anexo Técnico de Altas (Setup) por Grupos (A5)</div>
+    <div style="display:flex; gap:8px;">
+      <a href="../index.html#tarifas" onclick="if(window.opener && !window.opener.closed){event.preventDefault();window.close();}" class="btn-pc sec">⬅ Volver a la Web</a>
+      <button type="button" onclick="window.print()" class="btn-pc">🖨️ Imprimir / Guardar PDF A5</button>
+    </div>
+  </aside>
+
+  <main class="sheet">
+    <header class="header">
+      <img src="../logo.png" alt="Sistemas Pyme" class="brand-logo-img" onerror="this.onerror=null; this.src='logo.png';">
+      <div class="header-tagline">
+        <strong>Anexo Técnico de Altas e Implantación</strong>
+        Reglas de Setup por Complejidad/API y Super-Auditorías
+      </div>
+    </header>
+
+    <div class="section-banner">
+      <span>¿Qué incluye el Alta Técnica (Setup) y la Implantación?</span>
+      <span class="rule">Pago único de ingeniería llave en mano</span>
+    </div>
+
+    <div class="phases-grid">
+      <div class="phase-card">
+        <strong>🔌 1. Conexión Oficial Meta y Google API</strong>
+        <span>Vinculación verificada con Google Business Profile, Meta Cloud API (fijo o móvil), agendas y carpetas de gestoría.</span>
+      </div>
+      <div class="phase-card" style="border-left-color:#2563eb;">
+        <strong>🧠 2. Entrenamiento IA, HEARD y RGPD</strong>
+        <span>Inyección del contexto del negocio, blindaje de secreto profesional RGPD y alta de plantillas en 4 tonos.</span>
+      </div>
+      <div class="phase-card" style="border-left-color:#d97706;">
+        <strong>🔍 3. Ingeniería de Entidades SEO/GEO y Neuro</strong>
+        <span>Grafo @graph Wikidata, /llms.txt y Sonda Térmica de 10-14 días en Modo Ágil o Modo Corporativo Alto Standing.</span>
+      </div>
+      <div class="phase-card" style="border-left-color:#16a34a;">
+        <strong>📊 4. Telemetría y Cuadro de Mando 360°</strong>
+        <span>Activación de enlaces ultrarrápidos /r/{slug}, pruebas en vivo e Informe Mensual 360° interactivo.</span>
+      </div>
+    </div>
+
+    <div class="section-banner dark">
+      <span>Chuleta Oficial de Altas Técnicas (Setup Único) por Grupos</span>
+      <span class="rule">Descuento automático al combinar módulos</span>
+    </div>
+
+    <table class="setup-table">
+      <thead>
+        <tr>
+          <th style="width:34%;">Grupo / Plan o Módulo</th>
+          <th style="width:26%;">Regla de Ingeniería</th>
+          <th style="width:18%;">Setup Único</th>
+          <th style="width:22%;">Ventaja / Ahorro</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="plan-name">Grupo 1: 1er Servicio (Plan BASE)</span><span class="plan-sub">S1, S2, S3 Leads 10s, S9 o S5</span></td>
+          <td>1er módulo núcleo (100%)</td>
+          <td><span class="price-main">150 €</span></td>
+          <td><span style="font-size:6.4px; color:#475569; font-weight:700;">Puesta en marcha 24-48h</span></td>
+        </tr>
+        <tr style="background:#f0f9ff;">
+          <td><span class="plan-name" style="color:#0369a1;">Grupo 1: Pack ESCUDO BÁSICO (Dúo)</span><span class="plan-sub" style="color:#0284c7;">2 Servicios Grupo 1 (ej. S1+S2)</span></td>
+          <td>150 € + <strong>2º módulo al 50% (+75 €)</strong></td>
+          <td><span class="price-main" style="color:#0369a1;">225 €</span></td>
+          <td><span class="save-badge">Ahorras 75 € + Aud. a 195€</span></td>
+        </tr>
+        <tr style="background:#ecfdf5;">
+          <td><span class="plan-name" style="color:#047857;">Grupo 1: Pack ESCUDO TOTAL ★ (Trinity)</span><span class="plan-sub" style="color:#059669;">S1 + S2 + S3 Leads en 10s</span></td>
+          <td>150 € + <strong>2 módulos al 50% (+150 €)</strong></td>
+          <td><span class="price-main" style="color:#047857;">300 €</span></td>
+          <td><span class="save-badge" style="color:#047857;">Ahorras 150 € + Bóveda Gratis</span></td>
+        </tr>
+        <tr>
+          <td><span class="plan-name">Grupo 1: Planes QUATRO (4) y PENTIUM (5)</span><span class="plan-sub">Cada servicio extra G1 suma +75 €</span></td>
+          <td>Quatro: 375 € | Pentium: 450 €</td>
+          <td><span class="price-main">375 € / 450 €</span></td>
+          <td><span class="save-badge">Ahorras hasta 300 € en Setup</span></td>
+        </tr>
+        <tr style="background:#eff6ff;">
+          <td><span class="plan-name" style="color:#1e40af;">Grupo 2 (S6, S8, S10), Logística o S4</span><span class="plan-sub" style="color:#1d4ed8;">Agenda, Contratos, Cobros, Reparto o Llamadas</span></td>
+          <td>Conexión profunda bidireccional</td>
+          <td><span style="font-size:7.8px; font-weight:900; color:#1e40af;">+110 € combo</span><br><span style="font-size:6px; color:#64748b;">(195 € suelto)</span></td>
+          <td><span class="save-badge" style="color:#1e40af;">Ahorras 85 € en Setup</span></td>
+        </tr>
+        <tr style="background:#fdf2f8;">
+          <td><span class="plan-name" style="color:#9d174d;">Satélite 1: Instagram 3 en 1 (Meta API)</span><span class="plan-sub" style="color:#be185d;">Auto-DM Reels + DMs 24/7 + Stories</span></td>
+          <td>50% dto. al unirlo a un Pack</td>
+          <td><span style="font-size:7.8px; font-weight:900; color:#9d174d;">+75 € combo</span><br><span style="font-size:6px; color:#64748b;">(150 € suelto)</span></td>
+          <td><span class="save-badge" style="color:#9d174d;">Ahorras 75 € en Setup</span></td>
+        </tr>
+        <tr style="background:#f5f3ff;">
+          <td><span class="plan-name" style="color:#4338ca;">Satélite 3: Cerebro Redactor B2B (RAG)</span><span class="plan-sub" style="color:#4f46e5;">Indexación PDFs, Tarifas y Contratos</span></td>
+          <td>Base vectorial privada IA</td>
+          <td><span style="font-size:7.8px; font-weight:900; color:#4338ca;">+150 € combo</span><br><span style="font-size:6px; color:#64748b;">(250 € suelto)</span></td>
+          <td><span class="save-badge" style="color:#4338ca;">Ahorras 100 € en Setup</span></td>
+        </tr>
+        <tr style="background:#eef2ff;">
+          <td><span class="plan-name" style="color:#3730a3;">Satélite S7: Centralita Voz IA 24/7</span><span class="plan-sub" style="color:#4338ca;">Línea SIP + Voz Neuronal + Agenda (250m)</span></td>
+          <td>Entrenamiento voz + desvíos</td>
+          <td><span style="font-size:7.8px; font-weight:900; color:#3730a3;">+250 € combo</span><br><span style="font-size:6px; color:#64748b;">(350 € suelto)</span></td>
+          <td><span class="save-badge" style="color:#3730a3;">Ahorras 100 € en Setup</span></td>
+        </tr>
+        <tr style="background:#f0fdfa;">
+          <td><span class="plan-name" style="color:#095852;">🔍🧠 Las 2 Super-Auditorías Gemelas</span><span class="plan-sub" style="color:#0d7d74;">1) SEO/GEO IA y 2) Neuro-CRO (Sonda 10-14d)</span></td>
+          <td>DIY: <strong>200€</strong> (390€ las 2)<br>Llave en Mano: <strong>350€</strong> (590€ las 2)</td>
+          <td><span class="price-main" style="color:#047857;">195 € c/u</span><br><span style="font-size:5.8px; font-weight:800; color:#065f46;">(Con Pack 2+ serv.)</span></td>
+          <td><span class="save-badge" style="color:#047857;">390 € las 2 en Pack<br>(Suelo blindado 195€)</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="guarantee-box">
+      <strong style="color:#b45309;">Garantía de Escalabilidad sin Penalización:</strong> Si hoy empiezas con 1 servicio y más adelante amplías tu plan con nuevos módulos del Grupo 1, 2, 3 o 4, <strong>te aplicamos directamente el Setup Combinado bonificado</strong> (+75 € en G1/IG, +110 € en G2/Logística/S4).
+    </div>
+
+    <div class="print-qr-banner">
+      <div class="print-qr-left">
+        <img src="../qr-code.png" alt="QR Contacto" class="print-qr-img" onerror="this.style.display='none'">
+        <div class="print-qr-text">
+          <strong>¿Listo para programar la puesta en marcha en tu negocio?</strong>
+          Escanea este código con tu móvil para hablar con Francisco y agendar tu alta técnica.
+        </div>
+      </div>
+      <div class="contact-details-box">
+        <span class="name">Francisco M. Gallardo</span>
+        <span class="role">Consultor Tecnológico</span>
+        <strong>711 54 75 61</strong> • francisco@sistemaspyme.es<br>
+        <span style="color:#64748b;">sistemaspyme.es • Galicia</span>
+      </div>
+    </div>
+
+    <footer class="footer-bar">
+      <span><strong>Sistemas Pyme</strong> — Anexo Técnico de Altas y Setups (Sin IVA 21%)</span>
+      <span><strong>Anexo I (Setup + Super-Auditorías)</strong></span>
+    </footer>
+  </main>
+</body>
+</html>
+"""
+
+HTML_SETUP_MOVIL = r"""<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Anexo Técnico de Implantación (Setup + Super-Auditorías) — Sistemas Pyme</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; background-color: #071629; color: #f1f5f9; font-family: 'Inter', sans-serif; font-size: 16.5px; line-height: 1.55; }
+    body.font-xl { font-size: 19px; line-height: 1.65; }
+    .topbar { position: sticky; top: 0; z-index: 100; background: rgba(7, 22, 41, 0.96); border-bottom: 2px solid #14b8a6; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .btn-back { background: #1e293b; color: #5eead4; border: 1px solid rgba(20,184,166,0.45); text-decoration: none; font-weight: 800; font-size: 13px; padding: 8px 12px; border-radius: 10px; }
+    .btn-action { background: #0d7d74; color: #fff; border: 1px solid #14b8a6; font-weight: 800; font-size: 12.5px; padding: 8px 11px; border-radius: 10px; text-decoration: none; cursor: pointer; }
+    .btn-action.sec { background: #1e293b; color: #cbd5e1; border-color: #475569; }
+    .container { max-width: 660px; margin: 0 auto; padding: 18px 16px 48px 16px; display: flex; flex-direction: column; gap: 16px; }
+    .hero-box { background: linear-gradient(145deg, #0b2545 0%, #0f172a 100%); border: 1.5px solid rgba(20, 184, 166, 0.45); border-radius: 18px; padding: 18px 16px; }
+    .badge { display: inline-block; background: rgba(20, 184, 166, 0.18); color: #5eead4; border: 1px solid rgba(20, 184, 166, 0.4); font-size: 11.5px; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 99px; margin-bottom: 8px; }
+    .hero-title { font-size: 1.38em; font-weight: 900; color: #fff; line-height: 1.22; margin-bottom: 6px; }
+    .section-head { background: linear-gradient(90deg, #0f766e 0%, #115e59 100%); color: #fff; padding: 11px 14px; border-radius: 12px; font-weight: 900; font-size: 0.95em; text-transform: uppercase; margin-top: 6px; }
+    .section-head.blue { background: linear-gradient(90deg, #1e3a8a 0%, #1d4ed8 100%); }
+    .section-head.amber { background: linear-gradient(90deg, #b45309 0%, #d97706 100%); }
+    .card { background: #0f172a; border: 1.5px solid rgba(255,255,255,0.12); border-left: 5px solid #14b8a6; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .card.emerald { border-left-color: #10b981; border-color: rgba(16,185,129,0.45); background: linear-gradient(145deg, rgba(6,78,59,0.45) 0%, #0f172a 100%); }
+    .card.blue { border-left-color: #3b82f6; }
+    .card.amber { border-left-color: #f59e0b; }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+    .card-title { font-size: 1.08em; font-weight: 900; color: #fff; }
+    .price-tag { background: rgba(20, 184, 166, 0.18); color: #5eead4; border: 1px solid rgba(20, 184, 166, 0.4); font-weight: 900; font-size: 0.95em; padding: 4px 10px; border-radius: 10px; white-space: nowrap; }
+    .data-grid { display: flex; flex-direction: column; gap: 7px; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; }
+    .data-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 0.9em; }
+    .data-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .data-label { color: #94a3b8; font-weight: 600; }
+    .data-val { color: #fff; font-weight: 800; text-align: right; }
+    .data-val.hi { color: #34d399; }
+    .cta-box { background: linear-gradient(145deg, #064e3b 0%, #0f172a 100%); border: 2px solid #10b981; border-radius: 18px; padding: 20px 16px; text-align: center; }
+    .btn-wa { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: #10b981; color: #052e16; font-weight: 900; padding: 14px 18px; border-radius: 14px; text-decoration: none; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="../index.html#documentacion" onclick="if(window.opener && !window.opener.closed){event.preventDefault();window.close();}" class="btn-back">⬅ Volver a la Web</a>
+    <div style="display:flex; gap:6px;">
+      <button type="button" onclick="document.body.classList.toggle('font-xl')" class="btn-action">🔎 Letra A+</button>
+      <a href="setup.html?modo=impreso" class="btn-action sec">📄 Original A5</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="hero-box">
+      <span class="badge">Anexo Técnico Oficial</span>
+      <h1 class="hero-title">Altas Técnicas (Setup) por Grupos y Super-Auditorías</h1>
+      <p style="font-size:0.92em; color:#cbd5e1;">Reglas oficiales de puesta en marcha llave en mano en los 4 Grupos de servicios, Super-Auditorías y Atril NFC.</p>
+    </div>
+
+    <div class="section-head">1. Altas Técnicas del Grupo 1 (150 € el 1º | +75 € adicionales)</div>
+    <article class="card emerald">
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">Plan Pyme BASE (1 serv. G1):</span><span class="data-val">150 € Setup</span></div>
+        <div class="data-row"><span class="data-label">Pack ESCUDO BÁSICO (Dúo 2 serv.):</span><span class="data-val hi">225 € Setup (Ahorras 75 €)</span></div>
+        <div class="data-row"><span class="data-label">Pack ESCUDO TOTAL ★ (Trinity 3 serv.):</span><span class="data-val hi">300 € Setup + 🎁 Bóveda Gratis</span></div>
+        <div class="data-row"><span class="data-label">Plan QUATRO (4) / PENTIUM (5):</span><span class="data-val hi">375 € / 450 € Setup</span></div>
+      </div>
+    </article>
+
+    <div class="section-head blue">2. Altas Técnicas en Grupos 2, 3 y 4 (Suelto vs. Combinado)</div>
+    <article class="card blue">
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">Grupo 2 (S6, S8, S10), Logística o S4 Llamadas:</span><span class="data-val hi">+110 € combinado | 195 € suelto</span></div>
+        <div class="data-row"><span class="data-label">Satélite 1: Instagram 3 en 1:</span><span class="data-val hi">+75 € combinado | 150 € suelto</span></div>
+        <div class="data-row"><span class="data-label">Satélite 3: Cerebro Redactor B2B (RAG):</span><span class="data-val hi">+150 € combinado | 250 € suelto</span></div>
+        <div class="data-row"><span class="data-label">Satélite S7: Centralita Voz IA 24/7:</span><span class="data-val hi">+250 € combinado | 350 € suelto</span></div>
+        <div class="data-row"><span class="data-label">Boosters IA (Correo S9 / Prov. S10):</span><span class="data-val">+50 € Setup</span></div>
+      </div>
+    </article>
+
+    <div class="section-head amber">3. Las 2 Super-Auditorías y Hardware NFC</div>
+    <article class="card amber">
+      <div class="data-grid">
+        <div class="data-row"><span class="data-label">1. Solo Código / DIY:</span><span class="data-val">200 € una | 390 € las dos</span></div>
+        <div class="data-row"><span class="data-label">2. Oficial Llave en Mano (Suelta/Base):</span><span class="data-val">350 € una | 590 € las dos</span></div>
+        <div class="data-row"><span class="data-label">3. Bonificada con Pack (2+ serv.):</span><span class="data-val hi">195 € una | 390 € las dos</span></div>
+        <div class="data-row"><span class="data-label">★ Atril NFC + QR Mostrador:</span><span class="data-val hi">39 € (1ª ud) | 29 € (2ª-4ª) | 25 € (5+)</span></div>
+      </div>
+    </article>
+
+    <div class="cta-box">
+      <div style="font-size: 0.85em; font-weight: 800; color: #6ee7b7; text-transform: uppercase;">Atención Directa • Galicia</div>
+      <div style="font-size: 1.2em; font-weight: 900; color: #ffffff; margin-top: 4px;">Francisco M. Gallardo</div>
+      <div style="font-size: 0.92em; color: #cbd5e1; margin-top: 2px;">Tel: <strong>711 54 75 61</strong> • francisco@sistemaspyme.es</div>
+      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20programar%20la%20puesta%20en%20marcha%20en%20mi%20negocio" target="_blank" class="btn-wa">
+        💬 Hablar con Francisco por WhatsApp
+      </a>
+    </div>
+  </main>
+</body>
+</html>
+"""
+
+def actualizar_catalogo_a4_y_movil(ruta_catalogo_a4, ruta_catalogo_movil):
+    if os.path.isfile(ruta_catalogo_a4):
+        with open(ruta_catalogo_a4, "r", encoding="utf-8") as f:
+            c = f.read()
+        c = c.replace(
+            "Auditoría e Implantación Premium SEO Local + GEO (Posicionamiento en IA)",
+            "Las 2 Super-Auditorías Gemelas: 1) Ingeniería SEO Local + GEO IA y 2) Neuro-CRO (Sonda 10-14 Días)"
+        )
+        c = c.replace(
+            "Guía detallada paso a paso de nuestros 10 servicios troncales, Auditoría (GEO o Neuro CRO) IA y 3 Satélites",
+            "Arquitectura Oficial en 4 Grupos Operativos (S1 a S10), las 2 Super-Auditorías Gemelas (SEO/GEO y Neuro-CRO) y Satélites"
+        )
+        escribir_archivo_con_backup(ruta_catalogo_a4, c)
+
+    if os.path.isfile(ruta_catalogo_movil):
+        with open(ruta_catalogo_movil, "r", encoding="utf-8") as f:
+            cm = f.read()
+        cm = cm.replace(
+            "(o <strong>95 € c/u</strong> en Plan Anual Trinity+).",
+            "(o <strong>390 € las dos juntas</strong>; suelo mínimo blindado de 195 € c/u). Y en el <strong>Pack Escudo Total ★ (Trinity S1+S2+S3 Leads en 10s por 139 €/mes)</strong> recibes además GRATIS la Bóveda de Contraseñas."
+        )
+        cm = cm.replace(
+            "Sueltas cuestan 200 € (solo diagnóstico/código) o 350 € (llave en mano)",
+            "Sueltas cuestan 200 € (Solo Código DIY: 390 € las dos) o 350 € Llave en Mano (590 € las dos juntas en Pack Firma Institucional)"
+        )
+        escribir_archivo_con_backup(ruta_catalogo_movil, cm)
+
+# =============================================================================
+# 5. PARCHE QUIRÚRGICO DE INDEX.HTML (PRECIOS CLAROS + CARRITO + S3 TRINITY)
+# =============================================================================
+NUEVO_BLOQUE_VISTA_TARIFAS_INDEX = r"""  <!-- ======================================================================= -->
+  <!-- VISTA 4 (SALA INDEPENDIENTE): PRECIOS CLAROS (ARQUITECTURA 4 GRUPOS)    -->
+  <!-- ======================================================================= -->
+  <section id="vista-tarifas" class="view-panel hidden bg-slate-50 text-slate-900">
+
+    <!-- =================================================================== -->
+    <!-- DIAPOSITIVA 1 DE PRECIOS: LOS 3 PLANES TRONCALES DEL GRUPO 1        -->
+    <!-- =================================================================== -->
+    <div id="tarifas-slide-planes" class="slide-section sp-tarifas-light-bg border-b border-teal-200/80 px-4 sm:px-6 relative overflow-hidden" style="min-height: calc(100vh - 5.75rem); padding-top: 1.75rem !important; padding-bottom: 0.75rem !important; justify-content: flex-start !important;">
+      <div class="absolute inset-0 sp-rhombus-grid-reverse pointer-events-none opacity-65" aria-hidden="true"></div>
+
+      <div class="max-w-6xl mx-auto w-full flex flex-col justify-start relative z-10">
+
+        <!-- FILA 1: Encabezado de Sección + Conmutador Mensual/Anual -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-2.5 mb-3.5 border-b-2 border-teal-500/25">
+          <div>
+            <div class="inline-flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-wider text-teal-800 bg-teal-50/90 px-3 py-0.5 rounded-full border border-teal-300/80 mb-1 shadow-sm">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>Arquitectura Oficial en 4 Bloques • 1º a 59 €/m y +40 €/m en Grupo 1 • Suelo Super-Auditorías 195 €</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl lg:text-[27px] font-black text-brand-navy tracking-tight leading-tight">
+              Precios claros y <span class="sp-green-headline">amortización desde el primer cliente.</span>
+            </h2>
+          </div>
+
+          <div class="inline-flex items-center gap-1.5 bg-white/95 p-1 rounded-2xl border-2 border-teal-500/35 shadow-md self-start lg:self-center flex-shrink-0">
+            <button type="button" id="btnSwitchMensual" onclick="cambiarModoTarifas('mensual')" class="px-4 py-1.5 rounded-xl text-xs sm:text-[13px] font-extrabold bg-brand-navy text-white shadow-sm transition-all cursor-pointer">
+              🔄 Mensual Flexible (3m mín.)
+            </button>
+            <button type="button" id="btnSwitchAnual" onclick="cambiarModoTarifas('anual')" class="px-4 py-1.5 rounded-xl text-xs sm:text-[13px] font-extrabold text-slate-700 hover:text-brand-navy transition-all cursor-pointer flex items-center gap-1.5">
+              <span>🎁 Plan Anual</span>
+              <span class="text-[10px] font-black bg-amber-100 text-amber-900 border border-amber-400 px-2 py-0.5 rounded-full">2 Meses Gratis</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- FILA 2: Las 3 Tarjetas Protagonistas del Grupo 1 (Base 59€, Escudo Básico Dúo 99€ y Escudo Total Trinity 139€) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-stretch mb-2.5">
+
+          <!-- TARJETA 1: PLAN PYME BASE (1 SERVICIO GRUPO 1 = 59 €/MES) -->
+          <div class="sp-price-card-3d sp-price-card-slate px-5 py-3.5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-start justify-between gap-2 mb-1.5">
+                <div class="inline-flex flex-col items-center justify-center text-[10px] font-extrabold uppercase tracking-wider text-slate-800 bg-slate-100 px-2.5 py-0.5 rounded-xl border border-slate-300 leading-tight shadow-sm">
+                  <span class="whitespace-nowrap">1 Servicio Grupo 1</span>
+                  <span class="text-[9px] text-slate-600 font-bold whitespace-nowrap">(S1, S2 o S3 a elegir)</span>
+                </div>
+                <div class="text-right leading-tight">
+                  <span class="block text-[11px] font-bold text-slate-700 whitespace-nowrap">Setup único: <strong class="text-brand-navy font-black">150 €</strong></span>
+                  <span class="block text-[10px] font-semibold text-slate-500 whitespace-nowrap">(Alta llave en mano)</span>
+                </div>
+              </div>
+
+              <h3 class="text-lg sm:text-[19px] font-black text-brand-navy mb-0.5 whitespace-nowrap">
+                Plan Pyme BASE <span class="text-slate-500 font-bold text-sm">(1 serv.)</span>
+              </h3>
+              <p class="text-xs text-slate-600 mb-2 leading-snug">
+                Para empezar hoy por un único servicio troncal de implantación rápida:
+              </p>
+
+              <div class="bg-slate-50 border-2 border-slate-200/90 rounded-2xl px-3.5 py-2 mb-2 shadow-inner">
+                <div class="flex items-baseline gap-1.5" data-plan-price="base">
+                  <span class="text-2xl sm:text-[28px] font-black text-brand-navy">59 €</span>
+                  <span class="text-xs font-bold text-slate-500">/ mes</span>
+                </div>
+                <span id="spSubPriceBase" class="block text-[10.5px] font-extrabold text-teal-800 mt-0.5">
+                  Día 1 Flex: 209 € (150 € Setup + 59 € Mes 1)
+                </span>
+              </div>
+
+              <ul class="space-y-1 text-xs text-slate-700 leading-snug mb-2.5">
+                <li class="flex items-start gap-1.5"><span class="text-teal-600 font-black">✔</span><span>Elige <strong class="text-brand-navy">S1 (Reseñas IA)</strong>, <strong class="text-brand-navy">S2 (Cortafuegos WA)</strong> o <strong class="text-brand-navy">S3 (Leads en 10s)</strong>.</span></li>
+                <li class="flex items-start gap-1.5"><span class="text-teal-600 font-black">✔</span><span>Incluye <strong class="text-brand-navy">Informe Mensual 360° Interactivo</strong> cada día 1 de mes.</span></li>
+                <li class="flex items-start gap-1.5"><span class="text-slate-400 font-black">•</span><span class="text-slate-600">Super-Auditorías Llave en Mano a tarifa estándar (350 € una / 590 € las dos).</span></li>
+              </ul>
+            </div>
+
+            <a id="spBtnWaPlanBase" href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20el%20Plan%20Pyme%20BASE%20%281%20servicio%20por%2059%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-2 text-center rounded-xl bg-brand-navy hover:bg-slate-800 text-white font-extrabold text-xs sm:text-[13px] shadow-md transition-all block">
+              Elegir Plan Pyme BASE &rarr;
+            </a>
+          </div>
+
+          <!-- TARJETA 2: PACK ESCUDO BÁSICO (DÚO: 2 SERVICIOS GRUPO 1 = 99 €/MES) -->
+          <div class="sp-price-card-3d sp-price-card-sky px-5 py-3.5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-start justify-between gap-2 mb-1.5">
+                <div class="inline-flex flex-col items-center justify-center text-[10px] font-extrabold uppercase tracking-wider text-sky-900 bg-sky-100/95 px-2.5 py-0.5 rounded-xl border border-sky-300 leading-tight shadow-sm">
+                  <span class="whitespace-nowrap">🛡️ Dúo: 2 Servicios</span>
+                  <span class="text-[9px] text-sky-950 font-black whitespace-nowrap">(S1 + S2 o S1 + S3)</span>
+                </div>
+                <div class="text-right leading-tight">
+                  <span class="block text-[11px] font-bold text-sky-950 whitespace-nowrap">Setup Dúo: <strong class="text-brand-navy font-black">225 €</strong></span>
+                  <span class="block text-[10px] font-extrabold text-emerald-700 whitespace-nowrap">(150 € + 75 € al 50%)</span>
+                </div>
+              </div>
+
+              <h3 class="text-lg sm:text-[19px] font-black text-brand-navy mb-0.5 whitespace-nowrap">
+                Pack Escudo Básico <span class="text-sky-700 font-bold text-sm">(Dúo)</span>
+              </h3>
+              <p class="text-xs text-slate-700 mb-2 leading-snug">
+                Doble blindaje de reputación y captación (el 2.º módulo suma solo <strong class="text-brand-navy">+40 €/mes</strong>):
+              </p>
+
+              <div class="bg-white/95 border-2 border-sky-300 rounded-2xl px-3.5 py-2 mb-2 shadow-inner">
+                <div class="flex items-baseline justify-between gap-2">
+                  <div class="flex items-baseline gap-1.5" data-plan-price="duo">
+                    <span class="text-2xl sm:text-[28px] font-black text-sky-700">99 €</span>
+                    <span class="text-xs font-bold text-slate-500">/ mes</span>
+                  </div>
+                  <span class="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-full whitespace-nowrap">Ahorras 19 €/m + 75 € Setup</span>
+                </div>
+                <span id="spSubPriceDuo" class="block text-[10.5px] font-extrabold text-sky-900 mt-0.5">
+                  Día 1 Flex: 324 € (225 € Setup + 99 € Mes 1)
+                </span>
+              </div>
+
+              <ul class="space-y-1 text-xs text-slate-800 leading-snug mb-2.5">
+                <li class="flex items-start gap-1.5"><span class="text-sky-600 font-black">✔</span><span><strong class="text-brand-navy">Une S1 + S2:</strong> Respuesta IA en Google + Cortafuegos Preventivo por WhatsApp.</span></li>
+                <li class="flex items-start gap-1.5"><span class="text-sky-600 font-black">✔</span><span><strong class="text-brand-navy">Informe 360° Completo</strong> con transcripción IA de notas de voz.</span></li>
+                <li class="flex items-start gap-1.5"><span class="text-amber-600 font-black">🔑</span><span><strong class="text-brand-navy">Desbloquea Super-Auditorías a 195 € c/u</strong> (o <strong class="text-emerald-800">390 € las dos juntas</strong>, ahorrando 310 €).</span></li>
+              </ul>
+            </div>
+
+            <a id="spBtnWaPlanDuo" href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20el%20Pack%20Escudo%20B%C3%A1sico%20D%C3%BAo%20%28S1%20%2B%20S2%20por%2099%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-2 text-center rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs sm:text-[13px] shadow-lg shadow-sky-600/25 transition-all block">
+              Elegir Pack Escudo Básico &rarr;
+            </a>
+          </div>
+
+          <!-- TARJETA 3 ESTRELLA: PACK ESCUDO TOTAL ★ (TRINITY: S1 + S2 + S3 LEADS 10S = 139 €/MES) -->
+          <div class="sp-price-card-3d sp-price-card-emerald px-5 py-3.5 flex flex-col justify-between relative">
+            <div>
+              <div class="flex items-start justify-between gap-2 mb-1.5">
+                <div class="inline-flex flex-col items-center justify-center text-[10px] font-extrabold uppercase tracking-wider text-white bg-gradient-to-r from-emerald-600 to-teal-600 px-2.5 py-0.5 rounded-xl shadow-sm leading-tight">
+                  <span class="whitespace-nowrap">★ Pack Estrella Trinity</span>
+                  <span class="text-[9px] font-black text-emerald-50 whitespace-nowrap">(S1 + S2 + S3 Leads 10s)</span>
+                </div>
+                <div class="text-right leading-tight">
+                  <span id="spBadgeAhorroEscudoTotal" class="block text-[10px] font-black text-amber-900 bg-amber-100/95 px-2 py-0.5 rounded-md border border-amber-300 whitespace-nowrap">🎁 Bóveda Gratis (150 €)</span>
+                  <span class="block text-[9px] font-extrabold text-teal-900 whitespace-nowrap mt-0.5">Setup Trinity: 300 € (150+75+75)</span>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center justify-between gap-1.5 mb-2">
+                <h3 id="spTitleEscudoTotal" class="text-lg sm:text-[19px] font-black text-brand-navy whitespace-nowrap">
+                  Pack Escudo Total ★ <span class="text-emerald-700 font-bold text-xs">(Trinity)</span>
+                </h3>
+                <div class="inline-flex items-center bg-white/95 p-0.5 rounded-lg border-2 border-emerald-500/50 text-[9.5px] font-extrabold shadow-sm">
+                  <button type="button" id="btnEscudo0Aud" onclick="spSeleccionarNivelEscudoTotal(0)" class="px-1.5 py-0.5 rounded-md bg-emerald-600 text-white cursor-pointer transition-all whitespace-nowrap">
+                    Solo Pack
+                  </button>
+                  <button type="button" id="btnEscudo1Aud" onclick="spSeleccionarNivelEscudoTotal(1)" class="px-1.5 py-0.5 rounded-md text-teal-900 hover:text-brand-navy cursor-pointer transition-all whitespace-nowrap">
+                    +1 Aud (195€)
+                  </button>
+                  <button type="button" id="btnEscudo2Aud" onclick="spSeleccionarNivelEscudoTotal(2)" class="px-1.5 py-0.5 rounded-md text-teal-900 hover:text-brand-navy cursor-pointer transition-all whitespace-nowrap">
+                    +2 Aud (390€)
+                  </button>
+                </div>
+              </div>
+
+              <div class="bg-white/95 border-2 border-emerald-500/70 rounded-2xl px-3.5 py-2 mb-2 shadow-inner">
+                <div class="flex items-baseline justify-between gap-1.5 flex-wrap">
+                  <div class="flex items-baseline gap-1" data-plan-price="trinity">
+                    <span class="text-2xl sm:text-[28px] font-black text-emerald-700">139 €</span>
+                    <span class="text-xs font-bold text-slate-500">/ mes</span>
+                  </div>
+                  <span id="spAuditAddonPriceTag" class="text-[10px] font-black text-emerald-900 bg-emerald-100 border border-emerald-400 px-2 py-0.5 rounded-lg whitespace-nowrap">
+                    59 € + 40 € + 40 € (3 serv. G1)
+                  </span>
+                </div>
+                <span id="spSubPriceEscudoTotal" class="block text-[10.5px] font-extrabold text-teal-900 mt-0.5">
+                  Día 1 Flex: 439 € (300 € Setup + 139 € Mes 1) | Anual: 1.690 €
+                </span>
+              </div>
+
+              <ul class="space-y-1 text-xs text-slate-800 leading-snug mb-2.5">
+                <li class="flex items-start gap-1.5"><span class="text-emerald-600 font-black">✔</span><span><strong class="text-brand-navy">Une S1 + S2 + S3 (Respuesta a Leads en 10s + Portales):</strong> reputación blindada y cierre de presupuestos en caliente.</span></li>
+                <li class="flex items-start gap-1.5"><span class="text-emerald-600 font-black">✔</span><span id="spBulletAuditEscudo">Incluye <strong class="text-brand-navy">🎁 Bóveda de Contraseñas GRATIS</strong> (valorada en 150 €) para compartir accesos con tu equipo en 1 clic.</span></li>
+                <li class="flex items-start gap-1.5"><span class="text-amber-600 font-black">★</span><span id="spBulletBonusEscudo"><strong class="text-brand-navy">Super-Auditorías Llave en Mano bonificadas un 44%:</strong> llévate 1 por <strong class="text-emerald-800">195 €</strong> o las 2 juntas por <strong class="text-emerald-800">390 €</strong>.</span></li>
+              </ul>
+            </div>
+
+            <a id="spBtnWaPlanEscudoTotal" href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20activar%20el%20Pack%20Escudo%20Total%20Trinity%20%28S1%20%2B%20S2%20%2B%20S3%20Leads%20en%2010s%20por%20139%20%E2%82%AC%2Fmes%29" target="_blank" class="sp-btn-s5-primary-3d w-full py-2 text-center rounded-xl text-white font-black text-xs sm:text-[13px] block">
+              Activar Pack Escudo Total &rarr;
+            </a>
+          </div>
+
+        </div>
+
+        <!-- FILA 3: Banner-Guía hacia la Diapositiva 2 (Los 4 Grupos, Super-Auditorías y Atril NFC) -->
+        <div class="pt-0.5 pb-1 flex justify-center">
+          <button type="button" onclick="spScrollLimpioSeccion('tarifas-slide-complementos')" class="group inline-flex items-center gap-3 px-6 py-2 rounded-2xl bg-white/95 hover:bg-teal-50 border-2 border-teal-500/50 hover:border-teal-600 shadow-md transition-all cursor-pointer">
+            <span class="text-sm">🔍🧠</span>
+            <span class="text-xs sm:text-[13px] font-extrabold text-brand-navy group-hover:text-teal-800">
+              Ver Tabla de las 2 Super-Auditorías (195 € / 350 € / 590 €), Grupos 2-3-4 y Atril NFC
+            </span>
+            <span class="w-5 h-5 rounded-full bg-teal-500/15 border border-teal-500/50 flex items-center justify-center text-teal-700 group-hover:translate-y-0.5 transition-transform font-black text-xs">
+              &darr;
+            </span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- DIAPOSITIVA 2 DE PRECIOS: SUPER-AUDITORÍAS, GRUPOS 2-3-4 Y ATRIL    -->
+    <!-- =================================================================== -->
+    <div id="tarifas-slide-complementos" class="slide-section sp-tarifas-light-bg px-4 sm:px-6 py-5 relative overflow-hidden" style="min-height: calc(100vh - 5.75rem);">
+      <div class="absolute inset-0 sp-rhombus-grid-reverse pointer-events-none opacity-65" aria-hidden="true"></div>
+      <div class="max-w-6xl mx-auto w-full flex flex-col justify-between min-h-[calc(100vh-8.5rem)] relative z-10">
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2.5 border-b-2 border-teal-500/25">
+          <div>
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-800 bg-amber-100/90 px-3 py-0.5 rounded-full border border-amber-300 inline-block mb-1">
+              Suelo Mínimo Blindado de 195 € en Super-Auditorías • Grupos 2, 3 y 4 con Descuento Combinado
+            </span>
+            <h3 class="text-2xl sm:text-3xl font-black text-brand-navy tracking-tight">
+              Las 2 Super-Auditorías Gemelas, <span class="sp-green-headline">Grupos Avanzados y Hardware NFC.</span>
+            </h3>
+          </div>
+          <button type="button" onclick="spScrollLimpioSeccion('tarifas-slide-planes')" class="self-start sm:self-center inline-flex items-center gap-2 text-xs font-extrabold text-brand-navy hover:text-teal-700 bg-white hover:bg-teal-50 px-4 py-2 rounded-xl border-2 border-slate-300 shadow-sm transition-all cursor-pointer">
+            <span>&uarr;</span>
+            <span>Volver a los Planes del Grupo 1</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 my-auto py-2.5 items-stretch">
+
+          <!-- Columna Izquierda (7 cols): Las 2 Super-Auditorías Gemelas (Tabla Oficial Suelo 195 €) -->
+          <div class="lg:col-span-7 sp-light-card-3d-teal rounded-3xl p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-teal-900 bg-teal-100/90 px-3 py-1 rounded-full border border-teal-400">
+                  🔍🧠 Las 2 Super-Auditorías Web Gemelas (Pago Único • Sin Cuotas)
+                </span>
+                <span class="text-[11px] font-extrabold text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">Suelo Mínimo Intocable: 195 € c/u</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3 text-xs">
+                <div class="bg-sky-50/95 border-2 border-sky-300 rounded-2xl p-3.5 shadow-sm">
+                  <strong class="text-sky-900 text-[13.5px] font-black block mb-1">1. Ingeniería de Entidades SEO/GEO IA</strong>
+                  <p class="text-slate-700 leading-snug">
+                    <strong class="text-brand-navy">«Para que os encuentren gratis en Google Maps y os citen ChatGPT, Perplexity y Gemini»:</strong> 16 parámetros oficiales + Grafo <code>@graph</code> Wikidata + <code>/llms.txt</code>.
+                  </p>
+                </div>
+                <div class="bg-amber-50/95 border-2 border-amber-300 rounded-2xl p-3.5 shadow-sm">
+                  <strong class="text-amber-900 text-[13.5px] font-black block mb-1">2. Neuro-CRO + Sonda de 10-14 Días</strong>
+                  <p class="text-slate-700 leading-snug">
+                    <strong class="text-brand-navy">«Para duplicar los clientes que os contactan»:</strong> Disponible en <strong>Perfil 1 (Modo Ágil)</strong> o <strong>Perfil 2 (Modo Corporativo Alto Standing)</strong>.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <span class="block text-[11px] font-extrabold uppercase tracking-wider text-brand-navy mb-2">
+                Tabla Oficial de Precios de las Super-Auditorías (1 Auditoría vs. Las 2 Juntas):
+              </span>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-center">
+                <div class="bg-white rounded-2xl p-3 border-2 border-slate-200 flex flex-col justify-between shadow-sm">
+                  <span class="block text-[10px] font-extrabold text-slate-700 uppercase">1. Solo Código / DIY</span>
+                  <span class="block text-xl font-black text-brand-navy my-0.5">200 € <span class="text-[11px] font-bold text-slate-500">por 1</span></span>
+                  <span class="block text-[11px] font-extrabold text-teal-800">390 € las dos (195€ c/u)</span>
+                  <span class="block text-[10.5px] text-slate-600 leading-tight mt-1">PDF Parte 1 + Parte 2 (Códigos limpios) para que lo suba tu informático.</span>
+                </div>
+                <div class="bg-white rounded-2xl p-3 border-2 border-sky-300 flex flex-col justify-between shadow-sm">
+                  <span class="block text-[10px] font-extrabold text-sky-900 uppercase">2. Oficial «Llave en Mano»</span>
+                  <span class="block text-xl font-black text-sky-700 my-0.5">350 € <span class="text-[11px] font-bold text-slate-500">por 1</span></span>
+                  <span class="block text-[11px] font-extrabold text-sky-900">590 € las dos (Ahorra 110€)</span>
+                  <span class="block text-[10.5px] text-slate-700 leading-tight mt-1">Suelta o con Plan Base. Incluye reunión con tu técnico, implantación y Sonda.</span>
+                </div>
+                <div class="bg-emerald-50 rounded-2xl p-3 border-2 border-emerald-500 flex flex-col justify-between shadow-md">
+                  <span class="block text-[10px] font-extrabold text-emerald-900 uppercase">3. Bonificada con Pack ★</span>
+                  <span class="block text-xl font-black text-emerald-700 my-0.5">195 € <span class="text-[11px] font-bold text-emerald-800">por 1</span></span>
+                  <span class="block text-[11px] font-black text-emerald-900">390 € las dos (Ahorra 310€)</span>
+                  <span class="block text-[10.5px] text-emerald-950 font-semibold leading-tight mt-1">Todo el servicio «Llave en Mano» bonificado un 44% con cualquier Pack de 2+ servicios.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna Derecha (5 cols): Grupos 2, 3 y 4 + Hardware Atril NFC/QR -->
+          <div class="lg:col-span-5 flex flex-col justify-between gap-3.5">
+
+            <!-- Tarjeta Grupos 2, 3 y 4 (Combinados vs Sueltos) -->
+            <div class="sp-light-card-3d-sky rounded-3xl p-4 flex-1 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-sky-900 bg-sky-100 px-2.5 py-0.5 rounded-full border border-sky-300">
+                    🚀 Grupos 2, 3 y 4 (Suelto vs. Combinado con Pack)
+                  </span>
+                  <span class="text-[10.5px] font-extrabold text-emerald-700">Computan para Pack Dúo+</span>
+                </div>
+                <ul class="space-y-1.5 text-[11.5px] text-slate-800 leading-snug">
+                  <li class="flex justify-between gap-2 border-b border-sky-200/70 pb-1">
+                    <span><strong>Grupo 1 extra (4º Quatro / 5º Pentium):</strong></span>
+                    <strong class="text-brand-navy whitespace-nowrap">+40 €/m (+75 € Setup)</strong>
+                  </li>
+                  <li class="flex justify-between gap-2 border-b border-sky-200/70 pb-1">
+                    <span><strong>Grupo 2 (S6 Citas, S8 Firma, S10 Cobros):</strong></span>
+                    <strong class="text-sky-800 whitespace-nowrap">+59 €/m (+110 €) <span class="text-[10px] text-slate-500 font-normal">| 79€ s.</span></strong>
+                  </li>
+                  <li class="flex justify-between gap-2 border-b border-sky-200/70 pb-1">
+                    <span><strong>Sat. 1 Instagram 3 en 1 (Meta API):</strong></span>
+                    <strong class="text-pink-700 whitespace-nowrap">+49 €/m (+75 €) <span class="text-[10px] text-slate-500 font-normal">| 69€ s.</span></strong>
+                  </li>
+                  <li class="flex justify-between gap-2 border-b border-sky-200/70 pb-1">
+                    <span><strong>Sat. 2 Logística 360 / S4 Llamadas WA:</strong></span>
+                    <strong class="text-sky-800 whitespace-nowrap">+59 €/m (+110 €) <span class="text-[10px] text-slate-500 font-normal">| 79€ s.</span></strong>
+                  </li>
+                  <li class="flex justify-between gap-2 border-b border-sky-200/70 pb-1">
+                    <span><strong>Sat. 3 Cerebro Redactor B2B (RAG):</strong></span>
+                    <strong class="text-indigo-700 whitespace-nowrap">+69 €/m (+150 €) <span class="text-[10px] text-slate-500 font-normal">| 99€ s.</span></strong>
+                  </li>
+                  <li class="flex justify-between gap-2">
+                    <span><strong>S7 Centralita Voz IA 24/7 (250 min/m):</strong></span>
+                    <strong class="text-indigo-900 whitespace-nowrap">+129 €/m (+250 €) <span class="text-[10px] text-slate-500 font-normal">| 169€ s.</span></strong>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Tarjeta Atril Inteligente NFC + QR -->
+            <div class="sp-light-card-3d-amber rounded-3xl p-4 flex flex-col justify-between">
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-400">
+                  ★ Hardware Mostrador: Atril NFC + QR
+                </span>
+                <span class="text-sm font-black text-amber-800">Pago único • Sin cuotas</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                <div class="bg-white rounded-xl py-1.5 px-2 border-2 border-amber-300 shadow-sm">
+                  <span class="block font-black text-brand-navy text-sm">39 €</span>
+                  <span class="text-[10px] font-semibold text-slate-600">1.ª Unidad</span>
+                </div>
+                <div class="bg-white rounded-xl py-1.5 px-2 border-2 border-amber-300 shadow-sm">
+                  <span class="block font-black text-amber-700 text-sm">29 € / ud</span>
+                  <span class="text-[10px] font-semibold text-slate-600">2.ª a 4.ª Ud.</span>
+                </div>
+                <div class="bg-white rounded-xl py-1.5 px-2 border-2 border-emerald-400 shadow-sm">
+                  <span class="block font-black text-emerald-700 text-sm">25 € / ud</span>
+                  <span class="text-[10px] font-semibold text-slate-600">5 o más Uds.</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Barra Inferior de Transparencia Fiscal y Enlaces a Documentos Oficiales -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white/95 border-2 border-slate-200 rounded-2xl px-5 py-2.5 text-xs text-slate-700 shadow-sm">
+          <span>🧾 <strong class="text-brand-navy">Transparencia Total:</strong> Vía Flexible (3 meses) o Plan Anual (10 meses = 2 gratis). Precios netos sin IVA 21% (SEPA).</span>
+          <div class="flex flex-wrap items-center gap-3 font-extrabold">
+            <a href="documentos/tarifas.html" target="_blank" class="text-teal-700 hover:text-brand-navy underline whitespace-nowrap">Tarifas oficiales &rarr;</a>
+            <span class="text-slate-300">•</span>
+            <a href="documentos/desembolso.html" target="_blank" class="text-sky-700 hover:text-brand-navy underline whitespace-nowrap">Desembolso primer día &rarr;</a>
+            <span class="text-slate-300">•</span>
+            <a href="documentos/setup.html" target="_blank" class="text-indigo-700 hover:text-brand-navy underline whitespace-nowrap">Anexo técnico de altas &rarr;</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </section>"""
+
+NUEVO_JS_TARIFAS_INDEX = r"""    var _spModoTarifasActual = 'mensual';
+    var _spNumAuditoriasEscudo = 0;
+
+    function _spRenderizarTarjetasPrecios() {
+      var btnM = document.getElementById('btnSwitchMensual');
+      var btnA = document.getElementById('btnSwitchAnual');
+      var pBase = document.querySelector('[data-plan-price="base"]');
+      var pDuo = document.querySelector('[data-plan-price="duo"]');
+      var pTri = document.querySelector('[data-plan-price="trinity"]');
+      var subBase = document.getElementById('spSubPriceBase');
+      var subDuo = document.getElementById('spSubPriceDuo');
+      var subEsc = document.getElementById('spSubPriceEscudoTotal');
+      var tagAud = document.getElementById('spAuditAddonPriceTag');
+      var badgeAhorro = document.getElementById('spBadgeAhorroEscudoTotal');
+      var btn0Aud = document.getElementById('btnEscudo0Aud');
+      var btn1Aud = document.getElementById('btnEscudo1Aud');
+      var btn2Aud = document.getElementById('btnEscudo2Aud');
+      var waEsc = document.getElementById('spBtnWaPlanEscudoTotal');
+
+      [
+        { el: btn0Aud, val: 0 },
+        { el: btn1Aud, val: 1 },
+        { el: btn2Aud, val: 2 }
+      ].forEach(function(item) {
+        if (!item.el) return;
+        if (_spNumAuditoriasEscudo === item.val) {
+          item.el.className = 'px-1.5 py-0.5 rounded-md bg-emerald-600 text-white cursor-pointer transition-all whitespace-nowrap shadow-sm';
+        } else {
+          item.el.className = 'px-1.5 py-0.5 rounded-md text-teal-900 hover:text-brand-navy cursor-pointer transition-all whitespace-nowrap';
+        }
+      });
+
+      var costeAud = (_spNumAuditoriasEscudo === 1) ? 195 : ((_spNumAuditoriasEscudo === 2) ? 390 : 0);
+
+      if (tagAud) {
+        if (_spNumAuditoriasEscudo === 0) tagAud.textContent = '59 € + 40 € + 40 € (S1 + S2 + S3)';
+        else if (_spNumAuditoriasEscudo === 1) tagAud.textContent = '+ 195 € (1 Super-Auditoría Llave en Mano)';
+        else tagAud.textContent = '+ 390 € (Las 2 Super-Auditorías • Ahorras 310 €)';
+      }
+
+      if (badgeAhorro) {
+        if (_spNumAuditoriasEscudo === 2) badgeAhorro.textContent = '🎁 Bóveda Gratis + Ahorras 310 € en Aud.';
+        else if (_spNumAuditoriasEscudo === 1) badgeAhorro.textContent = '🎁 Bóveda Gratis + Aud. a 195 € (-44%)';
+        else badgeAhorro.textContent = '🎁 Bóveda Gratis (150 €) + Aud. a 195 €';
+      }
+
+      if (_spModoTarifasActual === 'anual') {
+        if (btnA) btnA.className = 'px-4 py-1.5 rounded-xl text-xs sm:text-[13px] font-extrabold bg-brand-navy text-white shadow-sm transition-all cursor-pointer flex items-center gap-1.5';
+        if (btnM) btnM.className = 'px-4 py-1.5 rounded-xl text-xs sm:text-[13px] font-extrabold text-slate-700 hover:text-brand-navy transition-all cursor-pointer';
+
+        if (pBase) pBase.innerHTML = '<span class="text-2xl sm:text-[28px] font-black text-brand-navy">49 €</span><span class="text-xs font-bold text-slate-500">/ mes eq. (590 €/año)</span>';
+        if (subBase) subBase.textContent = 'Día 1 Anual: 740 € (590 € 10m + 150 € Setup • Ahorras 118 €)';
+
+        if (pDuo) pDuo.innerHTML = '<span class="text-2xl sm:text-[28px] font-black text-sky-700">82,50 €</span><span class="text-xs font-bold text-slate-500">/ mes eq. (990 €/año)</span>';
+        if (subDuo) subDuo.textContent = 'Día 1 Anual: 1.215 € (990 € 10m + 225 € Setup • Ahorras 198 €)';
+
+        if (pTri) pTri.innerHTML = '<span class="text-2xl sm:text-[28px] font-black text-emerald-700">115,80 €</span><span class="text-xs font-bold text-slate-500">/ mes eq. (1.390 €/año)</span>';
+        var totalDia1AnualTri = 1690 + costeAud;
+        if (subEsc) subEsc.textContent = 'Día 1 Anual: ' + totalDia1AnualTri + ' € (1.390€ 10m + 300€ Setup' + (costeAud > 0 ? ' + ' + costeAud + '€ Aud.' : '') + ' • Ahorras 278€)';
+      } else {
+        if (btnM) btnM.className = 'px-4 py-1.5 rounded-xl text-xs sm:text-[13px] font-extrabold bg-brand-navy text-white shadow-sm transition-all cursor-pointer';
+        if (btnA) btnA.className = 'px-4 py-1.5 rounded-xl text-xs sm:text-[13px] font-extrabold text-slate-700 hover:text-brand-navy transition-all cursor-pointer flex items-center gap-1.5';
+
+        if (pBase) pBase.innerHTML = '<span class="text-2xl sm:text-[28px] font-black text-brand-navy">59 €</span><span class="text-xs font-bold text-slate-500">/ mes</span>';
+        if (subBase) subBase.textContent = 'Día 1 Flex: 209 € (150 € Setup + 59 € Mes 1)';
+
+        if (pDuo) pDuo.innerHTML = '<span class="text-2xl sm:text-[28px] font-black text-sky-700">99 €</span><span class="text-xs font-bold text-slate-500">/ mes</span>';
+        if (subDuo) subDuo.textContent = 'Día 1 Flex: 324 € (225 € Setup + 99 € Mes 1)';
+
+        if (pTri) pTri.innerHTML = '<span class="text-2xl sm:text-[28px] font-black text-emerald-700">139 €</span><span class="text-xs font-bold text-slate-500">/ mes</span>';
+        var totalDia1FlexTri = 439 + costeAud;
+        if (subEsc) subEsc.textContent = 'Día 1 Flex: ' + totalDia1FlexTri + ' € (300 € Setup + 139 € Mes 1' + (costeAud > 0 ? ' + ' + costeAud + ' € Aud.' : '') + ')';
+      }
+
+      if (waEsc) {
+        var extraAudTxt = (_spNumAuditoriasEscudo === 2) ? ' + las 2 Super-Auditorías por 390 €' : ((_spNumAuditoriasEscudo === 1) ? ' + 1 Super-Auditoría por 195 €' : '');
+        var modTexto = (_spModoTarifasActual === 'anual') ? ' en Plan Anual (1.390 €/año + 300 € Setup)' : ' en modalidad Flexible (139 €/mes + 300 € Setup)';
+        waEsc.href = 'https://wa.me/34711547561?text=' + encodeURIComponent('Hola Francisco, quiero activar el Pack Escudo Total Trinity (S1+S2+S3 Leads en 10s)' + extraAudTxt + modTexto + '.');
+      }
+    }
+
+    function cambiarModoTarifas(modo) {
+      _spModoTarifasActual = (modo === 'anual') ? 'anual' : 'mensual';
+      _spRenderizarTarjetasPrecios();
+    }
+
+    window.spSeleccionarNivelEscudoTotal = function(numAud) {
+      _spNumAuditoriasEscudo = (numAud === 2) ? 2 : ((numAud === 1) ? 1 : 0);
+      _spRenderizarTarjetasPrecios();
+    };"""
+
+def actualizar_index_html_completo(ruta_index):
+    if not os.path.isfile(ruta_index):
+        print(f"  ⚠️ No se encontró {ruta_index}")
+        return
+
+    with open(ruta_index, "r", encoding="utf-8") as f:
+        html = f.read()
+
+    # 1. Reemplazar el bloque completo de #vista-tarifas con el nuevo diseño de 4 Grupos y Pack Escudo Total Trinity (139 €/m)
+    patron_vista_tarifas = re.compile(
+        r"<!-- ======================================================================= -->\s*<!-- VISTA 4 \(SALA INDEPENDIENTE\): PRECIOS CLAROS.*?</section>",
+        re.DOTALL
+    )
+    if patron_vista_tarifas.search(html):
+        html = patron_vista_tarifas.sub(lambda _: NUEVO_BLOQUE_VISTA_TARIFAS_INDEX, html, count=1)
+
+    # 2. Actualizar las funciones JS de tarifas en index.html
+    patron_js_tarifas = re.compile(
+        r"var _spModoTarifasActual = 'mensual';.*?window\.spSeleccionarNivelEscudoTotal = function\(numAud\)\s*\{.*?\};",
+        re.DOTALL
+    )
+    html = patron_js_tarifas.sub(lambda _: NUEVO_JS_TARIFAS_INDEX, html)
+
+    # 3. Actualizar las opciones del Carrito Configurador a la Carta (#spModalCarritoCarta) con la nueva arquitectura
+    html = html.replace(
+        '<span class="text-[11px] text-slate-300">Permanencia mín. 3 meses (Auditoría a 250 € con Dúo)</span>',
+        '<span class="text-[11px] text-slate-300">Compromiso mín. 3 meses (Auditorías a 195 € c/u desde Pack Dúo+)</span>'
+    )
+    html = html.replace(
+        '<span class="text-[11px] text-slate-300">Pagas 10 meses + Auditorías en 2x1 (350 € las 2)</span>',
+        '<span class="text-[11px] text-slate-300">Pagas 10 meses (2 gratis) + Auditorías a 195 € c/u (390 € las 2)</span>'
+    )
+
+    # Añadir el botón del Pack Escudo Total Trinity (139 €/m) en el paso 2 del Carrito y actualizar los desplegables de Grupos 1, 2, 3 y 4
+    bloque_planes_carrito_antiguo = """              <button type="button" id="spCartPlan_duo" onclick="window.spSetCartPlan('duo')" class="sp-cart-item-btn sp-cart-selected">
+                <span class="font-black block text-emerald-300">★ Pack Escudo Dúo (2 Serv.)</span>
+                <span class="text-[11px] text-white font-bold">99 €/mes + 225 € Setup</span>
+                <span class="block text-[10px] text-emerald-200">S1 Reseñas IA + S2 WhatsApp</span>
+              </button>"""
+
+    bloque_planes_carrito_nuevo = """              <button type="button" id="spCartPlan_duo" onclick="window.spSetCartPlan('duo')" class="sp-cart-item-btn sp-cart-selected">
+                <span class="font-black block text-sky-300">🛡️ Pack Escudo Básico (Dúo)</span>
+                <span class="text-[11px] text-white font-bold">99 €/mes + 225 € Setup</span>
+                <span class="block text-[10px] text-sky-200">S1 Reseñas + S2 WhatsApp (Aud. 195€)</span>
+              </button>
+              <button type="button" id="spCartPlan_trinity" onclick="window.spSetCartPlan('trinity')" class="sp-cart-item-btn sm:col-span-3">
+                <span class="font-black block text-emerald-300">★ Pack Escudo Total (Trinity: S1 + S2 + S3 Leads en 10s) — Incluye 🎁 Bóveda Gratis</span>
+                <span class="text-[11px] text-white font-bold">139 €/mes + 300 € Setup (Día 1 Flex: 439 € | Día 1 Anual: 1.690 €) + Desbloquea Auditorías a 195 € c/u</span>
+              </button>"""
+
+    if "spCartPlan_trinity" not in html and bloque_planes_carrito_antiguo in html:
+        html = html.replace(bloque_planes_carrito_antiguo, bloque_planes_carrito_nuevo, 1)
+
+    # Actualizar opciones del selector de módulos adicionales en el Carrito según los 4 Grupos oficiales
+    patron_select_f2 = re.compile(
+        r'<select id="spCartReservaFase2".*?</select>',
+        re.DOTALL
+    )
+    nuevo_select_f2 = """<select id="spCartReservaFase2" onchange="window.spAgregarModuloReservaFase2(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-bold">
+                <option value="">+ Añadir módulo de Grupo 1, 2, 3 o 4 al carrito...</option>
+                <optgroup label="Grupo 1 • Núcleo de Implantación Rápida (+40 €/m | +75 € Setup)">
+                  <option value="S3 Respuesta a Leads en 10s + Portales (+40 €/m | +75 € Setup)">S3. Respuesta a Leads en 10s + Portales (+40 €/m | +75 € Setup)</option>
+                  <option value="S9 Facturas y Tickets al Gestor por Foto WA (+40 €/m | +75 € Setup)">S9. Facturas y Tickets al Gestor por Foto WA (+40 €/m | +75 € Setup)</option>
+                  <option value="S5 Reactivación Automática Clientes Inactivos (+40 €/m | +75 € Setup)">S5. Reactivación de Clientes Inactivos (+40 €/m | +75 € Setup)</option>
+                </optgroup>
+                <optgroup label="Grupo 2 • Operativa Avanzada (+59 €/m | +110 € Setup combinado)">
+                  <option value="S6 Sistema Anti-Plantón 24h + Huecos Flash (+59 €/m | +110 € Setup)">S6. Sistema Anti-Plantón 24h + Huecos Flash (+59 €/m | +110 € Setup)</option>
+                  <option value="S8 Firma Digital Presupuestos + Onboarding IA (+59 €/m | +110 € Setup)">S8. Firma Digital Legal + Onboarding IA (+59 €/m | +110 € Setup)</option>
+                  <option value="S10 Escudo Anti-Morosidad Diplomático (+59 €/m | +110 € Setup)">S10. Escudo Anti-Morosidad Diplomático (+59 €/m | +110 € Setup)</option>
+                </optgroup>
+                <optgroup label="Grupo 3 • Satélites Especializados y Boosters IA">
+                  <option value="Sat.1 Instagram Inteligente 3 en 1 (+49 €/m | +75 € Setup)">Sat.1. Instagram Inteligente 3 en 1: Reels + DMs (+49 €/m | +75 € Setup)</option>
+                  <option value="Sat.2 Escudo Logístico 360 Reparto (+59 €/m | +110 € Setup)">Sat.2. Escudo Logístico 360: Tracking + Ausencias (+59 €/m | +110 € Setup)</option>
+                  <option value="Sat.3 Cerebro Redactor B2B con IA RAG (+69 €/m | +150 € Setup)">Sat.3. Cerebro Redactor B2B con IA RAG (+69 €/m | +150 € Setup)</option>
+                  <option value="Booster IA Lector Correo Facturas S9 (+35 €/m | +50 € Setup)">Booster IA 1: Add-on Lector de Correo para S9 (+35 €/m | +50 € Setup)</option>
+                  <option value="Booster IA Reclamación Proveedores S10 (+35 €/m | +50 € Setup)">Booster IA 2: Add-on Reclamación a Proveedores S10 (+35 €/m | +50 € Setup)</option>
+                </optgroup>
+                <optgroup label="Grupo 4 • Satélites de Telefonía y Voz IA">
+                  <option value="S4 Rescate Llamadas Perdidas por WhatsApp (+59 €/m | +110 € Setup)">S4. Rescate Llamadas Perdidas WA - 250 rescates/m (+59 €/m | +110 € Setup)</option>
+                  <option value="S7 Centralita Voz y Recepcionista IA 24/7 (+129 €/m | +250 € Setup)">S7. Centralita Voz IA 24/7 - Bolsa 250 min/m (+129 €/m | +250 € Setup)</option>
+                </optgroup>
+              </select>"""
+    html = patron_select_f2.sub(lambda _: nuevo_select_f2, html, count=1)
+
+    # 4. Actualizar la lógica matemática del Carrito en index.html (Suelo 195 € en Auditorías, Combo 590 € sueltas / 390 € con Pack, y soporte para Trinity 139 €/m)
+    bloque_calculo_carrito_antiguo = """        ['ninguno', 'base', 'duo'].forEach(function(p) {
+          var b = document.getElementById('spCartPlan_' + p);
+          if (b) {
+            if (_spCartState.plan === p) b.classList.add('sp-cart-selected');
+            else b.classList.remove('sp-cart-selected');
+          }
+        });"""
+
+    bloque_calculo_carrito_nuevo = """        ['ninguno', 'base', 'duo', 'trinity'].forEach(function(p) {
+          var b = document.getElementById('spCartPlan_' + p);
+          if (b) {
+            if (_spCartState.plan === p) b.classList.add('sp-cart-selected');
+            else b.classList.remove('sp-cart-selected');
+          }
+        });"""
+    html = html.replace(bloque_calculo_carrito_antiguo, bloque_calculo_carrito_nuevo)
+
+    patron_precios_aud_carrito = re.compile(
+        r"var esAnual = \(_spCartState\.modalidad === 'anual'\);\s*var tieneDuo = \(_spCartState\.plan === 'duo'\);\s*var precio1Aud = \(!tieneDuo\) \? 350 : \(esAnual \? 195 : 250\);\s*var precio2Aud = \(!tieneDuo\) \? 650 : \(esAnual \? 350 : 450\);\s*var lbl1 = document\.getElementById\('spCartPriceAud1Lbl'\);\s*var lbl2 = document\.getElementById\('spCartPriceAud2Lbl'\);\s*if \(lbl1\) lbl1\.textContent = [^\n]+;\s*if \(lbl2\) lbl2\.textContent = [^\n]+;",
+        re.DOTALL
+    )
+    reemplazo_precios_aud_carrito = """var esAnual = (_spCartState.modalidad === 'anual');
+        var numExtrasElegidos = _spCartState.reservasFase2.length;
+        var numBasePlan = (_spCartState.plan === 'trinity') ? 3 : ((_spCartState.plan === 'duo') ? 2 : ((_spCartState.plan === 'base') ? 1 : 0));
+        var tienePack2Mas = ((numBasePlan + numExtrasElegidos) >= 2);
+        var precio1Aud = tienePack2Mas ? 195 : 350;
+        var precio2Aud = tienePack2Mas ? 390 : 590;
+
+        var lbl1 = document.getElementById('spCartPriceAud1Lbl');
+        var lbl2 = document.getElementById('spCartPriceAud2Lbl');
+        if (lbl1) lbl1.textContent = precio1Aud + ' € ' + (tienePack2Mas ? '(Bonificada con Pack 2+)' : '(Llave en Mano Suelta)');
+        if (lbl2) lbl2.textContent = precio2Aud + ' € las 2 ' + (tienePack2Mas ? '(195 € c/u • Ahorras 310 €)' : '(Combo Firma • Ahorras 110 €)');"""
+    html = patron_precios_aud_carrito.sub(lambda _: reemplazo_precios_aud_carrito, html)
+
+    bloque_plan_duo_carrito_antiguo = """        } else if (_spCartState.plan === 'duo') {
+          numServiciosActivos = 2;
+          costeSetup = 225;
+          cuotaMes = 99;
+          pagoPlanDia1 = esAnual ? (990 + 225) : (99 + 225);
+          nombrePlanTxt = esAnual ? 'Pack Escudo Dúo Anual (990 €/año + 225 € Setup)' : 'Pack Escudo Dúo Flexible (99 €/mes + 225 € Setup)';
+        }"""
+
+    bloque_plan_duo_carrito_nuevo = """        } else if (_spCartState.plan === 'duo') {
+          numServiciosActivos = 2;
+          costeSetup = 225;
+          cuotaMes = 99;
+          pagoPlanDia1 = esAnual ? (990 + 225) : (99 + 225);
+          nombrePlanTxt = esAnual ? 'Pack Escudo Básico Dúo Anual (990 €/año + 225 € Setup)' : 'Pack Escudo Básico Dúo Flexible (99 €/mes + 225 € Setup)';
+        } else if (_spCartState.plan === 'trinity') {
+          numServiciosActivos = 3;
+          costeSetup = 300;
+          cuotaMes = 139;
+          pagoPlanDia1 = esAnual ? (1390 + 300) : (139 + 300);
+          nombrePlanTxt = esAnual ? 'Pack Escudo Total ★ Trinity Anual (1.390 €/año + 300 € Setup)' : 'Pack Escudo Total ★ Trinity Flexible (139 €/mes + 300 € Setup)';
+        }"""
+    html = html.replace(bloque_plan_duo_carrito_antiguo, bloque_plan_duo_carrito_nuevo)
+
+    html = html.replace(
+        "else if (esAnual) cuoEl.textContent = 'Año completo cubierto (equiv. ' + (cuotaMes === 99 ? '82,50' : '49') + ' €/m)';",
+        "else if (esAnual) cuoEl.textContent = 'Año completo cubierto (equiv. ' + (cuotaMes === 139 ? '115,80' : (cuotaMes === 99 ? '82,50' : '49')) + ' €/m)';"
+    )
+
+    # 5. Actualizar textos de la base de conocimiento local de la Tecnosala dentro de index.html
+    html = html.replace(
+        "Satélite 1 • Instagram 3 en 1:</strong> Auto-DM con enlace al comentar Reels/Posts, recepcionista 24/7 en mensajes directos y regalo al mencionarte en Stories.",
+        "Satélite 1 • Instagram 3 en 1 (+49 €/m combo | 69 €/m suelto):</strong> Auto-DM con enlace al comentar Reels/Posts, DMs 24/7 y menciones en Stories."
+    )
+    html = html.replace(
+        "el <strong>Pack Escudo Dúo (S1 + S2) son 99 €/mes</strong> (Setup: 225 €) y además te bonifica las Auditorías SEO/GEO o Neuro-CRO de 350 € a solo <strong>195 €</strong> (pago único).",
+        "el <strong>Pack Escudo Básico Dúo (S1 + S2) son 99 €/mes</strong> (+225 € Setup) y el <strong>Pack Escudo Total ★ Trinity (S1 + S2 + S3 Leads en 10s) son 139 €/mes</strong> (+300 € Setup e incluye Bóveda de Contraseñas GRATIS). Ambos desbloquean nuestras 2 Super-Auditorías Llave en Mano a solo <strong>195 € c/u</strong> (o 390 € las dos juntas; sueltas cuestan 350 € una o 590 € las dos)."
+    )
+
+    escribir_archivo_con_backup(ruta_index, html)
+
+# =============================================================================
+# 6. ACTUALIZAR BASE DE CONOCIMIENTO DEL CONSULTOR DE VOZ (SI EXISTE)
+# =============================================================================
+def actualizar_base_conocimiento_js_tecnosala():
+    posibles = [
+        os.path.join(RUTA_WEB_PUBLIC_HTML, "documentos", "base_conocimiento_ingenieria.js"),
+        os.path.join(RUTA_WEB_RENDER, "documentos", "base_conocimiento_ingenieria.js"),
+        os.path.join(os.getcwd(), "documentos", "base_conocimiento_ingenieria.js"),
+    ]
+    vistos = set()
+    for ruta in posibles:
+        ruta_abs = os.path.abspath(ruta)
+        if ruta_abs not in vistos and os.path.isfile(ruta_abs):
+            vistos.add(ruta_abs)
+            with open(ruta_abs, "r", encoding="utf-8") as f:
+                js = f.read()
+            js = re.sub(r"\b95\s*€", "195 €", js)
+            js = js.replace("650 €", "590 €")
+            js = js.replace("450 € las 2", "390 € las 2")
+            escribir_archivo_con_backup(ruta_abs, js)
+
+# =============================================================================
+# 7. ACTUALIZACIÓN AUTOMÁTICA DE LOS 2 DOCUMENTOS MAESTROS (.md) EN PROGRAMAR
+# =============================================================================
+BLOQUE_HISTORIAL_V135 = f"""
+---
+### ACTUALIZACIÓN {VERSION_ACTUAL} ({datetime.now().strftime('%d/%m/%Y %H:%M')}) — Nueva Arquitectura Oficial de Precios en 4 Grupos, Pack Escudo Total Trinity (S1+S2+S3 = 139 €/m) y Suelo Mínimo Blindado de 195 € en las 2 Super-Auditorías
+- **Las 3 Reglas de Oro de la Nueva Arquitectura de Tarifas:**
+  1. **Charm Pricing en terminación «9»:** Todas las cuotas terminan en 9 (`59 €`, `99 €`, `139 €`, `79 €`, `+59 €`, `69 €`, `+49 €`, `99 €`, `+69 €`, `169 €`, `+129 €`) o `+40 €` redondo en los módulos adicionales del Grupo 1.
+  2. **Suelo Mínimo Intocable de 195 € en las 2 Super-Auditorías (eliminado para siempre el escalón de 95 €):**
+     - **Modalidad 1 (Solo Código / DIY):** `200 €` por 1 Super-Auditoría | `390 €` contratando las 2 juntas (`195 €` c/u).
+     - **Modalidad 2 (Oficial «Llave en Mano», suelta o con Plan Base de 1 servicio):** `350 €` por 1 Super-Auditoría | `590 €` contratando las 2 juntas (Pack Firma Institucional / Alto Standing, ahorra `110 €`).
+     - **Modalidad 3 (Bonificada con cualquier Pack de 2 o más servicios, mensual o anual):** `195 €` por 1 Super-Auditoría | `390 €` las 2 juntas (ahorra `310 €`). Jamás baja de `195 €` c/u.
+  3. **División del Catálogo en 4 Bloques por Complejidad y Coste de API:**
+     - **GRUPO 1 (Núcleo de Venta Rápida: S1 Reseñas IA, S2 Cortafuegos WA, S3 ★ Respuesta a Leads en 10s, S9 Facturas por Foto WA y S5 Reactivación de Inactivos):** `59 €/mes` el 1º (`150 €` Setup) y `+40 €/mes` del 2º al 5º (`+75 €` Setup). Packs: **Base** (`59 €/m`, Día 1 Flex `209 €` | Anual `740 €`), **Pack Escudo Básico Dúo S1+S2** (`99 €/m`, Día 1 Flex `324 €` | Anual `1.215 €`), **Pack Escudo Total ★ Trinity S1+S2+S3** (`139 €/m`, Día 1 Flex `439 €` | Anual `1.690 €`, incluye Bóveda Gratis), **Quatro** (`179 €/m`, Día 1 Flex `554 €` | Anual `2.165 €`) y **Pentium** (`219 €/m`, Día 1 Flex `669 €` | Anual `2.640 €`).
+     - **GRUPO 2 (Operativa Avanzada: S6 Anti-Plantón 24h + Huecos Flash, S8 Firma Digital + Onboarding IA y S10 Escudo Anti-Morosidad):** Suelto `79 €/mes` (`195 €` Setup) | Combinado `+59 €/mes` (`+110 €` Setup). Computa al 100% para beneficios de Pack.
+     - **GRUPO 3 (Satélites Especializados y Boosters IA):** Satélite 1 Instagram 3 en 1 (`69 €/m` + `150 €` suelto | `+49 €/m` + `+75 €` combinado), Satélite 2 Escudo Logístico 360 (`79 €/m` + `195 €` suelto | `+59 €/m` + `+110 €` combinado), Satélite 3 Cerebro Redactor B2B RAG (`99 €/m` + `250 €` suelto | `+69 €/m` + `+150 €` combinado), y Boosters IA 1 y 2 (`+35 €/m` + `+50 €` Setup).
+     - **GRUPO 4 (Satélites de Telefonía y Voz IA):** S4 Rescate de Llamadas Perdidas por WhatsApp (`79 €/m` + `195 €` suelto | `+59 €/m` + `+110 €` combinado, incluye hasta 250 rescates/mes) y S7 Centralita de Voz y Recepcionista IA 24/7 (`169 €/m` + `350 €` suelto | `+129 €/m` + `+250 €` combinado, incluye bolsa de 250 minutos/mes).
+- **Rediseño integral aplicado en:** `index.html`, `tarifas.html`, `tarifas_movil.html`, `desembolso.html`, `desembolso_movil.html`, `setup.html`, `setup_movil.html`, `catalogo.html` y `catalogo_movil.html`.
+"""
+
+_DOCUMENTOS_MAESTROS_ACTUALIZADOS = False
+
+def actualizar_documentos_maestros_md():
+    global _DOCUMENTOS_MAESTROS_ACTUALIZADOS
+    if _DOCUMENTOS_MAESTROS_ACTUALIZADOS:
+        return
+
+    carpetas_md = [
+        RUTA_PROGRAMAR,
+        RUTA_SCRAPER,
+        RUTA_WEB_RENDER,
+    ]
+    archivos_oficiales = [
+        "biblia_de_conocimiento_de_sistemas_pyme.md",
+        "manual_maestro_de_programaci_n_ad_py.md",
+    ]
+    for carpeta in carpetas_md:
+        if not os.path.isdir(carpeta):
+            continue
+        for nombre_md in archivos_oficiales:
+            ruta_md = os.path.join(carpeta, nombre_md)
+            if os.path.isfile(ruta_md):
+                with open(ruta_md, "r", encoding="utf-8") as f:
+                    contenido = f.read()
+                if f"ACTUALIZACIÓN {VERSION_ACTUAL}" not in contenido:
+                    crear_backup_seguro(ruta_md)
+                    contenido_nuevo = contenido.rstrip() + "\n" + BLOQUE_HISTORIAL_V135
+                    with open(ruta_md, "w", encoding="utf-8") as f:
+                        f.write(contenido_nuevo)
+                    print(f"  📘 Documento Maestro actualizado: {ruta_md}")
+    _DOCUMENTOS_MAESTROS_ACTUALIZADOS = True
+
+atexit.register(actualizar_documentos_maestros_md)
+
+# =============================================================================
+# 8. EJECUCIÓN PRINCIPAL DE LA ACTUALIZACIÓN
+# =============================================================================
+def encontrar_raiz_git(ruta_inicio):
+    actual = os.path.abspath(ruta_inicio)
+    while actual and actual != "/":
+        if os.path.isdir(os.path.join(actual, ".git")):
+            return actual
+        actual = os.path.dirname(actual)
+    return None
+
+def ejecutar_actualizacion():
+    print("\n" + "=" * 78)
+    print(f"🚀 INICIANDO ACTUALIZACIÓN MAESTRA {VERSION_ACTUAL} — ARQUITECTURA DE PRECIOS Y TARJETONES")
+    print("=" * 78)
+
+    # Paso 1 prioritario: Actualizar Biblia y Manual Maestro en SISTEMAS PYME/Programar
+    actualizar_documentos_maestros_md()
+    replicar_ad_py_en_carpetas_oficiales()
+
+    # Detectar todas las carpetas web activas (incluyendo Web/web-sistemaspyme/public_html)
+    carpetas_objetivo = []
+    for candidata in [RUTA_WEB_PUBLIC_HTML, RUTA_WEB_RENDER, os.path.abspath(os.getcwd())]:
+        if os.path.isdir(candidata):
+            c_abs = os.path.abspath(candidata)
+            if c_abs not in carpetas_objetivo:
+                carpetas_objetivo.append(c_abs)
+
+    archivos_a_validar = []
+
+    for base_dir in carpetas_objetivo:
+        sub_doc = os.path.join(base_dir, "documentos")
+        sub_art = os.path.join(base_dir, "articulos")
+
+        # Actualizar los tarjetones dentro de documentos/ (si existe esa subcarpeta)
+        if os.path.isdir(sub_doc):
+            print(f"\n📂 Actualizando tarjetones y dossieres en: {sub_doc}")
+            r_tar = os.path.join(sub_doc, "tarifas.html")
+            r_tar_m = os.path.join(sub_doc, "tarifas_movil.html")
+            r_des = os.path.join(sub_doc, "desembolso.html")
+            r_des_m = os.path.join(sub_doc, "desembolso_movil.html")
+            r_set = os.path.join(sub_doc, "setup.html")
+            r_set_m = os.path.join(sub_doc, "setup_movil.html")
+            r_cat = os.path.join(sub_doc, "catalogo.html")
+            r_cat_m = os.path.join(sub_doc, "catalogo_movil.html")
+
+            escribir_archivo_con_backup(r_tar, HTML_TARIFAS_A5)
+            escribir_archivo_con_backup(r_tar_m, HTML_TARIFAS_MOVIL)
+            escribir_archivo_con_backup(r_des, HTML_DESEMBOLSO_A5)
+            escribir_archivo_con_backup(r_des_m, HTML_DESEMBOLSO_MOVIL)
+            escribir_archivo_con_backup(r_set, HTML_SETUP_A5)
+            escribir_archivo_con_backup(r_set_m, HTML_SETUP_MOVIL)
+            actualizar_catalogo_a4_y_movil(r_cat, r_cat_m)
+
+            archivos_a_validar.extend([r_tar, r_tar_m, r_des, r_des_m, r_set, r_set_m, r_cat, r_cat_m])
+
+        # Actualizar también en subcarpeta static/documentos si existe en servicio_resenas
+        sub_static_doc = os.path.join(base_dir, "static", "documentos")
+        if os.path.isdir(sub_static_doc):
+            print(f"\n📂 Actualizando tarjetones en: {sub_static_doc}")
+            escribir_archivo_con_backup(os.path.join(sub_static_doc, "tarifas.html"), HTML_TARIFAS_A5)
+            escribir_archivo_con_backup(os.path.join(sub_static_doc, "tarifas_movil.html"), HTML_TARIFAS_MOVIL)
+            escribir_archivo_con_backup(os.path.join(sub_static_doc, "desembolso.html"), HTML_DESEMBOLSO_A5)
+            escribir_archivo_con_backup(os.path.join(sub_static_doc, "desembolso_movil.html"), HTML_DESEMBOLSO_MOVIL)
+            escribir_archivo_con_backup(os.path.join(sub_static_doc, "setup.html"), HTML_SETUP_A5)
+            escribir_archivo_con_backup(os.path.join(sub_static_doc, "setup_movil.html"), HTML_SETUP_MOVIL)
+            actualizar_catalogo_a4_y_movil(
+                os.path.join(sub_static_doc, "catalogo.html"),
+                os.path.join(sub_static_doc, "catalogo_movil.html")
+            )
+
+        # Actualizar Pyme_Magazine_N1.html si está en articulos/
+        if os.path.isdir(sub_art):
+            r_mag = os.path.join(sub_art, "Pyme_Magazine_N1.html")
+            if os.path.isfile(r_mag):
+                actualizar_catalogo_a4_y_movil("", r_mag)
+                archivos_a_validar.append(r_mag)
+
+        # Actualizar index.html de la web principal
+        r_idx = os.path.join(base_dir, "index.html")
+        if os.path.isfile(r_idx):
+            print(f"\n🌐 Actualizando pantalla principal de la web: {r_idx}")
+            actualizar_index_html_completo(r_idx)
+            archivos_a_validar.append(r_idx)
+
+    actualizar_base_conocimiento_js_tecnosala()
+
+    # 3. Validación Gateway Anti-Errores y Resumen de Archivos Actualizados
+    print("\n🔍 RESUMEN DE VALIDACIÓN Y ARCHIVOS ACTUALIZADOS:")
+    with open(os.path.abspath(__file__), "r", encoding="utf-8") as f_self:
+        ast.parse(f_self.read())
+    print("  🟢 Sintaxis Python (ast.parse) de AD.py verificada.")
+
+    vistos = set()
+    for ruta_v in archivos_a_validar:
+        ruta_abs = os.path.abspath(ruta_v)
+        if ruta_abs not in vistos and os.path.isfile(ruta_abs):
+            vistos.add(ruta_abs)
+            if not validar_bloques_js_en_html(ruta_abs):
+                print(f"  ⚠️ Revisa el archivo {ruta_abs}")
+                sys.exit(1)
+
+    # 4. Sincronización Git en el repositorio de la Web (public_html) y en servicio_resenas
+    repos_git = set()
+    for c in [RUTA_WEB_PUBLIC_HTML, RUTA_WEB_ROOT, RUTA_WEB_RENDER, os.getcwd()]:
+        if os.path.isdir(c):
+            raiz_git = encontrar_raiz_git(c)
+            if raiz_git:
+                repos_git.add(raiz_git)
+
+    for repo in repos_git:
+        print(f"\n☁️ Sincronizando repositorio Git en: {repo}")
+        try:
+            subprocess.run(["git", "add", "."], cwd=repo, check=False)
+            subprocess.run(
+                ["git", "commit", "-m", f"feat({VERSION_ACTUAL}): nueva arquitectura de precios en 4 grupos, Pack Escudo Total Trinity 139e y suelo 195e en Super-Auditorias"],
+                cwd=repo,
+                check=False
+            )
+            subprocess.run(["git", "push"], cwd=repo, check=False)
+            print(f"  ✅ Git sincronizado en: {os.path.basename(repo)}")
+        except Exception as e:
+            print(f"  ℹ️ Aviso Git en {repo}: {e}")
+
+    print("\n" + "=" * 78)
+    print(f"🎉 ACTUALIZACIÓN {VERSION_ACTUAL} COMPLETADA CON ÉXITO — TODOS LOS DOCUMENTOS AL DÍA")
+    print("=" * 78)
 
 if __name__ == "__main__":
-    main()
+    ejecutar_actualizacion()

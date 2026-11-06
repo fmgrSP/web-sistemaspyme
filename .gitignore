@@ -2,3 +2,17 @@
 public_html/backups_sp/
 backups_sp/
 .DS_Store
+
+.sp_servidor_neuronal_8765.py
+**/config_b2b.json
+config_b2b.json
+**/backups_sp/
+leads_contrataciones_web.json
+
+**/__pycache__/
+__pycache__/
+*.pyc
+
+.env
+*.backup_*
+*.bak
