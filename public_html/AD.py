@@ -44,7 +44,7 @@ RUTA_SCRAPER = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Scrape
 RUTA_PROGRAMAR = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Programar"
 
 STAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
-VERSION_ACTUAL = "V139"
+VERSION_ACTUAL = "V141"
 
 # =============================================================================
 # 2. UTILIDADES DE BACKUP, VALIDACIÓN Y AUTO-REPLICACIÓN DE AD.py
@@ -142,14 +142,33 @@ def validar_bloques_js_en_html(ruta_html):
     print(f"  🟢 Verificado OK: {os.path.basename(ruta_html)} ({peso_kb:.1f} KB, {len(bloques)} bloques <script> limpios)")
     return True
 
+def renumerar_servicios_en_html_documentos(html):
+    """Actualiza la numeración en catálogos y tarjetones para que Grupo 1 = S1..S5, Grupo 2 = S6..S8 y Grupo 4 Telefonía = S9..S10."""
+    # En textos de tablas y planes donde salía S1+S2+S3+S9 -> S1+S2+S3+S4
+    html = html.replace("S1+S2+S3+S9", "S1+S2+S3+S4")
+    html = html.replace("S1 + S2 + S3 + S9", "S1 + S2 + S3 + S4")
+    html = html.replace("(o con S9)", "(o con S4)")
+    html = html.replace("(S1, S2, S3, S5, S9)", "(S1, S2, S3, S4, S5)")
+    html = html.replace("(S6, S8, S10)", "(S6, S7, S8)")
+    html = html.replace("(Para S9 Facturas)", "(Para S4 Facturas)")
+    html = html.replace("(Requiere tener S9)", "(Requiere tener S4)")
+    html = html.replace("(Para S10)", "(Para S8 Anti-Morosidad)")
+    html = html.replace("(Requiere tener S10)", "(Requiere tener S8)")
+    html = html.replace("Llamadas Perdidas (S4)", "Llamadas Perdidas (S9)")
+    html = html.replace("Satélite Telefónico A (S4)", "Satélite Telefónico A (S9)")
+    html = html.replace("Centralita de Voz IA 24/7 (S7)", "Centralita de Voz IA 24/7 (S10)")
+    html = html.replace("Satélite Telefónico B (S7)", "Satélite Telefónico B (S10)")
+    return html
+
 def actualizar_tarjeton_existente_si_procede(ruta_archivo):
-    """Asegura que cualquier tarjetón existente mantenga el suelo de 195 € y las nuevas tarifas."""
+    """Asegura que cualquier tarjetón existente mantenga el suelo de 195 €, las nuevas tarifas y la numeración correlativa S1-S10."""
     if not os.path.isfile(ruta_archivo):
         return
     with open(ruta_archivo, "r", encoding="utf-8") as f:
         html = f.read()
     nuevo = html.replace("95 € Llave en Mano", "195 € Llave en Mano (390 € las dos)")
     nuevo = re.sub(r"o\s*<strong>95\s*€\s*c/u</strong>\s*en\s*Plan\s*Anual\s*Trinity\+", "o <strong>390 € las dos</strong>", nuevo)
+    nuevo = renumerar_servicios_en_html_documentos(nuevo)
     if nuevo != html:
         escribir_archivo_con_backup(ruta_archivo, nuevo)
 
@@ -159,7 +178,7 @@ def actualizar_catalogo_a4_y_movil(ruta_cat, ruta_cat_m):
             actualizar_tarjeton_existente_si_procede(r)
 
 # =============================================================================
-# 5. PARCHE QUIRÚRGICO DE INDEX.HTML (PRECIOS CLAROS + CARRITO + 4 GRUPOS)
+# 5. PARCHE QUIRÚRGICO DE INDEX.HTML (PRECIOS CLAROS + CARRITO + 4 GRUPOS S1-S10)
 # =============================================================================
 NUEVO_BLOQUE_VISTA_TARIFAS_INDEX = r"""  <!-- ======================================================================= -->
   <!-- VISTA 4 (SALA INDEPENDIENTE): PRECIOS CLAROS (ARQUITECTURA 4 GRUPOS)    -->
@@ -169,26 +188,30 @@ NUEVO_BLOQUE_VISTA_TARIFAS_INDEX = r"""  <!-- ==================================
     <!-- =================================================================== -->
     <!-- DIAPOSITIVA 1 DE PRECIOS: LOS 3 PLANES ACTIVOS HOY (100VH LUMINOSO) -->
     <!-- =================================================================== -->
-    <div id="tarifas-slide-planes" class="slide-section sp-tarifas-light-bg border-b border-teal-200/80 px-4 sm:px-6 relative overflow-hidden" style="min-height: calc(100vh - 5.75rem); padding-top: 2.1rem !important; padding-bottom: 0.75rem !important; justify-content: flex-start !important;">
+    <div id="tarifas-slide-planes" class="slide-section sp-tarifas-light-bg border-b border-teal-200/80 px-4 sm:px-6 relative overflow-hidden" style="min-height: calc(100vh - 5.75rem); padding-top: 1.9rem !important; padding-bottom: 0.75rem !important; justify-content: flex-start !important;">
       <div class="absolute inset-0 sp-rhombus-grid-reverse pointer-events-none opacity-65" aria-hidden="true"></div>
 
       <div class="max-w-6xl mx-auto w-full flex flex-col justify-start relative z-10">
 
-        <!-- FILA 1: Encabezado limpio (Cero jerga arriba: solo el titular H2 + Conmutador Mensual/Anual) -->
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 mb-4 border-b-2 border-teal-500/25">
-          <div>
-            <h2 class="text-2xl sm:text-3xl lg:text-[29px] font-black text-brand-navy tracking-tight leading-tight lg:whitespace-nowrap">
-              Precios claros y <span class="sp-green-headline">amortización desde el primer cliente.</span>
-            </h2>
-          </div>
+        <!-- FILA 1: Encabezado encajado al 100% dentro del ancho de las 3 tarjetas (sin que el botón de compra se salga por la derecha) -->
+        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-2.5 pb-2.5 mb-3.5 border-b-2 border-teal-500/25 w-full">
+          <h2 class="text-xl sm:text-2xl lg:text-[24px] font-black text-brand-navy tracking-tight leading-tight">
+            Precios claros y <span class="sp-green-headline">amortización desde el primer cliente.</span>
+          </h2>
 
-          <div class="inline-flex items-center gap-1.5 bg-white/95 p-1 rounded-2xl border-2 border-teal-500/35 shadow-md self-start lg:self-center flex-shrink-0">
-            <button type="button" id="btnSwitchMensual" onclick="cambiarModoTarifas('mensual')" class="px-4 py-1.5 rounded-xl text-xs sm:text-[13px] font-extrabold bg-brand-navy text-white shadow-sm transition-all cursor-pointer">
-              🔄 Mensual Flexible (3m mín.)
-            </button>
-            <button type="button" id="btnSwitchAnual" onclick="cambiarModoTarifas('anual')" class="px-4 py-1.5 rounded-xl text-xs sm:text-[13px] font-extrabold text-slate-700 hover:text-brand-navy transition-all cursor-pointer flex items-center gap-1.5">
-              <span>🎁 Plan Anual</span>
-              <span class="text-[10px] font-black bg-amber-100 text-amber-900 border border-amber-400 px-2 py-0.5 rounded-full">2 Meses Gratis</span>
+          <div class="flex flex-wrap items-center justify-start xl:justify-end gap-2 flex-shrink-0">
+            <div class="inline-flex items-center gap-1 bg-white/95 p-1 rounded-2xl border-2 border-teal-500/35 shadow-md">
+              <button type="button" id="btnSwitchMensual" onclick="cambiarModoTarifas('mensual')" class="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-brand-navy text-white shadow-sm transition-all cursor-pointer whitespace-nowrap">
+                🔄 Mensual (3m mín.)
+              </button>
+              <button type="button" id="btnSwitchAnual" onclick="cambiarModoTarifas('anual')" class="px-3 py-1.5 rounded-xl text-xs font-extrabold text-slate-700 hover:text-brand-navy transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap">
+                <span>🎁 Plan Anual</span>
+                <span class="text-[9.5px] font-black bg-amber-100 text-amber-900 border border-amber-400 px-1.5 py-0.5 rounded-full">2 Meses Gratis</span>
+              </button>
+            </div>
+            <button type="button" id="spBtnTopCarritoPrecios" onclick="window.spAbrirCarritoConfigurador()" class="sp-btn-carrito-gold-3d px-3.5 py-2 rounded-xl text-xs inline-flex items-center gap-1.5 whitespace-nowrap shadow-md">
+              <span class="sp-cart-icon-badge">🛒</span>
+              <span>Configurar a la Carta / Contratar</span>
             </button>
           </div>
         </div>
@@ -346,7 +369,7 @@ NUEVO_BLOQUE_VISTA_TARIFAS_INDEX = r"""  <!-- ==================================
           <button type="button" onclick="spScrollLimpioSeccion('tarifas-slide-complementos')" class="group inline-flex items-center gap-3 px-6 py-2 rounded-2xl bg-white/95 hover:bg-teal-50 border-2 border-teal-500/50 hover:border-teal-600 shadow-md transition-all cursor-pointer">
             <span class="text-sm">🔍🧠</span>
             <span class="text-xs sm:text-[13px] font-extrabold text-brand-navy group-hover:text-teal-800">
-              Ver Tabla de las 2 Super-Auditorías (195 € / 350 € / 590 €), los 4 Grupos y Atril NFC
+              Ver Tabla de las 2 Super-Auditorías (195 € / 350 € / 590 €), los 4 Grupos (S1 a S10) y Atril NFC
             </span>
             <span class="w-5 h-5 rounded-full bg-teal-500/15 border border-teal-500/50 flex items-center justify-center text-teal-700 group-hover:translate-y-0.5 transition-transform font-black text-xs">
               &darr;
@@ -367,7 +390,7 @@ NUEVO_BLOQUE_VISTA_TARIFAS_INDEX = r"""  <!-- ==================================
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2.5 border-b-2 border-teal-500/25">
           <div>
             <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-800 bg-amber-100/90 px-3 py-0.5 rounded-full border border-amber-300 inline-block mb-1">
-              Pagos Únicos Sin Cuotas Mensuales y Escalado por Nivel Técnico (Grupos 1 a 4)
+              Pagos Únicos Sin Cuotas Mensuales y Escalado por Nivel Técnico (S1 a S10 en 4 Grupos)
             </span>
             <h3 class="text-2xl sm:text-3xl font-black text-brand-navy tracking-tight">
               Las 2 Super-Auditorías Gemelas, <span class="sp-green-headline">los 4 Grupos y Hardware NFC.</span>
@@ -434,40 +457,40 @@ NUEVO_BLOQUE_VISTA_TARIFAS_INDEX = r"""  <!-- ==================================
             </div>
           </div>
 
-          <!-- Columna Derecha (5 cols): Resumen de los 4 Grupos por Complejidad + Hardware Atril NFC/QR -->
+          <!-- Columna Derecha (5 cols): Resumen de los 4 Grupos correlativos S1 a S10 + Hardware Atril NFC/QR -->
           <div class="lg:col-span-5 flex flex-col justify-between gap-3.5">
 
             <div class="sp-light-card-3d-sky rounded-3xl p-4 flex-1 flex flex-col justify-between">
               <div>
                 <div class="flex items-center justify-between gap-2 mb-2">
                   <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-sky-900 bg-sky-100 px-2.5 py-0.5 rounded-full border border-sky-300">
-                    🚀 Escalado por Grupos (Suelto vs. Combinado)
+                    🚀 Los 4 Grupos en Orden de Dificultad (S1 a S10)
                   </span>
                   <span class="text-[10.5px] font-extrabold text-emerald-700">🎁 Bóveda Gratis desde 3 serv.</span>
                 </div>
                 <ul class="space-y-1.5 text-[11.5px] text-slate-800 leading-snug">
                   <li class="flex justify-between gap-2 border-b border-sky-200/70 pb-1">
-                    <span><strong>Grupo 1 (Núcleo Rápido: 2º al 5º serv.):</strong></span>
+                    <span><strong>Grupo 1 (S1 a S5 • Implantación Rápida):</strong></span>
                     <strong class="text-brand-navy whitespace-nowrap">+40 €/m (+75 € Setup)</strong>
                   </li>
                   <li class="flex justify-between gap-2 border-b border-sky-200/70 pb-1">
-                    <span><strong>Grupo 2 (Agenda S6, Firma S8, Cobros S10):</strong></span>
+                    <span><strong>Grupo 2 (S6 Agenda, S7 Firma, S8 Cobros):</strong></span>
                     <strong class="text-sky-800 whitespace-nowrap">+59 €/m (+110 €) <span class="text-[10px] text-slate-500 font-normal">| 79€ s.</span></strong>
                   </li>
                   <li class="flex justify-between gap-2 border-b border-sky-200/70 pb-1">
-                    <span><strong>Grupo 3 (Instagram 3 en 1 Meta API):</strong></span>
+                    <span><strong>Grupo 3 (Sat.1 Instagram 3 en 1 Meta API):</strong></span>
                     <strong class="text-pink-700 whitespace-nowrap">+49 €/m (+75 €) <span class="text-[10px] text-slate-500 font-normal">| 69€ s.</span></strong>
                   </li>
                   <li class="flex justify-between gap-2 border-b border-sky-200/70 pb-1">
-                    <span><strong>Grupo 3 (Logística 360 / Redactor RAG):</strong></span>
+                    <span><strong>Grupo 3 (Sat.2 Logística / Sat.3 RAG B2B):</strong></span>
                     <strong class="text-indigo-700 whitespace-nowrap">+59 € / +69 €/m <span class="text-[10px] text-slate-500 font-normal">combo</span></strong>
                   </li>
                   <li class="flex justify-between gap-2 border-b border-sky-200/70 pb-1">
-                    <span><strong>Grupo 4 (S4 Rescate Llamadas WA 250/m):</strong></span>
+                    <span><strong>Grupo 4 (S9 Rescate Llamadas WA 250/m):</strong></span>
                     <strong class="text-sky-800 whitespace-nowrap">+59 €/m (+110 €) <span class="text-[10px] text-slate-500 font-normal">| 79€ s.</span></strong>
                   </li>
                   <li class="flex justify-between gap-2">
-                    <span><strong>Grupo 4 (S7 Centralita Voz IA 24/7 250m):</strong></span>
+                    <span><strong>Grupo 4 (S10 Centralita Voz IA 24/7 250m):</strong></span>
                     <strong class="text-indigo-900 whitespace-nowrap">+129 €/m (+250 €) <span class="text-[10px] text-slate-500 font-normal">| 169€ s.</span></strong>
                   </li>
                 </ul>
@@ -520,7 +543,7 @@ NUEVO_BLOQUE_VISTA_TARIFAS_INDEX = r"""  <!-- ==================================
   </section>"""
 
 NUEVO_BLOQUE_CA_SLIDE_PROXIMOS = r"""    <!-- ===================================================================== -->
-    <!-- DIAPOSITIVA 5 DE CÓMO AYUDAMOS: CLASIFICACIÓN EN 4 GRUPOS POR COSTE   -->
+    <!-- DIAPOSITIVA 5 DE CÓMO AYUDAMOS: CLASIFICACIÓN CORRELATIVA S1 A S10    -->
     <!-- ===================================================================== -->
     <section id="ca-slide-proximos" class="scroll-mt-20 slide-section sp-ca-slide5-proximos-dark text-white px-4 sm:px-6 pt-6 pb-4" style="min-height: calc(100vh - 5rem); justify-content: center;">
       <div class="max-w-6xl mx-auto w-full relative z-10 flex flex-col justify-center">
@@ -528,27 +551,27 @@ NUEVO_BLOQUE_CA_SLIDE_PROXIMOS = r"""    <!-- ==================================
         <div class="text-center mt-1 mb-5 sm:mb-6">
           <div class="inline-flex items-center justify-center gap-3.5 mb-2">
             <span class="sp-proximamente-line-l"></span>
-            <span class="sp-proximamente-sweep text-[11.5px] font-black uppercase tracking-[0.28em]">Arquitectura Modular en 4 Grupos</span>
+            <span class="sp-proximamente-sweep text-[11.5px] font-black uppercase tracking-[0.28em]">Arquitectura Modular en 4 Grupos (S1 a S10)</span>
             <span class="sp-proximamente-line-r"></span>
           </div>
           <h2 class="sp-roadmap-title-blue-cloud text-2xl sm:text-3xl lg:text-[32px] font-black tracking-tight leading-[1.18] mb-1.5">
-            Nuestros servicios agrupados por nivel técnico y coste de implantación.
+            Nuestros servicios ordenados por facilidad de implantación y coste técnico.
           </h2>
           <p class="text-[13px] sm:text-[14px] text-slate-300 max-w-3xl mx-auto leading-snug">
             Empieza hoy con los servicios activos (S1 Reseñas IA, S2 Cortafuegos WhatsApp, Atril NFC y Super-Auditorías) y suma cualquier módulo con descuento automático de combinación:
           </p>
         </div>
 
-        <!-- 4 TARJETAS GIRATORIAS (FLIP CARDS) CORRESPONDIENTES A LOS 4 GRUPOS OFICIALES -->
+        <!-- 4 TARJETAS GIRATORIAS (FLIP CARDS) CON NUMERACIÓN CORRELATIVA S1 A S10 -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 text-left mb-5 items-stretch">
 
-          <!-- GRUPO 1: NÚCLEO DE IMPLANTACIÓN RÁPIDA (LOS MÁS ECONÓMICOS: 59€ EL 1º | +40€ EXTRA) -->
+          <!-- GRUPO 1: S1, S2, S3, S4, S5 (NÚCLEO DE IMPLANTACIÓN RÁPIDA: 59€ EL 1º | +40€ EXTRA) -->
           <div id="cat1-grupo1-rapido" onclick="spToggleFlipCard('cat1-grupo1-rapido', event)" class="sp-flip-scene sp-flip-roadmap-height sp-flip-led-blue cursor-pointer">
             <div class="sp-flip-card-inner">
 
               <div class="sp-flip-face sp-flip-front sp-roadmap-face-card border-t-4 border-t-emerald-400 flex flex-col items-center justify-between p-6 text-center group">
                 <div class="w-full flex items-center justify-between">
-                  <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-300">Grupo 1 • Nivel Base</span>
+                  <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-300">Grupo 1 • S1 a S5</span>
                   <span class="sp-flip-plus-btn bg-emerald-500/20 text-emerald-200 border border-emerald-400/50 group-hover:bg-emerald-500 group-hover:text-white transition-colors">+</span>
                 </div>
 
@@ -557,7 +580,7 @@ NUEVO_BLOQUE_CA_SLIDE_PROXIMOS = r"""    <!-- ==================================
                     59 €/m el 1.º • +40 €/m extra
                   </span>
                   <h3 class="text-lg sm:text-xl font-black text-white tracking-tight leading-snug mb-2">
-                    Implantación Rápida y Venta Diaria
+                    Implantación Rápida (S1 a S5)
                   </h3>
                   <p class="text-xs text-slate-300 leading-relaxed">
                     Los 5 servicios más ágiles y económicos de poner en marcha (Setup: 150 € el 1.º y +75 € adicionales).
@@ -565,7 +588,7 @@ NUEVO_BLOQUE_CA_SLIDE_PROXIMOS = r"""    <!-- ==================================
                 </div>
 
                 <div class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300 group-hover:text-white transition-colors">
-                  <span>Ver módulos del Grupo 1</span>
+                  <span>Ver S1 a S5 del Grupo 1</span>
                   <span>&#8635;</span>
                 </div>
               </div>
@@ -574,34 +597,35 @@ NUEVO_BLOQUE_CA_SLIDE_PROXIMOS = r"""    <!-- ==================================
                 <div>
                   <div class="flex items-center justify-between gap-2 mb-2">
                     <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-200 bg-emerald-950/90 px-2.5 py-0.5 rounded-full border border-emerald-400/50">
-                      Grupo 1 • +40 €/m (+75 € Setup)
+                      Grupo 1 (S1 a S5) • +40 €/m
                     </span>
                     <button type="button" onclick="spToggleFlipCard('cat1-grupo1-rapido', event)" class="px-2 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 text-[10.5px] font-bold cursor-pointer">
                       &#8635;
                     </button>
                   </div>
-                  <ul class="space-y-2 text-[12px] text-slate-200 leading-snug">
-                    <li class="flex items-start gap-1.5"><span class="text-emerald-400 font-black">S1-S2.</span><span><strong class="text-white">Activos Hoy:</strong> Reseñas Google IA y Cortafuegos Preventivo WA.</span></li>
-                    <li class="flex items-start gap-1.5"><span class="text-emerald-400 font-black">S3.</span><span><strong class="text-white">Leads en 10s + Portales:</strong> WhatsApp en &lt;10s a solicitudes de web/portales y alerta al móvil.</span></li>
-                    <li class="flex items-start gap-1.5"><span class="text-emerald-400 font-black">S9.</span><span><strong class="text-white">Facturas por Foto WA:</strong> Foto al ticket y subida directa al Excel del gestor.</span></li>
+                  <ul class="space-y-1.5 text-[11.5px] text-slate-200 leading-snug">
+                    <li class="flex items-start gap-1.5"><span class="text-emerald-400 font-black">S1.</span><span><strong class="text-white">Reseñas Google IA (Activo):</strong> Auto-respuesta SEO en 4-5★ y freno HEARD en 1-3★.</span></li>
+                    <li class="flex items-start gap-1.5"><span class="text-emerald-400 font-black">S2.</span><span><strong class="text-white">Cortafuegos WA (Activo):</strong> Encuesta post-visita y buzón privado con audio IA.</span></li>
+                    <li class="flex items-start gap-1.5"><span class="text-emerald-400 font-black">S3.</span><span><strong class="text-white">Leads en 10s + Portales:</strong> WhatsApp en &lt;10s a solicitudes web/portales y alerta al móvil.</span></li>
+                    <li class="flex items-start gap-1.5"><span class="text-emerald-400 font-black">S4.</span><span><strong class="text-white">Facturas por Foto WA:</strong> Foto al ticket y subida directa al Excel del gestor.</span></li>
                     <li class="flex items-start gap-1.5"><span class="text-emerald-400 font-black">S5.</span><span><strong class="text-white">Clientes Inactivos:</strong> Campaña automática de retorno (+60/90 días).</span></li>
                   </ul>
                 </div>
-                <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20servicios%20del%20Grupo%201%20%28S3%20Leads%2010s%2C%20S9%20Facturas%20o%20S5%20Inactivos%29" target="_blank" onclick="event.stopPropagation();" class="pt-2 border-t border-white/15 text-xs font-extrabold text-emerald-300 hover:text-white inline-flex items-center justify-between">
-                  <span>Consultar Grupo 1</span><span>&rarr;</span>
+                <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20servicios%20S1%20a%20S5%20del%20Grupo%201" target="_blank" onclick="event.stopPropagation();" class="pt-2 border-t border-white/15 text-xs font-extrabold text-emerald-300 hover:text-white inline-flex items-center justify-between">
+                  <span>Consultar S1 a S5</span><span>&rarr;</span>
                 </a>
               </div>
 
             </div>
           </div>
 
-          <!-- GRUPO 2: OPERATIVA AVANZADA DE AGENDA, CONTRATOS Y COBROS (79€ SUELTO | +59€ COMBO) -->
+          <!-- GRUPO 2: S6, S7, S8 (OPERATIVA AVANZADA DE AGENDA, CONTRATOS Y COBROS: 79€ SUELTO | +59€ COMBO) -->
           <div id="cat2-facturacion" onclick="spToggleFlipCard('cat2-facturacion', event)" class="sp-flip-scene sp-flip-roadmap-height sp-flip-led-blue cursor-pointer">
             <div class="sp-flip-card-inner">
 
               <div class="sp-flip-face sp-flip-front sp-roadmap-face-card border-t-4 border-t-blue-500 flex flex-col items-center justify-between p-6 text-center group">
                 <div class="w-full flex items-center justify-between">
-                  <span class="text-[10px] font-extrabold uppercase tracking-widest text-blue-300">Grupo 2 • Nivel Medio</span>
+                  <span class="text-[10px] font-extrabold uppercase tracking-widest text-blue-300">Grupo 2 • S6 a S8</span>
                   <span class="sp-flip-plus-btn bg-blue-500/20 text-blue-200 border border-blue-400/50 group-hover:bg-blue-500 group-hover:text-white transition-colors">+</span>
                 </div>
 
@@ -610,7 +634,7 @@ NUEVO_BLOQUE_CA_SLIDE_PROXIMOS = r"""    <!-- ==================================
                     +59 €/m combo • 79 €/m suelto
                   </span>
                   <h3 class="text-lg sm:text-xl font-black text-white tracking-tight leading-snug mb-2">
-                    Agenda, Contratos y Cobros
+                    Agenda, Contratos y Cobros (S6 a S8)
                   </h3>
                   <p class="text-xs text-slate-300 leading-relaxed">
                     Conexión bidireccional con calendarios, firmas legales y facturación (Setup: +110 € combo | 195 € suelto).
@@ -618,7 +642,7 @@ NUEVO_BLOQUE_CA_SLIDE_PROXIMOS = r"""    <!-- ==================================
                 </div>
 
                 <div class="inline-flex items-center gap-1.5 text-xs font-bold text-blue-300 group-hover:text-white transition-colors">
-                  <span>Ver módulos del Grupo 2</span>
+                  <span>Ver S6 a S8 del Grupo 2</span>
                   <span>&#8635;</span>
                 </div>
               </div>
@@ -627,7 +651,7 @@ NUEVO_BLOQUE_CA_SLIDE_PROXIMOS = r"""    <!-- ==================================
                 <div>
                   <div class="flex items-center justify-between gap-2 mb-2">
                     <span class="text-[10px] font-extrabold uppercase tracking-wider text-blue-200 bg-blue-950/90 px-2.5 py-0.5 rounded-full border border-blue-400/50">
-                      Grupo 2 • +59 €/m (+110 € Setup)
+                      Grupo 2 (S6 a S8) • +59 €/m
                     </span>
                     <button type="button" onclick="spToggleFlipCard('cat2-facturacion', event)" class="px-2 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 text-[10.5px] font-bold cursor-pointer">
                       &#8635;
@@ -635,12 +659,12 @@ NUEVO_BLOQUE_CA_SLIDE_PROXIMOS = r"""    <!-- ==================================
                   </div>
                   <ul class="space-y-2.5 text-[12px] text-slate-200 leading-snug">
                     <li class="flex items-start gap-1.5"><span class="text-blue-400 font-black">S6.</span><span><strong class="text-white">Anti-Plantón 24h + Huecos Flash:</strong> Confirma citas por WA y rellena bajas con la lista de espera.</span></li>
-                    <li class="flex items-start gap-1.5"><span class="text-blue-400 font-black">S8.</span><span><strong class="text-white">Firma Digital + Onboarding IA:</strong> Firma legal en el móvil, carpeta en Drive y validación de documentos.</span></li>
-                    <li class="flex items-start gap-1.5"><span class="text-blue-400 font-black">S10.</span><span><strong class="text-white">Escudo Anti-Morosidad:</strong> Reclamación diplomática (+3, +7, +15 días) con PDF y enlace de pago.</span></li>
+                    <li class="flex items-start gap-1.5"><span class="text-blue-400 font-black">S7.</span><span><strong class="text-white">Firma Digital + Onboarding IA:</strong> Firma legal en el móvil, carpeta en Drive y validación de documentos.</span></li>
+                    <li class="flex items-start gap-1.5"><span class="text-blue-400 font-black">S8.</span><span><strong class="text-white">Escudo Anti-Morosidad:</strong> Reclamación diplomática (+3, +7, +15 días) con PDF y enlace de pago.</span></li>
                   </ul>
                 </div>
-                <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20servicios%20del%20Grupo%202%20%28S6%20Anti-Plant%C3%B3n%2C%20S8%20Firma%20o%20S10%20Anti-Morosidad%29" target="_blank" onclick="event.stopPropagation();" class="pt-2 border-t border-white/15 text-xs font-extrabold text-blue-300 hover:text-white inline-flex items-center justify-between">
-                  <span>Reservar Grupo 2</span><span>&rarr;</span>
+                <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20servicios%20S6%2C%20S7%20y%20S8%20del%20Grupo%202" target="_blank" onclick="event.stopPropagation();" class="pt-2 border-t border-white/15 text-xs font-extrabold text-blue-300 hover:text-white inline-flex items-center justify-between">
+                  <span>Reservar S6 a S8</span><span>&rarr;</span>
                 </a>
               </div>
 
@@ -670,7 +694,7 @@ NUEVO_BLOQUE_CA_SLIDE_PROXIMOS = r"""    <!-- ==================================
                 </div>
 
                 <div class="inline-flex items-center gap-1.5 text-xs font-bold text-pink-300 group-hover:text-white transition-colors">
-                  <span>Ver módulos del Grupo 3</span>
+                  <span>Ver Satélites del Grupo 3</span>
                   <span>&#8635;</span>
                 </div>
               </div>
@@ -689,7 +713,7 @@ NUEVO_BLOQUE_CA_SLIDE_PROXIMOS = r"""    <!-- ==================================
                     <li class="flex items-start gap-1.5"><span class="text-pink-400 font-black">Sat.1</span><span><strong class="text-white">Instagram 3 en 1:</strong> +49 €/m (+75€) combo | 69 €/m (150€) suelto.</span></li>
                     <li class="flex items-start gap-1.5"><span class="text-sky-400 font-black">Sat.2</span><span><strong class="text-white">Escudo Logístico 360:</strong> +59 €/m (+110€) combo | 79 €/m (195€) suelto.</span></li>
                     <li class="flex items-start gap-1.5"><span class="text-violet-400 font-black">Sat.3</span><span><strong class="text-white">Cerebro Redactor RAG:</strong> +69 €/m (+150€) combo | 99 €/m (250€) suelto.</span></li>
-                    <li class="flex items-start gap-1.5"><span class="text-amber-300 font-black">Boost</span><span><strong class="text-white">Add-ons IA (Correo S9 / Prov. S10):</strong> +35 €/m (+50 € Setup).</span></li>
+                    <li class="flex items-start gap-1.5"><span class="text-amber-300 font-black">Boost</span><span><strong class="text-white">Add-ons IA (Correo S4 / Prov. S8):</strong> +35 €/m (+50 € Setup).</span></li>
                   </ul>
                 </div>
                 <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20Sat%C3%A9lites%20del%20Grupo%203%20%28Instagram%2C%20Log%C3%ADstica%20o%20Redactor%20RAG%29" target="_blank" onclick="event.stopPropagation();" class="pt-2 border-t border-white/15 text-xs font-extrabold text-pink-300 hover:text-white inline-flex items-center justify-between">
@@ -700,13 +724,13 @@ NUEVO_BLOQUE_CA_SLIDE_PROXIMOS = r"""    <!-- ==================================
             </div>
           </div>
 
-          <!-- GRUPO 4: TELEFONÍA Y CENTRALITA DE VOZ IA 24/7 (LOS DE MAYOR COSTE DE LÍNEA Y MINUTOS) -->
+          <!-- GRUPO 4: S9 Y S10 (TELEFONÍA Y CENTRALITA DE VOZ IA 24/7) -->
           <div id="cat3-eficiencia" onclick="spToggleFlipCard('cat3-eficiencia', event)" class="sp-flip-scene sp-flip-roadmap-height sp-flip-led-indigo cursor-pointer">
             <div class="sp-flip-card-inner">
 
               <div class="sp-flip-face sp-flip-front sp-roadmap-face-card border-t-4 border-t-indigo-500 flex flex-col items-center justify-between p-6 text-center group">
                 <div class="w-full flex items-center justify-between">
-                  <span class="text-[10px] font-extrabold uppercase tracking-widest text-indigo-300">Grupo 4 • Voz y Línea</span>
+                  <span class="text-[10px] font-extrabold uppercase tracking-widest text-indigo-300">Grupo 4 • S9 y S10</span>
                   <span class="sp-flip-plus-btn bg-indigo-500/20 text-indigo-200 border border-indigo-400/50 group-hover:bg-indigo-500 group-hover:text-white transition-colors">+</span>
                 </div>
 
@@ -715,7 +739,7 @@ NUEVO_BLOQUE_CA_SLIDE_PROXIMOS = r"""    <!-- ==================================
                     Línea SIP + Minutos Voz IA
                   </span>
                   <h3 class="text-lg sm:text-xl font-black text-white tracking-tight leading-snug mb-2">
-                    Telefonía y Centralita Voz IA 24/7
+                    Telefonía y Voz IA 24/7 (S9 y S10)
                   </h3>
                   <p class="text-xs text-slate-300 leading-relaxed">
                     Satélites de telecomunicaciones con desvío de operadora y bolsa de minutos de voz neuronal.
@@ -723,7 +747,7 @@ NUEVO_BLOQUE_CA_SLIDE_PROXIMOS = r"""    <!-- ==================================
                 </div>
 
                 <div class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-300 group-hover:text-white transition-colors">
-                  <span>Ver módulos del Grupo 4</span>
+                  <span>Ver S9 y S10 del Grupo 4</span>
                   <span>&#8635;</span>
                 </div>
               </div>
@@ -732,19 +756,19 @@ NUEVO_BLOQUE_CA_SLIDE_PROXIMOS = r"""    <!-- ==================================
                 <div>
                   <div class="flex items-center justify-between gap-2 mb-2">
                     <span class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-200 bg-indigo-950/90 px-2.5 py-0.5 rounded-full border border-indigo-400/50">
-                      Grupo 4 • Telecomunicaciones IA
+                      Grupo 4 (S9 y S10) • Voz IA
                     </span>
                     <button type="button" onclick="spToggleFlipCard('cat3-eficiencia', event)" class="px-2 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 text-[10.5px] font-bold cursor-pointer">
                       &#8635;
                     </button>
                   </div>
                   <ul class="space-y-2.5 text-[12px] text-slate-200 leading-snug">
-                    <li class="flex items-start gap-1.5"><span class="text-indigo-400 font-black">S4.</span><span><strong class="text-white">Rescate Llamadas Perdidas WA:</strong> +59 €/m (+110€ Setup) combo | 79 €/m (195€) suelto. Incluye desvío + hasta <strong>250 rescates/mes</strong>.</span></li>
-                    <li class="flex items-start gap-1.5"><span class="text-indigo-400 font-black">S7.</span><span><strong class="text-white">Centralita Recepcionista Voz IA 24/7:</strong> +129 €/m (+250€ Setup) combo | 169 €/m (350€) suelto. Atiende y agenda sola con <strong>bolsa de 250 min/mes</strong>.</span></li>
+                    <li class="flex items-start gap-1.5"><span class="text-indigo-400 font-black">S9.</span><span><strong class="text-white">Rescate Llamadas Perdidas WA:</strong> +59 €/m (+110€ Setup) combo | 79 €/m (195€) suelto. Incluye desvío + hasta <strong>250 rescates/mes</strong>.</span></li>
+                    <li class="flex items-start gap-1.5"><span class="text-indigo-400 font-black">S10.</span><span><strong class="text-white">Centralita Recepcionista Voz IA 24/7:</strong> +129 €/m (+250€ Setup) combo | 169 €/m (350€) suelto. Atiende y agenda sola con <strong>bolsa de 250 min/mes</strong>.</span></li>
                   </ul>
                 </div>
-                <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20informaci%C3%B3n%20sobre%20el%20Grupo%204%20de%20Telefon%C3%ADa%20y%20Voz%20IA%20%28S4%20Llamadas%20Perdidas%20o%20S7%20Centralita%2024%2F7%29" target="_blank" onclick="event.stopPropagation();" class="pt-2 border-t border-white/15 text-xs font-extrabold text-indigo-300 hover:text-white inline-flex items-center justify-between">
-                  <span>Reservar Grupo 4</span><span>&rarr;</span>
+                <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20servicios%20S9%20y%20S10%20del%20Grupo%204%20de%20Telefon%C3%ADa%20y%20Voz%20IA" target="_blank" onclick="event.stopPropagation();" class="pt-2 border-t border-white/15 text-xs font-extrabold text-indigo-300 hover:text-white inline-flex items-center justify-between">
+                  <span>Reservar S9 y S10</span><span>&rarr;</span>
                 </a>
               </div>
 
@@ -795,7 +819,31 @@ NUEVO_BLOQUE_CA_SLIDE_PROXIMOS = r"""    <!-- ==================================
       </div>
     </section>"""
 
-NUEVO_JS_TARIFAS_INDEX = r"""    var _spModoTarifasActual = 'mensual';
+NUEVO_SELECT_RESERVA_CARRITO = r"""              <select id="spCartReservaFase2" onchange="window.spAgregarModuloReservaFase2(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-bold">
+                <option value="">+ Añadir módulo en Reserva Prioritaria (Grupos 1 a 4: S3 a S10 y Satélites)...</option>
+                <optgroup label="Grupo 1 • Implantación Rápida (+40 €/m | +75 € Setup)">
+                  <option value="S3 Leads en 10s + Portales (+40 €/m)">S3. Respuesta a Leads en 10s + Portales (+40 €/m)</option>
+                  <option value="S4 Facturas al Gestor por Foto WA (+40 €/m)">S4. Facturas y Tickets al Gestor por Foto WA (+40 €/m)</option>
+                  <option value="S5 Reactivación Clientes Inactivos (+40 €/m)">S5. Reactivación de Clientes Inactivos (+40 €/m)</option>
+                </optgroup>
+                <optgroup label="Grupo 2 • Operativa Avanzada (+59 €/m combo | 79 €/m suelto)">
+                  <option value="S6 Agenda Anti-Plantón 24h + Flash (+59 €/m)">S6. Sistema Anti-Plantón de Citas 24h + Huecos Flash (+59 €/m)</option>
+                  <option value="S7 Firma Digital + Onboarding IA (+59 €/m)">S7. Firma Digital de Presupuestos + Onboarding IA (+59 €/m)</option>
+                  <option value="S8 Escudo Anti-Morosidad (+59 €/m)">S8. Escudo Anti-Morosidad Diplomático (+59 €/m)</option>
+                </optgroup>
+                <optgroup label="Grupo 3 • Satélites Especializados y Boosters IA">
+                  <option value="Sat.1 Instagram 3 en 1 (+49 €/m combo)">Sat.1. Instagram Inteligente 3 en 1: Reels + DMs (+49 €/m)</option>
+                  <option value="Sat.2 Escudo Logístico 360 (+59 €/m combo)">Sat.2. Escudo Logístico 360: Tracking + Ausencias (+59 €/m)</option>
+                  <option value="Sat.3 Cerebro Redactor B2B RAG (+69 €/m combo)">Sat.3. Cerebro Redactor Técnico B2B RAG (+69 €/m)</option>
+                  <option value="Booster IA Lector Correo S4 / Prov S8 (+35 €/m)">Booster IA: Lector Correo (S4) o Proveedores (S8) (+35 €/m)</option>
+                </optgroup>
+                <optgroup label="Grupo 4 • Telefonía y Voz Neuronal IA 24/7">
+                  <option value="S9 Rescate Llamadas Perdidas WA (+59 €/m combo)">S9. Rescate de Llamadas Perdidas por WA (+59 €/m • 250/m)</option>
+                  <option value="S10 Centralita Voz IA 24/7 (+129 €/m combo)">S10. Centralita Recepcionista de Voz IA 24/7 (+129 €/m • 250 min)</option>
+                </optgroup>
+              </select>"""
+
+NUEVO_JS_TARIFAS_INDEX = r"""var _spModoTarifasActual = 'mensual';
     var _spNumAuditoriasEscudo = 1;
 
     function _spRenderizarTarjetasPrecios() {
@@ -828,10 +876,9 @@ NUEVO_JS_TARIFAS_INDEX = r"""    var _spModoTarifasActual = 'mensual';
 
       var esPlus = (_spNumAuditoriasEscudo === 2);
       var costeAud = esPlus ? 390 : 195;
-      var ahorroAud = esPlus ? 310 : 155;
 
       if (titleEsc) titleEsc.textContent = esPlus ? 'Pack Escudo Plus ★' : 'Pack Escudo Total ★';
-      if (tagAud) tagAud.textContent = esPlus ? '+ 390 € (Las 2 Super-Auditorías Llave en Mano)' : '+ 195 € (1 Super-Auditoría Llave en Mano)';
+      if (tagAud) tagAud.textContent = esPlus ? '+ 390 € (Las 2 Super-Auditorías)' : '+ 195 € (1 Super-Auditoría Llave en Mano)';
       if (badgeAhorro) badgeAhorro.textContent = esPlus ? '¡Ahorras 310 € en las 2 Auditorías!' : '¡Ahorras 155 € en la Auditoría!';
 
       if (bulletAud) {
@@ -842,25 +889,25 @@ NUEVO_JS_TARIFAS_INDEX = r"""    var _spModoTarifasActual = 'mensual';
       if (bulletBon) {
         bulletBon.innerHTML = esPlus
           ? 'Dejas blindados a la vez tu posicionamiento en Google/IA y la conversión de tu página web.'
-          : 'Si eliges <strong class="text-brand-navy">+2 Auditorías (390€)</strong> arriba, te llevas ambas implantadas ahorrando <strong class="text-emerald-800">310 €</strong>.';
+          : 'Si eliges <strong class="text-brand-navy">+2 Auditorías (390 €)</strong> arriba, te llevas ambas implantadas ahorrando <strong class="text-emerald-800">310 €</strong>.';
       }
 
       if (_spModoTarifasActual === 'anual') {
-        if (btnA) btnA.className = 'px-4 py-1.5 rounded-xl text-xs sm:text-[13px] font-extrabold bg-brand-navy text-white shadow-sm transition-all cursor-pointer flex items-center gap-1.5';
-        if (btnM) btnM.className = 'px-4 py-1.5 rounded-xl text-xs sm:text-[13px] font-extrabold text-slate-700 hover:text-brand-navy transition-all cursor-pointer';
+        if (btnA) btnA.className = 'px-3 py-1.5 rounded-xl text-xs font-extrabold bg-brand-navy text-white shadow-sm transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap';
+        if (btnM) btnM.className = 'px-3 py-1.5 rounded-xl text-xs font-extrabold text-slate-700 hover:text-brand-navy transition-all cursor-pointer whitespace-nowrap';
 
         if (pBase) pBase.innerHTML = '<span class="text-2xl sm:text-[28px] font-black text-brand-navy">49 €</span><span class="text-xs font-bold text-slate-500">/ mes eq. (590 €/año)</span>';
-        if (subBase) subBase.textContent = 'Día 1 Anual: 740 € (590 € 10m + 150 € Setup • Ahorras 118 €)';
+        if (subBase) subBase.textContent = 'Día 1 Anual: 740 € (590€ 10m + 150€ Setup • Ahorras 118 €)';
 
         if (pDuo) pDuo.innerHTML = '<span class="text-2xl sm:text-[28px] font-black text-sky-700">82,50 €</span><span class="text-xs font-bold text-slate-500">/ mes eq. (990 €/año)</span>';
-        if (subDuo) subDuo.textContent = 'Día 1 Anual: 1.215 € (990 € 10m + 225 € Setup • Ahorras 198 €)';
+        if (subDuo) subDuo.textContent = 'Día 1 Anual: 1.215 € (990€ 10m + 225€ Setup • Ahorras 198 €)';
 
         if (pTri) pTri.innerHTML = '<span class="text-2xl sm:text-[28px] font-black text-emerald-700">82,50 €</span><span class="text-xs font-bold text-slate-500">/ mes eq. (990 €/año)</span>';
-        var totalDia1AnualEscudo = 1215 + costeAud;
-        if (subEsc) subEsc.textContent = 'Día 1 Anual: ' + totalDia1AnualEscudo + ' € (990€ 10m + 225€ Setup + ' + costeAud + '€ Aud. • Ahorras ' + (198 + ahorroAud) + '€)';
+        var totalAnualEsc = 1215 + costeAud;
+        if (subEsc) subEsc.textContent = 'Día 1 Anual: ' + totalAnualEsc + ' € (1.215€ Pack Anual + ' + costeAud + '€ Aud.)';
       } else {
-        if (btnM) btnM.className = 'px-4 py-1.5 rounded-xl text-xs sm:text-[13px] font-extrabold bg-brand-navy text-white shadow-sm transition-all cursor-pointer';
-        if (btnA) btnA.className = 'px-4 py-1.5 rounded-xl text-xs sm:text-[13px] font-extrabold text-slate-700 hover:text-brand-navy transition-all cursor-pointer flex items-center gap-1.5';
+        if (btnM) btnM.className = 'px-3 py-1.5 rounded-xl text-xs font-extrabold bg-brand-navy text-white shadow-sm transition-all cursor-pointer whitespace-nowrap';
+        if (btnA) btnA.className = 'px-3 py-1.5 rounded-xl text-xs font-extrabold text-slate-700 hover:text-brand-navy transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap';
 
         if (pBase) pBase.innerHTML = '<span class="text-2xl sm:text-[28px] font-black text-brand-navy">59 €</span><span class="text-xs font-bold text-slate-500">/ mes</span>';
         if (subBase) subBase.textContent = 'Día 1 Flex: 209 € (150 € Setup + 59 € Mes 1)';
@@ -869,13 +916,13 @@ NUEVO_JS_TARIFAS_INDEX = r"""    var _spModoTarifasActual = 'mensual';
         if (subDuo) subDuo.textContent = 'Día 1 Flex: 324 € (225 € Setup + 99 € Mes 1)';
 
         if (pTri) pTri.innerHTML = '<span class="text-2xl sm:text-[28px] font-black text-emerald-700">99 €</span><span class="text-xs font-bold text-slate-500">/ mes</span>';
-        var totalDia1FlexEscudo = 324 + costeAud;
-        if (subEsc) subEsc.textContent = 'Día 1 Flex: ' + totalDia1FlexEscudo + ' € (225€ Setup + ' + costeAud + '€ Aud. + 99€ Mes 1)';
+        var totalFlexEsc = 324 + costeAud;
+        if (subEsc) subEsc.textContent = 'Día 1 Flex: ' + totalFlexEsc + ' € (225€ Setup + ' + costeAud + '€ Aud. + 99€ Mes 1)';
       }
 
       if (waEsc) {
-        var nombrePack = esPlus ? 'Pack Escudo Plus (S1 + S2 por 99 €/mes + las 2 Super-Auditorías por 390 €)' : 'Pack Escudo Total (S1 + S2 por 99 €/mes + 1 Super-Auditoría por 195 €)';
-        var modTexto = (_spModoTarifasActual === 'anual') ? ' en Plan Anual (2 meses gratis)' : ' en modalidad Flexible';
+        var nombrePack = esPlus ? 'Pack Escudo Plus (S1 + S2 por 99 €/mes + 2 Super-Auditorías por 390 €)' : 'Pack Escudo Total (S1 + S2 por 99 €/mes + 1 Super-Auditoría por 195 €)';
+        var modTexto = (_spModoTarifasActual === 'anual') ? ' en modalidad Plan Anual (2 meses gratis)' : ' en modalidad mensual';
         waEsc.href = 'https://wa.me/34711547561?text=' + encodeURIComponent('Hola Francisco, quiero activar el ' + nombrePack + modTexto + '.');
         waEsc.textContent = esPlus ? 'Activar Pack Escudo Plus →' : 'Activar Pack Escudo Total →';
       }
@@ -899,7 +946,7 @@ def actualizar_index_html_completo(ruta_index):
     with open(ruta_index, "r", encoding="utf-8") as f:
         html = f.read()
 
-    # 1. Reemplazar el bloque completo de #vista-tarifas con el diseño limpio sin cartel superior, Base 1 serv. Grupo 1, Escudo Básico (S1+S2) y Escudo Total (S1+S2 + 1 o 2 Auditorías)
+    # 1. Reemplazar el bloque completo de #vista-tarifas con el botón dorado integrado y alineado dentro del contenedor sin salirse por la derecha
     patron_vista_tarifas = re.compile(
         r"<!-- ======================================================================= -->\s*<!-- VISTA 4 \(SALA INDEPENDIENTE\): PRECIOS CLAROS.*?</section>",
         re.DOTALL
@@ -907,7 +954,7 @@ def actualizar_index_html_completo(ruta_index):
     if patron_vista_tarifas.search(html):
         html = patron_vista_tarifas.sub(lambda _: NUEVO_BLOQUE_VISTA_TARIFAS_INDEX, html, count=1)
 
-    # 2. Reemplazar la última diapositiva de Cómo ayudamos (#ca-slide-proximos) para que muestre las 4 tarjetas clasificadas por los 4 Grupos de coste y complejidad técnica
+    # 2. Reemplazar la última diapositiva de Cómo ayudamos (#ca-slide-proximos) con la numeración correlativa S1-S5 (G1), S6-S8 (G2), Satélites (G3) y S9-S10 (G4)
     patron_ca_proximos = re.compile(
         r"<!-- ===================================================================== -->\s*<!-- DIAPOSITIVA 5(?: DE CÓMO AYUDAMOS)?:.*?</section>",
         re.DOTALL
@@ -915,14 +962,43 @@ def actualizar_index_html_completo(ruta_index):
     if patron_ca_proximos.search(html):
         html = patron_ca_proximos.sub(lambda _: NUEVO_BLOQUE_CA_SLIDE_PROXIMOS, html, count=1)
 
-    # 3. Actualizar las funciones JS de tarifas en index.html
+    # 3. Actualizar el desplegable de Reserva Prioritaria en el Carrito Configurador con los números correlativos S3..S10
+    patron_select_reserva = re.compile(
+        r'<select id="spCartReservaFase2".*?</select>',
+        re.DOTALL
+    )
+    if patron_select_reserva.search(html):
+        html = patron_select_reserva.sub(lambda _: NUEVO_SELECT_RESERVA_CARRITO, html, count=1)
+
+    # 4. Actualizar las referencias en el Test de Diagnóstico (CATALOGO_RECOMENDACIONES y mapaFase2) a la nueva numeración S1..S10
+    reemplazos_numeracion_index = [
+        ("Servicio 4 • Cero Ventas Perdidas", "Servicio 9 • Grupo 4 Telefonía"),
+        ("S4. Rescate de Llamadas Perdidas", "S9. Rescate de Llamadas Perdidas"),
+        ("Servicio 7 • Atención Telefónica 24/7", "Servicio 10 • Grupo 4 Voz IA 24/7"),
+        ("S7. Centralita de Voz y Citas con IA", "S10. Centralita de Voz y Citas con IA"),
+        ("Servicio 8 • Cierre Inmediato", "Servicio 7 • Grupo 2 Contratos"),
+        ("S8. Firma de Presupuestos + Onboarding IA", "S7. Firma de Presupuestos + Onboarding IA"),
+        ("Servicio 9 • Paz Trimestral (+ Add-on Correo)", "Servicio 4 • Grupo 1 Cero Papeles"),
+        ("S9. Facturas al Gestor IA (Cero Papeles)", "S4. Facturas al Gestor IA (Cero Papeles)"),
+        ("Servicio 10 • Cobro Puntual (+ Proveedores)", "Servicio 8 • Grupo 2 Anti-Morosidad"),
+        ("S10. Anti-Morosidad Diplomático", "S8. Anti-Morosidad Diplomático"),
+        ("S4 Rescate Llamadas Perdidas (+59 €/m)", "S9 Rescate Llamadas Perdidas WA (+59 €/m combo)"),
+        ("S7 Centralita Voz IA 24/7 (Desde 149 €/m)", "S10 Centralita Voz IA 24/7 (+129 €/m combo)"),
+        ("S8 Firma Digital Presupuestos (+40 €/m)", "S7 Firma Digital + Onboarding IA (+59 €/m)"),
+        ("S9 Facturas al Gestor por Foto WA (+40 €/m)", "S4 Facturas al Gestor por Foto WA (+40 €/m)"),
+        ("S10 Escudo Anti-Morosidad (+40 €/m)", "S8 Escudo Anti-Morosidad (+59 €/m)"),
+    ]
+    for viejo, nuevo in reemplazos_numeracion_index:
+        html = html.replace(viejo, nuevo)
+
+    # 5. Actualizar las funciones JS de tarifas en index.html
     patron_js_tarifas = re.compile(
         r"var _spModoTarifasActual = 'mensual';.*?window\.spSeleccionarNivelEscudoTotal = function\(numAud\)\s*\{.*?\};",
         re.DOTALL
     )
     html = patron_js_tarifas.sub(lambda _: NUEVO_JS_TARIFAS_INDEX, html)
 
-    # 4. Dejar en el Carrito Configurador a la Carta solo los servicios activos hoy en el paso 2 (Solo Auditoría/Atril, Plan Base 1 serv. 59€ y Pack Escudo S1+S2 99€) y el resto en Reserva Prioritaria por Grupos
+    # 6. Limpiar botón Trinity duplicado en el paso 2 del carrito si existía
     patron_btn_trinity_carrito = re.compile(
         r'\s*<button type="button" id="spCartPlan_trinity".*?</button>',
         re.DOTALL
@@ -956,7 +1032,7 @@ def actualizar_base_conocimiento_js_tecnosala():
 # 7. ACTUALIZACIÓN AUTOMÁTICA DE LOS 2 DOCUMENTOS MAESTROS (.md) EN PROGRAMAR
 #    + PUENTE AUTOMÁTICO CON GOOGLE SHEETS Y GOOGLE DRIVE (MEMORIA DE LA GEMA)
 # =============================================================================
-SECCION_5_NUEVA_BIBLIA = """## 5. ESTRUCTURA OFICIAL DE TARIFAS EN 4 GRUPOS, PACKS, SUPER-AUDITORÍAS Y LIQUIDACIÓN DÍA 1
+SECCION_5_NUEVA_BIBLIA = """## 5. ESTRUCTURA OFICIAL DE TARIFAS EN 4 GRUPOS (NUMERACIÓN CORRELATIVA S1 A S10), PACKS, SUPER-AUDITORÍAS Y LIQUIDACIÓN DÍA 1
 
 ### A) Las 3 Reglas de Oro de Nuestra Arquitectura de Precios (Precios Netos sin IVA 21% • SEPA B2B)
 1. **Coherencia Psicológica en Terminación «9» (Charm Pricing):** Todas las cuotas mensuales terminan en 9 (`59 €`, `99 €`, `139 €`, `79 €`, `+59 €`, `69 €`, `+49 €`, `99 €`, `+69 €`, `169 €`, `+129 €`) o en `+40 €` redondo para los módulos adicionales del Grupo 1.
@@ -964,25 +1040,26 @@ SECCION_5_NUEVA_BIBLIA = """## 5. ESTRUCTURA OFICIAL DE TARIFAS EN 4 GRUPOS, PAC
    - **Modalidad 1 — «Solo Código / DIY» (Sin mano de obra nuestra):** `200 €` por 1 Super-Auditoría | `390 €` contratando las 2 juntas (`195 €` c/u). Entregamos PDF Parte 1 + PDF Parte 2 (Solo Códigos Limpios) para su informático.
    - **Modalidad 2 — Oficial «Llave en Mano» (Suelta o con Plan Base de 1 servicio):** `350 €` por 1 Super-Auditoría | `590 €` las 2 juntas (`295 €` c/u, ahorra `110 €` — Pack Firma Institucional / Alto Standing ideal Nexitum). Incluye Diagnóstico + Parte 2 + Reunión de defensa con su técnico + Implantación en 15 min + Sonda de 10-14 días en la Neuro-CRO.
    - **Modalidad 3 — BONIFICADA CON PACK (Dúo, Trinity o superior, Mensual o Anual):** `195 €` por 1 Super-Auditoría | `390 €` las 2 juntas (`195 €` c/u, ahorra `310 €`). Nunca baja de `195 €` c/u.
-3. **División en 4 Bloques según Coste de API y Complejidad de Puesta en Marcha:**
-   - **GRUPO 1 (Núcleo de Venta Rápida — S1 Reseñas IA, S2 Cortafuegos WA, S3 ★ Respuesta a Leads en 10s, S9 Facturas por Foto WA y S5 Reactivación de Inactivos):** `59 €/mes` el 1º (`150 €` Setup) y `+40 €/mes` adicionales del 2º al 5º (`+75 €` Setup).
-   - **GRUPO 2 (Operativa Avanzada de Agenda, Contratos y Cobros — S6 Anti-Plantón 24h + Huecos Flash, S8 Firma Digital + Onboarding IA y S10 Escudo Anti-Morosidad):** `79 €/mes` suelto (`195 €` Setup) | `+59 €/mes` combinado (`+110 €` Setup). Computa al 100% para beneficios de Pack.
-   - **GRUPO 3 (Satélites Especializados y Boosters IA):** Satélite 1 Instagram 3 en 1 (`69 €/m` + `150 €` suelto | `+49 €/m` + `+75 €` combinado), Satélite 2 Escudo Logístico 360 (`79 €/m` + `195 €` suelto | `+59 €/m` + `+110 €` combinado), Satélite 3 Cerebro Redactor B2B RAG (`99 €/m` + `250 €` suelto | `+69 €/m` + `+150 €` combinado), y Boosters IA 1 y 2 (`+35 €/m` + `+50 €` Setup).
-   - **GRUPO 4 (Satélites de Telefonía y Voz IA):** S4 Rescate de Llamadas Perdidas por WhatsApp (`79 €/m` + `195 €` suelto | `+59 €/m` + `+110 €` combinado; incluye desvío + hasta 250 rescates/mes) y S7 Centralita de Voz IA 24/7 (`169 €/m` + `350 €` suelto | `+129 €/m` + `+250 €` combinado; incluye número virtual/desvío + conexión a agenda + bolsa de 250 min/mes).
+3. **División en 4 Bloques con Numeración Correlativa (`S1` a `S10`) según Dificultad de Puesta en Marcha y Coste de API:**
+   - **GRUPO 1 (S1 a S5 — Núcleo de Implantación Rápida: S1 Reseñas IA, S2 Cortafuegos WA, S3 ★ Respuesta a Leads en 10s, S4 Facturas por Foto WA y S5 Reactivación de Inactivos):** `59 €/mes` el 1º (`150 €` Setup) y `+40 €/mes` adicionales del 2º al 5º (`+75 €` Setup).
+   - **GRUPO 2 (S6 a S8 — Operativa Avanzada de Agenda, Contratos y Cobros: S6 Anti-Plantón 24h + Huecos Flash, S7 Firma Digital + Onboarding IA y S8 Escudo Anti-Morosidad):** `79 €/mes` suelto (`195 €` Setup) | `+59 €/mes` combinado (`+110 €` Setup). Computa al 100% para beneficios de Pack.
+   - **GRUPO 3 (Satélites Especializados y Boosters IA):** Satélite 1 Instagram 3 en 1 (`69 €/m` + `150 €` suelto | `+49 €/m` + `+75 €` combinado), Satélite 2 Escudo Logístico 360 (`79 €/m` + `195 €` suelto | `+59 €/m` + `+110 €` combinado), Satélite 3 Cerebro Redactor B2B RAG (`99 €/m` + `250 €` suelto | `+69 €/m` + `+150 €` combinado), y Boosters IA 1 (Lector Correo para S4) y 2 (Proveedores para S8) a `+35 €/m` + `+50 €` Setup.
+   - **GRUPO 4 (S9 y S10 — Satélites de Telefonía y Voz IA):** **S9** Rescate de Llamadas Perdidas por WhatsApp (`79 €/m` + `195 €` suelto | `+59 €/m` + `+110 €` combinado; incluye desvío + hasta 250 rescates/mes) y **S10** Centralita de Voz IA 24/7 (`169 €/m` + `350 €` suelto | `+129 €/m` + `+250 €` combinado; incluye número virtual/desvío + conexión a agenda + bolsa de 250 min/mes).
 
 ### B) Tabla Maestra de Planes del Grupo 1, Combinaciones y Desembolso Día 1 (Vía 1 Flexible 3 meses vs. Vía 2 Plan Anual 10 meses = 2 Gratis)
 
 | Plan / Módulo | Combinación Típica | Cuota Mensual | Alta Técnica (Setup) | Pago Día 1 (Vía Flexible 3m) | Pago Día 1 (Vía Anual 10m = 2 Gratis) | Ventajas Desbloqueadas en este Nivel |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| **Plan Pyme BASE (1 serv. G1)** | Solo S1, o solo S2, o solo S3 | **59 €/m** | 150 € | **209 €** | **740 €** (590€ + 150€) | Ahorra 118 € en Anual • Auditorías a 350 € c/u (o 590 € las dos) |
-| **Pack ESCUDO BÁSICO (Dúo: 2 serv.)** | **S1 + S2** (o S1 + S3) | **99 €/m** | 225 € | **324 €** | **1.215 €** (990€ + 225€) | Ahorra 19 €/m + 75 € Setup • **Desbloquea Auditorías a 195 € c/u (390 € las dos)** |
-| **Pack ESCUDO TOTAL ★ (Trinity: 3 serv.)** | **S1 + S2 + S3 (Leads 10s)** | **139 €/m** | 300 € | **439 €** | **1.690 €** (1.390€ + 300€) | **🎁 Bóveda Contraseñas GRATIS (150€)** + Auditorías a **195 € c/u** + Ahorra 278 € en Anual |
-| **Plan QUATRO (4 serv. Grupo 1)** | S1 + S2 + S3 + S9 | **179 €/m** | 375 € | **554 €** | **2.165 €** (1.790€ + 375€) | Bóveda Gratis + Auditorías a **195 € c/u** + Ahorra 358 € en Anual |
-| **Plan PENTIUM (5 serv. Grupo 1)** | S1 + S2 + S3 + S9 + S5 | **219 €/m** | 450 € | **669 €** | **2.640 €** (2.190€ + 450€) | Bóveda Gratis + Auditorías a **195 € c/u** + Ahorra 438 € en Anual |
-| **+ Servicio Grupo 2, Logística o S4** | S6, S8, S10, Reparto o Llamadas WA | **+59 €/m** (79€ s.) | +110 € (195€ s.) | **+169 €** combo (274€ s.) | **+700 €** combo (985€ s.) | Computa al 100% para beneficios de Pack Dúo/Trinity |
+| **Plan Pyme BASE (1 serv. G1)** | 1 servicio del Grupo 1 (S1..S5) | **59 €/m** | 150 € | **209 €** | **740 €** (590€ + 150€) | Ahorra 118 € en Anual • Auditorías a 350 € c/u (o 590 € las dos) |
+| **Pack ESCUDO BÁSICO (Dúo: 2 serv.)** | **S1 + S2** (2 serv. libre elección) | **99 €/m** | 225 € | **324 €** | **1.215 €** (990€ + 225€) | Ahorra 19 €/m + 75 € Setup • **Desbloquea Auditorías a 195 € c/u (390 € las dos)** |
+| **Pack ESCUDO TOTAL ★ (Hoy: S1+S2 + Aud.)** | **S1 + S2 (99€/m) + 1 o 2 Auditorías** | **99 €/m** | 225 € (+195€/390€ Aud.) | **519 €** (con 1 Aud.) / **714 €** (con 2) | **1.410 €** (con 1 Aud.) / **1.605 €** (con 2) | **Ahorra 155 € en 1 Auditoría o 310 € en las 2 Super-Auditorías** |
+| **Plan TRINITY (3 serv. Grupo 1)** | 3 servicios Grupo 1 (ej. S1+S2+S3) | **139 €/m** | 300 € | **439 €** | **1.690 €** (1.390€ + 300€) | **🎁 Bóveda Contraseñas GRATIS (150€)** + Auditorías a **195 € c/u** + Ahorra 278 € en Anual |
+| **Plan QUATRO (4 serv. Grupo 1)** | S1 + S2 + S3 + S4 | **179 €/m** | 375 € | **554 €** | **2.165 €** (1.790€ + 375€) | Bóveda Gratis + Auditorías a **195 € c/u** + Ahorra 358 € en Anual |
+| **Plan PENTIUM (5 serv. Grupo 1)** | S1 + S2 + S3 + S4 + S5 | **219 €/m** | 450 € | **669 €** | **2.640 €** (2.190€ + 450€) | Bóveda Gratis + Auditorías a **195 € c/u** + Ahorra 438 € en Anual |
+| **+ Servicio Grupo 2 (S6..S8), Logística o S9** | S6, S7, S8, Reparto o Llamadas WA | **+59 €/m** (79€ s.) | +110 € (195€ s.) | **+169 €** combo (274€ s.) | **+700 €** combo (985€ s.) | Computa al 100% para beneficios de Pack Dúo/Trinity |
 | **+ Satélite 1: Instagram 3 en 1** | Auto-DM Reels + DMs 24/7 + Stories | **+49 €/m** (69€ s.) | +75 € (150€ s.) | **+124 €** combo (219€ s.) | **+565 €** combo (840€ s.) | Ahorra 20 €/mes y 75 € de Setup al combinarlo |
 | **+ Satélite 3: Cerebro Redactor RAG** | IA con PDFs, tarifas y contratos propios | **+69 €/m** (99€ s.) | +150 € (250€ s.) | **+219 €** combo (349€ s.) | **+840 €** combo (1.240€ s.) | Ahorra 30 €/mes y 100 € de Setup al combinarlo |
-| **+ Satélite S7: Centralita Voz IA 24/7** | Recepcionista neuronal + 250 min/mes | **+129 €/m** (169€ s.) | +250 € (350€ s.) | **+379 €** combo (519€ s.) | **+1.540 €** combo (2.040€ s.) | Ahorra 40 €/mes y 100 € de Setup al combinarlo |"""
+| **+ Satélite S10: Centralita Voz IA 24/7** | Recepcionista neuronal + 250 min/mes | **+129 €/m** (169€ s.) | +250 € (350€ s.) | **+379 €** combo (519€ s.) | **+1.540 €** combo (2.040€ s.) | Ahorra 40 €/mes y 100 € de Setup al combinarlo |"""
 
 SECCION_4_PUENTE_DRIVE_SHEETS_MANUAL = """## 4. PROTOCOLO OBLIGATORIO DE SINCRONIZACIÓN AUTOMÁTICA CON GOOGLE SHEETS Y GOOGLE DRIVE (MEMORIA VIVA DE LA GEMA)
 En cada ejecución de `AD.py`, es **estrictamente obligatorio** mantener sincronizados los 2 documentos maestros (`biblia_de_conocimiento_de_sistemas_pyme.md` y `manual_maestro_de_programaci_n_ad_py.md`) en tres niveles simultáneos sin intervención manual compleja:
@@ -998,12 +1075,13 @@ En cada ejecución de `AD.py`, es **estrictamente obligatorio** mantener sincron
 
 BLOQUE_HISTORIAL_V137 = f"""
 ---
-### ACTUALIZACIÓN {VERSION_ACTUAL} ({datetime.now().strftime('%d/%m/%Y %H:%M')}) — Sincronización Integral en Cuerpo e Historial de la Biblia + Protocolo Oficial de Puente Automático hacia Google Sheets (`Biblia_IA_Viva` y `Manual_Maestro_AD`) y Google Drive (Documentos en Memoria de la Gema)
-- **Actualización de las Secciones Principales 2 y 5 de la Biblia de Conocimiento:** Sincronizadas todas las tablas del cuerpo principal de la Biblia con la nueva arquitectura de 4 Grupos, el Pack Escudo Total Trinity (`139 €/m`), el Pack Firma Institucional (`590 €` las 2 Super-Auditorías sueltas) y el suelo mínimo intocable de `195 €` c/u (`390 €` las dos con cualquier Pack de 2+ servicios).
-- **Incorporación en el Manual Maestro de la Sección 4 Oficial de Sincronización con Google Sheets y Google Drive (Memoria de la Gema):** Documentado y automatizado en `AD.py` el disparo directo hacia el Webhook de Google Apps Script (`sincronizar_biblia_conocimiento`) y la actualización de `App Script Base de Altas.js` para que cada ejecución de `AD.py` actualice simultáneamente:
-  1. Los 2 archivos `.md` locales en `SISTEMAS PYME/Programar`, `Scraper/Scrapper App` y `servicio_resenas`.
-  2. Las pestañas `Biblia_IA_Viva` y `Manual_Maestro_AD` en la Hoja de Google Sheets (`1m4ZqBaMslLJDok4I0DWJZMjoYNwJMZ-Qr0d6D02rxfY`).
-  3. Los documentos en Google Drive (`biblia_de_conocimiento_de_sistemas_pyme` y `manual_maestro_de_programaci_n_ad_py`, tanto en `.md` como en Google Docs nativo) conectados a la memoria de la Gema de Gemini de `fmgallardo@falconfactorysystems.com`.
+### ACTUALIZACIÓN {VERSION_ACTUAL} ({datetime.now().strftime('%d/%m/%Y %H:%M')}) — Reordenación Correlativa Oficial de Servicios (`S1` a `S10`) según Dificultad de Implementación + Encabezado de `Precios claros` Reestructurado sin Desborde del Botón Dorado de Compra
+- **Numeración Correlativa Oficial de los 10 Servicios (`S1` a `S10`) por orden de facilidad/complejidad de puesta en marcha:**
+  - **GRUPO 1 (`S1` a `S5` — Implantación Rápida, `59 €/m` el 1º y `+40 €/m` adicionales):** **S1** Reseñas Google IA, **S2** Cortafuegos Preventivo WhatsApp, **S3** Respuesta a Leads en 10s + Portales, **S4** Facturas y Tickets al Gestor por Foto WA (antes S9) y **S5** Reactivación de Clientes Inactivos.
+  - **GRUPO 2 (`S6` a `S8` — Operativa Avanzada de Agenda, Contratos y Cobros, `79 €/m` suelto | `+59 €/m` combinado):** **S6** Sistema Anti-Plantón 24h + Huecos Flash, **S7** Firma Digital de Presupuestos + Onboarding IA (antes S8) y **S8** Escudo Anti-Morosidad Diplomático (antes S10).
+  - **GRUPO 3 (Satélites Especializados y Boosters IA):** **Sat. 1** Instagram 3 en 1 (`+49 €/m` combo), **Sat. 2** Escudo Logístico 360 (`+59 €/m` combo), **Sat. 3** Cerebro Redactor B2B RAG (`+69 €/m` combo) y **Boosters IA** para S4 Facturas y S8 Anti-Morosidad (`+35 €/m`).
+  - **GRUPO 4 (`S9` y `S10` — Telefonía y Voz Neuronal IA):** **S9** Rescate de Llamadas Perdidas por WhatsApp (`+59 €/m` combo | `79 €/m` suelto, 250 rescates/mes, antes S4) y **S10** Centralita Recepcionista de Voz IA 24/7 (`+129 €/m` combo | `169 €/m` suelto, bolsa de 250 min/mes, antes S7).
+- **Encabezado de `Precios claros` reestructurado sin cortes ni desbordes (`index.html`):** El título H2, el conmutador Mensual/Anual y el botón dorado `🛒 Configurar a la Carta / Contratar` quedan ahora contenidos dentro de la misma caja flex alineada con las 3 tarjetas, impidiendo que el botón de compra se salga por el margen derecho de la pantalla.
 """
 
 _DOCUMENTOS_MAESTROS_ACTUALIZADOS = False
