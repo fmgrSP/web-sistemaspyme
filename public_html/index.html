@@ -6523,6 +6523,98 @@
       color: #ffffff !important;
       animation: spVoiceMicListeningPulse 1.35s ease-in-out infinite !important;
     }
+        /* =========================================================================
+       MODAL CARRITO CONFIGURADOR EN MODO CRISTAL LUMINOSO CRO (NEUROMARKETING)
+       ========================================================================= */
+    #spModalCarritoCarta > div {
+      background: linear-gradient(160deg, #f8fafc 0%, #ffffff 50%, #f0fdfa 100%) !important;
+      color: #0b2239 !important;
+      border: 2px solid rgba(13, 148, 136, 0.55) !important;
+      box-shadow: 0 30px 70px -12px rgba(11, 34, 57, 0.38), 0 0 0 1px rgba(255, 255, 255, 0.9) !important;
+    }
+    #spModalCarritoCarta h3,
+    #spModalCarritoCarta h4 {
+      color: #0b2239 !important;
+    }
+    #spModalCarritoCarta label {
+      color: #0f766e !important;
+    }
+    #spModalCarritoCarta .sp-cart-item-btn {
+      border: 1.5px solid #cbd5e1 !important;
+      background: #ffffff !important;
+      border-radius: 0.9rem;
+      padding: 0.65rem 0.85rem;
+      text-align: left;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      color: #1e293b !important;
+      box-shadow: 0 4px 10px -2px rgba(11, 34, 57, 0.06) !important;
+    }
+    #spModalCarritoCarta .sp-cart-item-btn span {
+      color: #334155 !important;
+    }
+    #spModalCarritoCarta .sp-cart-item-btn span.font-black,
+    #spModalCarritoCarta .sp-cart-item-btn span.font-extrabold {
+      color: #0b2239 !important;
+    }
+    #spModalCarritoCarta .sp-cart-item-btn:hover {
+      border-color: #0d9488 !important;
+      background: #f0fdfa !important;
+      transform: translateY(-1px);
+    }
+    #spModalCarritoCarta .sp-cart-item-btn.sp-cart-selected {
+      border: 2px solid #059669 !important;
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
+      box-shadow: 0 8px 20px -4px rgba(16, 185, 129, 0.25), inset 0 1px 0 #ffffff !important;
+      color: #064e3b !important;
+    }
+    #spModalCarritoCarta .sp-cart-item-btn.sp-cart-selected span {
+      color: #065f46 !important;
+    }
+    #spModalCarritoCarta .sp-cart-item-btn.sp-cart-selected span.font-black,
+    #spModalCarritoCarta .sp-cart-item-btn.sp-cart-selected span.font-extrabold {
+      color: #064e3b !important;
+    }
+    #spModalCarritoCarta select,
+    #spModalCarritoCarta input[type="text"],
+    #spModalCarritoCarta input[type="tel"],
+    #spModalCarritoCarta input[type="datetime-local"] {
+      background: #ffffff !important;
+      color: #0b2239 !important;
+      border: 1.5px solid #94a3b8 !important;
+      box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.05) !important;
+    }
+    #spModalCarritoCarta input::placeholder {
+      color: #64748b !important;
+    }
+    #spModalCarritoCarta .bg-slate-950,
+    #spModalCarritoCarta .bg-slate-950\/80,
+    #spModalCarritoCarta .bg-slate-900,
+    #spModalCarritoCarta .bg-slate-900\/95 {
+      background: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+      color: #0b2239 !important;
+    }
+    #spModalCarritoCarta #spCartSummaryLines,
+    #spModalCarritoCarta #spCartSummaryLines span,
+    #spModalCarritoCarta #spCartSummaryLines strong {
+      color: #0b2239 !important;
+    }
+    #spModalCarritoCarta .bg-emerald-950\/60 {
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
+      border: 2px solid #10b981 !important;
+    }
+    #spModalCarritoCarta #spCartTotalDia1 {
+      color: #065f46 !important;
+    }
+    #spModalCarritoCarta #spCartCuotaMensual {
+      color: #0f766e !important;
+    }
+    #spModalCarritoCarta .text-slate-300,
+    #spModalCarritoCarta .text-slate-200,
+    #spModalCarritoCarta .text-emerald-200 {
+      color: #334155 !important;
+    }
     /* === [SP_HARDWARE_TERMINAL_Y_PRECIOS_V115_END] === */
 
   </style>
@@ -9337,7 +9429,7 @@
       </div>
     </section>
 
-                <!-- ===================================================================== -->
+                    <!-- ===================================================================== -->
     <!-- DIAPOSITIVA 5 DE CÓMO AYUDAMOS: CLASIFICACIÓN CORRELATIVA S1 A S10    -->
     <!-- ===================================================================== -->
     <section id="ca-slide-proximos" class="scroll-mt-20 slide-section sp-ca-slide5-proximos-dark text-white px-4 sm:px-6 pt-6 pb-4" style="min-height: calc(100vh - 5rem); justify-content: center;">
@@ -10405,9 +10497,13 @@
             <button type="button" onclick="cambiarVista('tarifas')" class="w-full sm:w-auto text-xs sm:text-[13px] font-bold text-teal-200 hover:text-white bg-teal-950/90 hover:bg-teal-900 px-4 py-2 rounded-xl border border-teal-500/40 cursor-pointer">
               Ver Precios Claros &rarr;
             </button>
-            <a id="spTestWhatsappBtn" href="https://wa.me/34711547561" target="_blank" class="sp-btn-s5-primary-3d w-full sm:w-auto text-center text-white font-extrabold text-xs sm:text-[13.5px] px-5 py-2.5 rounded-xl">
-              💬 Comentar mi diagnóstico con Francisco &rarr;
+            <a id="spTestWhatsappBtn" href="https://wa.me/34711547561" target="_blank" class="sp-btn-s5-secondary-3d w-full sm:w-auto text-center text-white font-bold text-xs sm:text-[13px] px-4 py-2 rounded-xl">
+              💬 Comentar con Francisco
             </a>
+            <button type="button" id="spBtnComprarDesdeDiagnostico" onclick="window.spAbrirCarritoConDiagnosticoPreseleccionado()" class="sp-btn-carrito-gold-3d w-full sm:w-auto text-center px-5 py-2.5 rounded-xl text-xs sm:text-[13.5px] inline-flex items-center justify-center gap-2 shadow-lg cursor-pointer">
+              <span class="sp-cart-icon-badge">🛒</span>
+              <span>Configurar y Contratar mi Solución &rarr;</span>
+            </button>
           </div>
         </div>
 
@@ -11053,7 +11149,7 @@
              - Pilar Operativa Diaria: Fichas 7, 8, 10, 11 (4 fichas)
              - Nota Global = Media exacta de las 12 fichas (Σ puntos / 12) */
           var ptsRep = 0, ptsEsc = 0, ptsOpe = 0, sumaTotal12 = 0;
-          var urgenciaPorMódulo = {};
+          var urgenciaPorModulo = {};
 
           FICHAS_TEST.forEach(function(ficha, idx) {
             var idxElegido = (respuestasUsuario[idx] !== null) ? respuestasUsuario[idx] : 0;
@@ -11269,7 +11365,7 @@
 
 
 
-                                              <!-- ======================================================================= -->
+                                                <!-- ======================================================================= -->
   <!-- VISTA 4 (SALA INDEPENDIENTE): PRECIOS CLAROS (ARQUITECTURA 4 GRUPOS)    -->
   <!-- ======================================================================= -->
   <section id="vista-tarifas" class="view-panel hidden bg-slate-50 text-slate-900">
@@ -14738,7 +14834,7 @@
               <div class="flex items-center justify-between gap-1 mb-1">
                 <label class="block text-[10.5px] font-extrabold uppercase text-sky-300">5. Reserva Prioritaria Fase 2:</label>
               </div>
-                            <select id="spCartReservaFase2" onchange="window.spAgregarModuloReservaFase2(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-bold">
+                                          <select id="spCartReservaFase2" onchange="window.spAgregarModuloReservaFase2(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-bold">
                 <option value="">+ Añadir módulo en Reserva Prioritaria (Grupos 1 a 4: S3 a S10 y Satélites)...</option>
                 <optgroup label="Grupo 1 • Implantación Rápida (+40 €/m | +75 € Setup)">
                   <option value="S3 Leads en 10s + Portales (+40 €/m)">S3. Respuesta a Leads en 10s + Portales (+40 €/m)</option>
@@ -16872,24 +16968,7 @@
           }
         }
 
-        // 3. TEST DE DIAGNÓSTICO (#vista-test): En la barra superior del Test y en el panel de resultados
-        var vistaTest = document.getElementById('vista-auditorias');
-        if (vistaTest && !document.getElementById('spBtnCarritoEnTest')) {
-          var contenedorTest = vistaTest.querySelector('.slide-section > div') || vistaTest;
-          var cabTest = vistaTest.querySelector('h2, h1');
-          var barraCarritoTest = document.createElement('div');
-          barraCarritoTest.id = 'spWrapBtnCarritoEnTest';
-          barraCarritoTest.className = 'w-full flex flex-wrap items-center justify-center gap-2 my-2.5';
-          barraCarritoTest.innerHTML =
-            '<button type="button" id="spBtnCarritoEnTest" onclick="window.spAbrirCarritoConfigurador()" class="sp-btn-carrito-gold-3d px-5 py-2 rounded-xl text-xs sm:text-[13.5px] inline-flex items-center gap-2 shadow-lg">' +
-              '<span class="sp-cart-icon-badge">🛒</span><span>Configurar a la Carta / Contratar Ahora</span>' +
-            '</button>';
-          if (cabTest && cabTest.parentNode) {
-            cabTest.parentNode.insertBefore(barraCarritoTest, cabTest.nextSibling);
-          } else if (contenedorTest) {
-            contenedorTest.insertBefore(barraCarritoTest, contenedorTest.firstChild);
-          }
-        }
+        // 3. TEST DE DIAGNÓSTICO: Sin botón de compra arriba (aparece al final con el diagnóstico preseleccionado)
       }
 
       function conectarFuncionesRealesTecnosalaV159() {

@@ -44,7 +44,7 @@ RUTA_SCRAPER = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Scrape
 RUTA_PROGRAMAR = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Programar"
 
 STAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
-VERSION_ACTUAL = "V141"
+VERSION_ACTUAL = "V142"
 
 # =============================================================================
 # 2. UTILIDADES DE BACKUP, VALIDACIÓN Y AUTO-REPLICACIÓN DE AD.py
@@ -938,6 +938,162 @@ NUEVO_JS_TARIFAS_INDEX = r"""var _spModoTarifasActual = 'mensual';
       _spRenderizarTarjetasPrecios();
     };"""
 
+ESTILOS_CARRITO_LUMINOSO_CRO = r"""    /* =========================================================================
+       MODAL CARRITO CONFIGURADOR EN MODO CRISTAL LUMINOSO CRO (NEUROMARKETING)
+       ========================================================================= */
+    #spModalCarritoCarta > div {
+      background: linear-gradient(160deg, #f8fafc 0%, #ffffff 50%, #f0fdfa 100%) !important;
+      color: #0b2239 !important;
+      border: 2px solid rgba(13, 148, 136, 0.55) !important;
+      box-shadow: 0 30px 70px -12px rgba(11, 34, 57, 0.38), 0 0 0 1px rgba(255, 255, 255, 0.9) !important;
+    }
+    #spModalCarritoCarta h3,
+    #spModalCarritoCarta h4 {
+      color: #0b2239 !important;
+    }
+    #spModalCarritoCarta label {
+      color: #0f766e !important;
+    }
+    #spModalCarritoCarta .sp-cart-item-btn {
+      border: 1.5px solid #cbd5e1 !important;
+      background: #ffffff !important;
+      border-radius: 0.9rem;
+      padding: 0.65rem 0.85rem;
+      text-align: left;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      color: #1e293b !important;
+      box-shadow: 0 4px 10px -2px rgba(11, 34, 57, 0.06) !important;
+    }
+    #spModalCarritoCarta .sp-cart-item-btn span {
+      color: #334155 !important;
+    }
+    #spModalCarritoCarta .sp-cart-item-btn span.font-black,
+    #spModalCarritoCarta .sp-cart-item-btn span.font-extrabold {
+      color: #0b2239 !important;
+    }
+    #spModalCarritoCarta .sp-cart-item-btn:hover {
+      border-color: #0d9488 !important;
+      background: #f0fdfa !important;
+      transform: translateY(-1px);
+    }
+    #spModalCarritoCarta .sp-cart-item-btn.sp-cart-selected {
+      border: 2px solid #059669 !important;
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
+      box-shadow: 0 8px 20px -4px rgba(16, 185, 129, 0.25), inset 0 1px 0 #ffffff !important;
+      color: #064e3b !important;
+    }
+    #spModalCarritoCarta .sp-cart-item-btn.sp-cart-selected span {
+      color: #065f46 !important;
+    }
+    #spModalCarritoCarta .sp-cart-item-btn.sp-cart-selected span.font-black,
+    #spModalCarritoCarta .sp-cart-item-btn.sp-cart-selected span.font-extrabold {
+      color: #064e3b !important;
+    }
+    #spModalCarritoCarta select,
+    #spModalCarritoCarta input[type="text"],
+    #spModalCarritoCarta input[type="tel"],
+    #spModalCarritoCarta input[type="datetime-local"] {
+      background: #ffffff !important;
+      color: #0b2239 !important;
+      border: 1.5px solid #94a3b8 !important;
+      box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.05) !important;
+    }
+    #spModalCarritoCarta input::placeholder {
+      color: #64748b !important;
+    }
+    #spModalCarritoCarta .bg-slate-950,
+    #spModalCarritoCarta .bg-slate-950\/80,
+    #spModalCarritoCarta .bg-slate-900,
+    #spModalCarritoCarta .bg-slate-900\/95 {
+      background: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+      color: #0b2239 !important;
+    }
+    #spModalCarritoCarta #spCartSummaryLines,
+    #spModalCarritoCarta #spCartSummaryLines span,
+    #spModalCarritoCarta #spCartSummaryLines strong {
+      color: #0b2239 !important;
+    }
+    #spModalCarritoCarta .bg-emerald-950\/60 {
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
+      border: 2px solid #10b981 !important;
+    }
+    #spModalCarritoCarta #spCartTotalDia1 {
+      color: #065f46 !important;
+    }
+    #spModalCarritoCarta #spCartCuotaMensual {
+      color: #0f766e !important;
+    }
+    #spModalCarritoCarta .text-slate-300,
+    #spModalCarritoCarta .text-slate-200,
+    #spModalCarritoCarta .text-emerald-200 {
+      color: #334155 !important;
+    }"""
+
+JS_PUENTE_TEST_A_CARRITO = r"""window.spAbrirCarritoConDiagnosticoPreseleccionado = function() {
+          var recs = (typeof recsIntegralGlobal !== 'undefined' && Array.isArray(recsIntegralGlobal)) ? recsIntegralGlobal : [];
+          var tieneS1 = recs.indexOf('s1_resenas') !== -1;
+          var tieneS2 = recs.indexOf('s2_cortafuegos') !== -1;
+          var tieneGeo = recs.indexOf('audit_geo') !== -1;
+          var tieneCro = recs.indexOf('audit_cro') !== -1;
+          var tieneAtril = recs.indexOf('hw_atril') !== -1;
+
+          var planElegir = 'duo';
+          if (tieneS1 && tieneS2) {
+            planElegir = 'duo';
+          } else if (tieneS1 || tieneS2) {
+            planElegir = 'base';
+          } else if (tieneGeo || tieneCro || tieneAtril) {
+            planElegir = 'ninguno';
+          }
+
+          var numAud = (tieneGeo && tieneCro) ? 2 : ((tieneGeo || tieneCro) ? 1 : 0);
+
+          if (typeof window.spAbrirCarritoConfigurador === 'function') {
+            window.spAbrirCarritoConfigurador(planElegir, numAud);
+          }
+
+          if (planElegir === 'base' && typeof window.spSeleccionarSubServicioBaseV125 === 'function') {
+            if (tieneS2 && !tieneS1) {
+              window.spSeleccionarSubServicioBaseV125('S2 Encuesta Cortafuegos WhatsApp');
+            } else {
+              window.spSeleccionarSubServicioBaseV125('S1 Reseñas Google IA');
+            }
+          }
+
+          var selAtril = document.getElementById('spCartAtrilSelect');
+          if (selAtril) {
+            selAtril.value = tieneAtril ? '1' : '0';
+          }
+
+          var mapaRecAFase2 = {
+            s3_leads10s: 'S3 Leads en 10s + Portales (+40 €/m)',
+            s9_facturas: 'S4 Facturas al Gestor por Foto WA (+40 €/m)',
+            s5_inactivos: 'S5 Reactivación Clientes Inactivos (+40 €/m)',
+            s6_antiplanton: 'S6 Agenda Anti-Plantón 24h + Flash (+59 €/m)',
+            s8_firma: 'S7 Firma Digital + Onboarding IA (+59 €/m)',
+            s10_cobros: 'S8 Escudo Anti-Morosidad (+59 €/m)',
+            sat1_instagram: 'Sat.1 Instagram 3 en 1 (+49 €/m combo)',
+            sat2_logistica: 'Sat.2 Escudo Logístico 360 (+59 €/m combo)',
+            sat3_b2b: 'Sat.3 Cerebro Redactor B2B RAG (+69 €/m combo)',
+            s4_llamadas: 'S9 Rescate Llamadas Perdidas WA (+59 €/m combo)',
+            s7_centralita: 'S10 Centralita Voz IA 24/7 (+129 €/m combo)'
+          };
+
+          if (typeof window.spAgregarModuloReservaFase2 === 'function') {
+            recs.forEach(function(k) {
+              if (mapaRecAFase2[k]) {
+                window.spAgregarModuloReservaFase2(mapaRecAFase2[k]);
+              }
+            });
+          }
+
+          if (typeof window.spRecalcularCarritoCarta === 'function') {
+            window.spRecalcularCarritoCarta();
+          }
+        };"""
+
 def actualizar_index_html_completo(ruta_index):
     if not os.path.isfile(ruta_index):
         print(f"  ⚠️ No se encontró {ruta_index}")
@@ -991,14 +1147,48 @@ def actualizar_index_html_completo(ruta_index):
     for viejo, nuevo in reemplazos_numeracion_index:
         html = html.replace(viejo, nuevo)
 
-    # 5. Actualizar las funciones JS de tarifas en index.html
+    # 5. Reparar el bug de urgenciaPorMódulo (con tilde) que dejaba vacío el resultado del Test de Diagnóstico
+    html = html.replace("var urgenciaPorMódulo = {};", "var urgenciaPorModulo = {};")
+    html = html.replace("urgenciaPorMódulo", "urgenciaPorModulo")
+
+    # 6. Quitar el botón dorado de compra que salía arriba en la cabecera del Test de Diagnóstico (#vista-auditorias)
+    patron_inyeccion_test_top = re.compile(
+        r"// 3\. TEST DE DIAGNÓSTICO \(#vista-test\):.*?contenedorTest\.insertBefore\(barraCarritoTest, contenedorTest\.firstChild\);\s*\}\s*\}",
+        re.DOTALL
+    )
+    html = patron_inyeccion_test_top.sub("// 3. TEST DE DIAGNÓSTICO: Sin botón de compra arriba (aparece al final con el diagnóstico preseleccionado)", html)
+    # Por si ya estaba en el DOM estático
+    html = re.sub(r'<div id="spWrapBtnCarritoEnTest".*?</div>', '', html, flags=re.DOTALL)
+
+    # 7. Añadir el botón dorado "🛒 Configurar y Contratar mi Solución" en la barra inferior del resultado del Test (#spTestResultContainer)
+    if 'id="spBtnComprarDesdeDiagnostico"' not in html:
+        html = html.replace(
+            '<a id="spTestWhatsappBtn" href="https://wa.me/34711547561" target="_blank" class="sp-btn-s5-primary-3d w-full sm:w-auto text-center text-white font-extrabold text-xs sm:text-[13.5px] px-5 py-2.5 rounded-xl">\n              💬 Comentar mi diagnóstico con Francisco &rarr;\n            </a>',
+            '<a id="spTestWhatsappBtn" href="https://wa.me/34711547561" target="_blank" class="sp-btn-s5-secondary-3d w-full sm:w-auto text-center text-white font-bold text-xs sm:text-[13px] px-4 py-2 rounded-xl">\n              💬 Comentar con Francisco\n            </a>\n            <button type="button" id="spBtnComprarDesdeDiagnostico" onclick="window.spAbrirCarritoConDiagnosticoPreseleccionado()" class="sp-btn-carrito-gold-3d w-full sm:w-auto text-center px-5 py-2.5 rounded-xl text-xs sm:text-[13.5px] inline-flex items-center justify-center gap-2 shadow-lg cursor-pointer">\n              <span class="sp-cart-icon-badge">🛒</span>\n              <span>Configurar y Contratar mi Solución &rarr;</span>\n            </button>'
+        )
+
+    # 8. Inyectar la función spAbrirCarritoConDiagnosticoPreseleccionado() dentro del script del Test de Diagnóstico
+    if "window.spAbrirCarritoConDiagnosticoPreseleccionado" not in html:
+        html = html.replace(
+            "window.spReiniciarTestDiagnostico = function()",
+            JS_PUENTE_TEST_A_CARRITO + "\n\n        window.spReiniciarTestDiagnostico = function()"
+        )
+
+    # 9. Inyectar los estilos de «Modo Cristal Luminoso de Alta Confianza» para el Carrito (#spModalCarritoCarta)
+    if "MODAL CARRITO CONFIGURADOR EN MODO CRISTAL LUMINOSO CRO" not in html:
+        html = html.replace(
+            "/* === [SP_HARDWARE_TERMINAL_Y_PRECIOS_V115_END] === */",
+            ESTILOS_CARRITO_LUMINOSO_CRO + "\n    /* === [SP_HARDWARE_TERMINAL_Y_PRECIOS_V115_END] === */"
+        )
+
+    # 10. Actualizar las funciones JS de tarifas en index.html
     patron_js_tarifas = re.compile(
         r"var _spModoTarifasActual = 'mensual';.*?window\.spSeleccionarNivelEscudoTotal = function\(numAud\)\s*\{.*?\};",
         re.DOTALL
     )
     html = patron_js_tarifas.sub(lambda _: NUEVO_JS_TARIFAS_INDEX, html)
 
-    # 6. Limpiar botón Trinity duplicado en el paso 2 del carrito si existía
+    # 11. Limpiar botón Trinity duplicado en el paso 2 del carrito si existía
     patron_btn_trinity_carrito = re.compile(
         r'\s*<button type="button" id="spCartPlan_trinity".*?</button>',
         re.DOTALL
@@ -1075,13 +1265,10 @@ En cada ejecución de `AD.py`, es **estrictamente obligatorio** mantener sincron
 
 BLOQUE_HISTORIAL_V137 = f"""
 ---
-### ACTUALIZACIÓN {VERSION_ACTUAL} ({datetime.now().strftime('%d/%m/%Y %H:%M')}) — Reordenación Correlativa Oficial de Servicios (`S1` a `S10`) según Dificultad de Implementación + Encabezado de `Precios claros` Reestructurado sin Desborde del Botón Dorado de Compra
-- **Numeración Correlativa Oficial de los 10 Servicios (`S1` a `S10`) por orden de facilidad/complejidad de puesta en marcha:**
-  - **GRUPO 1 (`S1` a `S5` — Implantación Rápida, `59 €/m` el 1º y `+40 €/m` adicionales):** **S1** Reseñas Google IA, **S2** Cortafuegos Preventivo WhatsApp, **S3** Respuesta a Leads en 10s + Portales, **S4** Facturas y Tickets al Gestor por Foto WA (antes S9) y **S5** Reactivación de Clientes Inactivos.
-  - **GRUPO 2 (`S6` a `S8` — Operativa Avanzada de Agenda, Contratos y Cobros, `79 €/m` suelto | `+59 €/m` combinado):** **S6** Sistema Anti-Plantón 24h + Huecos Flash, **S7** Firma Digital de Presupuestos + Onboarding IA (antes S8) y **S8** Escudo Anti-Morosidad Diplomático (antes S10).
-  - **GRUPO 3 (Satélites Especializados y Boosters IA):** **Sat. 1** Instagram 3 en 1 (`+49 €/m` combo), **Sat. 2** Escudo Logístico 360 (`+59 €/m` combo), **Sat. 3** Cerebro Redactor B2B RAG (`+69 €/m` combo) y **Boosters IA** para S4 Facturas y S8 Anti-Morosidad (`+35 €/m`).
-  - **GRUPO 4 (`S9` y `S10` — Telefonía y Voz Neuronal IA):** **S9** Rescate de Llamadas Perdidas por WhatsApp (`+59 €/m` combo | `79 €/m` suelto, 250 rescates/mes, antes S4) y **S10** Centralita Recepcionista de Voz IA 24/7 (`+129 €/m` combo | `169 €/m` suelto, bolsa de 250 min/mes, antes S7).
-- **Encabezado de `Precios claros` reestructurado sin cortes ni desbordes (`index.html`):** El título H2, el conmutador Mensual/Anual y el botón dorado `🛒 Configurar a la Carta / Contratar` quedan ahora contenidos dentro de la misma caja flex alineada con las 3 tarjetas, impidiendo que el botón de compra se salga por el margen derecho de la pantalla.
+### ACTUALIZACIÓN {VERSION_ACTUAL} ({datetime.now().strftime('%d/%m/%Y %H:%M')}) — Carrito en «Modo Cristal Luminoso CRO», Reparación del Resultado del Test de Diagnóstico y Preselección Automática de Soluciones al Contratar
+- **Nuevo Diseño Luminoso de Alta Confianza en el Carrito Configurador (`#spModalCarritoCarta` en `index.html`):** Siguiendo los principios de neuromarketing y conversión (CRO), el modal de compra abandona el fondo negro oscuro y adopta la misma estética luminosa blanco/menta/perla de `Precios claros`, con tipografía azul marino de alto contraste para presbicia y tarjetas seleccionables en verde esmeralda suave.
+- **Eliminado el Botón Dorado Superior en el Test de Diagnóstico (`#vista-auditorias`):** Mientras el usuario responde las 12 fichas, arriba se muestra únicamente el encabezado limpio *«Descubre el pulso digital de tu negocio.»*.
+- **Reparación del Motor de Resultados del Test (`urgenciaPorModulo`) y Preselección Automática en el Carrito (`spAbrirCarritoConDiagnosticoPreseleccionado`):** Corregida la variable que impedía mostrar los módulos al terminar las 12 preguntas, e incorporado en la barra inferior del diagnóstico el botón dorado `🛒 Configurar y Contratar mi Solución →`, que abre el Carrito Luminoso con todos los servicios y auditorías recomendados por el Test ya marcados automáticamente para que el cliente solo tenga que elegir fecha/hora de la cita y confirmar.
 """
 
 _DOCUMENTOS_MAESTROS_ACTUALIZADOS = False
