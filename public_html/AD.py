@@ -47,14 +47,14 @@ RUTAS_PROYECTO = [
     RUTA_PROGRAMAR
 ]
 
-NOTA_ACTUALIZACION_V168 = """
-### ACTUALIZACIÓN V168 (Unificación Total del Tecnoconsultor en Motor Maestro Único: Cero Re-Prompts de Micrófono, Conexión Directa Gemini Flash-Lite y Conmutación Automática por Secciones)
-- **Eliminación de los 3 motores de voz duplicados que colisionaban en `index.html`:** Unificado todo el control en el bloque maestro final `[SP_CONSULTOR_ULTIMATE_V168]`, anulando los timers antiguos de 150ms/600ms que sobrescribían `spToggleDictadoVozTecnosala` y `spIniciarEscuchaDirectaConsultor`.
-- **Micrófono Persistente de Permiso Único con Conmutación por Apartados:**
-  1. Pide permiso una sola vez al activar el consultor y mantiene el canal abierto sin llamar a `.stop()` entre turnos de pregunta y respuesta (usa compuerta acústica lógica mientras habla el consultor).
-  2. Si el usuario navega a `Inicio`, `Cómo ayudamos`, `Test de diagnóstico`, `Precios claros` o `Magazine`, o cambia de pestaña del navegador, detiene la voz y apaga el micrófono en el acto.
-  3. Cuando el usuario regresa a `Tecnosala`, el micrófono se vuelve a activar solo automáticamente.
-- **Conexión en Paralelo de Baja Latencia a Gemini Flash-Lite (`gemini-2.5-flash-lite`):** Consulta en paralelo a la API de Google Gemini Flash-Lite y al servidor, respondiendo con total fluidez y sin bloqueos de `speechSynthesis` en macOS.
+NOTA_ACTUALIZACION_V169 = """
+### ACTUALIZACIÓN V169 (Reparación Quirúrgica de la Cadena `docHtml` en `spDescargarConversacionConsultor` y Motor Maestro Único V169 en el Cierre Real `</body>`)
+- **Causa raíz detectada y corregida:** En la V168, `re.sub(r"</body>", ...)` inyectó el bloque `<script>` dentro del primer `</body>` que aparecía en el archivo, el cual formaba parte del string literal `'</div></body></html>'` dentro de `spDescargarConversacionConsultor` (línea 3022). Eso partió el string en dos y anuló todo el bloque `<script>` principal de la Tecnosala.
+- **Solución definitiva aplicada:** Restaurada la cadena `'</div></body></html>';` original e inyectado el Motor Maestro Único (`[SP_CONSULTOR_ULTIMATE_V169]`) exclusivamente en el **último** `</body>` real del archivo (`rfind`), con validación estricta en Node.js de todos los bloques `<script>`.
+- **Comportamiento del Tecnoconsultor:**
+  1. Al tocar la Esfera 3D o el botón `🎙️ Hablar`, responde al instante y activa el micrófono con permiso único continuo.
+  2. Conectado en paralelo ultrarrápido al último modelo **Gemini Flash-Lite** (`gemini-2.5-flash-lite`).
+  3. Se silencia y apaga el micrófono al cambiar a cualquier otra sección (`Inicio`, `Cómo ayudamos`, `Test`, `Precios`, `Magazine`) o cambiar de pestaña del navegador, y se vuelve a activar él solo automáticamente al regresar a `Tecnosala`.
 """
 
 _DOCUMENTOS_ACTUALIZADOS = False
@@ -97,8 +97,8 @@ def actualizar_documentos_maestros():
                 crear_backup_seguro(ruta_md)
                 with open(ruta_md, "r", encoding="utf-8") as f:
                     contenido = f.read()
-                if "ACTUALIZACIÓN V168" not in contenido:
-                    contenido = contenido.rstrip() + "\n\n" + NOTA_ACTUALIZACION_V168.strip() + "\n"
+                if "ACTUALIZACIÓN V169" not in contenido:
+                    contenido = contenido.rstrip() + "\n\n" + NOTA_ACTUALIZACION_V169.strip() + "\n"
                     with open(ruta_md, "w", encoding="utf-8") as f:
                         f.write(contenido)
                     print(f"📘 Documento maestro actualizado: {ruta_md}")
@@ -124,6 +124,11 @@ def encontrar_ejecutable_node():
 
 
 def validar_bloques_js_en_html(contenido_html, ruta_html="index.html"):
+    # Verificar primero que NO haya ningún <script> inyectado por error dentro de spDescargarConversacionConsultor
+    if "'</div><!-- [SP_CONSULTOR_ULTIMATE_" in contenido_html:
+        print("❌ Detectada inyección dentro de string literal docHtml. Abortando.")
+        return False
+
     patron = re.compile(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", re.DOTALL | re.IGNORECASE)
     bloques = patron.findall(contenido_html)
     node_bin = encontrar_ejecutable_node()
@@ -151,29 +156,29 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
 <script id="spConsultorUltimateEngineV168">
 (function() {
   /* =========================================================================
-     MOTOR MAESTRO ÚNICO DEL TECNOCONSULTOR (V168)
-     - Toma el mando absoluto sobre cualquier función previa de index.html.
+     MOTOR MAESTRO ÚNICO DEL TECNOCONSULTOR (V169)
+     - Ubicado limpiamente antes del cierre real </body> al final del archivo.
      - Conectado en paralelo ultrarrápido a Gemini Flash-Lite (gemini-2.5-flash-lite).
      - Micrófono de permiso único: jamás se cierra entre turnos mientras estás
        en Tecnosala; se apaga al ir a otros apartados o pestañas y se enciende
        solo al volver a Tecnosala.
      ========================================================================= */
 
-  var _v168DespiertoPorUsuario = false;   // true en cuanto el usuario lo activa 1 vez
-  var _v168PausadoPorSalir = false;       // true cuando sale de Tecnosala o cambia de pestaña
-  var _v168Hablando = false;              // true mientras el consultor está locutando
-  var _v168Escuchando = false;            // true cuando está listo recibiendo voz del usuario
-  var _v168VozMuteada = false;            // true si el usuario silenció el altavoz
-  var _v168Rec = null;                    // Instancia única de SpeechRecognition
-  var _v168RecRunning = false;            // Estado real del motor nativo
-  var _v168BufferTexto = '';              // Frase acumulada del usuario
-  var _v168TimerSilencio = null;          // Disparo automático al terminar de hablar
-  var _v168TimersTeleprompter = [];       // Timers del marcapasos de texto
-  var _v168TimerWatchdogHabla = null;     // Vigilante anti-bloqueo de speechSynthesis
-  var _v168TsFinHabla = 0;                // Marca de tiempo para descartar eco residual
-  var _v168LineaUsuarioViva = null;       // Línea amarilla en vivo en el Teleprompter
-  var _v168Historial = [];                // Memoria conversacional de la sesión
-  var _v168TranscripcionDescarga = [];    // Registro para descargar informe HTML
+  var _v168DespiertoPorUsuario = false;
+  var _v168PausadoPorSalir = false;
+  var _v168Hablando = false;
+  var _v168Escuchando = false;
+  var _v168VozMuteada = false;
+  var _v168Rec = null;
+  var _v168RecRunning = false;
+  var _v168BufferTexto = '';
+  var _v168TimerSilencio = null;
+  var _v168TimersTeleprompter = [];
+  var _v168TimerWatchdogHabla = null;
+  var _v168TsFinHabla = 0;
+  var _v168LineaUsuarioViva = null;
+  var _v168Historial = [];
+  var _v168TranscripcionDescarga = [];
   var _v168NombreVoz = 'Jorge';
   var _v168VozObj = null;
   var _v168EstadoApi = 'online';
@@ -346,9 +351,6 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
     return _v168VozObj;
   }
 
-  /* =========================================================================
-     RECONOCEDOR DE VOZ ÚNICO Y CONTINUO (SIN RE-PROMPTS ENTRE TURNOS)
-     ========================================================================= */
   function obtenerReconocedorMaestroV168() {
     if (_v168Rec) return _v168Rec;
     var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -387,7 +389,6 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
     };
 
     rec.onresult = function(event) {
-      // Compuerta anti-eco: si el consultor está hablando o acaba de callarse hace <450ms, ignoramos el audio
       if (_v168Hablando || _v168PausadoPorSalir || !estaEnTecnosalaVisible() || (performance.now() - _v168TsFinHabla < 450)) {
         _v168BufferTexto = '';
         return;
@@ -442,7 +443,6 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
 
     rec.onend = function() {
       _v168RecRunning = false;
-      // Si el usuario sigue en Tecnosala y el consultor está activo, mantenemos vivo el micrófono automáticamente
       if (_v168DespiertoPorUsuario && !_v168PausadoPorSalir && estaEnTecnosalaVisible()) {
         try {
           rec.start();
@@ -474,9 +474,6 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
     }
   }
 
-  /* =========================================================================
-     LOCUCIÓN Y TELEPROMPTER SINCRONIZADO A 60 FPS (SIN APAGAR EL MICRO)
-     ========================================================================= */
   window.spReproducirEnTeleprompter2027 = function(textoCompleto, alTerminarCallback, preguntaPrevia) {
     limpiarTimersV168();
     _v168Hablando = true;
@@ -649,9 +646,6 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
     }
   };
 
-  /* =========================================================================
-     CONEXIÓN EN PARALELO DE BAJA LATENCIA A GEMINI FLASH-LITE (2.5 FLASH-LITE)
-     ========================================================================= */
   function pedirRespuestaGeminiFlashLiteV168(preguntaUsuario) {
     var respaldoExperto = (typeof window.spObtenerRespuestaOmniscienteCompleta === 'function')
       ? window.spObtenerRespuestaOmniscienteCompleta(preguntaUsuario)
@@ -667,7 +661,6 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
     var k = obtenerClaveVertexV168();
     var promesas = [];
 
-    // Vía 1 Directa: Gemini 2.5 Flash-Lite en Vertex AI (la más rápida)
     if (k) {
       var urlV25 = 'https://aiplatform.googleapis.com/v1beta1/publishers/google/models/gemini-2.5-flash-lite:generateContent?key=' + encodeURIComponent(k);
       promesas.push(
@@ -689,7 +682,6 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
       );
     }
 
-    // Vía 2 En paralelo: Backend Render de Sistemas Pyme
     promesas.push(
       fetch('https://servicio-resenas.onrender.com/api/consultor-ia', {
         method: 'POST',
@@ -710,7 +702,6 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
       })
     );
 
-    // Timeout máximo de 2.2 segundos para que jamás haya silencios largos
     return new Promise(function(resolve) {
       var resuelto = false;
       var timerMax = setTimeout(function() {
@@ -743,9 +734,6 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
     });
   }
 
-  /* =========================================================================
-     FUNCIONES PÚBLICAS GLOBALES (SOBRESCRIBEN CUALQUIER VERSIÓN PREVIA)
-     ========================================================================= */
   window.spProcesarConsultaEnTeleprompterDirecto = function(textoPregunta) {
     var limpia = String(textoPregunta || '').trim();
     if (!limpia) return;
@@ -778,12 +766,10 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
     _v168DespiertoPorUsuario = true;
     _v168PausadoPorSalir = false;
 
-    // 1. ARRANQUE SÍNCRONO DEL MICRÓFONO EN LA LÍNEA 1 DEL CLIC DEL USUARIO
     encenderMicrofonoAhoraSincrono();
 
     var track = asegurarCabinaTeleprompterV168();
     if (track && track.children.length > 0) {
-      // Si ya había saludado antes y el usuario toca el orbe mientras hablaba, calla la voz y pasa directo a escucharle
       if (_v168Hablando) {
         limpiarTimersV168();
         _v168Hablando = false;
@@ -910,7 +896,6 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
     }
   };
 
-  /* Vigilante permanente de navegación entre apartados de la web y pestañas del navegador */
   setInterval(function() {
     if (!_v168DespiertoPorUsuario) return;
     var visible = estaEnTecnosalaVisible();
@@ -944,30 +929,42 @@ def reparar_index_html(ruta_index):
     with open(ruta_index, "r", encoding="utf-8") as f:
         html = f.read()
 
-    # 1. Neutralizar los timers antiguos de 150ms/600ms que sobrescribían spToggleDictadoVozTecnosala
-    html = html.replace(
-        "setTimeout(conectarFuncionesRealesTecnosalaV159, 150);",
-        "/* [V168: neutralizado timer 150ms] */"
-    ).replace(
-        "setTimeout(conectarFuncionesRealesTecnosalaV159, 600);",
-        "/* [V168: neutralizado timer 600ms] */"
-    )
-
-    # 2. Inyectar o actualizar el Bloque Maestro Único V168 justo antes de </body>
+    # 1. ELIMINAR CUALQUIER INYECCIÓN PREVIA DE V168 (incluyendo la que cayó por error dentro de docHtml en la línea 3022)
     patron_v168 = re.compile(
-        r"<!-- \[SP_CONSULTOR_ULTIMATE_V168_START\] -->.*?<!-- \[SP_CONSULTOR_ULTIMATE_V168_END\] -->",
+        r"<!-- \[SP_CONSULTOR_ULTIMATE_V168_START\] -->.*?<!-- \[SP_CONSULTOR_ULTIMATE_V168_END\] -->\n?",
         re.DOTALL
     )
-    if patron_v168.search(html):
-        html = patron_v168.sub(lambda _: BLOQUE_MAESTRO_ULTIMATE_V168, html, count=1)
-    else:
-        html = re.sub(
-            r"</body>",
-            lambda _: BLOQUE_MAESTRO_ULTIMATE_V168 + "\n</body>",
-            html,
-            count=1,
-            flags=re.IGNORECASE
-        )
+    html = patron_v168.sub(lambda _: "", html)
+
+    # Asegurar que la línea de cierre de docHtml quede 100% limpia y en una sola línea válida de JS
+    html = re.sub(
+        r"'</div>\s*</body></html>';",
+        lambda _: "'</div></body></html>';",
+        html
+    )
+
+    # 2. Neutralizar timers antiguos
+    html = html.replace(
+        "setTimeout(conectarFuncionesRealesTecnosalaV159, 150);",
+        "/* [V169: neutralizado timer 150ms] */"
+    ).replace(
+        "setTimeout(conectarFuncionesRealesTecnosalaV159, 600);",
+        "/* [V169: neutralizado timer 600ms] */"
+    )
+
+    # 3. INYECTAR EL MOTOR MAESTRO ÚNICO EXCLUSIVAMENTE ANTES DEL ÚLTIMO </body> REAL DEL ARCHIVO
+    pos_ultimo_body = html.lower().rfind("</body>")
+    if pos_ultimo_body == -1:
+        print(f"❌ No se encontró etiqueta </body> final en {ruta_index}")
+        return False
+
+    html = (
+        html[:pos_ultimo_body]
+        + "\n"
+        + BLOQUE_MAESTRO_ULTIMATE_V168
+        + "\n"
+        + html[pos_ultimo_body:]
+    )
 
     if not validar_bloques_js_en_html(html, ruta_index):
         print(f"❌ Abortando guardado en {ruta_index} por error de sintaxis JS.")
@@ -976,7 +973,16 @@ def reparar_index_html(ruta_index):
     with open(ruta_index, "w", encoding="utf-8") as f:
         f.write(html)
 
-    print(f"🚀 [{os.path.basename(os.path.dirname(ruta_index))}] Motor Maestro Único V168 inyectado y verificado.")
+    # Eliminar duplicados prohibidos como index_2.html si existieran en la carpeta
+    ruta_dup = os.path.join(os.path.dirname(ruta_index), "index_2.html")
+    if os.path.isfile(ruta_dup):
+        try:
+            os.remove(ruta_dup)
+            print(f"🧹 Eliminado archivo duplicado residual: {ruta_dup}")
+        except Exception:
+            pass
+
+    print(f"🚀 [{os.path.basename(os.path.dirname(ruta_index))}] Cadena docHtml reparada y Motor V169 colocado al final real de </body>.")
     return True
 
 
@@ -1030,7 +1036,7 @@ def publicar_en_git_repositorios():
                 print(f"☁️ Subiendo cambios a Git ({nombre})...")
                 subprocess.run(["git", "-C", ruta_repo, "add", "-A"], check=False)
                 subprocess.run(
-                    ["git", "-C", ruta_repo, "commit", "-m", "V168: Motor Maestro Unico Tecnoconsultor Flash-Lite y Micro Continuo"],
+                    ["git", "-C", ruta_repo, "commit", "-m", "V169: Reparacion cadena docHtml y Motor Maestro Tecnoconsultor al final real de body"],
                     check=False
                 )
                 subprocess.run(["git", "-C", ruta_repo, "push"], check=False)
@@ -1063,7 +1069,7 @@ def lanzar_servidor_local_y_abrir_tecnosala():
 
 def main():
     print("\n" + "=" * 78)
-    print("🛠️ INICIANDO ACTUALIZACIÓN V168 — MOTOR MAESTRO ÚNICO TECNOCONSULTOR")
+    print("🛠️ INICIANDO ACTUALIZACIÓN V169 — REPARACIÓN QUIRÚRGICA DOC_HTML Y MOTOR V169")
     print("=" * 78)
 
     actualizar_documentos_maestros()
@@ -1076,7 +1082,7 @@ def main():
     publicar_en_git_repositorios()
     lanzar_servidor_local_y_abrir_tecnosala()
 
-    print("\n🎉 ACTUALIZACIÓN V168 COMPLETADA CON ÉXITO — RECARGA CON CMD+SHIFT+R")
+    print("\n🎉 ACTUALIZACIÓN V169 COMPLETADA CON ÉXITO — RECARGA CON CMD+SHIFT+R")
     print("📌 Actualización de Conocimiento guardada automáticamente en tu carpeta SISTEMAS PYME/Programar (con copia previa en backups_sp)\n")
 
 
