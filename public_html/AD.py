@@ -71,9 +71,12 @@ RUTA_SCRAPER = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Scrape
 RUTA_SERVICIO_RESENAS = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Servicios/Servicio Reseñas/servicio_resenas"
 RUTA_PROGRAMAR = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Programar"
 
-VERSION_ACTUAL = "V159"
+VERSION_ACTUAL = "V162"
 FECHA_EJECUCION = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 TIMESTAMP_BAK = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+URL_WEBHOOK_SHEETS_DEFAULT = "https://script.google.com/macros/s/AKfycbwo9pcYbQKru4WMAxAnHNcqtIcAYQogXkaQ8BAWhTeyzc49kLtM02SVFnTxYRGqUStapg/exec"
+
 # ==============================================================================
 # 1. UTILIDADES DE BACKUP, ESCRITURA SEGURA Y VALIDACIÓN (PYTHON + JS NODE)
 # ==============================================================================
@@ -117,28 +120,6 @@ def validar_sintaxis_python(ruta_py):
         return False
 
 
-def localizar_binario_node():
-    node_bin = shutil.which("node")
-    if node_bin and os.path.exists(node_bin):
-        return node_bin
-    rutas_candidatas = [
-        "/opt/homebrew/bin/node",
-        "/usr/local/bin/node",
-        "/usr/bin/node",
-    ]
-    patrones_extra = [
-        os.path.expanduser("~/.nvm/versions/node/*/bin/node"),
-        "/opt/homebrew/Cellar/node*/*/bin/node",
-    ]
-    for patron in patrones_extra:
-        encontrados = sorted(glob.glob(patron), reverse=True)
-        rutas_candidatas.extend(encontrados)
-    for cand in rutas_candidatas:
-        if cand and os.path.exists(cand) and os.access(cand, os.X_OK):
-            return cand
-    return None
-
-
 def validar_bloques_js_en_html(ruta_html):
     if not os.path.exists(ruta_html):
         return True
@@ -146,32 +127,43 @@ def validar_bloques_js_en_html(ruta_html):
         with open(ruta_html, "r", encoding="utf-8") as f:
             html = f.read()
         bloques = re.findall(r"<script(?![^>]*src=)[^>]*>([\s\S]*?)</script>", html, flags=re.IGNORECASE)
-        node_bin = localizar_binario_node()
+        node_bin = shutil.which("node")
         if not node_bin:
-            print(f"  ℹ️ Node.js no está en el PATH de este entorno; verificados {len(bloques)} bloques <script> en {os.path.basename(ruta_html)}.")
-            return True
-        for idx, b in enumerate(bloques):
-            if "application/ld+json" in b or not b.strip():
-                continue
-            tmp_js = f"/tmp/_sp_check_v158_{idx}.js"
-            with open(tmp_js, "w", encoding="utf-8") as tf:
-                tf.write(b)
-            try:
-                proc = subprocess.run([node_bin, "--check", tmp_js], capture_output=True, text=True)
-            except FileNotFoundError:
+            candidatos_node = [
+                "/opt/homebrew/bin/node",
+                "/usr/local/bin/node",
+                "/usr/bin/node",
+                os.path.expanduser("~/.nvm/versions/node/current/bin/node"),
+            ]
+            candid_glob = glob.glob(os.path.expanduser("~/.nvm/versions/node/*/bin/node"))
+            candidatos_node.extend(sorted(candid_glob, reverse=True))
+            for cand in candidatos_node:
+                if cand and os.path.exists(cand) and os.access(cand, os.X_OK):
+                    node_bin = cand
+                    break
+        if node_bin and bloques:
+            for idx, b in enumerate(bloques):
+                if "application/ld+json" in b or not b.strip():
+                    continue
+                tmp_js = f"/tmp/_sp_check_v161_{idx}.js"
+                with open(tmp_js, "w", encoding="utf-8") as tf:
+                    tf.write(b)
+                try:
+                    proc = subprocess.run([node_bin, "--check", tmp_js], capture_output=True, text=True)
+                except FileNotFoundError:
+                    try:
+                        os.remove(tmp_js)
+                    except Exception:
+                        pass
+                    break
                 try:
                     os.remove(tmp_js)
                 except Exception:
                     pass
-                return True
-            try:
-                os.remove(tmp_js)
-            except Exception:
-                pass
-            if proc.returncode != 0:
-                print(f"  ❌ Error JS en bloque #{idx + 1} de {os.path.basename(ruta_html)}:\n{proc.stderr}")
-                return False
-        print(f"  🟢 Todos los bloques <script> validados con node --check OK: {os.path.basename(ruta_html)}")
+                if proc.returncode != 0:
+                    print(f"  ❌ Error JS en bloque #{idx + 1} de {os.path.basename(ruta_html)}:\n{proc.stderr}")
+                    return False
+        print(f"  🟢 Todos los bloques <script> validados OK: {os.path.basename(ruta_html)}")
         return True
     except Exception as e:
         print(f"  ⚠️ Aviso validando JS en {ruta_html}: {e}")
@@ -179,9 +171,9 @@ def validar_bloques_js_en_html(ruta_html):
 
 
 # ==============================================================================
-# 2. SECCIÓN COMPLETA `#vista-tarifas` (CON TODA LA ESTRUCTURA DE LAS 3 TARJETAS)
+# 2. SECCIÓN COMPLETA `#vista-tarifas` (PRECIOS CLAROS CON SUS 3 TARJETAS ÍNTEGRAS)
 # ==============================================================================
-HTML_VISTA_TARIFAS_V152 = r'''<!-- ======================================================================= -->
+HTML_VISTA_TARIFAS_V152 = r'''  <!-- ======================================================================= -->
   <!-- VISTA 4 (SALA INDEPENDIENTE): PRECIOS CLAROS (ARQUITECTURA 4 GRUPOS)    -->
   <!-- ======================================================================= -->
   <section id="vista-tarifas" class="view-panel hidden bg-slate-50 text-slate-900">
@@ -194,9 +186,9 @@ HTML_VISTA_TARIFAS_V152 = r'''<!-- =============================================
 
       <div class="max-w-6xl mx-auto w-full flex flex-col justify-between flex-1 relative z-10">
 
-        <!-- FILA 1: Titular en 2 líneas a la izquierda + Botones Mensual/Anual grandes y explícitos -->
+        <!-- FILA 1: Titular en 2 líneas a la izquierda + Botones Mensual/Anual grandes y claros -->
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-2.5 mb-2 border-b-2 border-teal-500/25 w-full">
-          <h2 class="text-xl sm:text-2xl lg:text-[26px] font-black text-brand-navy tracking-tight leading-[1.15]">
+          <h2 class="text-xl sm:text-2xl lg:text-[26px] font-black text-brand-navy tracking-tight leading-[1.15] text-left">
             <span class="block">Precios claros y amortización</span>
             <span class="block sp-green-headline">desde el primer cliente.</span>
           </h2>
@@ -218,7 +210,7 @@ HTML_VISTA_TARIFAS_V152 = r'''<!-- =============================================
           </div>
         </div>
 
-        <!-- FILA 2: Las 3 Tarjetas Protagonistas con TODA su estructura y Subcajas Simétricas (h-[100px]) -->
+        <!-- FILA 2: Las 3 Tarjetas Protagonistas con toda su estructura completa y Subcajas Simétricas -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-stretch my-auto py-1">
 
           <!-- TARJETA 1: PYME BASE -->
@@ -243,7 +235,7 @@ HTML_VISTA_TARIFAS_V152 = r'''<!-- =============================================
                 </p>
               </div>
 
-              <!-- Subcaja Simétrica 1 (h-[100px]) -->
+              <!-- Subcaja Simétrica 1 (Altura idéntica h-[100px] y 1 sola línea de insignia) -->
               <div class="bg-slate-50 border-2 border-slate-200/90 rounded-2xl px-3.5 py-2 mb-2.5 shadow-inner flex flex-col justify-between h-[100px]">
                 <div class="flex items-baseline justify-between gap-2" data-plan-price="base">
                   <div class="flex items-baseline gap-1.5 whitespace-nowrap">
@@ -293,7 +285,7 @@ HTML_VISTA_TARIFAS_V152 = r'''<!-- =============================================
                 </p>
               </div>
 
-              <!-- Subcaja Simétrica 2 (h-[100px]) -->
+              <!-- Subcaja Simétrica 2 (Altura idéntica h-[100px] y 1 sola línea de insignia) -->
               <div class="bg-white/95 border-2 border-sky-300 rounded-2xl px-3.5 py-2 mb-2.5 shadow-inner flex flex-col justify-between h-[100px]">
                 <div class="flex items-baseline justify-between gap-2" data-plan-price="duo">
                   <div class="flex items-baseline gap-1.5 whitespace-nowrap">
@@ -348,7 +340,7 @@ HTML_VISTA_TARIFAS_V152 = r'''<!-- =============================================
                 </div>
               </div>
 
-              <!-- Subcaja Simétrica 3 (h-[100px]) -->
+              <!-- Subcaja Simétrica 3 (Altura idéntica h-[100px] y 1 sola línea de insignia) -->
               <div class="bg-white/95 border-2 border-emerald-500/70 rounded-2xl px-3.5 py-2 mb-2.5 shadow-inner flex flex-col justify-between h-[100px]">
                 <div class="flex items-baseline justify-between gap-2" data-plan-price="trinity">
                   <div class="flex items-baseline gap-1.5 whitespace-nowrap">
@@ -378,7 +370,7 @@ HTML_VISTA_TARIFAS_V152 = r'''<!-- =============================================
 
         </div>
 
-        <!-- FILA 3: Banner-Guía Inferior Centrado -->
+        <!-- FILA 3: Banner-Guía Inferior Centrado Equidistante -->
         <div class="my-auto pt-3 pb-1 flex justify-center">
           <button type="button" onclick="spScrollLimpioSeccion('tarifas-slide-complementos')" class="group inline-flex items-center gap-3.5 px-7 py-3 rounded-2xl bg-gradient-to-r from-brand-navy via-[#0f3456] to-teal-800 hover:from-teal-800 hover:to-brand-navy text-white border-2 border-teal-300/80 shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all cursor-pointer">
             <span class="text-base">🔍🧠</span>
@@ -566,15 +558,14 @@ HTML_VISTA_TARIFAS_V152 = r'''<!-- =============================================
 
 
 # ==============================================================================
-# 3. BLOQUE CSS + JS DEFINITIVO V159 PARA `index.html`:
-#    - CARRITO CON SUBCAJA DÍA 1 SUAVE, SUBSELECTOR S1/S2 NÍTIDO, CHECK "✓" Y
-#      PÍLDORA "🟢 Calendario Activo" SIMÉTRICA
-#    - TECNOCONSULTOR MANOS LIBRES FLUIDO (1 SOLA INSTANCIA SIN RE-PEDIR MICRO,
-#      SE CALLA AL SALIR DE TECNOSALA Y SE REACTIVA SOLO AL VOLVER)
-#    - AUTO-DESCUBRIDOR DEL MODELO GEMINI FLASH-LITE MÁS NUEVO DE GOOGLE (3.8+)
+# 3. BLOQUE CSS + JS DEFINITIVO V160 PARA `index.html`:
+#    - CERO DOBLE PERMISO DE MICRO (ELIMINADO getUserMedia Y RECONOCEDOR DUPLICADO)
+#    - USA EL MOTOR ORIGINAL DEL ORBE 3D QUE FUNCIONABA PERFECTO EN V149
+#    - SE CALLA AL SALIR DE TECNOSALA Y SE REACTIVA SOLO AL VOLVER
+#    - BUSCADOR DINÁMICO DEL MODELO GEMINI FLASH-LITE MÁS NUEVO (3.8+)
 # ==============================================================================
 BLOQUE_JS_MAESTRO_WEB_V152 = r'''
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V159_START] -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V160_START] -->
 <style>
   /* 1. CONTRASTE CLARO EN LAS TARJETAS DEL CARRITO + INSIGNIA COMPACTA "✓" */
   #spModalCarritoCarta .sp-cart-item-btn {
@@ -807,630 +798,79 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
 <script>
 (function() {
   /* =========================================================================
-     1. MOTOR DE VOZ MANOS LIBRES FLUIDO PARA EL TECNOCONSULTOR
-        - Instancia única persistente de micrófono (sin pedir permiso en bucle)
-        - Se calla y pausa al salir de Tecnosala
-        - Se vuelve a activar solo automáticamente al regresar a Tecnosala
+     1. COORDINACIÓN LIMPIA DEL TECNOCONSULTOR SOBRE SU MOTOR ORIGINAL NATIVO
+        (CERO getUserMedia Y CERO RECONOCEDOR DUPLICADO = NUNCA SALE DOBLE PERMISO)
      ========================================================================= */
-  var _spRecMaestroV157 = null;
-  var _spStreamPersistenteV157 = null;
-  var _spSesionIniciadaPorUsuarioV157 = false;
-  var _spManosLibresActivoV157 = false;
-  var _spMicroAbiertoRealV157 = false;
-  var _spConsultorHablandoV157 = false;
-  var _spIgnorarEcoHastaTsV157 = 0;
-  var _spTimerSilencioFraseV157 = null;
-  var _spWatchdogManosLibresV157 = null;
-  var _spLineaDictadoEnCursoV157 = null;
-  var _spHistorialCharlaV157 = [];
-  var _spUltimoReintentoStartTsV157 = 0;
+  window._spConsultorEstabaActivoAntesDeSalir = false;
 
-  function obtenerKVertexV157() {
-    try {
-      return atob(['QVEuQWI4Uk42THBt', 'WjZzMjBXVF9oVjVV', 'U3hnQThTbmVWMmFJ', 'ODF3MWNZUE1sMHpm', 'd3NSMFE='].join(''));
-    } catch (e) {
-      return '';
-    }
-  }
+  /* Guardamos referencias al motor original nativo del Orbe 3D (el que crea la cabina del Teleprompter y habla) */
+  var _origActivarOrbeNativo = window.spActivarOrbeConsultorInteractivo;
+  var _origPararTotalNativo = window.spPararConsultorTotalmente;
 
-  function estaEnVistaTecnosalaAhora() {
-    var v = document.getElementById('vista-tecnosala');
-    return !!(v && !v.classList.contains('hidden') && !document.hidden);
-  }
-
-  function asegurarStreamAudioPersistenteV157() {
-    if (_spStreamPersistenteV157) return Promise.resolve(_spStreamPersistenteV157);
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      return navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(function(st) {
-          _spStreamPersistenteV157 = st;
-          return st;
-        })
-        .catch(function() { return null; });
-    }
-    return Promise.resolve(null);
-  }
-
-  function actualizarUiConsultorV157(modo) {
-    var btnV = document.getElementById('spBtnVoiceTecnosala');
-    var txtV = document.getElementById('spVoiceBtnText');
-    var icoV = document.getElementById('spVoiceMicIcon');
-    var inp = document.getElementById('spTecnosalaInput');
-    var hud = document.getElementById('spTeleprompterHudStatus');
-    var wrappers = document.querySelectorAll('#spOrb3DWrapperMain, #vista-tecnosala .sp-ai-core-orb');
-
-    for (var i = 0; i < wrappers.length; i++) {
-      wrappers[i].classList.remove('sp-orb-state-speaking', 'sp-orb-state-listening');
-      if (modo === 'speaking') wrappers[i].classList.add('sp-orb-state-speaking');
-      else if (modo === 'listening') wrappers[i].classList.add('sp-orb-state-listening');
-    }
-
-    if (modo === 'listening') {
-      if (btnV) btnV.classList.add('sp-voice-listening');
-      if (txtV) txtV.textContent = 'Escuchando...';
-      if (icoV) icoV.textContent = '🔴';
-      if (inp) inp.setAttribute('placeholder', '🟢 Manos libres activo: habla directamente sin pulsar ningún botón...');
-      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping inline-block mr-1.5"></span>🎙️ MANOS LIBRES ACTIVO • HÁBLAME DIRECTAMENTE SIN PULSAR NADA';
-    } else if (modo === 'speaking') {
-      if (btnV) btnV.classList.remove('sp-voice-listening');
-      if (txtV) txtV.textContent = 'Hablar';
-      if (icoV) icoV.textContent = '🎙️';
-      if (inp) inp.setAttribute('placeholder', '🔊 Respondiendo en voz alta (al terminar te escucho automáticamente)...');
-      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse inline-block mr-1.5"></span>HABLANDO EN VIVO • PULSA EL ORBE O «⏹ PARAR» PARA DETENERLO';
-    } else {
-      if (btnV) btnV.classList.remove('sp-voice-listening');
-      if (txtV) txtV.textContent = 'Hablar';
-      if (icoV) icoV.textContent = '🎙️';
-      if (inp) inp.setAttribute('placeholder', 'Escribe tu duda o pulsa 🎙️ Hablar o la Esfera 3D...');
-      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full bg-sky-400 inline-block mr-1.5"></span>⏸ EN PAUSA • PULSA LA ESFERA 3D O «🎙️ HABLAR» PARA ACTIVAR EL MICRO';
-    }
-  }
-
-  function quitarLineaDictadoEnCursoV157() {
-    if (_spLineaDictadoEnCursoV157 && _spLineaDictadoEnCursoV157.parentNode) {
-      try { _spLineaDictadoEnCursoV157.parentNode.removeChild(_spLineaDictadoEnCursoV157); } catch (e) {}
-    }
-    _spLineaDictadoEnCursoV157 = null;
-  }
-
-  function mostrarDictadoVivoEnTeleprompterV157(textoParcial) {
-    var track = document.getElementById('spTeleprompterRollTrack');
-    if (!track) return;
-    if (!_spLineaDictadoEnCursoV157 || !_spLineaDictadoEnCursoV157.parentNode) {
-      _spLineaDictadoEnCursoV157 = document.createElement('div');
-      _spLineaDictadoEnCursoV157.className = 'sp-led-line-item sp-led-line-user';
-      track.appendChild(_spLineaDictadoEnCursoV157);
-      while (track.children.length > 4) {
-        track.removeChild(track.firstElementChild);
-      }
-    }
-    _spLineaDictadoEnCursoV157.innerHTML = '🎙️ <span>«' + String(textoParcial || '').replace(/</g, '&lt;') + '»</span><span class="sp-led-cursor"></span>';
-  }
-
-  function crearOObtenerReconocedorUnicoV157() {
-    if (_spRecMaestroV157) return _spRecMaestroV157;
-    var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRec) return null;
-
-    var rec = new SpeechRec();
-    rec.lang = 'es-ES';
-    rec.continuous = true;
-    rec.interimResults = true;
-    rec.maxAlternatives = 1;
-
-    var bufferFraseUsuario = '';
-
-    function dispararFraseCapturada() {
-      if (_spTimerSilencioFraseV157) {
-        clearTimeout(_spTimerSilencioFraseV157);
-        _spTimerSilencioFraseV157 = null;
-      }
-      if (!estaEnVistaTecnosalaAhora() || !_spManosLibresActivoV157) {
-        bufferFraseUsuario = '';
-        return;
-      }
-      var pregunta = String(bufferFraseUsuario || '').trim();
-      bufferFraseUsuario = '';
-      if (!pregunta || pregunta.length < 2) return;
-      if (_spConsultorHablandoV157 || Date.now() < _spIgnorarEcoHastaTsV157) return;
-
-      quitarLineaDictadoEnCursoV157();
-      _spConsultorHablandoV157 = true;
-      _spIgnorarEcoHastaTsV157 = Date.now() + 1800;
-      actualizarUiConsultorV157('speaking');
-      window.spProcesarConsultaEnTeleprompterDirecto(pregunta);
-    }
-
-    rec.onstart = function() {
-      _spMicroAbiertoRealV157 = true;
-      if (!_spConsultorHablandoV157 && _spManosLibresActivoV157 && estaEnVistaTecnosalaAhora()) {
-        actualizarUiConsultorV157('listening');
-      }
+  if (typeof _origActivarOrbeNativo === 'function' && !_origActivarOrbeNativo._wrappedV160) {
+    var nuevoActivarOrbe = function(ev) {
+      window._spConsultorEstabaActivoAntesDeSalir = true;
+      return _origActivarOrbeNativo.apply(this, arguments);
     };
+    nuevoActivarOrbe._wrappedV160 = true;
+    window.spActivarOrbeConsultorInteractivo = nuevoActivarOrbe;
+  }
 
-    rec.onresult = function(ev) {
-      if (!estaEnVistaTecnosalaAhora() || !_spManosLibresActivoV157) {
-        bufferFraseUsuario = '';
-        return;
+  if (typeof _origPararTotalNativo === 'function' && !_origPararTotalNativo._wrappedV160) {
+    var nuevoPararTotal = function(ev) {
+      /* Si el usuario pulsa manualmente PARAR (con evento de clic), desactivamos el auto-retorno */
+      if (ev) {
+        window._spConsultorEstabaActivoAntesDeSalir = false;
       }
-      if (_spConsultorHablandoV157 || (window.speechSynthesis && window.speechSynthesis.speaking) || Date.now() < _spIgnorarEcoHastaTsV157) {
-        bufferFraseUsuario = '';
-        return;
-      }
-      var acumulado = '';
-      var esFinal = false;
-      for (var i = ev.resultIndex; i < ev.results.length; i++) {
-        acumulado += ev.results[i][0].transcript;
-        if (ev.results[i].isFinal) esFinal = true;
-      }
-      var limpio = acumulado.trim();
-      if (!limpio) return;
-      bufferFraseUsuario = limpio;
-
-      var inp = document.getElementById('spTecnosalaInput');
-      if (inp) inp.value = limpio;
-      mostrarDictadoVivoEnTeleprompterV157(limpio);
-
-      if (_spTimerSilencioFraseV157) clearTimeout(_spTimerSilencioFraseV157);
-      _spTimerSilencioFraseV157 = setTimeout(dispararFraseCapturada, esFinal ? 550 : 980);
+      return _origPararTotalNativo.apply(this, arguments);
     };
-
-    rec.onerror = function(ev) {
-      var err = ev ? ev.error : '';
-      if (err === 'not-allowed' || err === 'service-not-allowed') {
-        _spMicroAbiertoRealV157 = false;
-        _spManosLibresActivoV157 = false;
-        actualizarUiConsultorV157('idle');
-      }
-    };
-
-    rec.onend = function() {
-      _spMicroAbiertoRealV157 = false;
-      if (!estaEnVistaTecnosalaAhora() || !_spManosLibresActivoV157) {
-        actualizarUiConsultorV157('idle');
-        return;
-      }
-      if (bufferFraseUsuario && bufferFraseUsuario.trim().length >= 2 && !_spConsultorHablandoV157) {
-        dispararFraseCapturada();
-      }
-      if (_spManosLibresActivoV157 && estaEnVistaTecnosalaAhora() && !_spConsultorHablandoV157) {
-        var ahora = Date.now();
-        if (ahora - _spUltimoReintentoStartTsV157 > 450) {
-          _spUltimoReintentoStartTsV157 = ahora;
-          setTimeout(function() {
-            if (_spManosLibresActivoV157 && estaEnVistaTecnosalaAhora() && !_spMicroAbiertoRealV157 && !_spConsultorHablandoV157) {
-              try { _spRecMaestroV157.start(); } catch (e) {}
-            }
-          }, 180);
-        }
-      }
-    };
-
-    _spRecMaestroV157 = rec;
-    return rec;
+    nuevoPararTotal._wrappedV160 = true;
+    window.spPararConsultorTotalmente = nuevoPararTotal;
   }
 
-  function iniciarWatchdogManosLibresV157() {
-    if (_spWatchdogManosLibresV157) return;
-    _spWatchdogManosLibresV157 = setInterval(function() {
-      if (!estaEnVistaTecnosalaAhora() || !_spManosLibresActivoV157) return;
-      var sintHablando = !!(window.speechSynthesis && window.speechSynthesis.speaking);
-      if (_spConsultorHablandoV157 || sintHablando) return;
-      if (!_spMicroAbiertoRealV157 && _spRecMaestroV157) {
-        var ahora = Date.now();
-        if (ahora - _spUltimoReintentoStartTsV157 > 1200) {
-          _spUltimoReintentoStartTsV157 = ahora;
-          try { _spRecMaestroV157.start(); } catch (e) {}
-        }
-      }
-    }, 1100);
-  }
-
-  function pausarPorCambioDePestanaOSalidaV157() {
-    _spManosLibresActivoV157 = false;
-    _spConsultorHablandoV157 = false;
-    if (_spTimerSilencioFraseV157) {
-      clearTimeout(_spTimerSilencioFraseV157);
-      _spTimerSilencioFraseV157 = null;
-    }
-    quitarLineaDictadoEnCursoV157();
-    if ('speechSynthesis' in window) {
-      try { window.speechSynthesis.cancel(); } catch (e) {}
-    }
-    if (_spRecMaestroV157 && _spMicroAbiertoRealV157) {
-      try { _spRecMaestroV157.stop(); } catch (e) {}
-    }
-    _spMicroAbiertoRealV157 = false;
-    actualizarUiConsultorV157('idle');
-  }
-
-  /* Parada manual cuando el usuario pulsa expresamente el botón rojo "⏹ PARAR" o toca el Orbe para pausar */
-  window.spPararConsultorTotalmente = function(ev) {
-    if (ev && ev.stopPropagation) ev.stopPropagation();
-    _spSesionIniciadaPorUsuarioV157 = false;
-    pausarPorCambioDePestanaOSalidaV157();
-    if (_spStreamPersistenteV157 && _spStreamPersistenteV157.getTracks) {
-      try {
-        _spStreamPersistenteV157.getTracks().forEach(function(t) { t.stop(); });
-      } catch (e) {}
-      _spStreamPersistenteV157 = null;
-    }
-  };
-
-  window.spActivarModoEscuchaPersistente = function(forzarPorUsuario) {
-    if (!estaEnVistaTecnosalaAhora()) return;
-
-    if (forzarPorUsuario) {
-      _spSesionIniciadaPorUsuarioV157 = true;
-      _spManosLibresActivoV157 = true;
-      _spConsultorHablandoV157 = false;
-      if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
-        try { window.speechSynthesis.cancel(); } catch (e) {}
-      }
-    }
-
-    if (!_spManosLibresActivoV157) return;
-    iniciarWatchdogManosLibresV157();
-
-    if (!_spConsultorHablandoV157) {
-      actualizarUiConsultorV157('listening');
-    }
-
-    if (_spMicroAbiertoRealV157) return;
-
-    var rec = crearOObtenerReconocedorUnicoV157();
-    if (!rec) return;
-
-    asegurarStreamAudioPersistenteV157().then(function() {
-      if (_spManosLibresActivoV157 && estaEnVistaTecnosalaAhora() && !_spMicroAbiertoRealV157) {
-        _spUltimoReintentoStartTsV157 = Date.now();
-        try { rec.start(); } catch (e) {}
-      }
-    });
-  };
-
-  window.spIniciarEscuchaDirectaConsultor = function() {
-    window.spActivarModoEscuchaPersistente(true);
-  };
-
-  window.spToggleDictadoVozTecnosala = function() {
-    var stage = document.getElementById('spTeleprompter2027Stage');
-    if (!stage) {
-      window.spActivarOrbeConsultorInteractivo();
-      return;
-    }
-    if (_spManosLibresActivoV157 && (_spMicroAbiertoRealV157 || _spConsultorHablandoV157)) {
-      window.spPararConsultorTotalmente();
-      return;
-    }
-    window.spActivarModoEscuchaPersistente(true);
-  };
-
-  /* Sobrescribimos limpiamente spActivarOrbeConsultorInteractivo para que despierte a la primera sin peleas entre scripts */
-  window.spActivarOrbeConsultorInteractivo = function(ev) {
-    if (ev && ev.stopPropagation) ev.stopPropagation();
-
-    /* Si ya estaba activo hablando o escuchando y el usuario pulsa el Orbe, se pausa */
-    if (_spManosLibresActivoV157 && (_spConsultorHablandoV157 || _spMicroAbiertoRealV157)) {
-      window.spPararConsultorTotalmente(ev);
-      return;
-    }
-
-    _spSesionIniciadaPorUsuarioV157 = true;
-    _spManosLibresActivoV157 = true;
-    iniciarWatchdogManosLibresV157();
-
-    /* Arrancar la instancia de micrófono aprovechando el gesto directo del usuario */
-    var rec = crearOObtenerReconocedorUnicoV157();
-    asegurarStreamAudioPersistenteV157().then(function() {
-      if (rec && !_spMicroAbiertoRealV157 && estaEnVistaTecnosalaAhora()) {
-        _spUltimoReintentoStartTsV157 = Date.now();
-        try { rec.start(); } catch (e) {}
-      }
-    });
-
-    var track = document.getElementById('spTeleprompterRollTrack');
-    if (track && track.children.length > 0) {
-      _spConsultorHablandoV157 = false;
-      window.spActivarModoEscuchaPersistente(true);
-      return;
-    }
-
-    var saludoInicial =
-      'Hola, soy tu consultor tecnológico experto de Sistemas Pyme. ' +
-      'Ya tienes el modo manos libres activado: dime a qué se dedica tu negocio o qué duda tienes sobre nuestras soluciones y hablamos directamente sin que tengas que tocar ningún botón.';
-
-    window.spReproducirEnTeleprompter2027(saludoInicial, function() {
-      _spConsultorHablandoV157 = false;
-      window.spActivarModoEscuchaPersistente(false);
-    });
-  };
-
-  if (typeof window.spReproducirEnTeleprompter2027 === 'function') {
-    var _origReprod2027 = window.spReproducirEnTeleprompter2027;
-    window.spReproducirEnTeleprompter2027 = function(textoCompleto, alTerminarCallback, etiquetaUsuarioPrevio) {
-      if (!estaEnVistaTecnosalaAhora()) {
-        pausarPorCambioDePestanaOSalidaV157();
-        return;
-      }
-      _spConsultorHablandoV157 = true;
-      var durEstimadaMs = Math.max(2200, String(textoCompleto || '').length * 64);
-      _spIgnorarEcoHastaTsV157 = Date.now() + durEstimadaMs;
-      quitarLineaDictadoEnCursoV157();
-      actualizarUiConsultorV157('speaking');
-
-      return _origReprod2027.call(this, textoCompleto, function() {
-        _spConsultorHablandoV157 = false;
-        _spIgnorarEcoHastaTsV157 = Date.now() + 380;
-        if (typeof alTerminarCallback === 'function') {
-          try { alTerminarCallback(); } catch (e) {}
-        }
-        if (!estaEnVistaTecnosalaAhora()) {
-          pausarPorCambioDePestanaOSalidaV157();
-          return;
-        }
-        if (_spManosLibresActivoV157) {
-          actualizarUiConsultorV157('listening');
-          if (!_spMicroAbiertoRealV157 && _spRecMaestroV157) {
-            _spUltimoReintentoStartTsV157 = Date.now();
-            try { _spRecMaestroV157.start(); } catch (e) {}
-          }
-        } else {
-          actualizarUiConsultorV157('idle');
-        }
-      }, etiquetaUsuarioPrevio);
-    };
-  }
-
-  /* Motor experto contextual inmediato como respaldo garantizado */
-  function generarRespuestaExpertaContextualV157(preguntaRaw) {
-    var q = String(preguntaRaw || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
-
-    if (/^(hola|buenas|buenos dias|buenas tardes|buenas noches|que tal|como estas|ey|ola|me escuchas|probando)\b/.test(q) && q.split(/\s+/).length <= 6) {
-      return '¡Hola! Te escucho alto y claro en modo manos libres. Cuéntame, ¿a qué se dedica tu negocio o qué te gustaría mejorar hoy: las reseñas en Google Maps, salir recomendado en ChatGPT, evitar plantones de citas o ver nuestros precios?';
-    }
-    if (/(clinica|dentista|dental|medico|fisio|fisioterapia|psicologo|podologo|salud|veterinari)/.test(q)) {
-      return 'Para una clínica como la tuya lo ideal es el Pack Escudo Básico de 99 euros al mes: enviamos la encuesta por WhatsApp tras cada cita, multiplicamos tus 5 estrellas en Google Maps y aplicamos blindaje estricto RGPD para no confirmar jamás tratamientos en público. Además puedes sumar el sistema Anti-Plantón 24 horas antes. ¿Trabajáis con Google Calendar o con un programa clínico propio?';
-    }
-    if (/(taller|mecanico|coches|reformas|fontaner|electricist|instalador|carpinter)/.test(q)) {
-      return 'En tu sector se pierden muchos clientes cuando llaman mientras estás trabajando. Con el Pack Escudo Básico proteges tus reseñas en Google y WhatsApp por 99 euros al mes, y puedes añadir el Rescate de Llamadas Perdidas o la respuesta a Leads en 10 segundos. ¿Te suelen contactar más por teléfono o por WhatsApp?';
-    }
-    if (/(restaurante|bar|cafeteria|hosteleria|hotel|tienda|comercio|peluqueria|barberia|estetica)/.test(q)) {
-      return 'Para tu local funciona genial colocar nuestro Atril Inteligente NFC y QR en el mostrador por 39 euros pago único junto con el Gestor de Reseñas con IA de 59 euros al mes, o el Pack Escudo Básico de 99 euros al mes si trabajas con citas o reservas. Así el cliente acerca el móvil al pagar y te deja 5 estrellas en 1 segundo. ¿Tienes un solo mostrador o varios puntos de atención?';
-    }
-    if (/(abogad|asesori|gestori|notari|despacho|arquitect|ingenier|inmobiliari|consultor)/.test(q)) {
-      return 'Para un despacho profesional recomendamos nuestras 2 Super-Auditorías Web de pago único para que ChatGPT y Google te recomienden el primero en tu ciudad y tu web convierta el doble en Modo Corporativo, junto con el Gestor de Reseñas IA blindado ante el secreto profesional. ¿Tienes página web activa ahora mismo?';
-    }
-    if (/(precio|cuanto cuesta|cuanto vale|tarifa|mensual|anual|permanencia|descuento)/.test(q)) {
-      return 'Nuestros precios son muy claros: Pyme Base con 1 servicio son 59 euros al mes más 150 de alta única. El Pack Escudo Básico con 2 servicios son 99 euros al mes más 225 de alta, y te rebaja las Super-Auditorías de 350 a solo 195 euros cada una. Y en Plan Anual solo pagas 10 meses ahorrándote 2 meses completos. ¿Quieres que te abra el configurador a medida?';
-    }
-    if (/(auditoria|seo|geo|chatgpt|gemini|perplexity|neuro|cro|mapa de calor|sonda|web)/.test(q)) {
-      return 'Tenemos 2 Super-Auditorías Web de pago único sin cuotas: la primera es de SEO Local y GEO con 22 parámetros, Grafo Schema y Wikidata para que Google Maps y ChatGPT te recomienden; la segunda es de Neuromarketing CRO con Sonda Térmica de 10 a 14 días para duplicar los contactos de tu web. Sueltas cuestan 350 euros o 590 las dos, y con el Pack de 2 servicios bajan a 195 euros cada una.';
-    }
-    if (/(atril|nfc|qr|mostrador|expositor)/.test(q)) {
-      return 'El Atril Inteligente NFC y QR se coloca en tu mostrador sin cables ni cuotas mensuales. El cliente acerca su móvil al salir y en 1 segundo se le abre directamente tu ficha de Google Maps para ponerte 5 estrellas. La primera unidad cuesta 39 euros pago único, de la segunda a la cuarta 29 euros, y 5 o más a 25 euros.';
-    }
-    if (typeof window.spObtenerRespuestaOmniscienteCompleta === 'function') {
-      return window.spObtenerRespuestaOmniscienteCompleta(preguntaRaw);
-    }
-    return 'En Sistemas Pyme dejamos todo instalado en tu negocio en 24 a 48 horas sin cambiar tu forma de trabajar: desde multiplicar tus reseñas de 5 estrellas y posicionarte en Google y ChatGPT hasta automatizar tus citas, llamadas y facturas. ¿Qué área te gustaría que viéramos primero?';
-  }
-
-  /* =========================================================================
-     AUTO-DESCUBRIDOR DINÁMICO DEL MODELO GEMINI FLASH-LITE MÁS NUEVO DE GOOGLE
-     - Consulta en vivo la base de datos de modelos de Google (/v1beta/models),
-       filtra todos los modelos "flash-lite" (y "flash"), los ordena por versión
-       numérica de mayor a menor (ej. 3.8 > 3.5 > 3.0) y usa siempre el más nuevo.
-     - Si por red o permisos no puede listar el catálogo, usa por defecto
-       `gemini-3.8-flash-lite` (descartando el 2.5 antiguo).
-     ========================================================================= */
-  var _spModeloFlashLiteMasNuevoCache = null;
-  var _spPromesaDescubrirModelo = null;
-
-  function extraerVersionNumericaModelo(nombreMod) {
-    var m = String(nombreMod || '').match(/gemini-(\d+(?:\.\d+)?)/i);
-    return m ? parseFloat(m[1]) : 0;
-  }
-
-  function descubrirModeloFlashLiteMasNuevoDeGoogle(apiKey) {
-    if (_spModeloFlashLiteMasNuevoCache) {
-      return Promise.resolve(_spModeloFlashLiteMasNuevoCache);
-    }
-    if (_spPromesaDescubrirModelo) {
-      return _spPromesaDescubrirModelo;
-    }
-    _spPromesaDescubrirModelo = fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models?pageSize=100&key=' + encodeURIComponent(apiKey)
-    )
-    .then(function(r) { return r && r.ok ? r.json() : null; })
-    .then(function(data) {
-      var lista = (data && Array.isArray(data.models)) ? data.models : [];
-      var candidatosFlashLite = [];
-      var candidatosFlash = [];
-
-      for (var i = 0; i < lista.length; i++) {
-        var mod = lista[i];
-        var metodos = mod.supportedGenerationMethods || [];
-        if (metodos.indexOf('generateContent') === -1) continue;
-        var idCorto = String(mod.name || '').replace(/^models\//, '');
-        var idLow = idCorto.toLowerCase();
-        if (idLow.indexOf('gemini-') !== 0) continue;
-        if (idLow.indexOf('vision') !== -1 || idLow.indexOf('embedding') !== -1 || idLow.indexOf('imagen') !== -1 || idLow.indexOf('tts') !== -1 || idLow.indexOf('audio') !== -1) continue;
-
-        var ver = extraerVersionNumericaModelo(idLow);
-        /* Descartamos versiones <= 2.5 descatalogadas */
-        if (ver > 0 && ver <= 2.5) continue;
-
-        if (idLow.indexOf('flash-lite') !== -1) {
-          candidatosFlashLite.push({ id: idCorto, ver: ver || 99.0, esStable: idLow.indexOf('preview') === -1 && idLow.indexOf('exp') === -1 });
-        } else if (idLow.indexOf('flash') !== -1) {
-          candidatosFlash.push({ id: idCorto, ver: ver || 98.0, esStable: idLow.indexOf('preview') === -1 && idLow.indexOf('exp') === -1 });
-        }
-      }
-
-      function ordenarPorMasNuevo(a, b) {
-        if (b.ver !== a.ver) return b.ver - a.ver;
-        if (a.esStable !== b.esStable) return a.esStable ? -1 : 1;
-        return b.id.localeCompare(a.id);
-      }
-
-      candidatosFlashLite.sort(ordenarPorMasNuevo);
-      candidatosFlash.sort(ordenarPorMasNuevo);
-
-      var ganadores = candidatosFlashLite.concat(candidatosFlash).map(function(x) { return x.id; });
-      /* Aseguramos siempre en la cola de prioridad gemini-3.8-flash-lite en su defecto */
-      var porDefecto = ['gemini-3.8-flash-lite', 'gemini-3.8-flash-lite-preview', 'gemini-flash-lite-latest', 'gemini-3.8-flash', 'gemini-3.0-flash-lite'];
-      for (var j = 0; j < porDefecto.length; j++) {
-        if (ganadores.indexOf(porDefecto[j]) === -1) ganadores.push(porDefecto[j]);
-      }
-      _spModeloFlashLiteMasNuevoCache = ganadores;
-      return ganadores;
-    })
-    .catch(function() {
-      var fallbackLista = ['gemini-3.8-flash-lite', 'gemini-3.8-flash-lite-preview', 'gemini-flash-lite-latest', 'gemini-3.8-flash', 'gemini-3.0-flash-lite'];
-      _spModeloFlashLiteMasNuevoCache = fallbackLista;
-      return fallbackLista;
-    });
-
-    return _spPromesaDescubrirModelo;
-  }
-
-  function consultarIAEnVivoConTimeoutRapidoV157(preguntaUsuario) {
-    var respuestaRespaldo = generarRespuestaExpertaContextualV157(preguntaUsuario);
-    var histTxt = _spHistorialCharlaV157.slice(-8).join('\n');
-    var promptIA =
-      'Eres el Consultor Tecnológico Experto de Sistemas Pyme (creado por Francisco M. Gallardo en Galicia, tel/WhatsApp 711 54 75 61). ' +
-      'Hablas en directo por voz con el usuario en la Tecnosala de la web.\n\n' +
-      'RESPUESTA TÉCNICA DE REFERENCIA VERIFICADA:\n' + respuestaRespaldo + '\n\n' +
-      'HISTORIAL DE LA CONVERSACIÓN:\n' + (histTxt || 'Recién iniciada') + '\n\n' +
-      'LO QUE ACABA DE DECIR EL USUARIO: "' + preguntaUsuario + '"\n\n' +
-      'INSTRUCCIÓN: Responde directamente a lo que el usuario te acaba de decir en 2 a 4 frases conversacionales, naturales y claras (entre 35 y 70 palabras), sin asteriscos ni listas, terminando con una pregunta breve para mantener el diálogo.';
-
-    var k = obtenerKVertexV157();
-    var promesaIA = new Promise(function(resolve) {
-      var resuelto = false;
-      function finalizar(txt) {
-        if (!resuelto) {
-          resuelto = true;
-          resolve(txt || respuestaRespaldo);
-        }
-      }
-      /* Tope máximo de 3.2 segundos para respuesta ultrarrápida */
-      var timerMax = setTimeout(function() {
-        finalizar(respuestaRespaldo);
-      }, 3200);
-
-      descubrirModeloFlashLiteMasNuevoDeGoogle(k).then(function(colaModelos) {
-        function probarSiguienteModelo(idx) {
-          if (resuelto || idx >= colaModelos.length) {
-            clearTimeout(timerMax);
-            finalizar(respuestaRespaldo);
-            return;
-          }
-          var modId = colaModelos[idx];
-          var urlVertex = 'https://aiplatform.googleapis.com/v1beta1/publishers/google/models/' + modId + ':generateContent?key=' + encodeURIComponent(k);
-          fetch(urlVertex, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ role: 'user', parts: [{ text: promptIA }] }],
-              generationConfig: { temperature: 0.65, topP: 0.92, maxOutputTokens: 260 }
-            })
-          })
-          .then(function(r) { return r && r.ok ? r.json() : null; })
-          .then(function(d) {
-            var parts = d && d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts;
-            if (parts && parts.length) {
-              var txt = parts.map(function(p) { return p.thought ? '' : (p.text || ''); }).join(' ').trim();
-              if (txt.length > 12) {
-                /* Guardamos en primera posición el modelo más nuevo que acaba de responder OK */
-                _spModeloFlashLiteMasNuevoCache = [modId].concat(colaModelos.filter(function(m) { return m !== modId; }));
-                clearTimeout(timerMax);
-                finalizar(txt);
-                return;
-              }
-            }
-            probarSiguienteModelo(idx + 1);
-          })
-          .catch(function() {
-            probarSiguienteModelo(idx + 1);
-          });
-        }
-        probarSiguienteModelo(0);
-      });
-    });
-
-    return promesaIA;
-  }
-
-  window.spProcesarConsultaEnTeleprompterDirecto = function(textoPregunta) {
-    var limpia = String(textoPregunta || '').trim();
-    if (!limpia) return;
-
-    _spSesionIniciadaPorUsuarioV157 = true;
-    _spManosLibresActivoV157 = true;
-
-    var inp = document.getElementById('spTecnosalaInput');
-    if (inp) inp.value = '';
-
-    _spHistorialCharlaV157.push('Usuario: ' + limpia);
-    if (typeof window.spExtraerYPreconfigurarCarritoDesdeCharla === 'function') {
-      try { window.spExtraerYPreconfigurarCarritoDesdeCharla(limpia, _spHistorialCharlaV157); } catch (e) {}
-    }
-
-    var hud = document.getElementById('spTeleprompterHudStatus');
-    if (hud) {
-      hud.innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-teal-400 animate-ping inline-block mr-1.5"></span>⚡ RESPONDIENDO A: «' + limpia.replace(/</g, '&lt;').slice(0, 42) + '»...';
-    }
-
-    consultarIAEnVivoConTimeoutRapidoV157(limpia).then(function(respuestaFinal) {
-      if (!estaEnVistaTecnosalaAhora()) return;
-      var limpioTxt = String(respuestaFinal || '').replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
-      _spHistorialCharlaV157.push('Consultor: ' + limpioTxt);
-      window.spReproducirEnTeleprompter2027(limpioTxt, null, limpia);
-    });
-  };
-
-  window.spEnviarPreguntaLibreTecnosala = function(ev) {
-    if (ev && ev.preventDefault) ev.preventDefault();
-    var inp = document.getElementById('spTecnosalaInput');
-    var texto = inp ? (inp.value || '').trim() : '';
-    if (!texto) return;
-    window.spProcesarConsultaEnTeleprompterDirecto(texto);
-  };
-
-  /* =========================================================================
-     AUTO-APAGADO AL SALIR DE TECNOSALA Y AUTO-ENCENDIDO AL VOLVER A TECNOSALA
-     ========================================================================= */
-  if (typeof window.cambiarVista === 'function' && !window.cambiarVista._hookAutoTecnosalaV157) {
-    var _origCambiarVistaV157 = window.cambiarVista;
-    var nuevaCambiarVistaV157 = function(vistaDestino) {
+  /* Al cambiar de sección en la web:
+     - Si sale de Tecnosala -> se calla y apaga el micro en el acto (pero recuerda que estaba activo)
+     - Si vuelve a entrar en Tecnosala y ya lo había activado -> vuelve a activar la escucha solo */
+  if (typeof window.cambiarVista === 'function' && !window.cambiarVista._hookAutoTecnosalaV160) {
+    var _origCambiarVistaV160 = window.cambiarVista;
+    var nuevaCambiarVistaV160 = function(vistaDestino) {
+      var estabaActivo = window._spConsultorEstabaActivoAntesDeSalir;
       if (vistaDestino !== 'tecnosala') {
-        pausarPorCambioDePestanaOSalidaV157();
+        if (typeof _origPararTotalNativo === 'function') {
+          try { _origPararTotalNativo(); } catch (e) {}
+        }
+        window._spConsultorEstabaActivoAntesDeSalir = estabaActivo;
       }
-      var res = _origCambiarVistaV157.apply(this, arguments);
-      if (vistaDestino === 'tecnosala' && _spSesionIniciadaPorUsuarioV157) {
+      var res = _origCambiarVistaV160.apply(this, arguments);
+      if (vistaDestino === 'tecnosala' && window._spConsultorEstabaActivoAntesDeSalir) {
         setTimeout(function() {
-          if (estaEnVistaTecnosalaAhora()) {
-            _spManosLibresActivoV157 = true;
-            window.spActivarModoEscuchaPersistente(false);
+          if (typeof window.spIniciarEscuchaDirectaConsultor === 'function') {
+            window.spIniciarEscuchaDirectaConsultor();
           }
-        }, 160);
+        }, 220);
       }
       return res;
     };
-    nuevaCambiarVistaV157._hookAutoTecnosalaV157 = true;
-    window.cambiarVista = nuevaCambiarVistaV157;
+    nuevaCambiarVistaV160._hookAutoTecnosalaV160 = true;
+    window.cambiarVista = nuevaCambiarVistaV160;
   }
 
   document.addEventListener('visibilitychange', function() {
+    var estabaActivo = window._spConsultorEstabaActivoAntesDeSalir;
     if (document.hidden) {
-      pausarPorCambioDePestanaOSalidaV157();
-    } else if (estaEnVistaTecnosalaAhora() && _spSesionIniciadaPorUsuarioV157) {
-      setTimeout(function() {
-        _spManosLibresActivoV157 = true;
-        window.spActivarModoEscuchaPersistente(false);
-      }, 200);
+      if (typeof _origPararTotalNativo === 'function') {
+        try { _origPararTotalNativo(); } catch (e) {}
+      }
+      window._spConsultorEstabaActivoAntesDeSalir = estabaActivo;
+    } else {
+      var vTec = document.getElementById('vista-tecnosala');
+      if (vTec && !vTec.classList.contains('hidden') && window._spConsultorEstabaActivoAntesDeSalir) {
+        setTimeout(function() {
+          if (typeof window.spIniciarEscuchaDirectaConsultor === 'function') {
+            window.spIniciarEscuchaDirectaConsultor();
+          }
+        }, 250);
+      }
     }
   });
 
@@ -1576,7 +1016,7 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
     }
   };
 
-  function sincronizarSubBotonesPlanBaseV157() {
+  function sincronizarSubBotonesPlanBaseV160() {
     var b1 = document.getElementById('spBtnSubBase_S1');
     var b2 = document.getElementById('spBtnSubBase_S2');
     if (!b1 || !b2) return;
@@ -1615,191 +1055,9 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
   };
 
   /* =========================================================================
-     4. LÓGICA TÁCTIL ORIGINAL DE LAS 2 TARJETAS DE AUDITORÍAS («CÓMO AYUDAMOS»)
+     4. COLORES, PÍLDORA "🟢 Calendario Activo" SIMÉTRICA Y AGENDA DEL CARRITO
      ========================================================================= */
-  var DETALLE_SUBCAJAS_AUDITORIA = {
-    1: {
-      1: {
-        titulo: '📊 x9 Ventas desde ChatGPT y Asistentes IA (Seer Interactive):',
-        texto: 'En el buscador tradicional de Google solo compra el 1,76% de las visitas porque abren diez pestañas para comparar precios. En cambio, cuando un cliente pregunta a ChatGPT o Gemini «¿cuál es el mejor profesional de mi zona?» y la IA recomienda directamente tu negocio, la conversión a cliente real sube al <strong>15,9% (9 veces más cierres)</strong>.'
-      },
-      2: {
-        titulo: '📊 +115% más apariciones al estructurar tu Entidad (Univ. de Princeton):',
-        texto: 'El 83% de los negocios recomendados por las IAs no son las webs más grandes, sino aquellas cuyos datos internos están conectados mediante código estructurado <code>Schema.org JSON-LD</code> al nodo oficial de su ciudad en <strong>Wikidata</strong> y cuentan con archivo <code>/llms.txt</code>.'
-      },
-      3: {
-        titulo: '📊 El 69% decide leyendo el resumen de la IA (Similarweb / SparkToro):',
-        texto: 'Casi 7 de cada 10 búsquedas actuales se resuelven leyendo el bloque superior generado por la IA sin hacer clic en enlaces azules. El 44% de esas recomendaciones se extraen del bloque de respuesta directa de tu portada.'
-      }
-    },
-    2: {
-      1: {
-        titulo: '📊 +156% más ventas al colocar tu propuesta donde miran (MIT Attention Insight):',
-        texto: 'El visitante decide en los primeros 3 a 5 segundos si se queda en tu web o se marcha. Al situar tu titular de valor, tus estrellas de Google Maps y tu llamada a la acción en las zonas calientes de lectura ocular, los contactos aumentan un 156%.'
-      },
-      2: {
-        titulo: '📊 +103% el doble de llamadas eliminando fricción móvil (Ley de Hick):',
-        texto: 'Cada casilla innecesaria en un formulario o un teléfono que no se puede pulsar con el pulgar desde el móvil hace que la mitad de tus visitas abandone. Simplificar el contacto duplica del 3,3% al 6,7% quienes te llaman o escriben.'
-      },
-      3: {
-        titulo: '📊 Sonda Térmica de 10 a 14 días (Certeza matemática del 94%):',
-        texto: 'En lugar de cambiar tu web a ciegas, instalamos durante 10-14 días nuestra Sonda Árbitro 100% anónima (cumplidora AEPD) que mide en qué punto exacto abandonan tus visitas y cuántas llamadas pierde tu teléfono fijo fuera de horario (tanto en Modo Ágil como en Modo Corporativo).'
-      }
-    }
-  };
-
-  window.spCerrarTarjetaAuditoriaACaraA = function(num, ev) {
-    if (ev && ev.stopPropagation) ev.stopPropagation();
-    var circle = document.getElementById('spCaAuditCircle_' + num);
-    if (circle) circle.classList.remove('sp-circle-open');
-    window.spRestaurarVista3SubcajasCaraB(num);
-  };
-
-  window.spRestaurarVista3SubcajasCaraB = function(num) {
-    var caraB = document.getElementById('spCaAuditCaraB_' + num);
-    var caraC = document.getElementById('spCaAuditCaraC_' + num);
-    var resStat = document.getElementById('spCaAuditStatResumen_' + num);
-    var deepStat = document.getElementById('spCaAuditStatDeep_' + num);
-    var grid3 = document.getElementById('spCaStatGrid3_' + num);
-    var foot = document.getElementById('spCaStatFoot_' + num);
-    var singleExp = document.getElementById('spCaStatSingleExpand_' + num);
-    var btnB = document.getElementById('spBtnCaraB_' + num);
-    var btnC = document.getElementById('spBtnCaraC_' + num);
-    var linkToggle = document.getElementById('spLinkToggleVista_' + num);
-
-    if (caraB) caraB.classList.remove('hidden');
-    if (caraC) caraC.classList.add('hidden');
-    if (resStat) resStat.classList.remove('hidden');
-    if (deepStat) deepStat.classList.add('hidden');
-    if (grid3) grid3.classList.remove('hidden');
-    if (foot) foot.classList.remove('hidden');
-    if (singleExp) {
-      singleExp.classList.add('hidden');
-      singleExp.innerHTML = '';
-    }
-    if (btnB && btnC) {
-      if (num === 1) {
-        btnB.className = 'px-3 py-1 rounded-full text-xs font-black bg-cyan-600 text-white shadow cursor-pointer transition';
-        btnC.className = 'px-3 py-1 rounded-full text-xs font-bold bg-white/85 text-cyan-900 border border-cyan-400/60 cursor-pointer transition';
-      } else {
-        btnB.className = 'px-3 py-1 rounded-full text-xs font-black bg-amber-500 text-slate-950 shadow cursor-pointer transition';
-        btnC.className = 'px-3 py-1 rounded-full text-xs font-bold bg-white/85 text-amber-900 border border-amber-400/60 cursor-pointer transition';
-      }
-    }
-    if (linkToggle) {
-      linkToggle.textContent = '🛠️ Ver explicación técnica (Cara C) →';
-    }
-  };
-
-  window.spCambiarCaraInternaAuditoria = function(num, caraDestino, ev) {
-    if (ev && ev.stopPropagation) ev.stopPropagation();
-    var caraB = document.getElementById('spCaAuditCaraB_' + num);
-    var caraC = document.getElementById('spCaAuditCaraC_' + num);
-    var btnB = document.getElementById('spBtnCaraB_' + num);
-    var btnC = document.getElementById('spBtnCaraC_' + num);
-    var linkToggle = document.getElementById('spLinkToggleVista_' + num);
-
-    if (caraDestino === 'C') {
-      if (caraB) caraB.classList.add('hidden');
-      if (caraC) caraC.classList.remove('hidden');
-      if (btnB && btnC) {
-        if (num === 1) {
-          btnC.className = 'px-3 py-1 rounded-full text-xs font-black bg-cyan-600 text-white shadow cursor-pointer transition';
-          btnB.className = 'px-3 py-1 rounded-full text-xs font-bold bg-white/85 text-cyan-900 border border-cyan-400/60 cursor-pointer transition';
-        } else {
-          btnC.className = 'px-3 py-1 rounded-full text-xs font-black bg-amber-500 text-slate-950 shadow cursor-pointer transition';
-          btnB.className = 'px-3 py-1 rounded-full text-xs font-bold bg-white/85 text-amber-900 border border-amber-400/60 cursor-pointer transition';
-        }
-      }
-      if (linkToggle) linkToggle.textContent = '📊 Volver a Estadísticas (Cara B)';
-    } else {
-      window.spRestaurarVista3SubcajasCaraB(num);
-    }
-  };
-
-  window.spToggleExpandirCajaStat = function(numCard, idxStat, ev) {
-    if (ev && ev.stopPropagation) ev.stopPropagation();
-    var grid3 = document.getElementById('spCaStatGrid3_' + numCard);
-    var foot = document.getElementById('spCaStatFoot_' + numCard);
-    var singleExp = document.getElementById('spCaStatSingleExpand_' + numCard);
-    if (!singleExp || !grid3) return;
-
-    var info = (DETALLE_SUBCAJAS_AUDITORIA[numCard] || {})[idxStat];
-    if (!info) return;
-
-    grid3.classList.add('hidden');
-    if (foot) foot.classList.add('hidden');
-    var borderCol = (numCard === 1) ? 'border-cyan-500/70 hover:bg-cyan-50/90' : 'border-amber-500/70 hover:bg-amber-50/90';
-    var badgeCol = (numCard === 1) ? 'text-cyan-800' : 'text-amber-900';
-
-    singleExp.className = 'bg-white/95 rounded-2xl p-3.5 border-2 ' + borderCol + ' shadow-md text-left cursor-pointer transition my-1';
-    singleExp.innerHTML =
-      '<div class="flex items-center justify-between gap-2 border-b border-slate-200 pb-1.5 mb-1.5">' +
-        '<strong class="text-[13.5px] sm:text-[14.5px] font-black text-brand-navy">' + info.titulo + '</strong>' +
-        '<span class="text-[11px] font-extrabold ' + badgeCol + ' underline whitespace-nowrap">&larr; Pulsa aquí para volver</span>' +
-      '</div>' +
-      '<p class="text-[12.5px] sm:text-[13.5px] text-slate-800 leading-relaxed">' + info.texto + '</p>';
-
-    singleExp.onclick = function(eClick) {
-      if (eClick && eClick.stopPropagation) eClick.stopPropagation();
-      window.spRestaurarVista3SubcajasCaraB(numCard);
-    };
-  };
-
-  window.spToggleProfundizarCaraAuditoria = function(num, ev) {
-    if (ev && ev.stopPropagation) ev.stopPropagation();
-    var caraC = document.getElementById('spCaAuditCaraC_' + num);
-    var estaEnCaraC = caraC && !caraC.classList.contains('hidden');
-    if (estaEnCaraC) {
-      window.spCambiarCaraInternaAuditoria(num, 'B', ev);
-    } else {
-      window.spCambiarCaraInternaAuditoria(num, 'C', ev);
-    }
-  };
-
-  window.spToggleAuditCircleCA = function(num, ev) {
-    if (ev && ev.stopPropagation) ev.stopPropagation();
-    var card = document.getElementById('spCaAuditCard_' + num);
-    var badge = document.getElementById('spCaAuditBadge_' + num);
-    var circle = document.getElementById('spCaAuditCircle_' + num);
-    if (!circle) return;
-
-    if (card && badge) {
-      var cRect = card.getBoundingClientRect();
-      var bRect = badge.getBoundingClientRect();
-      if (cRect.width > 0 && cRect.height > 0) {
-        var cx = (((bRect.left + bRect.width / 2) - cRect.left) / cRect.width * 100).toFixed(1) + '%';
-        var cy = (((bRect.top + bRect.height / 2) - cRect.top) / cRect.height * 100).toFixed(1) + '%';
-        circle.style.setProperty('--sp-cx', cx);
-        circle.style.setProperty('--sp-cy', cy);
-      }
-    }
-
-    var otroNum = (num === 1) ? 2 : 1;
-    var otroCircle = document.getElementById('spCaAuditCircle_' + otroNum);
-
-    if (!circle.classList.contains('sp-circle-open')) {
-      if (otroCircle) otroCircle.classList.remove('sp-circle-open');
-      window.spRestaurarVista3SubcajasCaraB(num);
-      circle.classList.add('sp-circle-open');
-      return;
-    }
-
-    var singleExp = document.getElementById('spCaStatSingleExpand_' + num);
-    var caraC = document.getElementById('spCaAuditCaraC_' + num);
-    if (singleExp && !singleExp.classList.contains('hidden')) {
-      window.spRestaurarVista3SubcajasCaraB(num);
-    } else if (caraC && !caraC.classList.contains('hidden')) {
-      window.spCerrarTarjetaAuditoriaACaraA(num, ev);
-    } else {
-      window.spCambiarCaraInternaAuditoria(num, 'C', ev);
-    }
-  };
-
-  /* =========================================================================
-     5. COLORES, PÍLDORA "🟢 Calendario Activo" SIMÉTRICA Y AGENDA DEL CARRITO
-     ========================================================================= */
-  function aplicarIdsColorCajasCarritoV157() {
+  function aplicarIdsColorCajasCarritoV160() {
     var selAtr = document.getElementById('spCartAtrilSelect');
     if (selAtr && selAtr.parentNode) {
       selAtr.parentNode.id = 'spCartBoxAtriles4';
@@ -1816,14 +1074,14 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
     if (calBadge) {
       calBadge.innerHTML = '<span>🟢</span><span>Calendario Activo</span>';
     }
-    sincronizarSubBotonesPlanBaseV157();
+    sincronizarSubBotonesPlanBaseV160();
   }
 
   window.spAbrirCarritoConDiagnosticoPreseleccionado = function() {
     if (typeof window.spAbrirCarritoConfigurador === 'function') {
       window.spAbrirCarritoConfigurador('duo', 1);
       setTimeout(function() {
-        aplicarIdsColorCajasCarritoV157();
+        aplicarIdsColorCajasCarritoV160();
         window.spSincronizarOpcionesGrisesFase2();
       }, 40);
     }
@@ -1840,7 +1098,7 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
   }
 
   window.spAplicarBloqueoHorasCrmEnSelect = function() {
-    aplicarIdsColorCajasCarritoV157();
+    aplicarIdsColorCajasCarritoV160();
     var selDia = document.getElementById('spCartSelectDiaLV');
     var selHora = document.getElementById('spCartSelectHoraManana');
     var inpISO = document.getElementById('spCartInputFechaHoraISO');
@@ -1883,7 +1141,7 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
 
   window.spSincronizarCitasCrmLocal = function() {
     try {
-      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v157') || '[]');
+      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v160') || '[]');
       if (Array.isArray(guardados)) {
         guardados.forEach(function(sl) {
           var norm = normalizarSlotEspacio(sl);
@@ -1908,7 +1166,7 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
               if (norm) window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(norm);
             });
             try {
-              localStorage.setItem('sp_citas_ocupadas_crm_v157', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
+              localStorage.setItem('sp_citas_ocupadas_crm_v160', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
             } catch (e) {}
           }
         })
@@ -1918,60 +1176,60 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
     });
   };
 
-  function inicializarMejorasV157() {
-    aplicarIdsColorCajasCarritoV157();
+  function inicializarMejorasV160() {
+    aplicarIdsColorCajasCarritoV160();
     window._spRenderizarTarjetasPrecios();
     window.spSincronizarCitasCrmLocal();
     window.spSincronizarOpcionesGrisesFase2();
 
-    if (typeof window.spRecalcularCarritoCarta === 'function' && !window.spRecalcularCarritoCarta._hookFase2GrisV157) {
+    if (typeof window.spRecalcularCarritoCarta === 'function' && !window.spRecalcularCarritoCarta._hookFase2GrisV160) {
       var origRecalcCart = window.spRecalcularCarritoCarta;
       var nuevoRecalcCart = function() {
         var r = origRecalcCart.apply(this, arguments);
         window.spSincronizarOpcionesGrisesFase2();
-        sincronizarSubBotonesPlanBaseV157();
+        sincronizarSubBotonesPlanBaseV160();
         return r;
       };
-      nuevoRecalcCart._hookFase2GrisV157 = true;
+      nuevoRecalcCart._hookFase2GrisV160 = true;
       window.spRecalcularCarritoCarta = nuevoRecalcCart;
     }
 
-    if (typeof window.spActualizarHorasDisponiblesCarritoV125 === 'function' && !window.spActualizarHorasDisponiblesCarritoV125._hookV157) {
+    if (typeof window.spActualizarHorasDisponiblesCarritoV125 === 'function' && !window.spActualizarHorasDisponiblesCarritoV125._hookV160) {
       var origActHoras = window.spActualizarHorasDisponiblesCarritoV125;
       var nuevaActHoras = function() {
         var r = origActHoras.apply(this, arguments);
         window.spAplicarBloqueoHorasCrmEnSelect();
         return r;
       };
-      nuevaActHoras._hookV157 = true;
+      nuevaActHoras._hookV160 = true;
       window.spActualizarHorasDisponiblesCarritoV125 = nuevaActHoras;
     }
 
-    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window.spAbrirCarritoConfigurador._hookV157) {
+    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window.spAbrirCarritoConfigurador._hookV160) {
       var origOpen = window.spAbrirCarritoConfigurador;
       var nuevoOpen = function() {
         var r = origOpen.apply(this, arguments);
-        aplicarIdsColorCajasCarritoV157();
+        aplicarIdsColorCajasCarritoV160();
         window.spSincronizarCitasCrmLocal();
         window.spSincronizarOpcionesGrisesFase2();
         setTimeout(window.spAplicarBloqueoHorasCrmEnSelect, 120);
         return r;
       };
-      nuevoOpen._hookV157 = true;
+      nuevoOpen._hookV160 = true;
       window.spAbrirCarritoConfigurador = nuevoOpen;
     }
   }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(inicializarMejorasV157, 180);
+      setTimeout(inicializarMejorasV160, 180);
     });
   } else {
-    setTimeout(inicializarMejorasV157, 180);
+    setTimeout(inicializarMejorasV160, 180);
   }
 })();
 </script>
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V157_END] -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V160_END] -->
 '''
 
 
@@ -2842,31 +2100,131 @@ def reparar_index_html_v152(html):
         html
     )
 
-    # 2. En `spReproducirEnTeleprompter2027` (dentro del motor V131 original), evitar que destruya `_spRecogInstance = null`
-    #    para que la sesión de micrófono permanezca viva mientras habla el consultor
+    # 2. Restaurar el bloque original de `spReproducirEnTeleprompter2027` y el vigilante de micrófono en el motor V131
     html = html.replace(
-        "_spRecogInstance.abort();",
-        "/* No abortar instancia de micro para conservar permiso continuo */"
-    )
-    html = re.sub(
-        r"if\s*\(_spRecogInstance\)\s*\{\s*try\s*\{\s*_spRecogInstance\.onend\s*=\s*null;[\s\S]*?\}\s*catch\s*\(e\)\s*\{\}\s*_spRecogInstance\s*=\s*null;\s*_spMicroSesionActiva\s*=\s*false;\s*\}",
         "/* V158: mantenemos la instancia única de micrófono viva sin destruirla mientras el consultor habla */",
+        """if (_spRecogInstance) {
+          try {
+            _spRecogInstance.onend = null;
+            _spRecogInstance.onerror = null;
+            _spRecogInstance.onresult = null;
+            _spRecogInstance.stop();
+          } catch (e) {}
+          _spRecogInstance = null;
+          _spMicroSesionActiva = false;
+        }"""
+    )
+
+    # 3. Restaurar el vigilante nativo de manos libres dentro de `iniciarVigilanteMicrofonoContinuo`
+    html = re.sub(
+        r"function iniciarVigilanteMicrofonoContinuo\(\)\s*\{\s*/\*[\s\S]*?\*/\s*\}",
+        """function iniciarVigilanteMicrofonoContinuo() {
+        if (_spWatchdogMicroInterval) return;
+        _spWatchdogMicroInterval = setInterval(function() {
+          var vistaTec = document.getElementById('vista-tecnosala');
+          if (!vistaTec || vistaTec.classList.contains('hidden')) return;
+          if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spHablandoSintesis && !_spMicroSesionActiva && !_spRearmandoOido) {
+            window.spActivarModoEscuchaPersistente(false);
+          }
+        }, 1200);
+      }""",
         html
     )
 
-    # 2.1 Actualizar también la lista de modelos de `llamarVertexDirectoNavegador` en index.html quitando los 2.5 descatalogados
-    html = html.replace(
-        "['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash-lite-001', 'gemini-2.0-flash-001']",
-        "['gemini-3.8-flash-lite', 'gemini-3.8-flash-lite-preview', 'gemini-flash-lite-latest', 'gemini-3.8-flash']"
+    # 4. Neutralizar `instalarMicrofonoContinuoSinRePromptV129` en `spScriptMejorasCarritoYMigradoPersistenteV130`
+    #    para que NO llame a `getUserMedia` ni cree un segundo micrófono que pida permiso dos veces
+    html = re.sub(
+        r"function instalarMicrofonoContinuoSinRePromptV129\(\)\s*\{[\s\S]*?\n  \}\n\n  function obtenerTramosPorDiaSemanaV125",
+        """function instalarMicrofonoContinuoSinRePromptV129() {
+    /* V160: Desactivado para no duplicar getUserMedia ni interferir con el motor nativo del Orbe 3D */
+  }
+
+  function obtenerTramosPorDiaSemanaV125""",
+        html,
+        count=1
     )
 
-    # 3. Asegurar que en el HTML inyectado de la agenda del carrito ponga "🟢 Calendario Activo" completo
+    # 5. Actualizar `llamarVertexDirectoNavegador` en el motor nativo para que busque dinámicamente en la base de datos
+    #    de Google (`/v1beta/models`) el modelo Flash-Lite más nuevo (> 2.5) o use `gemini-3.8-flash-lite` en su defecto
+    viejo_vertex = re.compile(
+        r"function llamarVertexDirectoNavegador\(promptCompleto\)\s*\{[\s\S]*?return intentar\(0\);\s*\}",
+        re.MULTILINE
+    )
+    nuevo_vertex = """var _spColaModelosFlashLiteCache = null;
+      function _descubrirModelosFlashLiteGoogle(k) {
+        if (_spColaModelosFlashLiteCache) return Promise.resolve(_spColaModelosFlashLiteCache);
+        var porDefecto = ['gemini-3.8-flash-lite', 'gemini-3.8-flash-lite-preview', 'gemini-flash-lite-latest', 'gemini-3.0-flash-lite', 'gemini-2.0-flash-lite-001'];
+        return fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=100&key=' + encodeURIComponent(k))
+          .then(function(r) { return r && r.ok ? r.json() : null; })
+          .then(function(d) {
+            var mods = (d && Array.isArray(d.models)) ? d.models : [];
+            var lite = [];
+            for (var i = 0; i < mods.length; i++) {
+              var m = mods[i];
+              var met = m.supportedGenerationMethods || [];
+              if (met.indexOf('generateContent') === -1) continue;
+              var id = String(m.name || '').replace(/^models\\//, '');
+              var low = id.toLowerCase();
+              if (low.indexOf('gemini-') !== 0 || low.indexOf('flash-lite') === -1) continue;
+              var mVer = low.match(/gemini-(\\d+(?:\\.\\d+)?)/);
+              var ver = mVer ? parseFloat(mVer[1]) : 99.0;
+              if (ver > 0 && ver <= 2.5) continue;
+              lite.push({ id: id, ver: ver });
+            }
+            lite.sort(function(a, b) { return b.ver - a.ver; });
+            var lista = lite.map(function(x) { return x.id; });
+            for (var j = 0; j < porDefecto.length; j++) {
+              if (lista.indexOf(porDefecto[j]) === -1) lista.push(porDefecto[j]);
+            }
+            _spColaModelosFlashLiteCache = lista;
+            return lista;
+          })
+          .catch(function() {
+            _spColaModelosFlashLiteCache = porDefecto;
+            return porDefecto;
+          });
+      }
+
+      function llamarVertexDirectoNavegador(promptCompleto) {
+        var k = _obtenerKBrowser();
+        if (!k) return Promise.resolve(null);
+        return _descubrirModelosFlashLiteGoogle(k).then(function(modelosProbar) {
+          function intentar(idx) {
+            if (idx >= modelosProbar.length) return Promise.resolve(null);
+            var m = modelosProbar[idx];
+            var url = 'https://aiplatform.googleapis.com/v1beta1/publishers/google/models/' + m + ':generateContent?key=' + encodeURIComponent(k);
+            return fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ role: 'user', parts: [{ text: promptCompleto }] }],
+                generationConfig: { temperature: 0.65, topP: 0.92, maxOutputTokens: 350 }
+              })
+            })
+            .then(function(r) { return r && r.ok ? r.json() : null; })
+            .then(function(d) {
+              var parts = d && d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts;
+              if (parts && parts.length) {
+                var txt = parts.map(function(p) { return p.thought ? '' : (p.text || ''); }).join(' ').trim();
+                if (txt.length > 10) return { texto: txt, modelo: m };
+              }
+              return intentar(idx + 1);
+            })
+            .catch(function() { return intentar(idx + 1); });
+          }
+          return intentar(0);
+        });
+      }"""
+    if viejo_vertex.search(html):
+        html = viejo_vertex.sub(lambda _: nuevo_vertex, html, count=1)
+
+    # 6. Asegurar que en el HTML inyectado de la agenda del carrito ponga "🟢 Calendario Activo" completo
     html = html.replace(
         "🟢 Calendar Activo",
         "🟢 Calendario Activo"
     )
 
-    # 4. Sustituir la sección #vista-tarifas completa por la versión con toda su estructura íntegra
+    # 7. Sustituir la sección #vista-tarifas completa por la versión con toda su estructura íntegra
     patron_vista_tarifas = re.compile(
         r"<!-- ={40,}\s*-->\s*<!-- VISTA 4 \(SALA INDEPENDIENTE\): PRECIOS CLAROS[\s\S]*?</section>\s*(?=<!-- ={40,}\s*-->\s*<!-- VISTA 5)",
         re.MULTILINE
@@ -2874,7 +2232,7 @@ def reparar_index_html_v152(html):
     if patron_vista_tarifas.search(html):
         html = patron_vista_tarifas.sub(lambda _: HTML_VISTA_TARIFAS_V152 + "\n\n\n                    ", html, count=1)
 
-    # 5. Inyectar el bloque maestro V157 justo antes del último </body> real (usando rsplit)
+    # 8. Inyectar el bloque maestro V160 justo antes del último </body> real (usando rsplit)
     if "</body>" in html:
         partes = html.rsplit("</body>", 1)
         html = partes[0].rstrip() + "\n" + BLOQUE_JS_MAESTRO_WEB_V152.strip() + "\n</body>" + partes[1]
