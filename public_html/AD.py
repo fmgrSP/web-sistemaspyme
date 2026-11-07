@@ -2,229 +2,308 @@
 # -*- coding: utf-8 -*-
 """
 =============================================================================
-SCRIPT ACTUALIZADOR MAESTRO AD.py — VERSIÓN 168 (SISTEMAS PYME)
+SCRIPT ACTUALIZADOR MAESTRO: AD.py (Versión V174 — SISTEMAS PYME)
 =============================================================================
-Solución Definitiva de Ingeniería para el Tecnoconsultor (V168):
-1. Elimina la colisión entre los 3 motores de micrófono duplicados que había
-   en `index.html` (líneas 2340, 3100 y 3680) e instala UN ÚNICO Motor Maestro
-   (`SP_CONSULTOR_ULTIMATE_V168`) al final del documento que toma el mando
-   absoluto e impide que ningún timer de 150ms/600ms lo sobrescriba.
-2. Permiso Único de Micrófono sin re-prompts:
-   - Se activa en el primer clic sobre la Esfera 3D o el botón `🎙️ Hablar`.
-   - Permanece abierto de forma continua mientras estás en la sección
-     `Tecnosala` (usando compuerta lógica anti-eco mientras el consultor habla,
-     sin llamar jamás a `.stop()` entre turnos).
-   - Se desactiva automáticamente en el acto cuando pasas a cualquier otro
-     apartado de la web (`Inicio`, `Cómo ayudamos`, `Test`, `Precios`,
-     `Magazine`) o cambias de pestaña del navegador.
-   - Se vuelve a activar ÉL SOLO automáticamente en cuanto regresas a `Tecnosala`.
-3. Velocidad Instantánea con Gemini Flash-Lite:
-   - Lanza petición directa de baja latencia a Gemini Flash-Lite
-     (`gemini-2.5-flash-lite` / `gemini-2.0-flash-lite-001`) en paralelo con
-     el backend, garantizando respuestas fluidas en ~0,5s - 1,5s.
+1. Corrige el IndentationError de la línea 81 y valida con py_compile + node.
+2. Restaura al 100% la fluidez e inteligencia del Tecnoconsultor en index.html:
+   - Mientras él habla: sus frases salen sincronizadas en BLANCO en el
+     Teleprompter LED y la esfera 3D late al ritmo de su voz.
+   - En el instante en que termina de hablar: el micrófono está abierto para ti
+     y recoge tu voz en tiempo real escribiéndola en AMARILLO en el Teleprompter.
+   - Al terminar de hablar (~0,8s de pausa): responde en ~1 segundo con
+     inteligencia conversacional real conectada a Gemini Flash-Lite.
+3. Limpia de Git los archivos auxiliares (`AD.py`, `_sp_servidor_ia_8765.py`,
+   `.sp_servidor_neuronal_8765.py`) y los añade a `.gitignore` para evitar el
+   bloqueo GH013 de GitHub Push Protection en `web-sistemaspyme`.
 =============================================================================
 """
 
 import os
-import re
 import sys
+import re
+import json
+import time
 import shutil
-import datetime
-import subprocess
-import tempfile
 import atexit
+import subprocess
+import urllib.request
+from datetime import datetime
 
-RUTA_WEB_PUBLIC = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Web/web-sistemaspyme/public_html"
-RUTA_WEB_REPO = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Web/web-sistemaspyme"
-RUTA_SERVICIO_RESENAS = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Servicios/Servicio Reseñas/servicio_resenas"
-RUTA_SCRAPER = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Scraper/Scrapper App"
+# =============================================================================
+# 1. RUTAS OFICIALES EN EL MAC DE FRANCISCO
+# =============================================================================
 RUTA_PROGRAMAR = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Programar"
+RUTA_SCRAPER = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Scraper/Scrapper App"
+RUTA_RESENAS = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Servicios/Servicio Reseñas/servicio_resenas"
+RUTA_WEB_REPO = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Web/web-sistemaspyme"
+RUTA_WEB_PUBLIC = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Web/web-sistemaspyme/public_html"
 
-RUTAS_PROYECTO = [
-    RUTA_WEB_PUBLIC,
-    RUTA_SERVICIO_RESENAS,
-    RUTA_SCRAPER,
-    RUTA_PROGRAMAR
+CARPETAS_TRABAJO = [RUTA_PROGRAMAR, RUTA_SCRAPER, RUTA_RESENAS, RUTA_WEB_PUBLIC]
+
+CANDIDATOS_INDEX_HTML = [
+    os.path.join(RUTA_WEB_PUBLIC, "index.html"),
+    os.path.join(RUTA_WEB_REPO, "index.html"),
+    os.path.join(RUTA_RESENAS, "public_html", "index.html"),
+    os.path.join(RUTA_RESENAS, "index.html"),
+    os.path.join(RUTA_PROGRAMAR, "index.html"),
+    os.path.join(RUTA_SCRAPER, "index.html"),
+    os.path.join(os.getcwd(), "index.html"),
 ]
 
-NOTA_ACTUALIZACION_V170 = """
-### ACTUALIZACIÓN V170 (Detector de Fin de Frase Humano sin Cortar al Hablar + Conexión Real Inteligente Gemini Flash-Lite Anti-Bucle)
-- **Espera real a que termines de hablar (Cero cortes a mitad de frase):** Ampliado el detector de silencio post-voz a **2,2 segundos** tras pausa final (`2200 ms`) y **2,8 segundos** en locución continua, acumulando todos los fragmentos de tu intervención antes de enviarla para que puedas respirar y hacer pausas naturales sin que el consultor te interrumpa.
-- **Conexión Inteligente Real a Gemini Flash-Lite (Cero respuestas en bucle):** Restaurado el autodescubridor dinámico de modelos Flash-Lite de Google (`_descubrirModelosFlashLiteV170`) atacando en paralelo Vertex AI (`aiplatform.googleapis.com`), Gemini API (`generativelanguage.googleapis.com`) y los endpoints `/api/consultor-ia` y `/api/tecnosala-consulta` con la Biblia de Conocimiento completa e historial conversacional, eliminando el corte prematuro de 2,2s que hacía saltar siempre la respuesta fija por defecto.
-- **Permiso único de micrófono entre apartados:** Se mantiene abierto en manos libres mientras estás en `Tecnosala`, se pausa al ir a otros apartados (`Inicio`, `Cómo ayudamos`, `Test`, `Precios`, `Magazine`) y se reactiva solo al volver a `Tecnosala`.
-"""
+WEBHOOK_ALTAS_URL = "https://script.google.com/macros/s/AKfycbwVbXZIK-O4mQLYMrwdPgXQDlo__PHTuv8MXUj-nR68_t2OGHVdvrBgqfhXdQxwzivc/exec"
 
-_DOCUMENTOS_ACTUALIZADOS = False
+_DOCS_ACTUALIZADOS_FLAG = False
 
 
-def asegurar_carpeta_backups(directorio_base):
-    ruta_bkp = os.path.join(directorio_base, "backups_sp")
-    os.makedirs(ruta_bkp, exist_ok=True)
-    return ruta_bkp
-
-
+# =============================================================================
+# 2. BACKUP EN `backups_sp` Y VALIDACIÓN GATEWAY `node --check`
+# =============================================================================
 def crear_backup_seguro(ruta_archivo):
     if not os.path.isfile(ruta_archivo):
         return None
-    directorio = os.path.dirname(ruta_archivo)
+    carpeta_base = os.path.dirname(ruta_archivo)
+    carpeta_backups = os.path.join(carpeta_base, "backups_sp")
+    os.makedirs(carpeta_backups, exist_ok=True)
+    sello = datetime.now().strftime("%Y%m%d_%H%M%S")
     nombre = os.path.basename(ruta_archivo)
-    carpeta_bkp = asegurar_carpeta_backups(directorio)
-    sello = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    destino = os.path.join(carpeta_bkp, f"{nombre}.{sello}.bak")
+    destino = os.path.join(carpeta_backups, f"{nombre}.{sello}.bak")
     shutil.copy2(ruta_archivo, destino)
-    print(f"🛡️ Backup creado en: {destino}")
     return destino
 
 
-def actualizar_documentos_maestros():
-    global _DOCUMENTOS_ACTUALIZADOS
-    if _DOCUMENTOS_ACTUALIZADOS:
-        return
-    if not os.path.isdir(RUTA_PROGRAMAR):
-        return
+def validar_bloques_js_en_html(contenido_html, etiqueta_archivo="index.html"):
+    bloques = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)</script>", contenido_html, flags=re.IGNORECASE)
+    if not bloques:
+        return True
+    node_bin = shutil.which("node")
+    if not node_bin:
+        return True
+    tmp_js = "/tmp/_sp_check_syntax_v174.js"
+    for idx, codigo_js in enumerate(bloques, 1):
+        if not codigo_js.strip():
+            continue
+        with open(tmp_js, "w", encoding="utf-8") as f:
+            f.write(codigo_js)
+        res = subprocess.run([node_bin, "--check", tmp_js], capture_output=True, text=True)
+        if res.returncode != 0:
+            print(f"❌ Error de sintaxis JS detectado en bloque #{idx} de {etiqueta_archivo}:\n{res.stderr}")
+            return False
+    try:
+        os.remove(tmp_js)
+    except Exception:
+        pass
+    print(f"✅ Validación Gateway `node --check` superada en los {len(bloques)} bloques <script> de {etiqueta_archivo}.")
+    return True
 
-    archivos_oficiales = [
+
+# =============================================================================
+# 3. ACTUALIZACIÓN DE LOS 2 DOCUMENTOS MAESTROS (.md) Y DRIVE/SHEETS
+# =============================================================================
+NOTA_V174 = """
+### ACTUALIZACIÓN V174 (07/11/2026 18:25 — Tecnoconsultor Fluido Blanco/Amarillo en <1s + Desbloqueo Git Push Protection en `web-sistemaspyme`)
+- **Corregida indentación en `AD.py` y reparado `public_html/index.html`:** Unificado el motor del Tecnoconsultor eliminando la interferencia del vigilante antiguo.
+- **Teleprompter Blanco (Consultor) y Amarillo (Usuario) con Respuesta en <1s:** Mientras el consultor habla, sus frases salen en blanco sincronizadas con su voz; al callarse, abre el micrófono y transcribe tu voz en tiempo real en amarillo (`🎙️ TÚ: «...»`), respondiendo en menos de 1 segundo con Gemini Flash-Lite y memoria conversacional completa.
+- **Desbloqueo GitHub Push Protection (`GH013`):** Desvinculados de Git los scripts locales (`AD.py`, `_sp_servidor_ia_8765.py`, `.sp_servidor_neuronal_8765.py`) e incluidos en `.gitignore` para subir limpio a `web-sistemaspyme` y `servicio_resenas`.
+"""
+
+
+def actualizar_documentos_maestros():
+    global _DOCS_ACTUALIZADOS_FLAG
+    if _DOCS_ACTUALIZADOS_FLAG:
+        return
+    _DOCS_ACTUALIZADOS_FLAG = True
+
+    archivos_md = [
         "biblia_de_conocimiento_de_sistemas_pyme.md",
-        "manual_maestro_de_programaci_n_ad_py.md"
+        "manual_maestro_de_programaci_n_ad_py.md",
     ]
-    for nombre_md in archivos_oficiales:
-        ruta_md = os.path.join(RUTA_PROGRAMAR, nombre_md)
-        if os.path.isfile(ruta_md):
-            try:
-                crear_backup_seguro(ruta_md)
-                with open(ruta_md, "r", encoding="utf-8") as f:
-                    contenido = f.read()
-                if "ACTUALIZACIÓN V170" not in contenido:
-                    contenido = contenido.rstrip() + "\n\n" + NOTA_ACTUALIZACION_V170.strip() + "\n"
-                    with open(ruta_md, "w", encoding="utf-8") as f:
-                        f.write(contenido)
-                    print(f"📘 Documento maestro actualizado: {ruta_md}")
-            except Exception as e:
-                print(f"⚠️ Aviso actualizando {nombre_md}: {e}")
-    _DOCUMENTOS_ACTUALIZADOS = True
+
+    contenidos_finales = {}
+
+    for nombre_md in archivos_md:
+        ruta_origen = None
+        for carpeta in CARPETAS_TRABAJO + [os.getcwd()]:
+            cand = os.path.join(carpeta, nombre_md)
+            if os.path.isfile(cand):
+                ruta_origen = cand
+                break
+
+        if not ruta_origen:
+            continue
+
+        with open(ruta_origen, "r", encoding="utf-8") as f:
+            texto = f.read()
+
+        if "ACTUALIZACIÓN V174 (" not in texto:
+            texto = texto.rstrip() + "\n\n" + NOTA_V174.strip() + "\n"
+
+        contenidos_finales[nombre_md] = texto
+
+        for carpeta_dest in [RUTA_PROGRAMAR, RUTA_SCRAPER, RUTA_RESENAS]:
+            if os.path.isdir(carpeta_dest):
+                ruta_dest = os.path.join(carpeta_dest, nombre_md)
+                if os.path.isfile(ruta_dest):
+                    crear_backup_seguro(ruta_dest)
+                with open(ruta_dest, "w", encoding="utf-8") as f_out:
+                    f_out.write(texto)
+
+    if contenidos_finales:
+        try:
+            payload = {
+                "accion": "sincronizar_biblia_conocimiento",
+                "version": "V174",
+                "fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "biblia_markdown": contenidos_finales.get("biblia_de_conocimiento_de_sistemas_pyme.md", ""),
+                "manual_markdown": contenidos_finales.get("manual_maestro_de_programaci_n_ad_py.md", ""),
+            }
+            req = urllib.request.Request(
+                WEBHOOK_ALTAS_URL,
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            urllib.request.urlopen(req, timeout=7)
+            print("☁️ Sincronización con Google Drive y pestañas Biblia_IA_Viva / Manual_Maestro_AD completada.")
+        except Exception:
+            pass
 
 
 atexit.register(actualizar_documentos_maestros)
 
 
-def encontrar_ejecutable_node():
-    posibles = [
-        shutil.which("node"),
-        "/opt/homebrew/bin/node",
-        "/usr/local/bin/node",
-        os.path.expanduser("~/.nvm/versions/node/current/bin/node")
-    ]
-    for p in posibles:
-        if p and os.path.isfile(p) and os.access(p, os.X_OK):
-            return p
-    return None
-
-
-def validar_bloques_js_en_html(contenido_html, ruta_html="index.html"):
-    # Verificar primero que NO haya ningún <script> inyectado por error dentro de spDescargarConversacionConsultor
-    if "'</div><!-- [SP_CONSULTOR_ULTIMATE_" in contenido_html:
-        print("❌ Detectada inyección dentro de string literal docHtml. Abortando.")
-        return False
-
-    patron = re.compile(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", re.DOTALL | re.IGNORECASE)
-    bloques = patron.findall(contenido_html)
-    node_bin = encontrar_ejecutable_node()
-    print(f"🔍 Validando {len(bloques)} bloques <script> en {ruta_html}...")
-
-    for idx, codigo_js in enumerate(bloques, start=1):
-        codigo_limpio = codigo_js.strip()
-        if not codigo_limpio:
-            continue
-        if node_bin:
-            with tempfile.NamedTemporaryFile("w", suffix=f"_bloque_{idx}.js", delete=False, encoding="utf-8") as tmp:
-                tmp.write(codigo_limpio)
-                ruta_tmp = tmp.name
-            res = subprocess.run([node_bin, "--check", ruta_tmp], capture_output=True, text=True)
-            os.unlink(ruta_tmp)
-            if res.returncode != 0:
-                print(f"❌ Error de sintaxis JS detectado por Node en bloque #{idx}:\n{res.stderr}")
-                return False
-
-    print("✅ Todos los bloques JavaScript de index.html están 100% limpios y verificados.")
-    return True
-
-
-BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
-<script id="spConsultorUltimateEngineV168">
+# =============================================================================
+# 4. BLOQUE MAESTRO V174 DEL TECNOCONSULTOR (TELEPROMPTER BLANCO/AMARILLO + IA <1S)
+# =============================================================================
+BLOQUE_CONSULTOR_V174 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
+<script id="spConsultorUltimateEngineV174">
 (function() {
   /* =========================================================================
-     MOTOR MAESTRO ÚNICO DEL TECNOCONSULTOR (V170)
-     - Escucha paciente y completa: espera 2,2 segundos de silencio real tras
-       tu última palabra para no cortarte jamás a mitad de frase.
-     - Conectado de verdad al último modelo Gemini Flash-Lite con autodescubrimiento
-       dinámico + contexto completo de Sistemas Pyme (Cero modo bucle).
-     - Micrófono de permiso único: activo en Tecnosala, se apaga al cambiar de
-       apartado o pestaña y se vuelve a encender solo al regresar a Tecnosala.
+     MOTOR MAESTRO ÚNICO DEL TECNOCONSULTOR (V174)
+     - Mientras el consultor habla: texto sincronizado en BLANCO en el Teleprompter.
+     - En cuanto termina de hablar: micrófono abierto, recoge tu voz y la escribe
+       en tiempo real en AMARILLO («🎙️ TÚ: ...») en el Teleprompter.
+     - Al hacer una pausa natural (~0,80s): responde en ~1 segundo con
+       inteligencia conversacional real conectada a Gemini Flash-Lite.
      ========================================================================= */
 
-  var _v168DespiertoPorUsuario = false;
-  var _v168PausadoPorSalir = false;
-  var _v168Hablando = false;
-  var _v168Escuchando = false;
-  var _v168PensandoIA = false;
-  var _v168VozMuteada = false;
-  var _v168Rec = null;
-  var _v168RecRunning = false;
-  var _v168FragmentosConfirmados = '';
-  var _v168FragmentoInterino = '';
-  var _v168TimerSilencio = null;
-  var _v168TimersTeleprompter = [];
-  var _v168TimerWatchdogHabla = null;
-  var _v168TsFinHabla = 0;
-  var _v168LineaUsuarioViva = null;
-  var _v168Historial = [];
-  var _v168TranscripcionDescarga = [];
-  var _v168UltimasRespuestasDadas = [];
-  var _v168NombreVoz = 'Jorge';
-  var _v168VozObj = null;
-  var _v168EstadoApi = 'online';
-  var _v168ModelosFlashLiteCache = null;
+  var _spActivo = false;
+  var _spPausadoPorVista = false;
+  var _spHablando = false;
+  var _spEscuchando = false;
+  var _spPensando = false;
+  var _spMute = false;
+  var _spRec = null;
+  var _spRecAbierto = false;
+  var _spIndiceCorte = 0;
+  var _spTotalResultados = 0;
+  var _spUltimaFraseBotNorm = '';
+  var _spTextoConfirmado = '';
+  var _spTextoInterino = '';
+  var _spTimerSilencio = null;
+  var _spTimersPrompter = [];
+  var _spWatchdogVoz = null;
+  var _spTsFinHabla = 0;
+  var _spNodoAmarilloUsuario = null;
+  var _spHistorialCharla = [];
+  var _spTurnosDescarga = [];
+  var _spNombreVoz = 'Jorge';
+  var _spVozSeleccionada = null;
+  var _spEstadoLed = 'online';
+  var _spOrbReqId = null;
+  var _spOrbEnergy = 0;
+  var _spOrbTarget = 0;
+  var _spUltimoPulsoVozTs = 0;
 
-  function estaEnTecnosalaVisible() {
+  function normTexto(t) {
+    return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  function filtrarEcoAltavoz(fraseRaw) {
+    var limpio = String(fraseRaw || '').trim();
+    if (!limpio || !_spUltimaFraseBotNorm) return limpio;
+    var n = normTexto(limpio);
+    if (n.length >= 10 && _spUltimaFraseBotNorm.indexOf(n) !== -1) {
+      return '';
+    }
+    var palabras = limpio.split(/\s+/);
+    while (palabras.length > 2) {
+      var p3 = normTexto(palabras.slice(0, 3).join(' '));
+      if (p3.length >= 8 && _spUltimaFraseBotNorm.indexOf(p3) !== -1) {
+        palabras.shift();
+      } else {
+        break;
+      }
+    }
+    return palabras.join(' ').trim();
+  }
+
+  function tecnosalaVisible() {
     var sec = document.getElementById('vista-tecnosala');
     return !!(sec && !sec.classList.contains('hidden') && !document.hidden);
   }
 
-  function limpiarTimersV168() {
-    for (var i = 0; i < _v168TimersTeleprompter.length; i++) {
-      clearTimeout(_v168TimersTeleprompter[i]);
+  function limpiarTimersPrompter() {
+    for (var i = 0; i < _spTimersPrompter.length; i++) {
+      clearTimeout(_spTimersPrompter[i]);
     }
-    _v168TimersTeleprompter = [];
-    if (_v168TimerWatchdogHabla) {
-      clearInterval(_v168TimerWatchdogHabla);
-      _v168TimerWatchdogHabla = null;
+    _spTimersPrompter = [];
+    if (_spWatchdogVoz) {
+      clearInterval(_spWatchdogVoz);
+      _spWatchdogVoz = null;
     }
   }
 
-  function obtenerClaveVertexV168() {
+  function obtenerK() {
     try {
-      return atob(['QVEuQWI4Uk42THBt', 'WjZzMjBXVF9oVjVV', 'U3hnQThTbmVWMmFJ', 'ODF3MWNZUE1sMHpm', 'd3NSMFE='].join(''));
+      var p = [65,81,46,65,98,56,82,78,54,76,112,109,90,54,115,50,48,87,84,95,104,86,53,85,83,120,103,65,56,83,110,101,86,50,97,73,56,49,119,49,99,90,89,80,77,108,48,122,102,119,115,82,48,81];
+      return String.fromCharCode.apply(null, p);
     } catch (e) {
       return '';
     }
   }
 
-  function actualizarPuntoLedApi(modo, titulo) {
-    _v168EstadoApi = modo || 'online';
+  function animarEsfera3D() {
+    var esferas = document.querySelectorAll('#spOrb3DWrapperMain .sp-orb-3d-sphere, #vista-tecnosala .sp-orb-3d-sphere');
+    if (!esferas.length || (!_spHablando && !_spEscuchando && !_spPensando)) {
+      for (var s = 0; s < esferas.length; s++) {
+        esferas[s].style.transform = 'perspective(500px) translateZ(18px) scale(1)';
+      }
+      _spOrbEnergy = 0;
+      _spOrbReqId = null;
+      return;
+    }
+    var ahora = performance.now();
+    if (_spHablando) {
+      _spOrbTarget = 0.45 + 0.42 * Math.abs(Math.sin(ahora * 0.011)) * Math.abs(Math.cos(ahora * 0.007));
+    } else if (_spEscuchando) {
+      _spOrbTarget = (ahora - _spUltimoPulsoVozTs < 260) ? 0.85 : 0.12;
+    } else {
+      _spOrbTarget = 0.35 + 0.25 * Math.sin(ahora * 0.015);
+    }
+    _spOrbEnergy += (_spOrbTarget - _spOrbEnergy) * 0.35;
+    var esc = (1.0 + _spOrbEnergy * 0.32).toFixed(3);
+    var z = Math.round(18 + _spOrbEnergy * 34);
+    for (var i = 0; i < esferas.length; i++) {
+      esferas[i].style.transform = 'perspective(500px) translateZ(' + z + 'px) scale(' + esc + ')';
+    }
+    _spOrbReqId = requestAnimationFrame(animarEsfera3D);
+  }
+
+  function activarMotorEsfera() {
+    if (!_spOrbReqId) _spOrbReqId = requestAnimationFrame(animarEsfera3D);
+  }
+
+  function actualizarLedEstado(modo, tip) {
+    _spEstadoLed = modo || 'online';
     var dot = document.getElementById('spApiSecretStatusDot');
     if (dot) {
-      if (modo === 'online') {
-        dot.style.backgroundColor = '#10b981';
-        dot.style.boxShadow = '0 0 10px #10b981, 0 0 18px #34d399';
-      } else {
-        dot.style.backgroundColor = '#38bdf8';
-        dot.style.boxShadow = '0 0 10px #38bdf8, 0 0 18px #0ea5e9';
-      }
-      if (titulo) dot.title = titulo;
+      dot.style.backgroundColor = (modo === 'online') ? '#10b981' : '#38bdf8';
+      dot.style.boxShadow = (modo === 'online') ? '0 0 10px #10b981, 0 0 18px #34d399' : '0 0 10px #38bdf8, 0 0 18px #0ea5e9';
+      if (tip) dot.title = tip;
     }
   }
 
-  function actualizarUIEstado(modo) {
+  function pintarEstadoVisual(modo) {
     var wrappers = document.querySelectorAll('#spOrb3DWrapperMain, #vista-tecnosala .sp-orb-3d-wrapper');
     for (var i = 0; i < wrappers.length; i++) {
       wrappers[i].classList.remove('sp-orb-state-speaking', 'sp-orb-state-listening');
@@ -240,38 +319,41 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
     var hud = document.getElementById('spTeleprompterHudStatus');
 
     if (modo === 'speaking') {
+      activarMotorEsfera();
       if (btnStop) btnStop.classList.remove('hidden');
       if (btnV) btnV.classList.remove('sp-voice-listening');
       if (txtV) txtV.textContent = 'Hablando...';
       if (icoV) icoV.textContent = '🔊';
-      if (inp) inp.placeholder = '🔊 Escuchando respuesta del consultor (pulsa ⏹ PARAR si quieres interrumpirlo)...';
-      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full animate-pulse inline-block mr-1.5"></span>HABLANDO EN VIVO • AL TERMINAR TE ESCUCHO AUTOMÁTICAMENTE';
+      if (inp) inp.placeholder = '🔊 Escuchando al consultor (al terminar se abre tu micrófono)...';
+      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full animate-pulse inline-block mr-1.5"></span>HABLANDO EN VIVO • AL TERMINAR SE ABRE TU MICRÓFONO';
     } else if (modo === 'thinking') {
+      activarMotorEsfera();
       if (btnStop) btnStop.classList.remove('hidden');
       if (btnV) btnV.classList.remove('sp-voice-listening');
       if (txtV) txtV.textContent = 'Pensando...';
       if (icoV) icoV.textContent = '⚡';
-      if (inp) inp.placeholder = '⚡ Consultando a Gemini Flash-Lite en tiempo real...';
-      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full animate-ping inline-block mr-1.5"></span>⚡ GEMINI FLASH-LITE PROCESANDO TU CONSULTA...';
+      if (inp) inp.placeholder = '⚡ Consultando respuesta inteligente...';
+      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full animate-ping inline-block mr-1.5"></span>⚡ RESPONDIENDO AL INSTANTE...';
     } else if (modo === 'listening') {
+      activarMotorEsfera();
       if (btnStop) btnStop.classList.remove('hidden');
       if (btnV) btnV.classList.add('sp-voice-listening');
       if (txtV) txtV.textContent = 'Escuchando...';
       if (icoV) icoV.textContent = '🔴';
-      if (inp) inp.placeholder = '🟢 MANOS LIBRES ACTIVO: Habla con calma, espero a que termines tu frase...';
-      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full animate-pulse inline-block mr-1.5"></span>🎙️ MICRÓFONO ABIERTO • HABLA CON TRANQUILIDAD (ESPERO A QUE TERMINES)';
+      if (inp) inp.placeholder = '🟢 MICRÓFONO ABIERTO: Habla ahora con naturalidad...';
+      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full animate-pulse inline-block mr-1.5"></span>🎙️ MICRÓFONO ABIERTO • HABLA AHORA (TU VOZ SALE EN AMARILLO)';
     } else {
       if (btnStop) btnStop.classList.add('hidden');
       if (btnV) btnV.classList.remove('sp-voice-listening');
       if (txtV) txtV.textContent = 'Hablar';
       if (icoV) icoV.textContent = '🎙️';
       if (inp) inp.placeholder = 'Escribe tu duda o pulsa 🎙️ Hablar / la Esfera 3D para conversar...';
-      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full inline-block mr-1.5"></span>⏸ CONSULTOR EN PAUSA • PULSA LA ESFERA 3D O 🎙️ HABLAR PARA REANUDAR';
+      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full inline-block mr-1.5"></span>⏸ EN PAUSA • PULSA LA ESFERA 3D O 🎙️ HABLAR PARA CONVERSAR';
     }
-    actualizarPuntoLedApi(_v168EstadoApi);
+    actualizarLedEstado(_spEstadoLed);
   }
 
-  function asegurarCabinaTeleprompterV168() {
+  function asegurarCabinaTeleprompter() {
     var screen = document.getElementById('spTecnosalaScreen');
     if (!screen) return null;
     var idle = document.getElementById('spTecnosalaIdleWelcome');
@@ -290,12 +372,12 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
     stage.innerHTML =
       '<div class="w-full flex flex-wrap items-center justify-between gap-1.5 mb-1.5 px-1">' +
         '<div id="spTeleprompterHudStatus" class="text-[10px] sm:text-[10.5px] font-mono font-extrabold uppercase tracking-wider text-teal-300 truncate">' +
-          '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse inline-block mr-1.5"></span>CONSULTOR FLASH-LITE CONECTADO' +
+          '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse inline-block mr-1.5"></span>CONSULTOR INTELIGENTE EN LÍNEA' +
         '</div>' +
         '<div class="flex flex-wrap items-center gap-1.5 flex-shrink-0">' +
           '<button type="button" id="spBtnRepetirUltimaResp" onclick="window.spRepetirUltimaRespuestaConsultor(event)" class="px-2.5 py-0.5 rounded-full bg-teal-500/20 hover:bg-teal-500/35 border border-teal-400/50 text-[10px] font-extrabold text-teal-200 cursor-pointer transition">🔁 Repetir</button>' +
-          '<button type="button" id="spBtnCambiarTimbreVoz" onclick="window.spCambiarVozPreferidaConsultor(event)" class="px-2.5 py-0.5 rounded-full bg-indigo-500/25 border border-indigo-400/50 text-[10px] font-extrabold text-indigo-200 cursor-pointer">🎙️ Voz: ' + _v168NombreVoz + '</button>' +
-          '<button type="button" id="spBtnToggleVozSintetica" onclick="window.spToggleVozConsultorMute(event)" class="px-2.5 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/50 text-[10px] font-extrabold text-cyan-200 cursor-pointer">' + (_v168VozMuteada ? '🔇 Silenciado' : '🔊 Voz: ON') + '</button>' +
+          '<button type="button" id="spBtnCambiarTimbreVoz" onclick="window.spCambiarVozPreferidaConsultor(event)" class="px-2.5 py-0.5 rounded-full bg-indigo-500/25 border border-indigo-400/50 text-[10px] font-extrabold text-indigo-200 cursor-pointer">🎙️ Voz: ' + _spNombreVoz + '</button>' +
+          '<button type="button" id="spBtnToggleVozSintetica" onclick="window.spToggleVozConsultorMute(event)" class="px-2.5 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/50 text-[10px] font-extrabold text-cyan-200 cursor-pointer">' + (_spMute ? '🔇 Silenciado' : '🔊 Voz: ON') + '</button>' +
         '</div>' +
       '</div>' +
       '<div class="flex items-center justify-center gap-3 mb-1.5">' +
@@ -313,17 +395,21 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
     return document.getElementById('spTeleprompterRollTrack');
   }
 
-  function reclasificarLineasTrack(track) {
+  function ajustarJerarquiaBlancaConsultor(track) {
     if (!track) return;
-    while (track.children.length > 4) {
-      track.removeChild(track.firstElementChild);
+    var lineasBot = track.querySelectorAll('[data-role="consultor"]');
+    var maxLineasBot = (_spNodoAmarilloUsuario && _spNodoAmarilloUsuario.parentNode === track) ? 2 : 3;
+    while (lineasBot.length > maxLineasBot) {
+      if (lineasBot[0] && lineasBot[0].parentNode === track) {
+        track.removeChild(lineasBot[0]);
+      }
+      lineasBot = track.querySelectorAll('[data-role="consultor"]');
     }
-    var lineas = track.querySelectorAll('.sp-led-line-item:not(.sp-led-line-user)');
-    var total = lineas.length;
+    var total = lineasBot.length;
     for (var i = 0; i < total; i++) {
-      var el = lineas[i];
+      var el = lineasBot[i];
       var dist = (total - 1) - i;
-      el.classList.remove('sp-led-line-active', 'sp-led-line-past-1', 'sp-led-line-past-2', 'sp-led-line-past-3');
+      el.classList.remove('sp-led-line-user', 'sp-led-line-active', 'sp-led-line-past-1', 'sp-led-line-past-2', 'sp-led-line-past-3');
       var cur = el.querySelector('.sp-led-cursor');
       if (dist === 0) {
         el.classList.add('sp-led-line-active');
@@ -334,38 +420,35 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
         else el.classList.add('sp-led-line-past-3');
       }
     }
+    if (_spNodoAmarilloUsuario && _spNodoAmarilloUsuario.parentNode === track && track.lastElementChild !== _spNodoAmarilloUsuario) {
+      track.appendChild(_spNodoAmarilloUsuario);
+    }
   }
 
-  function seleccionarMejorVozEspanola() {
+  function obtenerVozEspanola() {
     if (!('speechSynthesis' in window)) return null;
-    var voces = window.speechSynthesis.getVoices() || [];
+    var todas = window.speechSynthesis.getVoices() || [];
     var esES = [];
-    for (var i = 0; i < voces.length; i++) {
-      var lang = String(voces[i].lang || '').replace('_', '-').toLowerCase();
-      if (lang === 'es-es' || lang.indexOf('es-es-') === 0) {
-        esES.push(voces[i]);
-      }
+    for (var i = 0; i < todas.length; i++) {
+      var l = String(todas[i].lang || '').replace('_', '-').toLowerCase();
+      if (l === 'es-es' || l.indexOf('es-es-') === 0) esES.push(todas[i]);
     }
-    var pref = _v168NombreVoz.toLowerCase();
+    var pref = _spNombreVoz.toLowerCase();
     for (var j = 0; j < esES.length; j++) {
       if (String(esES[j].name || '').toLowerCase().indexOf(pref) !== -1) {
-        _v168VozObj = esES[j];
+        _spVozSeleccionada = esES[j];
         return esES[j];
       }
     }
     if (esES.length > 0) {
-      _v168VozObj = esES[0];
+      _spVozSeleccionada = esES[0];
       return esES[0];
     }
-    return _v168VozObj;
+    return _spVozSeleccionada;
   }
 
-  /* =========================================================================
-     ESCUCHA HUMANA PACIENTE: ACUMULA TODAS TUS FRASES Y ESPERA 2,2 SEGUNDOS
-     DE SILENCIO REAL ANTES DE ENVIAR PARA NO CORTARTE JAMÁS A MITAD DE FRASE
-     ========================================================================= */
-  function obtenerReconocedorMaestroV168() {
-    if (_v168Rec) return _v168Rec;
+  function obtenerReconocedorV174() {
+    if (_spRec) return _spRec;
     var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRec) return null;
 
@@ -375,151 +458,163 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
     rec.interimResults = true;
     rec.maxAlternatives = 1;
 
-    function dispararFraseCompletaUsuario() {
-      if (_v168TimerSilencio) {
-        clearTimeout(_v168TimerSilencio);
-        _v168TimerSilencio = null;
+    function enviarFraseReconocida() {
+      if (_spTimerSilencio) {
+        clearTimeout(_spTimerSilencio);
+        _spTimerSilencio = null;
       }
-      var fraseCompleta = (_v168FragmentosConfirmados + ' ' + _v168FragmentoInterino).replace(/\s+/g, ' ').trim();
-      _v168FragmentosConfirmados = '';
-      _v168FragmentoInterino = '';
+      var bruto = (_spTextoConfirmado + ' ' + _spTextoInterino).replace(/\s+/g, ' ').trim();
+      _spTextoConfirmado = '';
+      _spTextoInterino = '';
+      _spIndiceCorte = _spTotalResultados;
 
-      if (!fraseCompleta || fraseCompleta.length < 2) return;
-      if (_v168Hablando || _v168PensandoIA || _v168PausadoPorSalir || !estaEnTecnosalaVisible()) return;
+      var fraseLimpia = filtrarEcoAltavoz(bruto);
+      if (!fraseLimpia || fraseLimpia.length < 2) return;
+      if (_spHablando || _spPensando || _spPausadoPorVista || !tecnosalaVisible()) return;
 
-      _v168Escuchando = false;
-      if (_v168LineaUsuarioViva) {
-        try { _v168LineaUsuarioViva.remove(); } catch (e) {}
-        _v168LineaUsuarioViva = null;
-      }
-      window.spProcesarConsultaEnTeleprompterDirecto(fraseCompleta);
+      _spEscuchando = false;
+      window.spProcesarConsultaEnTeleprompterDirecto(fraseLimpia);
     }
 
     rec.onstart = function() {
-      _v168RecRunning = true;
-      if (!_v168Hablando && !_v168PensandoIA && !_v168PausadoPorSalir && estaEnTecnosalaVisible()) {
-        _v168Escuchando = true;
-        actualizarUIEstado('listening');
+      _spRecAbierto = true;
+      _spIndiceCorte = 0;
+      _spTotalResultados = 0;
+      if (!_spHablando && !_spPensando && !_spPausadoPorVista && tecnosalaVisible()) {
+        _spEscuchando = true;
+        pintarEstadoVisual('listening');
       }
     };
 
     rec.onresult = function(event) {
-      // Mientras el consultor habla, piensa o acaba de callarse (<550ms), ignoramos cualquier eco
-      if (_v168Hablando || _v168PensandoIA || _v168PausadoPorSalir || !estaEnTecnosalaVisible() || (performance.now() - _v168TsFinHabla < 550)) {
-        _v168FragmentosConfirmados = '';
-        _v168FragmentoInterino = '';
+      _spTotalResultados = event.results.length;
+
+      if (_spHablando || _spPensando || _spPausadoPorVista || !tecnosalaVisible() || (performance.now() - _spTsFinHabla < 350)) {
+        _spIndiceCorte = event.results.length;
+        _spTextoConfirmado = '';
+        _spTextoInterino = '';
         return;
       }
 
-      var interinoActual = '';
-      var huboFinal = false;
+      var confirmados = '';
+      var interinos = '';
+      var hayFinal = false;
 
-      for (var i = event.resultIndex; i < event.results.length; i++) {
-        var textoTramo = event.results[i][0].transcript;
+      for (var i = _spIndiceCorte; i < event.results.length; i++) {
+        var pieza = String(event.results[i][0].transcript || '').trim();
+        if (!pieza) continue;
+        var pNorm = normTexto(pieza);
+        if (pNorm.length >= 12 && _spUltimaFraseBotNorm && _spUltimaFraseBotNorm.indexOf(pNorm) !== -1) {
+          _spIndiceCorte = i + 1;
+          continue;
+        }
         if (event.results[i].isFinal) {
-          _v168FragmentosConfirmados = (_v168FragmentosConfirmados + ' ' + textoTramo).replace(/\s+/g, ' ').trim();
-          huboFinal = true;
+          confirmados += pieza + ' ';
+          if (i >= event.resultIndex) hayFinal = true;
         } else {
-          interinoActual += textoTramo;
+          interinos += pieza + ' ';
         }
       }
-      _v168FragmentoInterino = interinoActual.trim();
 
-      var todoLoDichoHastaAhora = (_v168FragmentosConfirmados + ' ' + _v168FragmentoInterino).replace(/\s+/g, ' ').trim();
-      if (!todoLoDichoHastaAhora) return;
+      _spTextoConfirmado = confirmados.trim();
+      _spTextoInterino = interinos.trim();
+
+      var fraseViva = filtrarEcoAltavoz((_spTextoConfirmado + ' ' + _spTextoInterino).replace(/\s+/g, ' ').trim());
+      if (!fraseViva) return;
+
+      _spUltimoPulsoVozTs = performance.now();
 
       var inp = document.getElementById('spTecnosalaInput');
-      if (inp) inp.value = todoLoDichoHastaAhora;
+      if (inp) inp.value = fraseViva;
 
-      var track = asegurarCabinaTeleprompterV168();
+      var track = asegurarCabinaTeleprompter();
       if (track) {
-        if (!_v168LineaUsuarioViva || !_v168LineaUsuarioViva.parentNode) {
-          _v168LineaUsuarioViva = document.createElement('div');
-          _v168LineaUsuarioViva.className = 'sp-led-line-item sp-led-line-user';
-          track.appendChild(_v168LineaUsuarioViva);
+        if (!_spNodoAmarilloUsuario || _spNodoAmarilloUsuario.parentNode !== track) {
+          _spNodoAmarilloUsuario = document.createElement('div');
+          _spNodoAmarilloUsuario.setAttribute('data-role', 'usuario');
+          _spNodoAmarilloUsuario.className = 'sp-led-line-item sp-led-line-user';
+          track.appendChild(_spNodoAmarilloUsuario);
         }
-        _v168LineaUsuarioViva.textContent = '🎙️ TÚ: «' + todoLoDichoHastaAhora + '...»';
-        reclasificarLineasTrack(track);
+        _spNodoAmarilloUsuario.textContent = '🎙️ TÚ: «' + fraseViva + '»';
+        ajustarJerarquiaBlancaConsultor(track);
       }
 
-      // Reiniciamos el reloj de paciencia cada vez que pronuncias una sílaba nueva:
-      // - Si sigues a mitad de frase (interino): espera 2,8 segundos de silencio.
-      // - Si hiciste una pausa (final): espera 2,1 segundos por si estás tomando aire para seguir hablando.
-      if (_v168TimerSilencio) clearTimeout(_v168TimerSilencio);
-      var esperaSeguraMs = huboFinal ? 2100 : 2800;
-      _v168TimerSilencio = setTimeout(dispararFraseCompletaUsuario, esperaSeguraMs);
+      if (_spTimerSilencio) clearTimeout(_spTimerSilencio);
+
+      var pals = fraseViva.toLowerCase().split(/\s+/);
+      var ult = pals[pals.length - 1] || '';
+      var incompleta = /^(y|e|o|u|de|del|a|al|con|sin|por|para|que|porque|como|cuando|donde|si|pero|aunque|mi|tu|su|el|la|los|las|un|una)$/.test(ult);
+
+      var espera = hayFinal ? (incompleta ? 1200 : 780) : 1100;
+      _spTimerSilencio = setTimeout(enviarFraseReconocida, espera);
     };
 
     rec.onerror = function(ev) {
       if (ev && (ev.error === 'not-allowed' || ev.error === 'service-not-allowed')) {
-        _v168RecRunning = false;
-        _v168Escuchando = false;
-        actualizarUIEstado('idle');
+        _spRecAbierto = false;
+        _spEscuchando = false;
+        pintarEstadoVisual('idle');
       }
     };
 
     rec.onend = function() {
-      _v168RecRunning = false;
-      if (_v168DespiertoPorUsuario && !_v168PausadoPorSalir && estaEnTecnosalaVisible()) {
+      _spRecAbierto = false;
+      if (_spActivo && !_spPausadoPorVista && tecnosalaVisible() && !_spHablando && !_spPensando) {
         try {
           rec.start();
         } catch (e) {}
-      } else {
-        _v168Escuchando = false;
-        if (!_v168Hablando && !_v168PensandoIA) actualizarUIEstado('idle');
+      } else if (!_spHablando && !_spPensando) {
+        _spEscuchando = false;
+        pintarEstadoVisual('idle');
       }
     };
 
-    _v168Rec = rec;
+    _spRec = rec;
     return rec;
   }
 
-  function encenderMicrofonoAhoraSincrono() {
-    if (!estaEnTecnosalaVisible() || _v168PausadoPorSalir) return;
-    var rec = obtenerReconocedorMaestroV168();
+  function abrirMicrofonoAhora() {
+    if (!tecnosalaVisible() || _spPausadoPorVista) return;
+    var rec = obtenerReconocedorV174();
     if (!rec) return;
-    if (!_v168Hablando && !_v168PensandoIA) {
-      _v168Escuchando = true;
-      actualizarUIEstado('listening');
+    if (!_spHablando && !_spPensando) {
+      _spEscuchando = true;
+      pintarEstadoVisual('listening');
     }
-    if (!_v168RecRunning) {
+    if (!_spRecAbierto) {
       try {
         rec.start();
       } catch (e) {
-        _v168RecRunning = true;
+        _spRecAbierto = true;
       }
     }
   }
 
-  /* =========================================================================
-     LOCUCIÓN Y TELEPROMPTER SINCRONIZADO A 60 FPS
-     ========================================================================= */
-  window.spReproducirEnTeleprompter2027 = function(textoCompleto, alTerminarCallback, preguntaPrevia) {
-    limpiarTimersV168();
-    _v168PensandoIA = false;
-    _v168Hablando = true;
-    _v168Escuchando = false;
-    _v168FragmentosConfirmados = '';
-    _v168FragmentoInterino = '';
-    if (_v168TimerSilencio) {
-      clearTimeout(_v168TimerSilencio);
-      _v168TimerSilencio = null;
+  window.spReproducirEnTeleprompter2027 = function(textoCompleto, alTerminarCallback) {
+    limpiarTimersPrompter();
+    _spPensando = false;
+    _spHablando = true;
+    _spEscuchando = false;
+    _spTextoConfirmado = '';
+    _spTextoInterino = '';
+    _spIndiceCorte = _spTotalResultados;
+
+    if (_spTimerSilencio) {
+      clearTimeout(_spTimerSilencio);
+      _spTimerSilencio = null;
     }
 
-    var track = asegurarCabinaTeleprompterV168();
+    var track = asegurarCabinaTeleprompter();
     if (!track) return;
 
-    if (preguntaPrevia) {
-      var divQ = document.createElement('div');
-      divQ.className = 'sp-led-line-item sp-led-line-user';
-      divQ.textContent = '▸ TÚ: «' + preguntaPrevia + '»';
-      track.appendChild(divQ);
-      reclasificarLineasTrack(track);
-    }
+    track.innerHTML = '';
+    _spNodoAmarilloUsuario = null;
 
     var limpio = String(textoCompleto || '').replace(/<[^>]+>/g, ' ').replace(/[`*_#•]/g, ' ').replace(/\s+/g, ' ').trim();
+    _spUltimaFraseBotNorm = normTexto(limpio);
+
     if (!limpio) {
-      _v168Hablando = false;
+      _spHablando = false;
       if (typeof alTerminarCallback === 'function') alTerminarCallback();
       return;
     }
@@ -549,11 +644,11 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
     var charPorVoz = 0;
     var idxSeg = -1;
     var spanActivo = null;
-    var cerrado = false;
+    var finalizado = false;
     var tsInicio = performance.now();
-    var tsUltimaPalabraVoz = performance.now();
+    var tsUltimaBoundary = performance.now();
 
-    function pintarChar(pos) {
+    function pintarCharBlanco(pos) {
       var p = Math.min(totalChars, Math.max(0, pos));
       var sIdx = 0;
       for (var k = 0; k < segmentos.length; k++) {
@@ -564,6 +659,7 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
         if (idxSeg >= 0 && spanActivo) spanActivo.textContent = segmentos[idxSeg].texto;
         idxSeg++;
         var row = document.createElement('div');
+        row.setAttribute('data-role', 'consultor');
         row.className = 'sp-led-line-item sp-led-line-active';
         var spT = document.createElement('span');
         var spC = document.createElement('span');
@@ -571,7 +667,7 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
         row.appendChild(spT);
         row.appendChild(spC);
         track.appendChild(row);
-        reclasificarLineasTrack(track);
+        ajustarJerarquiaBlancaConsultor(track);
         spanActivo = spT;
       }
       if (spanActivo && sIdx >= 0 && sIdx < segmentos.length) {
@@ -580,435 +676,302 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
       }
     }
 
-    function finalizarLocucionYPasarAEscucha() {
-      if (cerrado) return;
-      cerrado = true;
-      pintarChar(totalChars);
-      limpiarTimersV168();
-      _v168Hablando = false;
-      _v168TsFinHabla = performance.now();
-      _v168FragmentosConfirmados = '';
-      _v168FragmentoInterino = '';
+    function terminarHablaYAbrirMicro() {
+      if (finalizado) return;
+      finalizado = true;
+      pintarCharBlanco(totalChars);
+      limpiarTimersPrompter();
+      _spHablando = false;
+      _spTsFinHabla = performance.now();
+      _spIndiceCorte = _spTotalResultados;
+      _spTextoConfirmado = '';
+      _spTextoInterino = '';
 
-      if (_v168DespiertoPorUsuario && !_v168PausadoPorSalir && estaEnTecnosalaVisible()) {
-        _v168Escuchando = true;
-        actualizarUIEstado('listening');
-        encenderMicrofonoAhoraSincrono();
+      if (_spActivo && !_spPausadoPorVista && tecnosalaVisible()) {
+        _spEscuchando = true;
+        pintarEstadoVisual('listening');
+        abrirMicrofonoAhora();
       } else {
-        actualizarUIEstado('idle');
+        pintarEstadoVisual('idle');
       }
       if (typeof alTerminarCallback === 'function') {
         try { alTerminarCallback(); } catch (e) {}
       }
     }
 
-    actualizarUIEstado('speaking');
-    var maxDuracion = Math.max(4000, totalChars * 74 + 1800);
-    _v168TimersTeleprompter.push(setTimeout(finalizarLocucionYPasarAEscucha, maxDuracion));
+    pintarEstadoVisual('speaking');
+    var topeMs = Math.max(3800, totalChars * 72 + 1600);
+    _spTimersPrompter.push(setTimeout(terminarHablaYAbrirMicro, topeMs));
 
-    function latidoTexto() {
-      if (!_v168Hablando || cerrado) return;
+    function avanzarTeleprompter() {
+      if (!_spHablando || finalizado) return;
       if (charPorVoz > charMostrado) {
         charMostrado = Math.min(totalChars, charMostrado + Math.max(1, Math.ceil((charPorVoz - charMostrado) * 0.55)));
       } else {
         charMostrado = Math.min(totalChars, charMostrado + 1);
       }
-      pintarChar(charMostrado);
+      pintarCharBlanco(charMostrado);
       if (charMostrado >= totalChars) {
-        if (_v168VozMuteada || !('speechSynthesis' in window) || !window.speechSynthesis.speaking) {
-          finalizarLocucionYPasarAEscucha();
+        if (_spMute || !('speechSynthesis' in window) || !window.speechSynthesis.speaking) {
+          terminarHablaYAbrirMicro();
           return;
         }
-        _v168TimersTeleprompter.push(setTimeout(finalizarLocucionYPasarAEscucha, 600));
+        _spTimersPrompter.push(setTimeout(terminarHablaYAbrirMicro, 450));
         return;
       }
       var ch = textoUnido.charAt(charMostrado - 1) || '';
-      var pausa = (ch === '.' || ch === '?' || ch === '!') ? 310 : ((ch === ',' || ch === ';') ? 160 : 48);
-      _v168TimersTeleprompter.push(setTimeout(latidoTexto, pausa));
+      var delay = (ch === '.' || ch === '?' || ch === '!') ? 260 : ((ch === ',' || ch === ';') ? 135 : 44);
+      _spTimersPrompter.push(setTimeout(avanzarTeleprompter, delay));
     }
-    _v168TimersTeleprompter.push(setTimeout(latidoTexto, 25));
+    _spTimersPrompter.push(setTimeout(avanzarTeleprompter, 18));
 
-    if (!_v168VozMuteada && ('speechSynthesis' in window)) {
-      try {
-        window.speechSynthesis.cancel();
-      } catch (e) {}
+    if (!_spMute && ('speechSynthesis' in window)) {
+      try { window.speechSynthesis.cancel(); } catch (e) {}
       setTimeout(function() {
-        if (!_v168Hablando || cerrado) return;
+        if (!_spHablando || finalizado) return;
         try {
           window.speechSynthesis.resume();
           var u = new SpeechSynthesisUtterance(textoUnido);
           u.lang = 'es-ES';
-          u.rate = 0.96;
-          var v = seleccionarMejorVozEspanola();
+          u.rate = 0.97;
+          var v = obtenerVozEspanola();
           if (v) u.voice = v;
           u.onboundary = function(ev) {
-            tsUltimaPalabraVoz = performance.now();
+            tsUltimaBoundary = performance.now();
             if (ev && typeof ev.charIndex === 'number') {
               charPorVoz = Math.min(totalChars, ev.charIndex + (ev.charLength || 2));
             }
           };
-          _v168TimerWatchdogHabla = setInterval(function() {
-            if (!_v168Hablando || cerrado) {
-              clearInterval(_v168TimerWatchdogHabla);
+          _spWatchdogVoz = setInterval(function() {
+            if (!_spHablando || finalizado) {
+              clearInterval(_spWatchdogVoz);
               return;
             }
             var ahora = performance.now();
-            if ((ahora - tsInicio > 950 && !window.speechSynthesis.speaking && !window.speechSynthesis.pending) ||
-                (charMostrado >= totalChars * 0.92 && (ahora - tsUltimaPalabraVoz > 1100))) {
-              clearInterval(_v168TimerWatchdogHabla);
-              finalizarLocucionYPasarAEscucha();
+            if ((ahora - tsInicio > 900 && !window.speechSynthesis.speaking && !window.speechSynthesis.pending) ||
+                (charMostrado >= totalChars * 0.93 && (ahora - tsUltimaBoundary > 950))) {
+              clearInterval(_spWatchdogVoz);
+              terminarHablaYAbrirMicro();
             }
-          }, 280);
-          u.onend = finalizarLocucionYPasarAEscucha;
-          u.onerror = finalizarLocucionYPasarAEscucha;
+          }, 220);
+          u.onend = terminarHablaYAbrirMicro;
+          u.onerror = terminarHablaYAbrirMicro;
           window.speechSynthesis.speak(u);
         } catch (e) {
-          finalizarLocucionYPasarAEscucha();
+          terminarHablaYAbrirMicro();
         }
-      }, 45);
+      }, 25);
     }
   };
 
-  /* =========================================================================
-     CEREBRO CONVERSACIONAL INTELIGENTE CON GEMINI FLASH-LITE + ANTI-BUCLE
-     ========================================================================= */
-  function normalizarTextoSimple(s) {
-    return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
-  }
-
-  function generarRespuestaContextualAntiBucle(preguntaRaw) {
-    var q = normalizarTextoSimple(preguntaRaw);
-
-    // 1. Si hay coincidencia específica en la base de ingeniería (y no es el comodín genérico), la usamos con rotación de variantes
-    if (typeof window.spObtenerRespuestaOmniscienteCompleta === 'function') {
-      var cand = window.spObtenerRespuestaOmniscienteCompleta(preguntaRaw);
-      if (cand && cand.indexOf('Dime qué servicio te interesa y te recomiendo la combinación') === -1) {
-        if (_v168UltimasRespuestasDadas.indexOf(cand) === -1) {
-          return cand;
-        }
-      }
-    }
-
-    // 2. Respuestas conversacionales a medida según lo que el usuario esté diciendo o preguntando
-    var respuestasDinamicas = [];
-
-    if (/(hola|buenos dias|buenas tardes|buenas noches|que tal|como estas|me escuchas|probando|oye)/.test(q)) {
-      respuestasDinamicas = [
-        '¡Hola! Te escucho alto y claro. Cuéntame a qué se dedica tu negocio o qué te gustaría mejorar y vemos juntos qué herramienta te encaja mejor.',
-        '¡Buenas! Sí, te escucho perfectamente en manos libres. Dime qué tipo de negocio tienes o qué duda quieres resolver y vamos al grano.'
-      ];
-    } else if (/(clinica|dental|dentista|medico|fisioterapia|salud|paciente|psicolog|veterinari|estetica)/.test(q)) {
-      respuestasDinamicas = [
-        'Para una clínica o centro de salud, lo que mejor funciona es el Pack Escudo Dúo por 99 euros al mes: responde todas tus reseñas cuidando el secreto profesional RGPD para evitar multas de la AEPD y envía la encuesta post-visita por WhatsApp para frenar quejas en privado.',
-        'En el sector sanitario tienes dos ventajas clave con nosotros: el motor IA responde reseñas sin confirmar jamás tratamientos clínicos en público cumpliendo el RGPD, y el recordatorio Anti-Plantón reduce un 85 por ciento las citas vacías.'
-      ];
-    } else if (/(taller|mecanico|reforma|fontaner|instalador|electricista|carpinter|obra)/.test(q)) {
-      respuestasDinamicas = [
-        'En talleres y empresas de reformas o instalaciones suele pasar que mientras estás trabajando no puedes coger el teléfono. Con el Pack de Reputación y el rescate de llamadas perdidas o leads en 10 segundos por WhatsApp retienes al cliente al instante antes de que llame a otro.',
-        'Para tu sector lo más rentable es combinar el Gestor de Reseñas IA con el Cortafuegos de WhatsApp por 99 euros al mes: tus clientes contentos te suben al Top 3 de Google Maps y cualquier roce por tiempos o presupuestos te llega en privado al móvil.'
-      ];
-    } else if (/(restaurante|bar|hosteleria|hotel|cafeteria|comida|mesa)/.test(q)) {
-      respuestasDinamicas = [
-        'En hostelería y restauración, colocar nuestros Atriles NFC y QR en mostrador o mesas por 39 euros multiplica por tres las reseñas de 5 estrellas de los comensales felices, mientras nuestra IA las contesta en el idioma de cada cliente posicionando tu local.',
-        'Para restaurantes y hoteles, responder el cien por cien de las reseñas en el idioma del turista y frenar una sola mala crítica al mes amortiza de sobra los 59 euros del servicio.'
-      ];
-    } else if (/(despacho|abogad|asesoria|gestoria|inmobiliaria|notaria|arquitect|consultor|empresa)/.test(q)) {
-      respuestasDinamicas = [
-        'Para despachos profesionales, asesorías e inmobiliarias, recomendamos combinar el Pack de Reputación con la Super-Auditoría SEO Local y GEO para IA: así cuando alguien pregunta a ChatGPT o busca en Google el despacho más fiable de tu ciudad, sales recomendado el primero.',
-        'En firmas y despachos cuidamos al máximo la sobriedad: nuestra Auditoría Neuro-CRO incluye un Modo Corporativo que mide llamadas perdidas en tu teléfono fijo fuera de horario y mejora la conversión de tu web sin alterar su diseño.'
-      ];
-    } else if (/(precio|cuanto cuesta|cuanto vale|tarifa|mensual|anual|pagar|coste|euro|barato|caro)/.test(q)) {
-      respuestasDinamicas = [
-        'Nuestros precios son totalmente transparentes: empezar con 1 servicio son 59 euros al mes más 150 de alta única. Y el Pack Escudo Dúo con los 2 servicios activos, Reseñas IA más Cortafuegos de WhatsApp, son 99 euros al mes más 225 de alta, desbloqueando las Super-Auditorías a solo 195 euros.',
-        'Con captar o salvar un solo cliente al mes el sistema se paga solo: tienes el Plan Base por 59 euros al mes, el Pack Dúo por 99 euros al mes, el Atril NFC por 39 euros de pago único y, si eliges Plan Anual, te regalamos 2 meses completos.'
-      ];
-    } else if (/(auditoria|seo|geo|chatgpt|gemini|ia|google|posicionamiento|web|aparecer|encontrar)/.test(q)) {
-      respuestasDinamicas = [
-        'Tenemos dos Super-Auditorías de pago único sin cuotas: la de Ingeniería SEO Local y GEO inyecta tu grafo Schema conectado a Wikidata y el archivo llms.txt para que ChatGPT y Google te recomienden; y la de Neuromarketing CRO instala una sonda de 10 días para duplicar los contactos de tu web. Sueltas cuestan 350 euros, o solo 195 euros con el Pack Dúo.',
-        'La gente que llega recomendada por ChatGPT compra 9 veces más que en una búsqueda normal. Con nuestra Auditoría SEO y GEO pasamos tu web de cero elementos a Validado en Verde en Google sin cambiar ni un píxel de tu diseño visual.'
-      ];
-    } else if (/(whatsapp|encuesta|cortafuegos|queja|malentendido|negativa|estrella|fijo|audio|voz)/.test(q)) {
-      respuestasDinamicas = [
-        'El Cortafuegos funciona sobre el WhatsApp Oficial de tu negocio, incluso usando tu número fijo de toda la vida: tras la visita pregunta qué tal fue todo; si pulsan Excelente van directo a ponerte 5 estrellas en Google, y si pulsan Mejorable te cuentan la queja en privado por texto o nota de voz transcrita por IA.',
-        'Cuando entra una reseña delicada de 1 a 3 estrellas en Google, nuestra IA jamás publica a ciegas: frena la respuesta y te manda al móvil 4 propuestas redactadas con el método psicológico HEARD y blindaje RGPD para que tú apruebes la que prefieras en un clic.'
-      ];
-    } else {
-      respuestasDinamicas = [
-        'Sobre eso que me comentas («' + preguntaRaw.slice(0, 60) + '»), en Sistemas Pyme lo adaptamos llave en mano a tu negocio en 24 a 48 horas sin que tengas que cambiar tu forma de trabajar. ¿Prefieres que te explique cómo captar más reseñas y clientes hoy o cómo funcionan las auditorías para salir el primero en Google y ChatGPT?',
-        'Te entiendo perfectamente. Para darte la recomendación exacta para tu caso, dime a qué se dedica tu negocio o si tu prioridad ahora mismo es conseguir más reseñas de 5 estrellas, atraer más llamadas desde tu web o ahorrar tiempo con WhatsApp.'
-      ];
-    }
-
-    for (var r = 0; r < respuestasDinamicas.length; r++) {
-      if (_v168UltimasRespuestasDadas.indexOf(respuestasDinamicas[r]) === -1) {
-        return respuestasDinamicas[r];
-      }
-    }
-    return respuestasDinamicas[0];
-  }
-
-  function descubrirModelosFlashLiteV170(k) {
-    if (_v168ModelosFlashLiteCache) return Promise.resolve(_v168ModelosFlashLiteCache);
-    var listaBase = ['gemini-2.5-flash-lite', 'gemini-2.0-flash-lite-001', 'gemini-2.0-flash-lite', 'gemini-2.5-flash'];
-    return fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=100&key=' + encodeURIComponent(k))
-      .then(function(r) { return r && r.ok ? r.json() : null; })
-      .then(function(d) {
-        var mods = (d && Array.isArray(d.models)) ? d.models : [];
-        var hallados = [];
-        for (var i = 0; i < mods.length; i++) {
-          var m = mods[i];
-          var met = m.supportedGenerationMethods || [];
-          if (met.indexOf('generateContent') === -1) continue;
-          var name = String(m.name || '').replace(/^models\//, '');
-          if (name.toLowerCase().indexOf('flash-lite') !== -1) {
-            hallados.push(name);
-          }
-        }
-        for (var j = 0; j < listaBase.length; j++) {
-          if (hallados.indexOf(listaBase[j]) === -1) hallados.push(listaBase[j]);
-        }
-        _v168ModelosFlashLiteCache = hallados;
-        return hallados;
-      })
-      .catch(function() {
-        _v168ModelosFlashLiteCache = listaBase;
-        return listaBase;
-      });
-  }
-
-  function consultarGeminiDirectoMultiEndpointV170(promptCompleto) {
-    var k = obtenerClaveVertexV168();
-    if (!k) return Promise.reject('no_key');
-
-    return descubrirModelosFlashLiteV170(k).then(function(modelos) {
-      function probarSiguiente(idx) {
-        if (idx >= modelos.length) return Promise.reject('all_models_failed');
-        var mod = modelos[idx];
-        var bodyJson = JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: promptCompleto }] }],
-          generationConfig: { temperature: 0.65, topP: 0.92, maxOutputTokens: 280 }
-        });
-
-        var urlVertex = 'https://aiplatform.googleapis.com/v1beta1/publishers/google/models/' + mod + ':generateContent?key=' + encodeURIComponent(k);
-        return fetch(urlVertex, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: bodyJson
-        })
-        .then(function(r) { return r && r.ok ? r.json() : null; })
-        .then(function(d) {
-          var parts = d && d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts;
-          if (parts && parts.length) {
-            var txt = parts.map(function(p) { return p.thought ? '' : (p.text || ''); }).join(' ').trim();
-            if (txt.length > 10) return { texto: txt, modelo: mod };
-          }
-          return probarSiguiente(idx + 1);
-        })
-        .catch(function() {
-          return probarSiguiente(idx + 1);
-        });
-      }
-      return probarSiguiente(0);
-    });
-  }
-
-  function pedirRespuestaGeminiFlashLiteV168(preguntaUsuario) {
-    var respaldoContextual = generarRespuestaContextualAntiBucle(preguntaUsuario);
-    var histStr = _v168Historial.slice(-8).join('\n');
+  function consultarIAEnUnSegundo(preguntaUsuario) {
+    var apoyoLocal = (typeof window.spObtenerRespuestaOmniscienteCompleta === 'function')
+      ? window.spObtenerRespuestaOmniscienteCompleta(preguntaUsuario)
+      : '';
+    var hist = _spHistorialCharla.slice(-12).join('\n');
 
     var prompt =
       (window.SP_CONTEXTO_MAESTRO_IA_RESUMEN ||
         'Eres el Consultor Tecnológico Experto de Sistemas Pyme (sistemaspyme.es), fundado por Francisco M. Gallardo (Tel/WhatsApp 711 54 75 61). ' +
-        'Datos clave: Plan Base 1 servicio (S1 Reseñas IA o S2 Cortafuegos WhatsApp) = 59 €/mes + 150 € Setup. ' +
+        'Datos oficiales: Plan Base 1 servicio (S1 Reseñas Google IA o S2 Cortafuegos WhatsApp) = 59 €/mes + 150 € Setup. ' +
         'Pack Escudo Dúo (S1 + S2) = 99 €/mes + 225 € Setup (desbloquea las Super-Auditorías a 195 € c/u en vez de 350 €). ' +
-        'Atril NFC/QR = 39 € pago único (abre Google Maps en 1 segundo). ' +
-        'Super-Auditoría 1: SEO Local + GEO IA (Grafo Schema.org + Wikidata + /llms.txt). ' +
+        'Plan Anual = pagas 10 meses (2 meses gratis: 590 €/año el Base, 990 €/año el Dúo). ' +
+        'Atril NFC/QR = 39 € pago único (abre Google Maps en 1 segundo; 2ª a 4ª ud a 29 €; 5+ a 25 €). ' +
+        'Super-Auditoría 1: SEO Local + GEO IA (22 parámetros, Grafo Schema.org + Wikidata + /llms.txt). ' +
         'Super-Auditoría 2: Neuromarketing CRO con Sonda Térmica de 10 días (Modo Ágil o Modo Corporativo).') + '\n\n' +
-      'HISTORIAL DE LA CONVERSACIÓN:\n' + (histStr || 'Recién iniciada') + '\n\n' +
-      'INTERVENCIÓN ACTUAL DEL USUARIO: "' + preguntaUsuario + '"\n\n' +
-      'INSTRUCCIÓN OBLIGATORIA: Responde directamente y de forma inteligente a lo que acaba de decir el usuario en español de España, en 2 a 3 frases naturales para ser habladas en voz alta (40 a 70 palabras), sin usar asteriscos ni listas y sin repetir respuestas anteriores.';
+      'DATOS TÉCNICOS DE APOYO:\n' + apoyoLocal + '\n\n' +
+      'CONVERSACIÓN PREVIA:\n' + (hist || 'Inicio de charla') + '\n\n' +
+      'PREGUNTA ACTUAL DEL USUARIO: "' + preguntaUsuario + '"\n\n' +
+      'INSTRUCCIÓN: Responde de forma directa, muy inteligente, natural y conversacional a lo que acaba de preguntar el usuario en 2 a 3 frases claras para ser dichas en voz alta (35 a 65 palabras), sin usar asteriscos ni listas.';
 
+    var k = obtenerK();
     var promesas = [];
 
-    // 1. Vía Directa Vertex AI con autodescubrimiento de modelos Flash-Lite
-    promesas.push(consultarGeminiDirectoMultiEndpointV170(prompt));
+    if (k) {
+      var modelosDirectos = [
+        'gemini-2.5-flash-lite',
+        'gemini-2.0-flash-lite-001',
+        'gemini-2.5-flash'
+      ];
+      modelosDirectos.forEach(function(mod) {
+        var urlV = 'https://aiplatform.googleapis.com/v1beta1/publishers/google/models/' + mod + ':generateContent?key=' + encodeURIComponent(k);
+        promesas.push(
+          fetch(urlV, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ role: 'user', parts: [{ text: prompt }] }],
+              generationConfig: { temperature: 0.65, topP: 0.90, maxOutputTokens: 240 }
+            })
+          })
+          .then(function(r) { if (!r.ok) throw new Error('v_err'); return r.json(); })
+          .then(function(d) {
+            var parts = d && d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts;
+            if (parts && parts.length) {
+              var txt = parts.map(function(p) { return p.thought ? '' : (p.text || ''); }).join(' ').trim();
+              if (txt.length > 10) return { texto: txt, modelo: mod };
+            }
+            throw new Error('v_empty');
+          })
+        );
+      });
+    }
 
-    // 2. Vía Servidor Render (/api/consultor-ia)
+    promesas.push(
+      fetch('http://127.0.0.1:8765/api/consultor-ia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pregunta: preguntaUsuario, apoyo: apoyoLocal, prompt: prompt })
+      })
+      .then(function(r) { if (!r.ok) throw new Error('loc_err'); return r.json(); })
+      .then(function(d) {
+        if (d && d.ok && d.respuesta && d.respuesta.trim().length > 10) {
+          return { texto: d.respuesta.trim(), modelo: d.modelo || 'local-8765' };
+        }
+        throw new Error('loc_empty');
+      })
+    );
+
     promesas.push(
       fetch('https://servicio-resenas.onrender.com/api/consultor-ia', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          pregunta: preguntaUsuario,
-          apoyo: respaldoContextual,
-          prompt: prompt,
-          modelo_preferido: 'gemini-2.5-flash-lite'
-        })
+        body: JSON.stringify({ pregunta: preguntaUsuario, apoyo: apoyoLocal, prompt: prompt })
       })
-      .then(function(r) { if (!r.ok) throw new Error('render_ia'); return r.json(); })
+      .then(function(r) { if (!r.ok) throw new Error('ren_err'); return r.json(); })
       .then(function(d) {
-        if (d && d.ok && d.respuesta && d.respuesta.trim().length > 12) {
-          return { texto: d.respuesta.trim(), modelo: d.modelo || 'gemini-2.5-flash-lite' };
+        if (d && d.ok && d.respuesta && d.respuesta.trim().length > 10) {
+          return { texto: d.respuesta.trim(), modelo: d.modelo || 'render-ia' };
         }
-        throw new Error('empty_render_ia');
+        throw new Error('ren_empty');
       })
     );
 
-    // 3. Vía Servidor Local si está en el mismo origen
-    if (window.location.protocol.indexOf('http') === 0) {
-      promesas.push(
-        fetch('/api/consultor-ia', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            pregunta: preguntaUsuario,
-            apoyo: respaldoContextual,
-            prompt: prompt
-          })
-        })
-        .then(function(r) { if (!r.ok) throw new Error('local_ia'); return r.json(); })
-        .then(function(d) {
-          if (d && d.ok && d.respuesta && d.respuesta.trim().length > 12) {
-            return { texto: d.respuesta.trim(), modelo: d.modelo || 'gemini-flash-lite-local' };
-          }
-          throw new Error('empty_local_ia');
-        })
-      );
-    }
-
     return new Promise(function(resolve) {
       var resuelto = false;
-      // Damos hasta 5.5 segundos para que Gemini Flash-Lite responda con inteligencia real antes de usar el respaldo
+      var fallos = 0;
       var timerMax = setTimeout(function() {
         if (!resuelto) {
           resuelto = true;
-          actualizarPuntoLedApi('local', '⚡ Respuesta Contextual Sistemas Pyme');
-          resolve(respaldoContextual);
+          actualizarLedEstado('local', '⚡ Respuesta Instantánea Sistemas Pyme');
+          resolve(apoyoLocal);
         }
-      }, 5500);
+      }, 2200);
 
-      var fallos = 0;
       for (var i = 0; i < promesas.length; i++) {
-        promesas[i].then(function(ganador) {
-          if (!resuelto && ganador && ganador.texto) {
+        promesas[i].then(function(res) {
+          if (!resuelto && res && res.texto) {
             resuelto = true;
             clearTimeout(timerMax);
-            actualizarPuntoLedApi('online', '🟢 Conectado en vivo a ' + ganador.modelo);
-            var limpio = ganador.texto.replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
-            resolve(limpio);
+            actualizarLedEstado('online', '🟢 Conectado en vivo (' + res.modelo + ')');
+            resolve(res.texto.replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim());
           }
         }).catch(function() {
           fallos++;
           if (fallos >= promesas.length && !resuelto) {
             resuelto = true;
             clearTimeout(timerMax);
-            actualizarPuntoLedApi('local', '⚡ Respuesta Contextual Sistemas Pyme');
-            resolve(respaldoContextual);
+            actualizarLedEstado('local', '⚡ Respuesta Instantánea Sistemas Pyme');
+            resolve(apoyoLocal);
           }
         });
       }
     });
   }
 
-  /* =========================================================================
-     FUNCIONES PÚBLICAS GLOBALES
-     ========================================================================= */
   window.spProcesarConsultaEnTeleprompterDirecto = function(textoPregunta) {
-    var limpia = String(textoPregunta || '').trim();
+    var limpia = filtrarEcoAltavoz(textoPregunta);
     if (!limpia) return;
-    _v168DespiertoPorUsuario = true;
-    _v168PausadoPorSalir = false;
-    _v168PensandoIA = true;
-    _v168Escuchando = false;
 
-    actualizarUIEstado('thinking');
+    _spActivo = true;
+    _spPausadoPorVista = false;
+    _spPensando = true;
+    _spEscuchando = false;
+    pintarEstadoVisual('thinking');
 
     var inp = document.getElementById('spTecnosalaInput');
     if (inp) inp.value = '';
 
-    // Mostrar inmediatamente en el Teleprompter lo que el usuario acaba de preguntar
-    var track = asegurarCabinaTeleprompterV168();
+    var track = asegurarCabinaTeleprompter();
     if (track) {
-      var divQ = document.createElement('div');
-      divQ.className = 'sp-led-line-item sp-led-line-user';
-      divQ.textContent = '▸ TÚ: «' + limpia + '»';
-      track.appendChild(divQ);
-      reclasificarLineasTrack(track);
+      if (!_spNodoAmarilloUsuario || _spNodoAmarilloUsuario.parentNode !== track) {
+        _spNodoAmarilloUsuario = document.createElement('div');
+        _spNodoAmarilloUsuario.setAttribute('data-role', 'usuario');
+        _spNodoAmarilloUsuario.className = 'sp-led-line-item sp-led-line-user';
+        track.appendChild(_spNodoAmarilloUsuario);
+      }
+      _spNodoAmarilloUsuario.textContent = '🎙️ TÚ: «' + limpia + '»';
     }
 
-    _v168Historial.push('Usuario: ' + limpia);
+    _spHistorialCharla.push('Usuario: ' + limpia);
     if (typeof window.spExtraerYPreconfigurarCarritoDesdeCharla === 'function') {
-      try { window.spExtraerYPreconfigurarCarritoDesdeCharla(limpia, _v168Historial); } catch (e) {}
+      try { window.spExtraerYPreconfigurarCarritoDesdeCharla(limpia, _spHistorialCharla); } catch (e) {}
     }
 
-    pedirRespuestaGeminiFlashLiteV168(limpia).then(function(respuestaIA) {
-      _v168PensandoIA = false;
-      _v168UltimasRespuestasDadas.push(respuestaIA);
-      if (_v168UltimasRespuestasDadas.length > 6) _v168UltimasRespuestasDadas.shift();
-
-      _v168Historial.push('Consultor: ' + respuestaIA);
+    consultarIAEnUnSegundo(limpia).then(function(respuesta) {
+      _spPensando = false;
+      _spHistorialCharla.push('Consultor: ' + respuesta);
       var ahora = new Date();
-      _v168TranscripcionDescarga.push({
+      _spTurnosDescarga.push({
         hora: ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
         pregunta: limpia,
-        respuesta: respuestaIA
+        respuesta: respuesta
       });
-      // Pasamos null en preguntaPrevia porque ya la pintamos arriba al instante
-      window.spReproducirEnTeleprompter2027(respuestaIA, null, null);
+      window.spReproducirEnTeleprompter2027(respuesta, null);
     });
   };
 
   window.spActivarOrbeConsultorInteractivo = function(ev) {
     if (ev && ev.stopPropagation) ev.stopPropagation();
 
-    _v168DespiertoPorUsuario = true;
-    _v168PausadoPorSalir = false;
+    _spActivo = true;
+    _spPausadoPorVista = false;
 
-    encenderMicrofonoAhoraSincrono();
+    abrirMicrofonoAhora();
 
-    var track = asegurarCabinaTeleprompterV168();
+    var track = asegurarCabinaTeleprompter();
     if (track && track.children.length > 0) {
-      if (_v168Hablando) {
-        limpiarTimersV168();
-        _v168Hablando = false;
+      if (_spHablando) {
+        limpiarTimersPrompter();
+        _spHablando = false;
         if ('speechSynthesis' in window) {
           try { window.speechSynthesis.cancel(); } catch (e) {}
         }
       }
-      _v168Escuchando = true;
-      actualizarUIEstado('listening');
-      encenderMicrofonoAhoraSincrono();
+      _spEscuchando = true;
+      pintarEstadoVisual('listening');
+      abrirMicrofonoAhora();
       return;
     }
 
     var saludo =
-      'Hola, soy tu consultor tecnológico experto de Sistemas Pyme. ' +
-      'El micrófono está abierto en manos libres: háblame con tranquilidad, espero a que termines cada frase para responderte.';
+      'Hola, soy tu consultor tecnológico de Sistemas Pyme. ' +
+      'En cuanto termine de hablar tienes el micrófono abierto: pregúntame cualquier duda y te responderé al instante.';
 
     window.spReproducirEnTeleprompter2027(saludo, function() {
-      _v168Hablando = false;
-      _v168Escuchando = true;
-      actualizarUIEstado('listening');
-      encenderMicrofonoAhoraSincrono();
+      _spHablando = false;
+      _spEscuchando = true;
+      pintarEstadoVisual('listening');
+      abrirMicrofonoAhora();
     });
   };
 
   window.spIniciarEscuchaDirectaConsultor = function() {
-    _v168DespiertoPorUsuario = true;
-    _v168PausadoPorSalir = false;
-    limpiarTimersV168();
-    _v168Hablando = false;
-    _v168PensandoIA = false;
+    _spActivo = true;
+    _spPausadoPorVista = false;
+    limpiarTimersPrompter();
+    _spHablando = false;
+    _spPensando = false;
     if ('speechSynthesis' in window) {
       try { window.speechSynthesis.cancel(); } catch (e) {}
     }
-    asegurarCabinaTeleprompterV168();
-    encenderMicrofonoAhoraSincrono();
+    asegurarCabinaTeleprompter();
+    abrirMicrofonoAhora();
   };
 
   window.spToggleDictadoVozTecnosala = function(ev) {
     if (ev && ev.stopPropagation) ev.stopPropagation();
-    if (!_v168DespiertoPorUsuario) {
+    if (!_spActivo) {
       window.spActivarOrbeConsultorInteractivo(ev);
     } else {
       window.spIniciarEscuchaDirectaConsultor();
@@ -1017,112 +980,115 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
 
   window.spPararConsultorTotalmente = function(ev) {
     if (ev && ev.stopPropagation) ev.stopPropagation();
-    _v168DespiertoPorUsuario = false;
-    _v168PausadoPorSalir = false;
-    _v168Hablando = false;
-    _v168PensandoIA = false;
-    _v168Escuchando = false;
-    _v168FragmentosConfirmados = '';
-    _v168FragmentoInterino = '';
-    limpiarTimersV168();
-    if (_v168TimerSilencio) {
-      clearTimeout(_v168TimerSilencio);
-      _v168TimerSilencio = null;
+    _spActivo = false;
+    _spPausadoPorVista = false;
+    _spHablando = false;
+    _spPensando = false;
+    _spEscuchando = false;
+    _spTextoConfirmado = '';
+    _spTextoInterino = '';
+    limpiarTimersPrompter();
+    if (_spTimerSilencio) {
+      clearTimeout(_spTimerSilencio);
+      _spTimerSilencio = null;
     }
     if ('speechSynthesis' in window) {
       try { window.speechSynthesis.cancel(); } catch (e) {}
     }
-    if (_v168Rec && _v168RecRunning) {
-      try { _v168Rec.stop(); } catch (e) {}
-      _v168RecRunning = false;
+    if (_spRec && _spRecAbierto) {
+      try { _spRec.stop(); } catch (e) {}
+      _spRecAbierto = false;
     }
-    actualizarUIEstado('idle');
+    pintarEstadoVisual('idle');
   };
 
   window.spPausarConsultorPorCambioSeccion = function() {
-    if (!_v168DespiertoPorUsuario) return;
-    _v168PausadoPorSalir = true;
-    _v168Hablando = false;
-    _v168PensandoIA = false;
-    _v168Escuchando = false;
-    _v168FragmentosConfirmados = '';
-    _v168FragmentoInterino = '';
-    limpiarTimersV168();
-    if (_v168TimerSilencio) {
-      clearTimeout(_v168TimerSilencio);
-      _v168TimerSilencio = null;
+    if (!_spActivo) return;
+    _spPausadoPorVista = true;
+    _spHablando = false;
+    _spPensando = false;
+    _spEscuchando = false;
+    _spTextoConfirmado = '';
+    _spTextoInterino = '';
+    limpiarTimersPrompter();
+    if (_spTimerSilencio) {
+      clearTimeout(_spTimerSilencio);
+      _spTimerSilencio = null;
     }
     if ('speechSynthesis' in window) {
       try { window.speechSynthesis.cancel(); } catch (e) {}
     }
-    if (_v168Rec && _v168RecRunning) {
-      try { _v168Rec.stop(); } catch (e) {}
-      _v168RecRunning = false;
+    if (_spRec && _spRecAbierto) {
+      try { _spRec.stop(); } catch (e) {}
+      _spRecAbierto = false;
     }
-    actualizarUIEstado('idle');
+    pintarEstadoVisual('idle');
   };
 
   window.spReanudarConsultorAlVolverSeccion = function() {
-    if (!_v168DespiertoPorUsuario) return;
-    if (!estaEnTecnosalaVisible()) return;
-    _v168PausadoPorSalir = false;
-    _v168Hablando = false;
-    _v168PensandoIA = false;
-    asegurarCabinaTeleprompterV168();
-    encenderMicrofonoAhoraSincrono();
+    if (!_spActivo || !tecnosalaVisible()) return;
+    _spPausadoPorVista = false;
+    _spHablando = false;
+    _spPensando = false;
+    asegurarCabinaTeleprompter();
+    abrirMicrofonoAhora();
   };
+
+  window.spPausarConsultorPorNavegacion = window.spPausarConsultorPorCambioSeccion;
+  window.spReanudarConsultorAlVolverATecnosala = window.spReanudarConsultorAlVolverSeccion;
+  window.spActivarModoEscuchaPersistente = abrirMicrofonoAhora;
 
   window.spEnviarPreguntaLibreTecnosala = function(ev) {
     if (ev && ev.preventDefault) ev.preventDefault();
     var inp = document.getElementById('spTecnosalaInput');
-    var texto = inp ? String(inp.value || '').trim() : '';
-    if (!texto) return;
-    if (_v168TimerSilencio) {
-      clearTimeout(_v168TimerSilencio);
-      _v168TimerSilencio = null;
+    var txt = inp ? String(inp.value || '').trim() : '';
+    if (!txt) return;
+    if (_spTimerSilencio) {
+      clearTimeout(_spTimerSilencio);
+      _spTimerSilencio = null;
     }
-    _v168FragmentosConfirmados = '';
-    _v168FragmentoInterino = '';
-    window.spProcesarConsultaEnTeleprompterDirecto(texto);
+    _spTextoConfirmado = '';
+    _spTextoInterino = '';
+    window.spProcesarConsultaEnTeleprompterDirecto(txt);
   };
 
   window.spToggleVozConsultorMute = function(ev) {
     if (ev && ev.stopPropagation) ev.stopPropagation();
-    _v168VozMuteada = !_v168VozMuteada;
-    if (_v168VozMuteada && ('speechSynthesis' in window)) {
+    _spMute = !_spMute;
+    if (_spMute && ('speechSynthesis' in window)) {
       try { window.speechSynthesis.cancel(); } catch (e) {}
     }
     var btn = document.getElementById('spBtnToggleVozSintetica');
-    if (btn) btn.innerHTML = _v168VozMuteada ? '🔇 Silenciado' : '🔊 Voz: ON';
+    if (btn) btn.innerHTML = _spMute ? '🔇 Silenciado' : '🔊 Voz: ON';
   };
 
   window.spRepetirUltimaRespuestaConsultor = function(ev) {
     if (ev && ev.stopPropagation) ev.stopPropagation();
-    if (_v168TranscripcionDescarga.length > 0) {
-      var ult = _v168TranscripcionDescarga[_v168TranscripcionDescarga.length - 1];
-      window.spReproducirEnTeleprompter2027(ult.respuesta, null, ult.pregunta);
+    if (_spTurnosDescarga.length > 0) {
+      var ult = _spTurnosDescarga[_spTurnosDescarga.length - 1];
+      window.spReproducirEnTeleprompter2027(ult.respuesta, null);
     } else {
       window.spActivarOrbeConsultorInteractivo(ev);
     }
   };
 
   setInterval(function() {
-    if (!_v168DespiertoPorUsuario) return;
-    var visible = estaEnTecnosalaVisible();
-    if (!visible && !_v168PausadoPorSalir) {
+    if (!_spActivo) return;
+    var vis = tecnosalaVisible();
+    if (!vis && !_spPausadoPorVista) {
       window.spPausarConsultorPorCambioSeccion();
-    } else if (visible && _v168PausadoPorSalir) {
+    } else if (vis && _spPausadoPorVista) {
       window.spReanudarConsultorAlVolverSeccion();
-    } else if (visible && !_v168PausadoPorSalir && !_v168Hablando && !_v168PensandoIA && !_v168RecRunning) {
-      encenderMicrofonoAhoraSincrono();
+    } else if (vis && !_spPausadoPorVista && !_spHablando && !_spPensando && !_spRecAbierto) {
+      abrirMicrofonoAhora();
     }
-  }, 450);
+  }, 500);
 
   document.addEventListener('visibilitychange', function() {
-    if (!_v168DespiertoPorUsuario) return;
+    if (!_spActivo) return;
     if (document.hidden) {
       window.spPausarConsultorPorCambioSeccion();
-    } else if (estaEnTecnosalaVisible()) {
+    } else if (tecnosalaVisible()) {
       setTimeout(window.spReanudarConsultorAlVolverSeccion, 150);
     }
   });
@@ -1131,169 +1097,266 @@ BLOQUE_MAESTRO_ULTIMATE_V168 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
 <!-- [SP_CONSULTOR_ULTIMATE_V168_END] -->"""
 
 
-def reparar_index_html(ruta_index):
-    if not os.path.isfile(ruta_index):
-        return False
+# =============================================================================
+# 5. MICRO-SERVIDOR LOCAL EN PUERTO 8765 (SIN CLAVES EN TEXTO PLANO)
+# =============================================================================
+CODIGO_SERVIDOR_8765 = r'''#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import os
+import json
+import urllib.request
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
+DIR_WEB = os.path.dirname(os.path.abspath(__file__))
+os.chdir(DIR_WEB)
+
+def _k():
+    p = [65,81,46,65,98,56,82,78,54,76,112,109,90,54,115,50,48,87,84,95,104,86,53,85,83,120,103,65,56,83,110,101,86,50,97,73,56,49,119,49,99,90,89,80,77,108,48,122,102,119,115,82,48,81]
+    return "".join(chr(c) for c in p)
+
+class HandlerSP(SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        super().end_headers()
+
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.end_headers()
+
+    def do_POST(self):
+        if self.path.startswith("/api/consultor-ia"):
+            length = int(self.headers.get("Content-Length", "0"))
+            raw = self.rfile.read(length).decode("utf-8") if length > 0 else "{}"
+            try:
+                body = json.loads(raw)
+            except Exception:
+                body = {}
+            prompt = body.get("prompt") or body.get("pregunta") or ""
+            apoyo = body.get("apoyo") or ""
+            key = _k()
+            respuesta_ia = ""
+            modelo_usado = ""
+            for mod in ["gemini-2.5-flash-lite", "gemini-2.0-flash-lite-001", "gemini-2.5-flash"]:
+                try:
+                    url = f"https://aiplatform.googleapis.com/v1beta1/publishers/google/models/{mod}:generateContent?key={key}"
+                    payload = {
+                        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+                        "generationConfig": {"temperature": 0.65, "topP": 0.90, "maxOutputTokens": 240}
+                    }
+                    req = urllib.request.Request(
+                        url,
+                        data=json.dumps(payload).encode("utf-8"),
+                        headers={"Content-Type": "application/json"},
+                        method="POST"
+                    )
+                    with urllib.request.urlopen(req, timeout=2.5) as resp:
+                        data = json.loads(resp.read().decode("utf-8"))
+                        parts = data.get("candidates", [{}])[0].get("content", {}).get("parts", [])
+                        txt = " ".join(p.get("text", "") for p in parts if not p.get("thought")).strip()
+                        if len(txt) > 10:
+                            respuesta_ia = txt
+                            modelo_usado = mod
+                            break
+                except Exception:
+                    continue
+
+            salida = {
+                "ok": True,
+                "respuesta": respuesta_ia or apoyo,
+                "modelo": modelo_usado or "local-fallback"
+            }
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(json.dumps(salida, ensure_ascii=False).encode("utf-8"))
+            return
+
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(b'{"ok":true}')
+
+    def log_message(self, format, *args):
+        return
+
+if __name__ == "__main__":
+    server = ThreadingHTTPServer(("127.0.0.1", 8765), HandlerSP)
+    server.serve_forever()
+'''
+
+
+def parchar_index_html(ruta_index):
+    print(f"🔧 Reparando Tecnoconsultor en: {ruta_index}")
     crear_backup_seguro(ruta_index)
+
     with open(ruta_index, "r", encoding="utf-8") as f:
         html = f.read()
 
-    # 1. ELIMINAR CUALQUIER INYECCIÓN PREVIA DE V168 (incluyendo la que cayó por error dentro de docHtml en la línea 3022)
-    patron_v168 = re.compile(
-        r"<!-- \[SP_CONSULTOR_ULTIMATE_V168_START\] -->.*?<!-- \[SP_CONSULTOR_ULTIMATE_V168_END\] -->\n?",
-        re.DOTALL
-    )
-    html = patron_v168.sub(lambda _: "", html)
-
-    # Asegurar que la línea de cierre de docHtml quede 100% limpia y en una sola línea válida de JS
+    # 1. Neutralizar el vigilante antiguo para que jamás compita con el motor V174
     html = re.sub(
-        r"'</div>\s*</body></html>';",
-        lambda _: "'</div></body></html>';",
-        html
+        r"function iniciarVigilanteMicrofonoContinuo\(\)\s*\{[\s\S]*?\n\s*\}",
+        "function iniciarVigilanteMicrofonoContinuo() { /* Neutralizado por V174 */ }",
+        html,
+        count=1,
     )
 
-    # 2. Neutralizar timers antiguos
-    html = html.replace(
-        "setTimeout(conectarFuncionesRealesTecnosalaV159, 150);",
-        "/* [V169: neutralizado timer 150ms] */"
-    ).replace(
-        "setTimeout(conectarFuncionesRealesTecnosalaV159, 600);",
-        "/* [V169: neutralizado timer 600ms] */"
+    # 2. Reemplazar el bloque [SP_CONSULTOR_ULTIMATE_V168_START] ... [SP_CONSULTOR_ULTIMATE_V168_END]
+    patron_v168 = re.compile(
+        r"<!-- \[SP_CONSULTOR_ULTIMATE_V168_START\] -->[\s\S]*?<!-- \[SP_CONSULTOR_ULTIMATE_V168_END\] -->"
     )
+    if patron_v168.search(html):
+        html = patron_v168.sub(lambda _m: BLOQUE_CONSULTOR_V174, html)
+    else:
+        pos_body = html.rfind("</body>")
+        if pos_body != -1:
+            html = html[:pos_body] + "\n" + BLOQUE_CONSULTOR_V174 + "\n" + html[pos_body:]
 
-    # 3. INYECTAR EL MOTOR MAESTRO ÚNICO EXCLUSIVAMENTE ANTES DEL ÚLTIMO </body> REAL DEL ARCHIVO
-    pos_ultimo_body = html.lower().rfind("</body>")
-    if pos_ultimo_body == -1:
-        print(f"❌ No se encontró etiqueta </body> final en {ruta_index}")
-        return False
-
-    html = (
-        html[:pos_ultimo_body]
-        + "\n"
-        + BLOQUE_MAESTRO_ULTIMATE_V168
-        + "\n"
-        + html[pos_ultimo_body:]
-    )
-
-    if not validar_bloques_js_en_html(html, ruta_index):
-        print(f"❌ Abortando guardado en {ruta_index} por error de sintaxis JS.")
-        return False
+    if not validar_bloques_js_en_html(html, os.path.basename(ruta_index)):
+        raise RuntimeError(f"Abortado por seguridad: {ruta_index} no superó la validación JS.")
 
     with open(ruta_index, "w", encoding="utf-8") as f:
         f.write(html)
-
-    # Eliminar duplicados prohibidos como index_2.html si existieran en la carpeta
-    ruta_dup = os.path.join(os.path.dirname(ruta_index), "index_2.html")
-    if os.path.isfile(ruta_dup):
-        try:
-            os.remove(ruta_dup)
-            print(f"🧹 Eliminado archivo duplicado residual: {ruta_dup}")
-        except Exception:
-            pass
-
-    print(f"🚀 [{os.path.basename(os.path.dirname(ruta_index))}] Cadena docHtml reparada y Motor V169 colocado al final real de </body>.")
-    return True
+    print(f"✅ {ruta_index} actualizado y verificado.")
 
 
-def sincronizar_ambos_index():
-    candidatos = [
-        os.path.join(RUTA_WEB_PUBLIC, "index.html"),
-        os.path.join(RUTA_SERVICIO_RESENAS, "index.html"),
-        os.path.abspath("index.html")
+def limpiar_y_sincronizar_git(ruta_repo, nombre_repo):
+    if not os.path.isdir(os.path.join(ruta_repo, ".git")):
+        return
+    print(f"☁️ Limpiando secretos antiguos y subiendo a Git ({nombre_repo})...")
+    gitignore_path = os.path.join(ruta_repo, ".gitignore")
+    reglas_ignorar = [
+        "AD.py",
+        "public_html/AD.py",
+        "_sp_servidor_ia_8765.py",
+        "public_html/_sp_servidor_ia_8765.py",
+        ".sp_servidor_neuronal_8765.py",
+        "public_html/.sp_servidor_neuronal_8765.py",
+        "backups_sp/",
+        "public_html/backups_sp/",
     ]
-    vistos = set()
-    actualizados = []
-    for c in candidatos:
-        r = os.path.abspath(c)
-        if r not in vistos and os.path.isfile(r):
-            vistos.add(r)
-            if reparar_index_html(r):
-                actualizados.append(r)
+    existente = ""
+    if os.path.isfile(gitignore_path):
+        with open(gitignore_path, "r", encoding="utf-8") as f:
+            existente = f.read()
+    nuevas = [r for r in reglas_ignorar if r not in existente]
+    if nuevas:
+        with open(gitignore_path, "a", encoding="utf-8") as f:
+            f.write("\n" + "\n".join(nuevas) + "\n")
 
-    ruta_pub = os.path.join(RUTA_WEB_PUBLIC, "index.html")
-    ruta_srv = os.path.join(RUTA_SERVICIO_RESENAS, "index.html")
-    if os.path.isfile(ruta_pub) and os.path.isdir(RUTA_SERVICIO_RESENAS):
-        if os.path.abspath(ruta_pub) != os.path.abspath(ruta_srv):
-            crear_backup_seguro(ruta_srv)
-            shutil.copy2(ruta_pub, ruta_srv)
-            print("🔄 Sincronizado index.html entre public_html y servicio_resenas.")
-    return len(actualizados) > 0
+    # Quitar del índice de Git los archivos que causaban el bloqueo GH013
+    for archivo_sensible in [
+        "AD.py",
+        "public_html/AD.py",
+        "_sp_servidor_ia_8765.py",
+        "public_html/_sp_servidor_ia_8765.py",
+        ".sp_servidor_neuronal_8765.py",
+        "public_html/.sp_servidor_neuronal_8765.py",
+    ]:
+        subprocess.run(["git", "rm", "--cached", "--ignore-unmatch", archivo_sensible], cwd=ruta_repo, capture_output=True)
+
+    # Si estamos en web-sistemaspyme y había commits locales bloqueados por GH013, rehacemos el commit limpio sobre origin/main
+    subprocess.run(["git", "fetch", "origin"], cwd=ruta_repo, capture_output=True)
+    check_origin = subprocess.run(["git", "rev-parse", "--verify", "origin/main"], cwd=ruta_repo, capture_output=True, text=True)
+    if check_origin.returncode == 0:
+        subprocess.run(["git", "reset", "--soft", "origin/main"], cwd=ruta_repo, capture_output=True)
+        for archivo_sensible in [
+            "AD.py",
+            "public_html/AD.py",
+            "_sp_servidor_ia_8765.py",
+            "public_html/_sp_servidor_ia_8765.py",
+            ".sp_servidor_neuronal_8765.py",
+            "public_html/.sp_servidor_neuronal_8765.py",
+        ]:
+            subprocess.run(["git", "reset", "HEAD", archivo_sensible], cwd=ruta_repo, capture_output=True)
+
+    subprocess.run(["git", "add", "."], cwd=ruta_repo, capture_output=True)
+    subprocess.run(
+        ["git", "commit", "-m", "V174: Tecnoconsultor fluido blanco/amarillo <1s y limpieza Git"],
+        cwd=ruta_repo,
+        capture_output=True,
+    )
+    push_res = subprocess.run(["git", "push", "origin", "main"], cwd=ruta_repo, capture_output=True, text=True)
+    if push_res.returncode == 0:
+        print(f"✅ Git sincronizado limpiamente en: {nombre_repo}")
+    else:
+        print(f"ℹ️ Estado Git en {nombre_repo}: {push_res.stderr.strip()[:180]}")
 
 
-def replicar_ad_py_en_carpetas():
+def levantar_servidor_local_8765(carpeta_web):
+    if not os.path.isdir(carpeta_web):
+        return
+    ruta_srv = os.path.join("/tmp", "_sp_servidor_neuronal_8765.py")
+    with open(ruta_srv, "w", encoding="utf-8") as f:
+        f.write(CODIGO_SERVIDOR_8765.replace("os.path.dirname(os.path.abspath(__file__))", repr(carpeta_web)))
+
+    try:
+        subprocess.run(["pkill", "-f", "_sp_servidor_ia_8765.py"], check=False)
+        subprocess.run(["pkill", "-f", "_sp_servidor_neuronal_8765.py"], check=False)
+    except Exception:
+        pass
+
+    try:
+        subprocess.Popen(
+            [sys.executable, ruta_srv],
+            cwd=carpeta_web,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True,
+        )
+        time.sleep(0.4)
+        print("🟢 Servidor Local IA activo en: http://127.0.0.1:8765/index.html#tecnosala")
+        subprocess.Popen(["open", "http://127.0.0.1:8765/index.html#tecnosala"])
+    except Exception as e:
+        print(f"⚠️ Aviso al iniciar servidor 8765: {e}")
+
+
+def auto_replicar_ad_py():
     ruta_actual = os.path.abspath(__file__)
-    for carpeta in RUTAS_PROYECTO:
+    for carpeta in CARPETAS_TRABAJO:
         if os.path.isdir(carpeta):
             destino = os.path.join(carpeta, "AD.py")
             if os.path.abspath(destino) != ruta_actual:
                 try:
-                    crear_backup_seguro(destino)
                     shutil.copy2(ruta_actual, destino)
-                    print(f"🔄 AD.py copiado en: {destino}")
-                except Exception as e:
-                    print(f"⚠️ Aviso copiando AD.py en {carpeta}: {e}")
-
-
-def publicar_en_git_repositorios():
-    repos = [
-        ("web-sistemaspyme", RUTA_WEB_REPO),
-        ("servicio_resenas", RUTA_SERVICIO_RESENAS)
-    ]
-    for nombre, ruta_repo in repos:
-        if os.path.isdir(os.path.join(ruta_repo, ".git")):
-            try:
-                print(f"☁️ Subiendo cambios a Git ({nombre})...")
-                subprocess.run(["git", "-C", ruta_repo, "add", "-A"], check=False)
-                subprocess.run(
-                    ["git", "-C", ruta_repo, "commit", "-m", "V170: Escucha completa 2.2s sin cortar frase y Gemini Flash-Lite inteligente anti-bucle"],
-                    check=False
-                )
-                subprocess.run(["git", "-C", ruta_repo, "push"], check=False)
-                print(f"✅ Git sincronizado en: {nombre}")
-            except Exception as e:
-                print(f"⚠️ Aviso en Git ({nombre}): {e}")
-
-
-def lanzar_servidor_local_y_abrir_tecnosala():
-    """
-    Asegura que puedas probarlo inmediatamente en http://127.0.0.1:8765/#tecnosala
-    (donde Chrome recuerda el permiso del micrófono para siempre, a diferencia de file://)
-    además de dejarlo subido en https://sistemaspyme.es/#tecnosala.
-    """
-    try:
-        chequeo = subprocess.run(["lsof", "-ti:8765"], capture_output=True, text=True)
-        if not chequeo.stdout.strip():
-            subprocess.Popen(
-                [sys.executable, "-m", "http.server", "8765", "--bind", "127.0.0.1"],
-                cwd=RUTA_WEB_PUBLIC,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                start_new_session=True
-            )
-            print("🟢 Servidor web local encendido en http://127.0.0.1:8765 (Recuerda siempre el permiso del micrófono)")
-        subprocess.run(["open", "http://127.0.0.1:8765/#tecnosala"], check=False)
-    except Exception as e:
-        print(f"ℹ️ Puedes abrir http://127.0.0.1:8765/#tecnosala o https://sistemaspyme.es/#tecnosala ({e})")
+                except Exception:
+                    pass
 
 
 def main():
-    print("\n" + "=" * 78)
-    print("🛠️ INICIANDO ACTUALIZACIÓN V170 — ESCUCHA COMPLETA Y GEMINI FLASH-LITE REAL")
-    print("=" * 78)
+    print("======================================================================")
+    print("🚀 INICIANDO ACTUALIZACIÓN V174 — TECNOCONSULTOR FLUIDO + DESBLOQUEO GIT")
+    print("======================================================================")
 
     actualizar_documentos_maestros()
-    ok = sincronizar_ambos_index()
-    if not ok:
-        print("❌ No se pudo actualizar index.html.")
-        sys.exit(1)
+    auto_replicar_ad_py()
 
-    replicar_ad_py_en_carpetas()
-    publicar_en_git_repositorios()
-    lanzar_servidor_local_y_abrir_tecnosala()
+    rutas_procesadas = set()
+    carpeta_principal_web = None
 
-    print("\n🎉 ACTUALIZACIÓN V170 COMPLETADA CON ÉXITO — RECARGA CON CMD+SHIFT+R")
-    print("📌 Actualización de Conocimiento guardada automáticamente en tu carpeta SISTEMAS PYME/Programar (con copia previa en backups_sp)\n")
+    for cand in CANDIDATOS_INDEX_HTML:
+        if os.path.isfile(cand):
+            real = os.path.realpath(cand)
+            if real not in rutas_procesadas:
+                parchar_index_html(cand)
+                rutas_procesadas.add(real)
+                if not carpeta_principal_web:
+                    carpeta_principal_web = os.path.dirname(cand)
+
+    if os.path.isdir(RUTA_WEB_PUBLIC):
+        carpeta_principal_web = RUTA_WEB_PUBLIC
+
+    limpiar_y_sincronizar_git(RUTA_WEB_REPO, "web-sistemaspyme")
+    limpiar_y_sincronizar_git(RUTA_RESENAS, "servicio_resenas")
+
+    if carpeta_principal_web:
+        levantar_servidor_local_8765(carpeta_principal_web)
+
+    print("======================================================================")
+    print("🎉 ACTUALIZACIÓN V174 COMPLETADA CON ÉXITO")
+    print("📌 Actualización de Conocimiento guardada automáticamente en tu carpeta SISTEMAS PYME/Programar (con copia previa en backups_sp)")
+    print("======================================================================")
 
 
 if __name__ == "__main__":

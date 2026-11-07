@@ -16,3 +16,9 @@ __pycache__/
 .env
 *.backup_*
 *.bak
+
+AD.py
+public_html/AD.py
+_sp_servidor_ia_8765.py
+public_html/_sp_servidor_ia_8765.py
+public_html/.sp_servidor_neuronal_8765.py
