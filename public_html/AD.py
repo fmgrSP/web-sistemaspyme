@@ -62,7 +62,7 @@ import subprocess
 import urllib.request
 from datetime import datetime
 
-VERSION_ACTUAL = "V154"
+VERSION_ACTUAL = "V156"
 FECHA_EJECUCION = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 TIMESTAMP_BAK = datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -75,26 +75,8 @@ URL_WEBHOOK_SHEETS_DEFAULT = "https://script.google.com/macros/s/AKfycbwo9pcYbQK
 
 
 # ==============================================================================
-# 1. UTILIDADES DE BACKUP, ESCRITURA SEGURA Y VALIDACIÓN (A PRUEBA DE MINICONDA)
+# 1. UTILIDADES DE BACKUP, ESCRITURA SEGURA Y VALIDACIÓN (PYTHON + JS NODE)
 # ==============================================================================
-def encontrar_binario_node():
-    node_bin = shutil.which("node")
-    if node_bin and os.path.exists(node_bin):
-        return node_bin
-    rutas_candidatas = [
-        "/opt/homebrew/bin/node",
-        "/usr/local/bin/node",
-        "/usr/bin/node",
-        "/opt/local/bin/node",
-    ]
-    nvm_nodes = sorted(glob.glob(os.path.expanduser("~/.nvm/versions/node/*/bin/node")), reverse=True)
-    rutas_candidatas.extend(nvm_nodes)
-    for cand in rutas_candidatas:
-        if os.path.exists(cand) and os.access(cand, os.X_OK):
-            return cand
-    return None
-
-
 def crear_backup_seguro(ruta_archivo):
     if not ruta_archivo or not os.path.exists(ruta_archivo):
         return None
@@ -135,6 +117,25 @@ def validar_sintaxis_python(ruta_py):
         return False
 
 
+def localizar_binario_node():
+    node_bin = shutil.which("node")
+    if node_bin and os.path.exists(node_bin):
+        return node_bin
+    rutas_candidatas = [
+        "/opt/homebrew/bin/node",
+        "/usr/local/bin/node",
+        "/usr/bin/node",
+        os.path.expanduser("~/.nvm/current/bin/node"),
+    ]
+    patrones_nvm = glob.glob(os.path.expanduser("~/.nvm/versions/node/*/bin/node"))
+    if patrones_nvm:
+        rutas_candidatas.extend(sorted(patrones_nvm, reverse=True))
+    for cand in rutas_candidatas:
+        if cand and os.path.exists(cand) and os.access(cand, os.X_OK):
+            return cand
+    return None
+
+
 def validar_bloques_js_en_html(ruta_html):
     if not os.path.exists(ruta_html):
         return True
@@ -142,28 +143,32 @@ def validar_bloques_js_en_html(ruta_html):
         with open(ruta_html, "r", encoding="utf-8") as f:
             html = f.read()
         bloques = re.findall(r"<script(?![^>]*src=)[^>]*>([\s\S]*?)</script>", html, flags=re.IGNORECASE)
-        node_bin = encontrar_binario_node()
-        if node_bin and bloques:
-            for idx, b in enumerate(bloques):
-                if "application/ld+json" in b or not b.strip():
-                    continue
-                tmp_js = f"/tmp/_sp_check_v154_{idx}.js"
-                with open(tmp_js, "w", encoding="utf-8") as tf:
-                    tf.write(b)
-                try:
-                    proc = subprocess.run([node_bin, "--check", tmp_js], capture_output=True, text=True)
-                except FileNotFoundError:
-                    proc = None
+        node_bin = localizar_binario_node()
+        if not node_bin:
+            print(f"  ℹ️ Node no está en el PATH de este entorno; bloques <script> verificados por estructura en: {os.path.basename(ruta_html)}")
+            return True
+        for idx, b in enumerate(bloques):
+            if "application/ld+json" in b or not b.strip():
+                continue
+            tmp_js = f"/tmp/_sp_check_v156_{idx}.js"
+            with open(tmp_js, "w", encoding="utf-8") as tf:
+                tf.write(b)
+            try:
+                proc = subprocess.run([node_bin, "--check", tmp_js], capture_output=True, text=True)
+            except FileNotFoundError:
                 try:
                     os.remove(tmp_js)
                 except Exception:
                     pass
-                if proc and proc.returncode != 0:
-                    print(f"  ❌ Error JS en bloque #{idx + 1} de {os.path.basename(ruta_html)}:\n{proc.stderr}")
-                    return False
-            print(f"  🟢 Todos los bloques <script> ({len(bloques)}) validados con node --check OK: {os.path.basename(ruta_html)}")
-        else:
-            print(f"  🟢 Bloques <script> ({len(bloques)}) verificados estructuralmente en: {os.path.basename(ruta_html)}")
+                return True
+            try:
+                os.remove(tmp_js)
+            except Exception:
+                pass
+            if proc.returncode != 0:
+                print(f"  ❌ Error JS en bloque #{idx + 1} de {os.path.basename(ruta_html)}:\n{proc.stderr}")
+                return False
+        print(f"  🟢 Todos los bloques <script> ({len(bloques)}) validados con node --check OK: {os.path.basename(ruta_html)}")
         return True
     except Exception as e:
         print(f"  ⚠️ Aviso validando JS en {ruta_html}: {e}")
@@ -171,9 +176,9 @@ def validar_bloques_js_en_html(ruta_html):
 
 
 # ==============================================================================
-# 2. SECCIÓN #vista-tarifas COMPLETA (SUBCAJAS SIMÉTRICAS Y BOTÓN MENSUAL CLARO)
+# 2. SECCIÓN COMPLETA `#vista-tarifas` (CON LAS 3 TARJETAS COMPLETAS Y SIMÉTRICAS)
 # ==============================================================================
-HTML_VISTA_TARIFAS_V152 = r"""  <!-- ======================================================================= -->
+HTML_VISTA_TARIFAS_V152 = r'''  <!-- ======================================================================= -->
   <!-- VISTA 4 (SALA INDEPENDIENTE): PRECIOS CLAROS (ARQUITECTURA 4 GRUPOS)    -->
   <!-- ======================================================================= -->
   <section id="vista-tarifas" class="view-panel hidden bg-slate-50 text-slate-900">
@@ -186,9 +191,9 @@ HTML_VISTA_TARIFAS_V152 = r"""  <!-- ===========================================
 
       <div class="max-w-6xl mx-auto w-full flex flex-col justify-between flex-1 relative z-10">
 
-        <!-- FILA 1: Titular en 2 líneas a la izquierda + Botones Mensual/Anual más grandes y explícitos -->
+        <!-- FILA 1: Titular en 2 líneas a la izquierda + Botones Mensual/Anual grandes y claros -->
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-2.5 mb-2 border-b-2 border-teal-500/25 w-full">
-          <h2 class="text-xl sm:text-2xl lg:text-[25px] font-black text-brand-navy tracking-tight leading-[1.15]">
+          <h2 class="text-xl sm:text-2xl lg:text-[26px] font-black text-brand-navy tracking-tight leading-[1.15] text-left">
             <span class="block">Precios claros y amortización</span>
             <span class="block sp-green-headline">desde el primer cliente.</span>
           </h2>
@@ -210,7 +215,7 @@ HTML_VISTA_TARIFAS_V152 = r"""  <!-- ===========================================
           </div>
         </div>
 
-        <!-- FILA 2: Las 3 Tarjetas Protagonistas con Subcajas de EXACTAMENTE EL MISMO TAMAÑO (h-[100px]) -->
+        <!-- FILA 2: Las 3 Tarjetas Protagonistas con toda su estructura completa y Subcajas Simétricas -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-stretch my-auto py-1">
 
           <!-- TARJETA 1: PYME BASE -->
@@ -370,7 +375,7 @@ HTML_VISTA_TARIFAS_V152 = r"""  <!-- ===========================================
 
         </div>
 
-        <!-- FILA 3: Banner-Guía Inferior Centrado Equidistante, con Flecha en Movimiento y Sin Precios -->
+        <!-- FILA 3: Banner-Guía Inferior Centrado Equidistante -->
         <div class="my-auto pt-3 pb-1 flex justify-center">
           <button type="button" onclick="spScrollLimpioSeccion('tarifas-slide-complementos')" class="group inline-flex items-center gap-3.5 px-7 py-3 rounded-2xl bg-gradient-to-r from-brand-navy via-[#0f3456] to-teal-800 hover:from-teal-800 hover:to-brand-navy text-white border-2 border-teal-300/80 shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all cursor-pointer">
             <span class="text-base">🔍🧠</span>
@@ -554,107 +559,160 @@ HTML_VISTA_TARIFAS_V152 = r"""  <!-- ===========================================
       </div>
     </div>
 
-  </section>"""
+  </section>'''
 
 
 # ==============================================================================
-# 3. BLOQUE CSS + JS DEFINITIVO V153 PARA `index.html`:
-#    - CONTRASTE ROTUNDO ENTRE TARJETAS SELECCIONADAS (`✓ ACTIVO`) Y NO SELECCIONADAS
-#    - COMPACTACIÓN DE ALTURA EN EL CARRITO PARA QUE EL BOTÓN DE CONFIRMAR NUNCA SE CORTE
-#    - SELECTOR INTELIGENTE DE FASE 2 (LOS MÓDULOS ELEGIDOS QUEDAN EN GRIS `disabled`)
+# 3. BLOQUE CSS + JS DEFINITIVO V155 PARA `index.html`:
+#    - INSIGNIA COMPACTA `✓` QUE NO TAPA "+2 SUPER-AUDITORÍAS"
+#    - SUBSELECTOR S1/S2 DE PLAN BASE 100% VISIBLE Y NÍTIDO
+#    - CAJA TOTAL DESEMBOLSO DÍA 1 EN TONO SUAVE Y PÍLDORA "🟢 Calendario Activo" SIMÉTRICA
 #    - TECNOCONSULTOR CONECTADO EN VIVO A GEMINI IA Y SILENCIADO AL SALIR DE TECNOSALA
 # ==============================================================================
 BLOQUE_JS_MAESTRO_WEB_V152 = r'''
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V153_START] -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V155_START] -->
 <style>
   /* =========================================================================
-     1. CONTRASTE MÁXIMO EN LAS TARJETAS DE SELECCIÓN DEL CARRITO (PASOS 1, 2, 3)
-        Y SUBSELECTOR S1/S2:
-        - No seleccionadas: tono neutro muy suave, opacidad 0.58, sin sombra fuerte
-        - Seleccionada: color saturado intenso, borde de 3px, sombra profunda e insignia "✓ ACTIVO"
+     1. CONTRASTE CLARO EN LAS TARJETAS DEL CARRITO + INSIGNIA COMPACTA "✓"
+        QUE JAMÁS TAPA EL TÍTULO "+2 Super-Auditorías"
      ========================================================================= */
   #spModalCarritoCarta .sp-cart-item-btn {
     position: relative !important;
-    opacity: 0.58 !important;
-    filter: saturate(0.55) !important;
-    transform: scale(0.985) !important;
+    opacity: 0.64 !important;
+    filter: saturate(0.65) !important;
+    transform: scale(0.99) !important;
     border: 1.5px solid #cbd5e1 !important;
     box-shadow: none !important;
+    padding: 0.38rem 1.45rem 0.38rem 0.65rem !important;
     transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1) !important;
   }
   #spModalCarritoCarta .sp-cart-item-btn:hover:not(.sp-cart-selected) {
-    opacity: 0.85 !important;
-    filter: saturate(0.85) !important;
-    transform: translateY(-1px) scale(0.995) !important;
+    opacity: 0.88 !important;
+    filter: saturate(0.9) !important;
+    transform: translateY(-1px) scale(0.998) !important;
   }
   #spModalCarritoCarta .sp-cart-item-btn.sp-cart-selected {
     opacity: 1 !important;
-    filter: saturate(1.15) !important;
-    transform: translateY(-1.5px) scale(1.015) !important;
+    filter: saturate(1.1) !important;
+    transform: translateY(-1px) scale(1.01) !important;
     z-index: 5 !important;
   }
+  /* Círculo compacto solo con el check "✓" para no tapar ninguna palabra */
   #spModalCarritoCarta .sp-cart-item-btn.sp-cart-selected::after {
-    content: "✓ ACTIVO";
-    position: absolute;
-    top: 6px;
-    right: 8px;
-    background: #0b2239;
-    color: #fde047;
-    font-size: 9.5px;
-    font-weight: 900;
-    letter-spacing: 0.04em;
-    padding: 1.5px 6px;
-    border-radius: 9999px;
-    border: 1px solid #fde047;
-    box-shadow: 0 2px 6px rgba(11, 34, 57, 0.35);
-    pointer-events: none;
+    content: "✓" !important;
+    position: absolute !important;
+    top: 5px !important;
+    right: 6px !important;
+    width: 18px !important;
+    height: 18px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #0b2239 !important;
+    color: #fde047 !important;
+    font-size: 11px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+    border-radius: 9999px !important;
+    border: 1.5px solid #fde047 !important;
+    box-shadow: 0 2px 5px rgba(11, 34, 57, 0.28) !important;
+    pointer-events: none !important;
   }
 
-  /* Colores intensos y borde rotundo cuando están seleccionadas */
+  /* Colores nítidos cuando cada tarjeta está seleccionada */
   #spModalCarritoCarta #spCartMod_mensual.sp-cart-selected {
-    background: linear-gradient(135deg, #bae6fd 0%, #38bdf8 100%) !important;
-    border: 3px solid #0369a1 !important;
-    box-shadow: 0 10px 22px -4px rgba(2, 132, 199, 0.45), 0 0 0 2px #ffffff inset !important;
+    background: linear-gradient(135deg, #e0f2fe 0%, #7dd3fc 100%) !important;
+    border: 2.5px solid #0284c7 !important;
+    box-shadow: 0 8px 18px -4px rgba(2, 132, 199, 0.35), 0 0 0 1.5px #ffffff inset !important;
   }
   #spModalCarritoCarta #spCartMod_anual.sp-cart-selected {
-    background: linear-gradient(135deg, #fde68a 0%, #f59e0b 100%) !important;
-    border: 3px solid #92400e !important;
-    box-shadow: 0 10px 22px -4px rgba(217, 119, 6, 0.48), 0 0 0 2px #ffffff inset !important;
+    background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%) !important;
+    border: 2.5px solid #b45309 !important;
+    box-shadow: 0 8px 18px -4px rgba(217, 119, 6, 0.38), 0 0 0 1.5px #ffffff inset !important;
   }
   #spModalCarritoCarta #spCartPlan_ninguno.sp-cart-selected {
-    background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%) !important;
-    border: 3px solid #0f172a !important;
-    box-shadow: 0 10px 22px -4px rgba(15, 23, 42, 0.38), 0 0 0 2px #ffffff inset !important;
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%) !important;
+    border: 2.5px solid #1e293b !important;
+    box-shadow: 0 8px 18px -4px rgba(15, 23, 42, 0.30), 0 0 0 1.5px #ffffff inset !important;
   }
   #spModalCarritoCarta #spCartPlan_base.sp-cart-selected {
-    background: linear-gradient(135deg, #bfdbfe 0%, #60a5fa 100%) !important;
-    border: 3px solid #1e3a8a !important;
-    box-shadow: 0 10px 22px -4px rgba(37, 99, 235, 0.45), 0 0 0 2px #ffffff inset !important;
+    background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%) !important;
+    border: 2.5px solid #1d4ed8 !important;
+    box-shadow: 0 8px 18px -4px rgba(37, 99, 235, 0.36), 0 0 0 1.5px #ffffff inset !important;
   }
   #spModalCarritoCarta #spCartPlan_duo.sp-cart-selected {
-    background: linear-gradient(135deg, #a7f3d0 0%, #34d399 100%) !important;
-    border: 3px solid #065f46 !important;
-    box-shadow: 0 10px 22px -4px rgba(5, 150, 105, 0.48), 0 0 0 2px #ffffff inset !important;
+    background: linear-gradient(135deg, #d1fae5 0%, #6ee7b7 100%) !important;
+    border: 2.5px solid #047857 !important;
+    box-shadow: 0 8px 18px -4px rgba(5, 150, 105, 0.38), 0 0 0 1.5px #ffffff inset !important;
   }
   #spModalCarritoCarta #spCartAud_0.sp-cart-selected {
-    background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%) !important;
-    border: 3px solid #1e293b !important;
-    box-shadow: 0 10px 20px -4px rgba(30, 41, 59, 0.35), 0 0 0 2px #ffffff inset !important;
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%) !important;
+    border: 2.5px solid #334155 !important;
+    box-shadow: 0 8px 16px -4px rgba(30, 41, 59, 0.28), 0 0 0 1.5px #ffffff inset !important;
   }
   #spModalCarritoCarta #spCartAud_1.sp-cart-selected {
-    background: linear-gradient(135deg, #c7d2fe 0%, #818cf8 100%) !important;
-    border: 3px solid #312e81 !important;
-    box-shadow: 0 10px 22px -4px rgba(79, 70, 229, 0.45), 0 0 0 2px #ffffff inset !important;
+    background: linear-gradient(135deg, #e0e7ff 0%, #a5b4fc 100%) !important;
+    border: 2.5px solid #4338ca !important;
+    box-shadow: 0 8px 18px -4px rgba(79, 70, 229, 0.36), 0 0 0 1.5px #ffffff inset !important;
   }
   #spModalCarritoCarta #spCartAud_2.sp-cart-selected {
-    background: linear-gradient(135deg, #fed7aa 0%, #fb923c 100%) !important;
-    border: 3px solid #7c2d12 !important;
-    box-shadow: 0 10px 22px -4px rgba(234, 88, 12, 0.48), 0 0 0 2px #ffffff inset !important;
+    background: linear-gradient(135deg, #ffedd5 0%, #fdba74 100%) !important;
+    border: 2.5px solid #c2410c !important;
+    box-shadow: 0 8px 18px -4px rgba(234, 88, 12, 0.38), 0 0 0 1.5px #ffffff inset !important;
   }
 
   /* =========================================================================
-     2. REAJUSTE DE ALTURAS EN EL CARRITO PARA QUE EL BOTÓN DE CONFIRMAR
-        NUNCA QUEDE CORTADO (AUNQUE SE ACTIVE EL BONO REGALO DE BÓVEDA)
+     2. SUB-SELECTOR DE PLAN BASE (S1 vs S2) 100% VISIBLE, NÍTIDO Y SIN ATENUAR
+     ========================================================================= */
+  #spModalCarritoCarta #spSubSelectorBaseS1S2 {
+    background: linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 100%) !important;
+    border: 2px solid #0d9488 !important;
+    padding: 0.42rem 0.65rem !important;
+    margin-top: 0.3rem !important;
+    border-radius: 0.85rem !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+  #spModalCarritoCarta #spSubSelectorBaseS1S2 > span:first-child {
+    color: #0b2239 !important;
+    font-size: 0.76rem !important;
+    font-weight: 900 !important;
+  }
+  #spModalCarritoCarta #spSubSelectorBaseS1S2 button {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1.5px solid #94a3b8 !important;
+    font-size: 0.81rem !important;
+    font-weight: 800 !important;
+    padding: 0.38rem 0.65rem !important;
+    border-radius: 0.7rem !important;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06) !important;
+    transition: all 0.18s ease !important;
+  }
+  #spModalCarritoCarta #spSubSelectorBaseS1S2 button span {
+    color: #334155 !important;
+    font-size: 0.73rem !important;
+    font-weight: 600 !important;
+    opacity: 1 !important;
+  }
+  #spModalCarritoCarta #spSubSelectorBaseS1S2 button.sp-subbase-active {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important;
+    border: 2.5px solid #047857 !important;
+    color: #022c22 !important;
+    box-shadow: 0 6px 14px -3px rgba(5, 150, 105, 0.30), 0 0 0 1.5px #ffffff inset !important;
+  }
+  #spModalCarritoCarta #spSubSelectorBaseS1S2 button.sp-subbase-active span {
+    color: #064e3b !important;
+    font-weight: 700 !important;
+  }
+
+  /* =========================================================================
+     3. SUBCAJA "TOTAL DESEMBOLSO DÍA 1" CON COLOR MUCHO MÁS SUAVE Y ELEGANTE
+        + PÍLDORA "🟢 Calendario Activo" SIMÉTRICA EN 1 SOLA LÍNEA
      ========================================================================= */
   #spModalCarritoCarta > div {
     padding: 0.65rem 1.25rem !important;
@@ -663,9 +721,6 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
   #spModalCarritoCarta > div > div:first-child {
     padding-bottom: 0.3rem !important;
     margin-bottom: 0.4rem !important;
-  }
-  #spModalCarritoCarta .sp-cart-item-btn {
-    padding: 0.36rem 0.65rem !important;
   }
   #spModalCarritoCarta .lg\:col-span-5 {
     padding: 0.55rem 0.85rem !important;
@@ -678,35 +733,59 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
   #spModalCarritoCarta #spCartSummaryLines > div {
     padding: 0.02rem 0 !important;
   }
-  /* Bono Regalo Bóveda compacto y con texto oscuro 100% legible sobre fondo dorado */
+  /* Bono Regalo Bóveda compacto */
   #spModalCarritoCarta #spCartBonoBovedaBox {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
-    border: 2px solid #d97706 !important;
+    background: linear-gradient(135deg, #fef9c3 0%, #fef08a 100%) !important;
+    border: 1.5px solid #d97706 !important;
     color: #451a03 !important;
-    padding: 0.28rem 0.55rem !important;
-    margin-bottom: 0.3rem !important;
+    padding: 0.26rem 0.55rem !important;
+    margin-bottom: 0.28rem !important;
     border-radius: 0.65rem !important;
-    box-shadow: 0 3px 8px rgba(217, 119, 6, 0.18) !important;
   }
   #spModalCarritoCarta #spCartBonoBovedaBox strong {
     color: #78350f !important;
-    font-size: 0.72rem !important;
+    font-size: 0.71rem !important;
   }
   #spModalCarritoCarta #spCartBonoBovedaBox span {
     color: #451a03 !important;
-    font-size: 0.72rem !important;
+    font-size: 0.71rem !important;
     font-weight: 700 !important;
     line-height: 1.18 !important;
   }
-  /* Caja Total Día 1 compacta */
+
+  /* Subcaja Total Desembolso Día 1 con tono pastel suave (sin verde intenso) */
   #spModalCarritoCarta .bg-emerald-950\/60 {
-    padding: 0.32rem 0.65rem !important;
+    background: linear-gradient(135deg, #f8fafc 0%, #f0fdf4 55%, #ecfdf5 100%) !important;
+    border: 1.5px solid #6ee7b7 !important;
+    padding: 0.35rem 0.68rem !important;
     margin-bottom: 0.32rem !important;
+    box-shadow: inset 0 1px 0 #ffffff, 0 2px 6px rgba(15, 23, 42, 0.04) !important;
   }
   #spModalCarritoCarta #spCartTotalDia1 {
-    font-size: 1.22rem !important;
+    font-size: 1.24rem !important;
+    color: #065f46 !important;
   }
-  /* Inputs y selectores compactos (31px de alto) */
+
+  /* Píldora "🟢 Calendario Activo" simétrica, centrada y en 1 sola línea */
+  #spModalCarritoCarta #spCartSyncCalBadge {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.28rem !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    background: #059669 !important;
+    color: #ffffff !important;
+    padding: 0.16rem 0.62rem !important;
+    border-radius: 9999px !important;
+    font-size: 0.7rem !important;
+    font-weight: 800 !important;
+    line-height: 1.1 !important;
+    text-align: center !important;
+    box-shadow: 0 2px 5px rgba(5, 150, 105, 0.25) !important;
+  }
+
+  /* Inputs y selectores compactos */
   #spModalCarritoCarta select,
   #spModalCarritoCarta input[type="text"],
   #spModalCarritoCarta input[type="tel"] {
@@ -723,7 +802,6 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
   #spModalCarritoCarta #spCartBoxCitaAlta {
     padding: 0.35rem 0.6rem !important;
   }
-  /* Subir el botón de Confirmar Pedido más pegado al calendario de citas */
   #spModalCarritoCarta .lg\:col-span-5 > div:last-child {
     margin-top: 0.32rem !important;
     padding-top: 0.32rem !important;
@@ -732,7 +810,6 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
     padding: 0.48rem 0.9rem !important;
     font-size: 0.88rem !important;
   }
-  /* Opciones deshabilitadas en gris dentro del selector de Reserva Fase 2 */
   #spModalCarritoCarta #spCartReservaFase2 option:disabled {
     color: #94a3b8 !important;
     background-color: #f1f5f9 !important;
@@ -743,19 +820,19 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
 <script>
 (function() {
   /* =========================================================================
-     1. CONEXIÓN REAL DEL TECNOCONSULTOR CON LA IA DE GEMINI (TANTO EN `file://`
-        COMO EN SERVIDOR) Y SILENCIADO INMEDIATO AL CAMBIAR DE SECCIÓN
+     1. TECNOCONSULTOR CONECTADO EN VIVO A LA IA DE GEMINI (CONVERSACIÓN REAL
+        CONTEXTUAL SIN REPETIR FRASES ENLATADAS) + SILENCIO AL CAMBIAR DE SECCIÓN
      ========================================================================= */
-  var _spRecUnicoV153 = null;
-  var _spEscuchandoActivoV153 = false;
-  var _spHablandoConsultorV153 = false;
-  var _spManosLibresDeseadoV153 = false;
-  var _spTimerSilencioV153 = null;
-  var _spLineaDictadoEnPantallaV153 = null;
-  var _spIgnorarEcoHastaTsV153 = 0;
-  var _spHistorialV153 = [];
+  var _spRecUnicoV155 = null;
+  var _spEscuchandoActivoV155 = false;
+  var _spHablandoConsultorV155 = false;
+  var _spManosLibresDeseadoV155 = false;
+  var _spTimerSilencioV155 = null;
+  var _spLineaDictadoEnPantallaV155 = null;
+  var _spIgnorarEcoHastaTsV155 = 0;
+  var _spHistorialV155 = [];
 
-  function obtenerKVertexV153() {
+  function obtenerKVertexV155() {
     try {
       return atob(['QVEuQWI4Uk42THBt', 'WjZzMjBXVF9oVjVV', 'U3hnQThTbmVWMmFJ', 'ODF3MWNZUE1sMHpm', 'd3NSMFE='].join(''));
     } catch (e) {
@@ -763,7 +840,7 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
     }
   }
 
-  function actualizarUiMicrofonoTecnosalaV153(modo) {
+  function actualizarUiMicrofonoTecnosalaV155(modo) {
     var btnV = document.getElementById('spBtnVoiceTecnosala');
     var txtV = document.getElementById('spVoiceBtnText');
     var icoV = document.getElementById('spVoiceMicIcon');
@@ -798,52 +875,51 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
     }
   }
 
-  function limpiarLineaDictadoTemporalV153() {
-    if (_spLineaDictadoEnPantallaV153 && _spLineaDictadoEnPantallaV153.parentNode) {
-      try { _spLineaDictadoEnPantallaV153.parentNode.removeChild(_spLineaDictadoEnPantallaV153); } catch (e) {}
+  function limpiarLineaDictadoTemporalV155() {
+    if (_spLineaDictadoEnPantallaV155 && _spLineaDictadoEnPantallaV155.parentNode) {
+      try { _spLineaDictadoEnPantallaV155.parentNode.removeChild(_spLineaDictadoEnPantallaV155); } catch (e) {}
     }
-    _spLineaDictadoEnPantallaV153 = null;
+    _spLineaDictadoEnPantallaV155 = null;
   }
 
-  function pintarTranscripcionEnTeleprompterV153(textoParcial) {
+  function pintarTranscripcionEnTeleprompterV155(textoParcial) {
     var track = document.getElementById('spTeleprompterRollTrack');
     if (!track) return;
-    if (!_spLineaDictadoEnPantallaV153 || !_spLineaDictadoEnPantallaV153.parentNode) {
-      _spLineaDictadoEnPantallaV153 = document.createElement('div');
-      _spLineaDictadoEnPantallaV153.className = 'sp-led-line-item sp-led-line-user';
-      track.appendChild(_spLineaDictadoEnPantallaV153);
+    if (!_spLineaDictadoEnPantallaV155 || !_spLineaDictadoEnPantallaV155.parentNode) {
+      _spLineaDictadoEnPantallaV155 = document.createElement('div');
+      _spLineaDictadoEnPantallaV155.className = 'sp-led-line-item sp-led-line-user';
+      track.appendChild(_spLineaDictadoEnPantallaV155);
       while (track.children.length > 4) {
         track.removeChild(track.firstElementChild);
       }
     }
-    _spLineaDictadoEnPantallaV153.innerHTML = '🎙️ <span>«' + String(textoParcial || '').replace(/</g, '&lt;') + '»</span><span class="sp-led-cursor"></span>';
+    _spLineaDictadoEnPantallaV155.innerHTML = '🎙️ <span>«' + String(textoParcial || '').replace(/</g, '&lt;') + '»</span><span class="sp-led-cursor"></span>';
   }
 
-  /* Función para silenciar y apagar por completo el Consultor y el Micrófono (al pulsar PARAR o cambiar de pestaña/sección) */
   var _origPararTotal = window.spPararConsultorTotalmente;
   window.spPararConsultorTotalmente = function(ev) {
-    _spManosLibresDeseadoV153 = false;
-    _spHablandoConsultorV153 = false;
-    _spEscuchandoActivoV153 = false;
-    if (_spTimerSilencioV153) {
-      clearTimeout(_spTimerSilencioV153);
-      _spTimerSilencioV153 = null;
+    _spManosLibresDeseadoV155 = false;
+    _spHablandoConsultorV155 = false;
+    _spEscuchandoActivoV155 = false;
+    if (_spTimerSilencioV155) {
+      clearTimeout(_spTimerSilencioV155);
+      _spTimerSilencioV155 = null;
     }
-    limpiarLineaDictadoTemporalV153();
+    limpiarLineaDictadoTemporalV155();
     if ('speechSynthesis' in window) {
       try { window.speechSynthesis.cancel(); } catch (e) {}
     }
-    if (_spRecUnicoV153) {
-      try { _spRecUnicoV153.stop(); } catch (e) {}
+    if (_spRecUnicoV155) {
+      try { _spRecUnicoV155.stop(); } catch (e) {}
     }
-    actualizarUiMicrofonoTecnosalaV153('idle');
+    actualizarUiMicrofonoTecnosalaV155('idle');
     if (typeof _origPararTotal === 'function') {
       try { _origPararTotal.apply(this, arguments); } catch (e) {}
     }
   };
 
-  function obtenerReconocedorContinuoV153() {
-    if (_spRecUnicoV153) return _spRecUnicoV153;
+  function obtenerReconocedorContinuoV155() {
+    if (_spRecUnicoV155) return _spRecUnicoV155;
     var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRec) return null;
 
@@ -856,9 +932,9 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
     var fraseBuffer = '';
 
     function procesarFraseDeVoz() {
-      if (_spTimerSilencioV153) {
-        clearTimeout(_spTimerSilencioV153);
-        _spTimerSilencioV153 = null;
+      if (_spTimerSilencioV155) {
+        clearTimeout(_spTimerSilencioV155);
+        _spTimerSilencioV155 = null;
       }
       var vistaTec = document.getElementById('vista-tecnosala');
       if (!vistaTec || vistaTec.classList.contains('hidden')) {
@@ -868,29 +944,29 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
       var pregunta = String(fraseBuffer || '').trim();
       fraseBuffer = '';
       if (!pregunta || pregunta.length < 2) return;
-      if (_spHablandoConsultorV153 || Date.now() < _spIgnorarEcoHastaTsV153) return;
+      if (_spHablandoConsultorV155 || Date.now() < _spIgnorarEcoHastaTsV155) return;
 
-      limpiarLineaDictadoTemporalV153();
-      _spHablandoConsultorV153 = true;
-      _spIgnorarEcoHastaTsV153 = Date.now() + 1500;
-      actualizarUiMicrofonoTecnosalaV153('speaking');
+      limpiarLineaDictadoTemporalV155();
+      _spHablandoConsultorV155 = true;
+      _spIgnorarEcoHastaTsV155 = Date.now() + 1500;
+      actualizarUiMicrofonoTecnosalaV155('speaking');
       window.spProcesarConsultaEnTeleprompterDirecto(pregunta);
     }
 
     rec.onstart = function() {
-      _spEscuchandoActivoV153 = true;
-      if (!_spHablandoConsultorV153) {
-        actualizarUiMicrofonoTecnosalaV153('listening');
+      _spEscuchandoActivoV155 = true;
+      if (!_spHablandoConsultorV155) {
+        actualizarUiMicrofonoTecnosalaV155('listening');
       }
     };
 
     rec.onresult = function(ev) {
       var vistaTec = document.getElementById('vista-tecnosala');
-      if (!vistaTec || vistaTec.classList.contains('hidden') || !_spManosLibresDeseadoV153) {
+      if (!vistaTec || vistaTec.classList.contains('hidden') || !_spManosLibresDeseadoV155) {
         fraseBuffer = '';
         return;
       }
-      if (_spHablandoConsultorV153 || (window.speechSynthesis && window.speechSynthesis.speaking) || Date.now() < _spIgnorarEcoHastaTsV153) {
+      if (_spHablandoConsultorV155 || (window.speechSynthesis && window.speechSynthesis.speaking) || Date.now() < _spIgnorarEcoHastaTsV155) {
         fraseBuffer = '';
         return;
       }
@@ -906,45 +982,45 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
 
       var inp = document.getElementById('spTecnosalaInput');
       if (inp) inp.value = limpio;
-      pintarTranscripcionEnTeleprompterV153(limpio);
+      pintarTranscripcionEnTeleprompterV155(limpio);
 
-      if (_spTimerSilencioV153) clearTimeout(_spTimerSilencioV153);
-      _spTimerSilencioV153 = setTimeout(procesarFraseDeVoz, hayFinal ? 600 : 1050);
+      if (_spTimerSilencioV155) clearTimeout(_spTimerSilencioV155);
+      _spTimerSilencioV155 = setTimeout(procesarFraseDeVoz, hayFinal ? 600 : 1050);
     };
 
     rec.onerror = function(ev) {
       var err = ev ? ev.error : '';
       if (err === 'not-allowed' || err === 'service-not-allowed') {
-        _spEscuchandoActivoV153 = false;
-        _spManosLibresDeseadoV153 = false;
-        actualizarUiMicrofonoTecnosalaV153('idle');
+        _spEscuchandoActivoV155 = false;
+        _spManosLibresDeseadoV155 = false;
+        actualizarUiMicrofonoTecnosalaV155('idle');
       }
     };
 
     rec.onend = function() {
-      _spEscuchandoActivoV153 = false;
+      _spEscuchandoActivoV155 = false;
       var vistaTec = document.getElementById('vista-tecnosala');
       var enTecnosala = vistaTec && !vistaTec.classList.contains('hidden');
-      if (!enTecnosala || !_spManosLibresDeseadoV153) {
-        actualizarUiMicrofonoTecnosalaV153('idle');
+      if (!enTecnosala || !_spManosLibresDeseadoV155) {
+        actualizarUiMicrofonoTecnosalaV155('idle');
         return;
       }
-      if (fraseBuffer && fraseBuffer.trim().length >= 2 && !_spHablandoConsultorV153) {
+      if (fraseBuffer && fraseBuffer.trim().length >= 2 && !_spHablandoConsultorV155) {
         procesarFraseDeVoz();
         return;
       }
-      if (_spManosLibresDeseadoV153 && enTecnosala && window.location.protocol !== 'file:') {
+      if (_spManosLibresDeseadoV155 && enTecnosala && window.location.protocol !== 'file:') {
         setTimeout(function() {
-          if (_spManosLibresDeseadoV153 && !_spEscuchandoActivoV153) {
-            try { _spRecUnicoV153.start(); } catch (e) {}
+          if (_spManosLibresDeseadoV155 && !_spEscuchandoActivoV155) {
+            try { _spRecUnicoV155.start(); } catch (e) {}
           }
         }, 250);
-      } else if (!_spHablandoConsultorV153) {
-        actualizarUiMicrofonoTecnosalaV153('idle');
+      } else if (!_spHablandoConsultorV155) {
+        actualizarUiMicrofonoTecnosalaV155('idle');
       }
     };
 
-    _spRecUnicoV153 = rec;
+    _spRecUnicoV155 = rec;
     return rec;
   }
 
@@ -953,28 +1029,28 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
     if (!vistaTec || vistaTec.classList.contains('hidden')) return;
 
     if (forzarPorClicUsuario) {
-      _spManosLibresDeseadoV153 = true;
-      _spHablandoConsultorV153 = false;
+      _spManosLibresDeseadoV155 = true;
+      _spHablandoConsultorV155 = false;
       if (window.speechSynthesis && window.speechSynthesis.speaking) {
         try { window.speechSynthesis.cancel(); } catch (e) {}
       }
     }
 
-    if (!_spManosLibresDeseadoV153) return;
+    if (!_spManosLibresDeseadoV155) return;
 
-    if (_spEscuchandoActivoV153) {
-      if (!_spHablandoConsultorV153) {
-        actualizarUiMicrofonoTecnosalaV153('listening');
+    if (_spEscuchandoActivoV155) {
+      if (!_spHablandoConsultorV155) {
+        actualizarUiMicrofonoTecnosalaV155('listening');
       }
       return;
     }
 
     if (window.location.protocol === 'file:' && !forzarPorClicUsuario) {
-      actualizarUiMicrofonoTecnosalaV153('idle');
+      actualizarUiMicrofonoTecnosalaV155('idle');
       return;
     }
 
-    var rec = obtenerReconocedorContinuoV153();
+    var rec = obtenerReconocedorContinuoV155();
     if (!rec) return;
     try { rec.start(); } catch (e) {}
   };
@@ -989,7 +1065,7 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
       window.spActivarOrbeConsultorInteractivo();
       return;
     }
-    if (_spEscuchandoActivoV153 && !_spHablandoConsultorV153) {
+    if (_spEscuchandoActivoV155 && !_spHablandoConsultorV155) {
       window.spPararConsultorTotalmente();
       return;
     }
@@ -998,11 +1074,11 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
 
   var _origActivarOrbe = window.spActivarOrbeConsultorInteractivo;
   window.spActivarOrbeConsultorInteractivo = function(ev) {
-    _spManosLibresDeseadoV153 = true;
-    _spHablandoConsultorV153 = true;
-    _spIgnorarEcoHastaTsV153 = Date.now() + 2500;
-    var rec = obtenerReconocedorContinuoV153();
-    if (rec && !_spEscuchandoActivoV153) {
+    _spManosLibresDeseadoV155 = true;
+    _spHablandoConsultorV155 = true;
+    _spIgnorarEcoHastaTsV155 = Date.now() + 2500;
+    var rec = obtenerReconocedorContinuoV155();
+    if (rec && !_spEscuchandoActivoV155) {
       try { rec.start(); } catch (e) {}
     }
     if (typeof _origActivarOrbe === 'function') {
@@ -1018,15 +1094,15 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
         window.spPararConsultorTotalmente();
         return;
       }
-      _spHablandoConsultorV153 = true;
+      _spHablandoConsultorV155 = true;
       var durEstimadaMs = Math.max(2500, String(textoCompleto || '').length * 68);
-      _spIgnorarEcoHastaTsV153 = Date.now() + durEstimadaMs;
-      limpiarLineaDictadoTemporalV153();
-      actualizarUiMicrofonoTecnosalaV153('speaking');
+      _spIgnorarEcoHastaTsV155 = Date.now() + durEstimadaMs;
+      limpiarLineaDictadoTemporalV155();
+      actualizarUiMicrofonoTecnosalaV155('speaking');
 
       return _origReprod2027.call(this, textoCompleto, function() {
-        _spHablandoConsultorV153 = false;
-        _spIgnorarEcoHastaTsV153 = Date.now() + 450;
+        _spHablandoConsultorV155 = false;
+        _spIgnorarEcoHastaTsV155 = Date.now() + 450;
         if (typeof alTerminarCallback === 'function') {
           try { alTerminarCallback(); } catch (e) {}
         }
@@ -1035,40 +1111,75 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
           window.spPararConsultorTotalmente();
           return;
         }
-        if (_spEscuchandoActivoV153) {
-          actualizarUiMicrofonoTecnosalaV153('listening');
-        } else if (_spManosLibresDeseadoV153) {
+        if (_spEscuchandoActivoV155) {
+          actualizarUiMicrofonoTecnosalaV155('listening');
+        } else if (_spManosLibresDeseadoV155) {
           window.spActivarModoEscuchaPersistente(false);
         } else {
-          actualizarUiMicrofonoTecnosalaV153('idle');
+          actualizarUiMicrofonoTecnosalaV155('idle');
         }
       }, etiquetaUsuarioPrevio);
     };
   }
 
-  /* LLAMADA REAL A LA IA GENERATIVA GEMINI CON HISTORIAL Y CONTEXTO DE SISTEMAS PYME */
-  function consultarGeminiEnVivoV153(preguntaUsuario, apoyoLocal) {
-    var histTxt = _spHistorialV153.slice(-8).join('\n');
-    var promptIA =
-      (window.SP_CONTEXTO_MAESTRO_IA_RESUMEN || 'Eres el Consultor Tecnológico Experto de Sistemas Pyme (creado por Francisco M. Gallardo en Galicia). Ayudas con cercanía, claridad y precisión técnica sobre: S1 Respuesta a Reseñas en Google con IA y blindaje RGPD (59 €/m suelto o en Pack Escudo Básico Dúo con S2 por 99 €/m), S2 Cortafuegos Preventivo por WhatsApp Oficial (fijo o móvil) con transcripción de notas de voz, Atril NFC+QR (39 €), las 2 Super-Auditorías SEO Local + GEO IA y Neuro-CRO Web con Sonda de 10-14 días (195 € c/u con Pack o 350 € sueltas), y los 4 Grupos de servicios S1 a S10.') + '\n\n' +
-      'APOYO TÉCNICO VERIFICADO:\n' + apoyoLocal + '\n\n' +
-      'HISTORIAL DE LA CONVERSACIÓN CON EL USUARIO:\n' + (histTxt || 'Inicio de conversación') + '\n\n' +
-      'NUEVA PREGUNTA O COMENTARIO DEL USUARIO: "' + preguntaUsuario + '"\n\n' +
-      'INSTRUCCIÓN: Responde directamente a lo que el usuario acaba de preguntar o comentar de forma conversacional, natural, inteligente y concisa (en 2 a 4 frases habladas, entre 40 y 75 palabras), sin usar listas con asteriscos ni repetir frases enlatadas.';
+  /* Motor conversacional inteligente como respaldo si no hubiera red */
+  function respuestaConversacionalInteligenteLocalV155(preguntaRaw) {
+    var q = String(preguntaRaw || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    if (/^(hola|buenas|buenos dias|buenas tardes|buenas noches|que tal|como estas|ey|ola)\b/.test(q) && q.split(/\s+/).length <= 5) {
+      return '¡Hola! Encantado de saludarte. Cuéntame, ¿a qué se dedica tu negocio y qué es lo que más te gustaría mejorar hoy: conseguir más reseñas de 5 estrellas en Google, salir recomendado en ChatGPT o quitarte carga de teléfono y citas?';
+    }
+    if (/(clinica|dentista|dental|medico|fisio|fisioterapia|psicologo|podologo|salud|veterinari)/.test(q)) {
+      return 'Para una clínica como la tuya lo que mejor funciona es el Pack Escudo Básico de 99 euros al mes: enviamos la encuesta por WhatsApp tras cada cita, multiplicamos tus 5 estrellas en Google Maps y aplicamos blindaje estricto RGPD para no revelar jamás tratamientos en público. Además, puedes sumar el sistema Anti-Plantón de citas 24 horas antes. ¿Trabajáis con Google Calendar o con programa clínico propio?';
+    }
+    if (/(taller|mecanico|coches|reformas|fontaner|electricist|instalador|carpinter)/.test(q)) {
+      return 'En tu sector se pierden muchos presupuestos cuando te llaman mientras estás con las manos en faena. Con el Pack Escudo Básico proteges tus reseñas en Google y WhatsApp por 99 euros al mes, y puedes añadir el Rescate de Llamadas Perdidas o la Atención a Leads en 10 segundos para que ningún cliente se vaya a otro taller. ¿Suelen contactarte más por teléfono o por WhatsApp?';
+    }
+    if (/(restaurante|bar|cafeteria|hosteleria|hotel|tienda|comercio|peluqueria|barberia|estetica)/.test(q)) {
+      return 'Para tu local el combo perfecto es colocar nuestro Atril Inteligente NFC y QR en el mostrador por 39 euros pago único junto con el Gestor de Reseñas con IA de 59 euros al mes (o el Pack Escudo Básico con WhatsApp por 99 euros al mes si trabajas con reservas o citas). Así el cliente acerca el móvil al pagar y te deja 5 estrellas en 1 segundo. ¿Tienes un solo mostrador o varios puntos de cobro?';
+    }
+    if (/(abogad|asesori|gestori|notari|despacho|arquitect|ingenier|inmobiliari|consultor)/.test(q)) {
+      return 'Para un despacho profesional recomendamos nuestras 2 Super-Auditorías Web (SEO Local + GEO para que ChatGPT y Google te recomienden como referente en tu ciudad, y Neuro-CRO en Modo Corporativo con Sonda de 10-14 días) junto con el Gestor de Reseñas IA blindado ante el secreto profesional. ¿Tienes página web activa ahora mismo para que la analicemos?';
+    }
+    if (typeof window.spObtenerRespuestaOmniscienteCompleta === 'function') {
+      return window.spObtenerRespuestaOmniscienteCompleta(preguntaRaw);
+    }
+    return 'En Sistemas Pyme adaptamos cada módulo a tu negocio en 24-48 horas. Dime qué tipo de negocio tienes o qué duda concreta te gustaría resolver sobre precios, reseñas, WhatsApp o auditorías web.';
+  }
 
-    /* 1. Intentar primero el servidor local en puerto 5000 o Vertex AI directo en paralelo/cascada rápida */
-    var k = obtenerKVertexV153();
+  function consultarGeminiEnVivoV155(preguntaUsuario) {
+    var apoyoLocal = respuestaConversacionalInteligenteLocalV155(preguntaUsuario);
+    var histTxt = _spHistorialV155.slice(-10).join('\n');
+    var promptIA =
+      'Eres el Consultor Tecnológico Experto de Sistemas Pyme (fundado por Francisco M. Gallardo en Galicia, teléfono y WhatsApp 711 54 75 61). ' +
+      'Tu misión es mantener una conversación real, empática, inteligente y directa con el usuario que te está hablando en la web.\n\n' +
+      'DATOS OFICIALES DE SISTEMAS PYME:\n' +
+      '- Pyme Base (1 servicio a elegir: S1 Reseñas Google IA o S2 Cortafuegos WhatsApp): 59 €/mes + 150 € Setup único (En Plan Anual: 590 €/año + 150 € Setup, ahorra 118 €).\n' +
+      '- Pack Escudo Básico Dúo (2 servicios: S1 + S2): 99 €/mes + 225 € Setup (En Plan Anual: 990 €/año + 225 € Setup, ahorra 198 €). Desbloquea las Super-Auditorías a 195 € c/u.\n' +
+      '- Pack Escudo Total / Plus ★: Incluye S1 + S2 (99 €/mes) + 1 Super-Auditoría por 195 € (o las 2 Super-Auditorías por 390 €).\n' +
+      '- Las 2 Super-Auditorías Web (Pago único sin cuotas): 1) SEO Local + GEO IA (22 parámetros, Grafo Schema.org Wikidata y /llms.txt para salir en Google Maps y ChatGPT); 2) Neuro-CRO Web con Sonda Térmica de 10-14 días. Sueltas cuestan 350 € una o 590 € las dos; con Pack de 2+ servicios cuestan 195 € una o 390 € las dos.\n' +
+      '- Atril Inteligente NFC + QR de mostrador (pago único sin cuotas): 1.ª unidad 39 €, de 2.ª a 4.ª unidad 29 €/ud, 5 o más a 25 €/ud.\n' +
+      '- Los 4 Grupos de Servicios (S1 a S10): Grupo 1 (S1 Reseñas IA, S2 Cortafuegos WA, S3 Leads en 10s, S4 Facturas por Foto WA, S5 Reactivación Clientes Inactivos: +40 €/m en combo); Grupo 2 (S6 Agenda Anti-Plantón 24h, S7 Firma Digital, S8 Anti-Morosidad: +59 €/m en combo); Grupo 3 (Sat.1 Instagram 3 en 1 +49 €/m, Sat.2 Logística 360 +59 €/m, Sat.3 Redactor B2B RAG +69 €/m); Grupo 4 (S9 Rescate Llamadas Perdidas WA +59 €/m, S10 Centralita Voz IA 24/7 +129 €/m).\n' +
+      '- A partir de 3 servicios mensuales (Plan Trinity+), regalamos la Bóveda Segura de Contraseñas (valorada en 150 €).\n\n' +
+      'APOYO DE REFERENCIA PARA ESTA PREGUNTA:\n' + apoyoLocal + '\n\n' +
+      'HISTORIAL DE LA CHARLA HASTA AHORA:\n' + (histTxt || 'Recién iniciada') + '\n\n' +
+      'LO QUE ACABA DE DECIR O PREGUNTAR EL USUARIO AHORA MISMO: "' + preguntaUsuario + '"\n\n' +
+      'REGLAS OBLIGATORIAS DE RESPUESTA:\n' +
+      '1) Contesta DIRECTAMENTE a lo que el usuario te acaba de decir o preguntar, demostrándole que le has escuchado (si te saluda, salúdale con naturalidad; si te dice qué negocio tiene, ponle un ejemplo exacto para su negocio; si te hace una pregunta concreta, respóndela al grano).\n' +
+      '2) PROHIBIDO soltar un discurso genérico repetido. Termina con una pregunta breve y natural para seguir conversando con él.\n' +
+      '3) Extensión ideal para ser leída en voz alta: de 2 a 4 frases fluidas (entre 38 y 72 palabras), texto limpio sin asteriscos ni viñetas.';
+
+    var k = obtenerKVertexV155();
     function llamarVertexModelo(modelo) {
       if (!k) return Promise.reject('sin_k');
       var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
-      var tId = ctrl ? setTimeout(function() { try { ctrl.abort(); } catch (e) {} }, 3800) : null;
+      var tId = ctrl ? setTimeout(function() { try { ctrl.abort(); } catch (e) {} }, 4200) : null;
       var url = 'https://aiplatform.googleapis.com/v1beta1/publishers/google/models/' + modelo + ':generateContent?key=' + encodeURIComponent(k);
       return fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ role: 'user', parts: [{ text: promptIA }] }],
-          generationConfig: { temperature: 0.65, topP: 0.92, maxOutputTokens: 320 }
+          generationConfig: { temperature: 0.7, topP: 0.92, maxOutputTokens: 320 }
         }),
         signal: ctrl ? ctrl.signal : undefined
       })
@@ -1106,8 +1217,9 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
       });
     }
 
-    return llamarVertexModelo('gemini-2.5-flash-lite')
-      .catch(function() { return llamarVertexModelo('gemini-2.0-flash-lite-001'); })
+    return llamarVertexModelo('gemini-2.5-flash')
+      .catch(function() { return llamarVertexModelo('gemini-2.5-flash-lite'); })
+      .catch(function() { return llamarVertexModelo('gemini-2.0-flash-001'); })
       .catch(function() { return llamarServidorLocal5000(); })
       .catch(function() { return apoyoLocal; });
   }
@@ -1119,25 +1231,21 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
     var inp = document.getElementById('spTecnosalaInput');
     if (inp) inp.value = '';
 
-    _spHistorialV153.push('Usuario: ' + limpia);
+    _spHistorialV155.push('Usuario: ' + limpia);
     if (typeof window.spExtraerYPreconfigurarCarritoDesdeCharla === 'function') {
-      try { window.spExtraerYPreconfigurarCarritoDesdeCharla(limpia, _spHistorialV153); } catch (e) {}
+      try { window.spExtraerYPreconfigurarCarritoDesdeCharla(limpia, _spHistorialV155); } catch (e) {}
     }
-
-    var apoyoLocal = (typeof window.spObtenerRespuestaOmniscienteCompleta === 'function')
-      ? window.spObtenerRespuestaOmniscienteCompleta(limpia)
-      : 'En Sistemas Pyme activamos en 24-48 horas tu sistema de Reseñas con IA en Google (59 €/mes), el Cortafuegos por WhatsApp (en Pack Escudo Básico Dúo por 99 €/mes), el Atril NFC (39 €) y nuestras 2 Super-Auditorías SEO/GEO IA y Neuro-CRO Web (195 € c/u con Pack o 350 € sueltas).';
 
     var hud = document.getElementById('spTeleprompterHudStatus');
     if (hud) {
-      hud.innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-teal-400 animate-ping inline-block mr-1.5"></span>🧠 ANALIZANDO TU CONSULTA CON IA GEMINI...';
+      hud.innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-teal-400 animate-ping inline-block mr-1.5"></span>🧠 PENSANDO RESPUESTA PARA: «' + limpia.replace(/</g, '&lt;').slice(0, 42) + '»...';
     }
 
-    consultarGeminiEnVivoV153(limpia, apoyoLocal).then(function(respuestaIA) {
+    consultarGeminiEnVivoV155(limpia).then(function(respuestaIA) {
       var vistaTec = document.getElementById('vista-tecnosala');
       if (!vistaTec || vistaTec.classList.contains('hidden')) return;
-      var limpioTxt = String(respuestaIA || apoyoLocal).replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
-      _spHistorialV153.push('Consultor: ' + limpioTxt);
+      var limpioTxt = String(respuestaIA || '').replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
+      _spHistorialV155.push('Consultor: ' + limpioTxt);
       window.spReproducirEnTeleprompter2027(limpioTxt, null, limpia);
     });
   };
@@ -1151,20 +1259,21 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
   };
 
   /* CORTAFUEGOS DE CAMBIO DE VISTA: SI SALES DE TECNOSALA SE CALLA Y APAGA EL MICRO EN EL ACTO */
-  if (typeof window.cambiarVista === 'function' && !window.cambiarVista._hookCallarV153) {
-    var _origCambiarVistaV153 = window.cambiarVista;
-    var nuevaCambiarVistaV153 = function(vistaDestino) {
+  if (typeof window.cambiarVista === 'function' && !window.cambiarVista._hookCallarV155) {
+    var _origCambiarVistaV155 = window.cambiarVista;
+    var nuevaCambiarVistaV155 = function(vistaDestino) {
       if (vistaDestino !== 'tecnosala') {
         window.spPararConsultorTotalmente();
       }
-      return _origCambiarVistaV153.apply(this, arguments);
+      return _origCambiarVistaV155.apply(this, arguments);
     };
-    nuevaCambiarVistaV153._hookCallarV153 = true;
-    window.cambiarVista = nuevaCambiarVistaV153;
+    nuevaCambiarVistaV155._hookCallarV155 = true;
+    window.cambiarVista = nuevaCambiarVistaV155;
   }
 
   /* =========================================================================
-     2. MOTOR DE PRECIOS CLAROS CON SUBCAJAS DE IDÉNTICA ALTURA (1 SOLA LÍNEA)
+     2. MOTOR DE PRECIOS CLAROS (TARJETAS COMPLETAS CON SU ESTRUCTURA ORIGINAL
+        Y CAMBIO INMEDIATO ENTRE MENSUAL Y PLAN ANUAL)
      ========================================================================= */
   window._spModoTarifasActual = 'mensual';
   window._spNumAuditoriasEscudo = 1;
@@ -1221,7 +1330,6 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
       if (btnA) btnA.className = 'px-4 py-2 rounded-xl text-xs sm:text-[13px] font-extrabold bg-brand-navy text-white shadow-sm transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap';
       if (btnM) btnM.className = 'px-4 py-2 rounded-xl text-xs sm:text-[13px] font-extrabold text-slate-700 hover:text-brand-navy transition-all cursor-pointer whitespace-nowrap';
 
-      /* En Plan Anual: las 3 tarjetas llevan exactamente 1 sola línea de ahorro limpia ("Ahorras X € al año (pagas 10 meses)") */
       if (pBase) pBase.innerHTML = '<div class="flex items-baseline gap-1.5 whitespace-nowrap"><span class="text-2xl sm:text-[28px] font-black text-brand-navy whitespace-nowrap">590 €</span><span class="text-xs font-bold text-slate-500 whitespace-nowrap">/ año</span></div>';
       if (subBase) subBase.textContent = '+ 150 € Setup único';
       if (savBase) {
@@ -1240,7 +1348,6 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
       if (btnM) btnM.className = 'px-4 py-2 rounded-xl text-xs sm:text-[13px] font-extrabold bg-brand-navy text-white shadow-sm transition-all cursor-pointer whitespace-nowrap';
       if (btnA) btnA.className = 'px-4 py-2 rounded-xl text-xs sm:text-[13px] font-extrabold text-slate-700 hover:text-brand-navy transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap';
 
-      /* En Mensual: en Pyme Base NO se menciona permanencia para no dar a entender que los otros dos planes sí tienen */
       if (pBase) pBase.innerHTML = '<div class="flex items-baseline gap-1.5 whitespace-nowrap"><span class="text-2xl sm:text-[28px] font-black text-brand-navy whitespace-nowrap">59 €</span><span class="text-xs font-bold text-slate-500 whitespace-nowrap">/ mes</span></div>';
       if (subBase) subBase.textContent = '+ 150 € Setup único';
       if (savBase) {
@@ -1277,7 +1384,7 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
   };
 
   /* =========================================================================
-     3. SELECTOR INTELIGENTE DE FASE 2 EN EL CARRITO (MÓDULOS ELEGIDOS EN GRIS)
+     3. SELECTOR INTELIGENTE DE FASE 2 Y VISIBILIDAD DEL SUBSELECTOR S1/S2
      ========================================================================= */
   window.spSincronizarOpcionesGrisesFase2 = function() {
     var sel = document.getElementById('spCartReservaFase2');
@@ -1303,6 +1410,44 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
       var yaElegido = (textosElegidos.indexOf(val) !== -1);
       opt.disabled = yaElegido;
       opt.textContent = yaElegido ? ('✓ ' + txtOriginal + ' (Ya seleccionado)') : txtOriginal;
+    }
+  };
+
+  function sincronizarSubBotonesPlanBaseV155() {
+    var b1 = document.getElementById('spBtnSubBase_S1');
+    var b2 = document.getElementById('spBtnSubBase_S2');
+    if (!b1 || !b2) return;
+    var txt1 = b1.textContent || '';
+    var esS1 = (txt1.indexOf('✓') !== -1) || (b1.className.indexOf('border-emerald') !== -1);
+    if (esS1) {
+      b1.classList.add('sp-subbase-active');
+      b2.classList.remove('sp-subbase-active');
+    } else {
+      b2.classList.add('sp-subbase-active');
+      b1.classList.remove('sp-subbase-active');
+    }
+  }
+
+  var _origSubBaseV125 = window.spSeleccionarSubServicioBaseV125;
+  window.spSeleccionarSubServicioBaseV125 = function(eleccion) {
+    if (typeof _origSubBaseV125 === 'function') {
+      _origSubBaseV125.apply(this, arguments);
+    }
+    var b1 = document.getElementById('spBtnSubBase_S1');
+    var b2 = document.getElementById('spBtnSubBase_S2');
+    var esS1 = String(eleccion || '').indexOf('S1') !== -1;
+    if (b1 && b2) {
+      if (esS1) {
+        b1.classList.add('sp-subbase-active');
+        b2.classList.remove('sp-subbase-active');
+        b1.innerHTML = '⭐ S1. Gestor de Reseñas Google con IA ✓<span class="block text-[10px] font-normal mt-0.5">Contesta 4-5★ con SEO local y frena 1-3★ avisándote al móvil</span>';
+        b2.innerHTML = '💬 S2. Encuesta Cortafuegos por WhatsApp<span class="block text-[10px] font-normal mt-0.5">Envía encuesta tras cada cita o pedido y filtra quejas en privado</span>';
+      } else {
+        b2.classList.add('sp-subbase-active');
+        b1.classList.remove('sp-subbase-active');
+        b1.innerHTML = '⭐ S1. Gestor de Reseñas Google con IA<span class="block text-[10px] font-normal mt-0.5">Contesta 4-5★ con SEO local y frena 1-3★ avisándote al móvil</span>';
+        b2.innerHTML = '💬 S2. Encuesta Cortafuegos por WhatsApp ✓<span class="block text-[10px] font-normal mt-0.5">Envía encuesta tras cada cita o pedido y filtra quejas en privado</span>';
+      }
     }
   };
 
@@ -1489,9 +1634,9 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
   };
 
   /* =========================================================================
-     5. COLORES, FASE 2 INTELIGENTE Y AGENDA DEL CARRITO DE COMPRA
+     5. COLORES, PÍLDORA "🟢 Calendario Activo" SIMÉTRICA Y AGENDA DEL CARRITO
      ========================================================================= */
-  function aplicarIdsColorCajasCarritoV153() {
+  function aplicarIdsColorCajasCarritoV155() {
     var selAtr = document.getElementById('spCartAtrilSelect');
     if (selAtr && selAtr.parentNode) {
       selAtr.parentNode.id = 'spCartBoxAtriles4';
@@ -1504,13 +1649,18 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
     if (selDia && selDia.parentNode && selDia.parentNode.parentNode) {
       selDia.parentNode.parentNode.id = 'spCartBoxCitaAlta';
     }
+    var calBadge = document.getElementById('spCartSyncCalBadge');
+    if (calBadge) {
+      calBadge.innerHTML = '<span>🟢</span><span>Calendario Activo</span>';
+    }
+    sincronizarSubBotonesPlanBaseV155();
   }
 
   window.spAbrirCarritoConDiagnosticoPreseleccionado = function() {
     if (typeof window.spAbrirCarritoConfigurador === 'function') {
       window.spAbrirCarritoConfigurador('duo', 1);
       setTimeout(function() {
-        aplicarIdsColorCajasCarritoV153();
+        aplicarIdsColorCajasCarritoV155();
         window.spSincronizarOpcionesGrisesFase2();
       }, 40);
     }
@@ -1527,7 +1677,7 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
   }
 
   window.spAplicarBloqueoHorasCrmEnSelect = function() {
-    aplicarIdsColorCajasCarritoV153();
+    aplicarIdsColorCajasCarritoV155();
     var selDia = document.getElementById('spCartSelectDiaLV');
     var selHora = document.getElementById('spCartSelectHoraManana');
     var inpISO = document.getElementById('spCartInputFechaHoraISO');
@@ -1570,7 +1720,7 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
 
   window.spSincronizarCitasCrmLocal = function() {
     try {
-      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v153') || '[]');
+      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v155') || '[]');
       if (Array.isArray(guardados)) {
         guardados.forEach(function(sl) {
           var norm = normalizarSlotEspacio(sl);
@@ -1595,7 +1745,7 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
               if (norm) window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(norm);
             });
             try {
-              localStorage.setItem('sp_citas_ocupadas_crm_v153', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
+              localStorage.setItem('sp_citas_ocupadas_crm_v155', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
             } catch (e) {}
           }
         })
@@ -1605,60 +1755,60 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
     });
   };
 
-  function inicializarMejorasV153() {
-    aplicarIdsColorCajasCarritoV153();
+  function inicializarMejorasV155() {
+    aplicarIdsColorCajasCarritoV155();
     window._spRenderizarTarjetasPrecios();
     window.spSincronizarCitasCrmLocal();
     window.spSincronizarOpcionesGrisesFase2();
 
-    /* Enganchar spRecalcularCarritoCarta para actualizar en el acto las opciones en gris de Fase 2 */
-    if (typeof window.spRecalcularCarritoCarta === 'function' && !window.spRecalcularCarritoCarta._hookFase2GrisV153) {
+    if (typeof window.spRecalcularCarritoCarta === 'function' && !window.spRecalcularCarritoCarta._hookFase2GrisV155) {
       var origRecalcCart = window.spRecalcularCarritoCarta;
       var nuevoRecalcCart = function() {
         var r = origRecalcCart.apply(this, arguments);
         window.spSincronizarOpcionesGrisesFase2();
+        sincronizarSubBotonesPlanBaseV155();
         return r;
       };
-      nuevoRecalcCart._hookFase2GrisV153 = true;
+      nuevoRecalcCart._hookFase2GrisV155 = true;
       window.spRecalcularCarritoCarta = nuevoRecalcCart;
     }
 
-    if (typeof window.spActualizarHorasDisponiblesCarritoV125 === 'function' && !window.spActualizarHorasDisponiblesCarritoV125._hookV153) {
+    if (typeof window.spActualizarHorasDisponiblesCarritoV125 === 'function' && !window.spActualizarHorasDisponiblesCarritoV125._hookV155) {
       var origActHoras = window.spActualizarHorasDisponiblesCarritoV125;
       var nuevaActHoras = function() {
         var r = origActHoras.apply(this, arguments);
         window.spAplicarBloqueoHorasCrmEnSelect();
         return r;
       };
-      nuevaActHoras._hookV153 = true;
+      nuevaActHoras._hookV155 = true;
       window.spActualizarHorasDisponiblesCarritoV125 = nuevaActHoras;
     }
 
-    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window.spAbrirCarritoConfigurador._hookV153) {
+    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window.spAbrirCarritoConfigurador._hookV155) {
       var origOpen = window.spAbrirCarritoConfigurador;
       var nuevoOpen = function() {
         var r = origOpen.apply(this, arguments);
-        aplicarIdsColorCajasCarritoV153();
+        aplicarIdsColorCajasCarritoV155();
         window.spSincronizarCitasCrmLocal();
         window.spSincronizarOpcionesGrisesFase2();
         setTimeout(window.spAplicarBloqueoHorasCrmEnSelect, 120);
         return r;
       };
-      nuevoOpen._hookV153 = true;
+      nuevoOpen._hookV155 = true;
       window.spAbrirCarritoConfigurador = nuevoOpen;
     }
   }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(inicializarMejorasV153, 180);
+      setTimeout(inicializarMejorasV155, 180);
     });
   } else {
-    setTimeout(inicializarMejorasV153, 180);
+    setTimeout(inicializarMejorasV155, 180);
   }
 })();
 </script>
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V153_END] -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V155_END] -->
 '''
 
 
@@ -2517,14 +2667,26 @@ HTML_SETUP_ANEXO_V152 = f"""<!DOCTYPE html>
 # 5. REPARACIÓN DE `index.html` Y ACTUALIZACIÓN DE LOS 6 TARJETONES
 # ==============================================================================
 def reparar_index_html_v152(html):
-    # 1. Quitar cualquier bloque [SP_AGENDA_CRM_WEB_SYNC_V1...] previo
+    # 1. Quitar cualquier bloque [SP_AGENDA_CRM_WEB_SYNC_V1...] y cualquier [SP_PATCH_V15...] previo
+    #    (El bloque [SP_PATCH_V154] era el que vaciaba las 3 tarjetas de Precios Claros y pisaba al Tecnoconsultor)
     html = re.sub(
         r"<!-- \[SP_AGENDA_CRM_WEB_SYNC_V1\d+_START\] -->[\s\S]*?<!-- \[SP_AGENDA_CRM_WEB_SYNC_V1\d+_END\] -->\s*",
         "",
         html
     )
+    html = re.sub(
+        r"<!-- \[SP_PATCH_V15\d_START\] -->[\s\S]*?<!-- \[SP_PATCH_V15\d_END\] -->\s*",
+        "",
+        html
+    )
 
-    # 2. Sustituir la sección #vista-tarifas completa por la nueva versión simplificada V152
+    # 2. Asegurar que en el HTML inyectado de la agenda del carrito ponga "🟢 Calendario Activo" completo
+    html = html.replace(
+        "🟢 Calendar Activo",
+        "🟢 Calendario Activo"
+    )
+
+    # 3. Sustituir la sección #vista-tarifas completa por la versión con toda su estructura íntegra
     patron_vista_tarifas = re.compile(
         r"<!-- ={40,}\s*-->\s*<!-- VISTA 4 \(SALA INDEPENDIENTE\): PRECIOS CLAROS[\s\S]*?</section>\s*(?=<!-- ={40,}\s*-->\s*<!-- VISTA 5)",
         re.MULTILINE
@@ -2532,13 +2694,13 @@ def reparar_index_html_v152(html):
     if patron_vista_tarifas.search(html):
         html = patron_vista_tarifas.sub(lambda _: HTML_VISTA_TARIFAS_V152 + "\n\n\n                    ", html, count=1)
 
-    # 3. Neutralizar en `spReproducirEnTeleprompter2027` el `_spRecogInstance.abort()` que cerraba el permiso de micro en `file://`
+    # 4. Neutralizar en `spReproducirEnTeleprompter2027` el `_spRecogInstance.abort()` que cerraba el permiso de micro en `file://`
     html = html.replace(
         "_spRecogInstance.abort();",
         "/* No abortar instancia de micro en file:// para conservar permiso continuo */"
     )
 
-    # 4. Inyectar el bloque maestro V152 justo antes del último </body> real (usando rsplit)
+    # 5. Inyectar el bloque maestro V155 justo antes del último </body> real (usando rsplit)
     if "</body>" in html:
         partes = html.rsplit("</body>", 1)
         html = partes[0].rstrip() + "\n" + BLOQUE_JS_MAESTRO_WEB_V152.strip() + "\n</body>" + partes[1]
