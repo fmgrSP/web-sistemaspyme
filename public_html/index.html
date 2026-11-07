@@ -6523,7 +6523,7 @@
       color: #ffffff !important;
       animation: spVoiceMicListeningPulse 1.35s ease-in-out infinite !important;
     }
-                /* =========================================================================
+                    /* =========================================================================
        MODAL CARRITO CONFIGURADOR EN MODO CRISTAL LUMINOSO CRO (NEUROMARKETING)
        PUNTO INTERMEDIO EXACTO: APTO PARA PRESBICIA + CERO SCROLL EN PANTALLA
        ========================================================================= */
@@ -9600,7 +9600,7 @@
       </div>
     </section>
 
-                            <!-- ===================================================================== -->
+                                <!-- ===================================================================== -->
     <!-- DIAPOSITIVA 5 DE CÓMO AYUDAMOS: CLASIFICACIÓN CORRELATIVA S1 A S10    -->
     <!-- ===================================================================== -->
     <section id="ca-slide-proximos" class="scroll-mt-20 slide-section sp-ca-slide5-proximos-dark text-white px-4 sm:px-6 pt-6 pb-4" style="min-height: calc(100vh - 5rem); justify-content: center;">
@@ -11536,7 +11536,7 @@
 
 
 
-                                                    <!-- ======================================================================= -->
+                                                      <!-- ======================================================================= -->
   <!-- VISTA 4 (SALA INDEPENDIENTE): PRECIOS CLAROS (ARQUITECTURA 4 GRUPOS)    -->
   <!-- ======================================================================= -->
   <section id="vista-tarifas" class="view-panel hidden bg-slate-50 text-slate-900">
@@ -15002,7 +15002,7 @@
               <div class="flex items-center justify-between gap-1 mb-1">
                 <label class="block text-[10.5px] font-extrabold uppercase text-sky-300">5. Reserva Prioritaria Fase 2:</label>
               </div>
-                                                                      <select id="spCartReservaFase2" onchange="window.spAgregarModuloReservaFase2(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-bold">
+                                                                                    <select id="spCartReservaFase2" onchange="window.spAgregarModuloReservaFase2(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-bold">
                 <option value="">+ Añadir módulo en Reserva Prioritaria (Grupos 1 a 4: S3 a S10 y Satélites)...</option>
                 <optgroup label="Grupo 1 • Implantación Rápida (+40 €/m | +75 € Setup)">
                   <option value="S3 Leads en 10s + Portales (+40 €/m)">S3. Respuesta a Leads en 10s + Portales (+40 €/m)</option>
@@ -16183,136 +16183,7 @@
               '<span><strong>Sistemas Pyme</strong> · Área de Santiago de Compostela (Galicia · Atención Nacional e Internacional)</span>' +
               '<span>Contacto directo: <strong>francisco@sistemaspyme.es</strong> · Tel: <strong>711 54 75 61</strong></span>' +
             '</div>' +
-          '</div><!-- [SP_AGENDA_CRM_WEB_SYNC_V146_START] -->
-<script>
-(function() {
-  window.SP_SLOTS_OCUPADOS_CRM_EXTRA = window.SP_SLOTS_OCUPADOS_CRM_EXTRA || new Set();
-
-  function mezclarSlotsEnMapaOcupados(listaSlots) {
-    if (!Array.isArray(listaSlots)) return;
-    window._spOcupadosPorDiaMap = window._spOcupadosPorDiaMap || {};
-    listaSlots.forEach(function(item) {
-      var s = String(item || '').trim();
-      if (!s || s.indexOf('|') === -1) return;
-      var partes = s.split('|');
-      var ymd = partes[0].trim();
-      var hhmm = partes[1].trim().substring(0, 5);
-      if (!ymd || !hhmm) return;
-      window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(ymd + '|' + hhmm);
-      if (!window._spOcupadosPorDiaMap[ymd]) {
-        window._spOcupadosPorDiaMap[ymd] = [];
-      }
-      if (window._spOcupadosPorDiaMap[ymd].indexOf(hhmm) === -1) {
-        window._spOcupadosPorDiaMap[ymd].push(hhmm);
-      }
-    });
-  }
-
-  window.spAplicarBloqueoHorasCrmEnSelect = function() {
-    var selDia = document.getElementById('spCartSelectDiaLV');
-    var selHora = document.getElementById('spCartSelectHoraManana');
-    if (!selDia || !selHora) return;
-
-    var ymd = selDia.value;
-    if (!ymd) return;
-
-    var mapDia = (window._spOcupadosPorDiaMap && window._spOcupadosPorDiaMap[ymd]) ? window._spOcupadosPorDiaMap[ymd] : [];
-    var cambioSeleccion = false;
-
-    for (var i = 0; i < selHora.options.length; i++) {
-      var opt = selHora.options[i];
-      var hhmm = String(opt.value || '').trim().substring(0, 5);
-      if (!hhmm) continue;
-      var clave = ymd + '|' + hhmm;
-      var ocupado = (mapDia.indexOf(hhmm) !== -1) || window.SP_SLOTS_OCUPADOS_CRM_EXTRA.has(clave);
-      if (ocupado) {
-        opt.disabled = true;
-        if (!opt.getAttribute('data-orig-txt')) {
-          opt.setAttribute('data-orig-txt', opt.textContent.replace(/^🔴\s*/, '').replace(/\s*\(Ocupado.*\)$/i, '').trim());
-        }
-        opt.textContent = '🔴 ' + opt.getAttribute('data-orig-txt').replace(/^🟢\s*/, '') + ' (Ocupado en agenda)';
-        if (selHora.selectedIndex === i) {
-          cambioSeleccion = true;
-        }
-      }
-    }
-
-    if (cambioSeleccion || (selHora.options[selHora.selectedIndex] && selHora.options[selHora.selectedIndex].disabled)) {
-      for (var j = 0; j < selHora.options.length; j++) {
-        if (!selHora.options[j].disabled) {
-          selHora.selectedIndex = j;
-          break;
-        }
-      }
-    }
-  };
-
-  window.spSincronizarCitasCrmLocal = function() {
-    try {
-      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v146') || '[]');
-      mezclarSlotsEnMapaOcupados(guardados);
-    } catch (e) {}
-
-    var ahora = Date.now();
-    var urls = [
-      'http://127.0.0.1:5000/api/horarios-ocupados-agenda?t=' + ahora,
-      'http://localhost:5000/api/horarios-ocupados-agenda?t=' + ahora
-    ];
-
-    Promise.all(urls.map(function(u) {
-      return fetch(u, { method: 'GET', mode: 'cors' })
-        .then(function(r) { return r.ok ? r.json() : null; })
-        .then(function(d) {
-          if (d && Array.isArray(d.slots_ocupados)) {
-            mezclarSlotsEnMapaOcupados(d.slots_ocupados);
-            try {
-              localStorage.setItem('sp_citas_ocupadas_crm_v146', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
-            } catch (e) {}
-          }
-        })
-        .catch(function() {});
-    })).then(function() {
-      if (typeof window.spActualizarHorasSegunDiaCarrito === 'function') {
-        try { window.spActualizarHorasSegunDiaCarrito(); } catch (e) {}
-      }
-      window.spAplicarBloqueoHorasCrmEnSelect();
-    });
-  };
-
-  document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(window.spSincronizarCitasCrmLocal, 150);
-
-    var selDia = document.getElementById('spCartSelectDiaLV');
-    if (selDia) {
-      selDia.addEventListener('change', function() {
-        setTimeout(window.spAplicarBloqueoHorasCrmEnSelect, 30);
-      });
-    }
-
-    if (typeof window.spActualizarHorasSegunDiaCarrito === 'function' && !window._spHookHorasV146) {
-      var origHoras = window.spActualizarHorasSegunDiaCarrito;
-      window.spActualizarHorasSegunDiaCarrito = function() {
-        var r = origHoras.apply(this, arguments);
-        window.spAplicarBloqueoHorasCrmEnSelect();
-        return r;
-      };
-      window._spHookHorasV146 = true;
-    }
-
-    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window._spHookAbrirCarritoV146) {
-      var origAbrir = window.spAbrirCarritoConfigurador;
-      window.spAbrirCarritoConfigurador = function() {
-        var res = origAbrir.apply(this, arguments);
-        window.spSincronizarCitasCrmLocal();
-        return res;
-      };
-      window._spHookAbrirCarritoV146 = true;
-    }
-  });
-})();
-</script>
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V146_END] -->
-</body></html>';
+          '</div></body></html>';
 
         var blob = new Blob([docHtml], { type: 'text/html;charset=utf-8' });
         var url = URL.createObjectURL(blob);
@@ -18090,54 +17961,39 @@
 })();
 </script>
 <!-- === [FIN_SP_MEJORAS_V120_FIN_DE_SEMANA_Y_CARRITO_S1_S2] === -->
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V146_START] -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V147_START] -->
 <script>
 (function() {
   window.SP_SLOTS_OCUPADOS_CRM_EXTRA = window.SP_SLOTS_OCUPADOS_CRM_EXTRA || new Set();
 
-  function mezclarSlotsEnMapaOcupados(listaSlots) {
-    if (!Array.isArray(listaSlots)) return;
-    window._spOcupadosPorDiaMap = window._spOcupadosPorDiaMap || {};
-    listaSlots.forEach(function(item) {
-      var s = String(item || '').trim();
-      if (!s || s.indexOf('|') === -1) return;
-      var partes = s.split('|');
-      var ymd = partes[0].trim();
-      var hhmm = partes[1].trim().substring(0, 5);
-      if (!ymd || !hhmm) return;
-      window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(ymd + '|' + hhmm);
-      if (!window._spOcupadosPorDiaMap[ymd]) {
-        window._spOcupadosPorDiaMap[ymd] = [];
-      }
-      if (window._spOcupadosPorDiaMap[ymd].indexOf(hhmm) === -1) {
-        window._spOcupadosPorDiaMap[ymd].push(hhmm);
-      }
-    });
+  function normalizarSlotEspacio(slotRaw) {
+    var s = String(slotRaw || '').trim();
+    if (!s) return '';
+    s = s.replace('|', ' ').replace('T', ' ');
+    var m = s.match(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})/);
+    return m ? (m[1] + ' ' + m[2]) : '';
   }
 
   window.spAplicarBloqueoHorasCrmEnSelect = function() {
     var selDia = document.getElementById('spCartSelectDiaLV');
     var selHora = document.getElementById('spCartSelectHoraManana');
+    var inpISO = document.getElementById('spCartInputFechaHoraISO');
+    var inpHor = document.getElementById('spCartInputHorario');
     if (!selDia || !selHora) return;
 
     var ymd = selDia.value;
     if (!ymd) return;
 
-    var mapDia = (window._spOcupadosPorDiaMap && window._spOcupadosPorDiaMap[ymd]) ? window._spOcupadosPorDiaMap[ymd] : [];
     var cambioSeleccion = false;
-
     for (var i = 0; i < selHora.options.length; i++) {
       var opt = selHora.options[i];
       var hhmm = String(opt.value || '').trim().substring(0, 5);
       if (!hhmm) continue;
-      var clave = ymd + '|' + hhmm;
-      var ocupado = (mapDia.indexOf(hhmm) !== -1) || window.SP_SLOTS_OCUPADOS_CRM_EXTRA.has(clave);
-      if (ocupado) {
+      var claveEspacio = ymd + ' ' + hhmm;
+      if (window.SP_SLOTS_OCUPADOS_CRM_EXTRA.has(claveEspacio)) {
         opt.disabled = true;
-        if (!opt.getAttribute('data-orig-txt')) {
-          opt.setAttribute('data-orig-txt', opt.textContent.replace(/^🔴\s*/, '').replace(/\s*\(Ocupado.*\)$/i, '').trim());
-        }
-        opt.textContent = '🔴 ' + opt.getAttribute('data-orig-txt').replace(/^🟢\s*/, '') + ' (Ocupado en agenda)';
+        var txtBase = opt.textContent.replace(/^🟢\s*/, '').replace(/^⛔\s*/, '').replace(/\s*\(Ocupado.*\)$/i, '').trim();
+        opt.textContent = '⛔ ' + txtBase + ' (Ocupado en Agenda CRM)';
         if (selHora.selectedIndex === i) {
           cambioSeleccion = true;
         }
@@ -18152,12 +18008,22 @@
         }
       }
     }
+
+    var hSel = selHora.value || '10:00';
+    var dTxt = (selDia.options[selDia.selectedIndex] ? selDia.options[selDia.selectedIndex].text : ymd);
+    if (inpISO) inpISO.value = ymd + 'T' + hSel;
+    if (inpHor) inpHor.value = dTxt + ' a las ' + hSel + ' h';
   };
 
   window.spSincronizarCitasCrmLocal = function() {
     try {
-      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v146') || '[]');
-      mezclarSlotsEnMapaOcupados(guardados);
+      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v147') || '[]');
+      if (Array.isArray(guardados)) {
+        guardados.forEach(function(sl) {
+          var norm = normalizarSlotEspacio(sl);
+          if (norm) window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(norm);
+        });
+      }
     } catch (e) {}
 
     var ahora = Date.now();
@@ -18171,53 +18037,93 @@
         .then(function(r) { return r.ok ? r.json() : null; })
         .then(function(d) {
           if (d && Array.isArray(d.slots_ocupados)) {
-            mezclarSlotsEnMapaOcupados(d.slots_ocupados);
+            d.slots_ocupados.forEach(function(sl) {
+              var norm = normalizarSlotEspacio(sl);
+              if (norm) window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(norm);
+            });
             try {
-              localStorage.setItem('sp_citas_ocupadas_crm_v146', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
+              localStorage.setItem('sp_citas_ocupadas_crm_v147', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
             } catch (e) {}
           }
         })
         .catch(function() {});
     })).then(function() {
-      if (typeof window.spActualizarHorasSegunDiaCarrito === 'function') {
-        try { window.spActualizarHorasSegunDiaCarrito(); } catch (e) {}
-      }
       window.spAplicarBloqueoHorasCrmEnSelect();
     });
   };
 
-  document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(window.spSincronizarCitasCrmLocal, 150);
+  function engancharEventosAgendaCarritoV147() {
+    window.spSincronizarCitasCrmLocal();
 
-    var selDia = document.getElementById('spCartSelectDiaLV');
-    if (selDia) {
-      selDia.addEventListener('change', function() {
-        setTimeout(window.spAplicarBloqueoHorasCrmEnSelect, 30);
-      });
-    }
-
-    if (typeof window.spActualizarHorasSegunDiaCarrito === 'function' && !window._spHookHorasV146) {
-      var origHoras = window.spActualizarHorasSegunDiaCarrito;
-      window.spActualizarHorasSegunDiaCarrito = function() {
-        var r = origHoras.apply(this, arguments);
+    if (typeof window.spActualizarHorasDisponiblesCarritoV125 === 'function' && !window.spActualizarHorasDisponiblesCarritoV125._hookV147) {
+      var origActHoras = window.spActualizarHorasDisponiblesCarritoV125;
+      var nuevaActHoras = function() {
+        var r = origActHoras.apply(this, arguments);
         window.spAplicarBloqueoHorasCrmEnSelect();
         return r;
       };
-      window._spHookHorasV146 = true;
+      nuevaActHoras._hookV147 = true;
+      window.spActualizarHorasDisponiblesCarritoV125 = nuevaActHoras;
     }
 
-    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window._spHookAbrirCarritoV146) {
-      var origAbrir = window.spAbrirCarritoConfigurador;
-      window.spAbrirCarritoConfigurador = function() {
-        var res = origAbrir.apply(this, arguments);
+    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window.spAbrirCarritoConfigurador._hookV147) {
+      var origOpen = window.spAbrirCarritoConfigurador;
+      var nuevoOpen = function() {
+        var r = origOpen.apply(this, arguments);
         window.spSincronizarCitasCrmLocal();
-        return res;
+        setTimeout(window.spAplicarBloqueoHorasCrmEnSelect, 120);
+        return r;
       };
-      window._spHookAbrirCarritoV146 = true;
+      nuevoOpen._hookV147 = true;
+      window.spAbrirCarritoConfigurador = nuevoOpen;
     }
-  });
+
+    if (typeof window.spConfirmarPedidoYAgendarCita === 'function' && !window.spConfirmarPedidoYAgendarCita._hookV147) {
+      var origConfirm = window.spConfirmarPedidoYAgendarCita;
+      var nuevoConfirm = function() {
+        try {
+          var selDia = document.getElementById('spCartSelectDiaLV');
+          var selHora = document.getElementById('spCartSelectHoraManana');
+          var inpNom = document.getElementById('spCartInputNombre');
+          var inpNeg = document.getElementById('spCartInputNegocioCiudad');
+          var inpTel = document.getElementById('spCartInputTelefono');
+          var ymd = selDia ? selDia.value : '';
+          var hhmm = selHora ? String(selHora.value || '').substring(0, 5) : '';
+          if (ymd && hhmm) {
+            window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(ymd + ' ' + hhmm);
+            try {
+              localStorage.setItem('sp_citas_ocupadas_crm_v147', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
+            } catch (e) {}
+            var nombreCompleto = ((inpNom ? inpNom.value : '') + (inpNeg && inpNeg.value ? (' — ' + inpNeg.value) : '')).trim();
+            fetch('http://127.0.0.1:5000/api/crm/registrar-pedido-web', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                origen: 'Carrito Configurador Web',
+                nombre: nombreCompleto || 'Cliente Web',
+                telefono: inpTel ? inpTel.value : '',
+                fecha_cita_iso: ymd + 'T' + hhmm + ':00',
+                horario: (selDia && selDia.options[selDia.selectedIndex] ? selDia.options[selDia.selectedIndex].text : ymd) + ' a las ' + hhmm + ' h'
+              })
+            }).catch(function() {});
+          }
+        } catch (err) {}
+        return origConfirm.apply(this, arguments);
+      };
+      nuevoConfirm._hookV147 = true;
+      window.spConfirmarPedidoYAgendarCita = nuevoConfirm;
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(engancharEventosAgendaCarritoV147, 250);
+    });
+  } else {
+    setTimeout(engancharEventosAgendaCarritoV147, 250);
+  }
 })();
 </script>
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V146_END] -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V147_END] -->
 </body>
 </html>

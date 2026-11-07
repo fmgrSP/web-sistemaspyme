@@ -44,7 +44,7 @@ RUTA_SCRAPER = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Scrape
 RUTA_PROGRAMAR = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Programar"
 
 STAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
-VERSION_ACTUAL = "V146"
+VERSION_ACTUAL = "V147"
 
 # =============================================================================
 # 2. UTILIDADES DE BACKUP, VALIDACIÓN Y AUTO-REPLICACIÓN DE AD.py
@@ -142,54 +142,26 @@ def validar_bloques_js_en_html(ruta_html):
     print(f"  🟢 Verificado OK: {os.path.basename(ruta_html)} ({peso_kb:.1f} KB, {len(bloques)} bloques <script> limpios)")
     return True
 
-def restaurar_ultimo_backup_sano_si_hace_falta(ruta_html):
+def limpiar_inyeccion_rota_en_string_js(html):
     """
-    Revisa si index.html perdió las funciones del Carrito o del Tecnoconsultor o tiene algún bloque roto,
-    y en ese caso restaura automáticamente el backup sano de backups_sp antes de aplicar el parche limpio.
+    Repara la causa raíz por la que habían dejado de funcionar el Carrito y la Tecnosala:
+    un replace('</body>', ...) anterior había metido un bloque <script> dentro del literal
+    de texto `'</div></body></html>'` de `spDescargarConversacionConsultor`, rompiendo
+    el bloque <script> donde se definen `spAbrirCarritoConfigurador` y el Orbe de la Tecnosala.
     """
-    if not os.path.isfile(ruta_html):
-        return
-    carpeta_backups = os.path.join(os.path.dirname(os.path.abspath(ruta_html)), "backups_sp")
-    if not os.path.isdir(carpeta_backups):
-        return
-
-    with open(ruta_html, "r", encoding="utf-8") as f:
-        actual = f.read()
-
-    # Comprobar si el archivo actual tiene las funciones esenciales intactas y pasa node --check
-    tiene_carrito = ("window.spAbrirCarritoConfigurador" in actual and 'id="spModalCarritoCarta"' in actual)
-    tiene_tecnosala = ("spEnviarConsultaTecnosala" in actual or "vista-tecnosala" in actual)
-    js_valido = validar_bloques_js_en_html(ruta_html)
-
-    if tiene_carrito and tiene_tecnosala and js_valido and "parentForm.insertBefore(filaNomTel, inpNom)" not in actual:
-        return
-
-    # Buscar en backups_sp el backup más reciente que tenga Carrito + Tecnosala intactos y previos al fallo de DOM
-    nombre_base = os.path.basename(ruta_html)
-    candidatos = sorted(
-        [
-            os.path.join(carpeta_backups, fn)
-            for fn in os.listdir(carpeta_backups)
-            if fn.startswith(nombre_base + ".") and fn.endswith(".bak")
-        ],
-        key=lambda p: os.path.getmtime(p),
-        reverse=True
+    # 1. Limpiar cualquier bloque [SP_AGENDA_CRM_WEB_SYNC_...] en todo el documento
+    html = re.sub(
+        r"<!-- \[SP_AGENDA_CRM_WEB_SYNC_V14[567]_START\] -->[\s\S]*?<!-- \[SP_AGENDA_CRM_WEB_SYNC_V14[567]_END\] -->\s*",
+        "",
+        html
     )
-    for cand in candidatos:
-        try:
-            with open(cand, "r", encoding="utf-8") as fc:
-                txt_b = fc.read()
-            if (
-                "window.spAbrirCarritoConfigurador" in txt_b
-                and 'id="spModalCarritoCarta"' in txt_b
-                and "parentForm.insertBefore(filaNomTel, inpNom)" not in txt_b
-                and "<!-- [SP_AGENDA_CRM_WEB_SYNC_V145_START] -->" not in txt_b
-            ):
-                shutil.copy2(cand, ruta_html)
-                print(f"  🔄 Base sana restaurada automáticamente desde: {os.path.basename(cand)}")
-                return
-        except Exception:
-            continue
+    # 2. Asegurar que el literal `'</div></body></html>'` de spDescargarConversacionConsultor quede 100% limpio en 1 línea
+    html = re.sub(
+        r"'</div>\s*</body></html>';",
+        "'</div></body></html>';",
+        html
+    )
+    return html
 
 def renumerar_servicios_en_html_documentos(html):
     """Actualiza la numeración en catálogos y tarjetones para que Grupo 1 = S1..S5, Grupo 2 = S6..S8 y Grupo 4 Telefonía = S9..S10."""
@@ -1427,54 +1399,39 @@ def api_horarios_ocupados_agenda_v145():
 '''
 
 BLOQUE_JS_COORDINADOR_AGENDA_WEB_V146 = r'''
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V146_START] -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V147_START] -->
 <script>
 (function() {
   window.SP_SLOTS_OCUPADOS_CRM_EXTRA = window.SP_SLOTS_OCUPADOS_CRM_EXTRA || new Set();
 
-  function mezclarSlotsEnMapaOcupados(listaSlots) {
-    if (!Array.isArray(listaSlots)) return;
-    window._spOcupadosPorDiaMap = window._spOcupadosPorDiaMap || {};
-    listaSlots.forEach(function(item) {
-      var s = String(item || '').trim();
-      if (!s || s.indexOf('|') === -1) return;
-      var partes = s.split('|');
-      var ymd = partes[0].trim();
-      var hhmm = partes[1].trim().substring(0, 5);
-      if (!ymd || !hhmm) return;
-      window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(ymd + '|' + hhmm);
-      if (!window._spOcupadosPorDiaMap[ymd]) {
-        window._spOcupadosPorDiaMap[ymd] = [];
-      }
-      if (window._spOcupadosPorDiaMap[ymd].indexOf(hhmm) === -1) {
-        window._spOcupadosPorDiaMap[ymd].push(hhmm);
-      }
-    });
+  function normalizarSlotEspacio(slotRaw) {
+    var s = String(slotRaw || '').trim();
+    if (!s) return '';
+    s = s.replace('|', ' ').replace('T', ' ');
+    var m = s.match(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})/);
+    return m ? (m[1] + ' ' + m[2]) : '';
   }
 
   window.spAplicarBloqueoHorasCrmEnSelect = function() {
     var selDia = document.getElementById('spCartSelectDiaLV');
     var selHora = document.getElementById('spCartSelectHoraManana');
+    var inpISO = document.getElementById('spCartInputFechaHoraISO');
+    var inpHor = document.getElementById('spCartInputHorario');
     if (!selDia || !selHora) return;
 
     var ymd = selDia.value;
     if (!ymd) return;
 
-    var mapDia = (window._spOcupadosPorDiaMap && window._spOcupadosPorDiaMap[ymd]) ? window._spOcupadosPorDiaMap[ymd] : [];
     var cambioSeleccion = false;
-
     for (var i = 0; i < selHora.options.length; i++) {
       var opt = selHora.options[i];
       var hhmm = String(opt.value || '').trim().substring(0, 5);
       if (!hhmm) continue;
-      var clave = ymd + '|' + hhmm;
-      var ocupado = (mapDia.indexOf(hhmm) !== -1) || window.SP_SLOTS_OCUPADOS_CRM_EXTRA.has(clave);
-      if (ocupado) {
+      var claveEspacio = ymd + ' ' + hhmm;
+      if (window.SP_SLOTS_OCUPADOS_CRM_EXTRA.has(claveEspacio)) {
         opt.disabled = true;
-        if (!opt.getAttribute('data-orig-txt')) {
-          opt.setAttribute('data-orig-txt', opt.textContent.replace(/^🔴\s*/, '').replace(/\s*\(Ocupado.*\)$/i, '').trim());
-        }
-        opt.textContent = '🔴 ' + opt.getAttribute('data-orig-txt').replace(/^🟢\s*/, '') + ' (Ocupado en agenda)';
+        var txtBase = opt.textContent.replace(/^🟢\s*/, '').replace(/^⛔\s*/, '').replace(/\s*\(Ocupado.*\)$/i, '').trim();
+        opt.textContent = '⛔ ' + txtBase + ' (Ocupado en Agenda CRM)';
         if (selHora.selectedIndex === i) {
           cambioSeleccion = true;
         }
@@ -1489,12 +1446,22 @@ BLOQUE_JS_COORDINADOR_AGENDA_WEB_V146 = r'''
         }
       }
     }
+
+    var hSel = selHora.value || '10:00';
+    var dTxt = (selDia.options[selDia.selectedIndex] ? selDia.options[selDia.selectedIndex].text : ymd);
+    if (inpISO) inpISO.value = ymd + 'T' + hSel;
+    if (inpHor) inpHor.value = dTxt + ' a las ' + hSel + ' h';
   };
 
   window.spSincronizarCitasCrmLocal = function() {
     try {
-      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v146') || '[]');
-      mezclarSlotsEnMapaOcupados(guardados);
+      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v147') || '[]');
+      if (Array.isArray(guardados)) {
+        guardados.forEach(function(sl) {
+          var norm = normalizarSlotEspacio(sl);
+          if (norm) window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(norm);
+        });
+      }
     } catch (e) {}
 
     var ahora = Date.now();
@@ -1508,54 +1475,94 @@ BLOQUE_JS_COORDINADOR_AGENDA_WEB_V146 = r'''
         .then(function(r) { return r.ok ? r.json() : null; })
         .then(function(d) {
           if (d && Array.isArray(d.slots_ocupados)) {
-            mezclarSlotsEnMapaOcupados(d.slots_ocupados);
+            d.slots_ocupados.forEach(function(sl) {
+              var norm = normalizarSlotEspacio(sl);
+              if (norm) window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(norm);
+            });
             try {
-              localStorage.setItem('sp_citas_ocupadas_crm_v146', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
+              localStorage.setItem('sp_citas_ocupadas_crm_v147', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
             } catch (e) {}
           }
         })
         .catch(function() {});
     })).then(function() {
-      if (typeof window.spActualizarHorasSegunDiaCarrito === 'function') {
-        try { window.spActualizarHorasSegunDiaCarrito(); } catch (e) {}
-      }
       window.spAplicarBloqueoHorasCrmEnSelect();
     });
   };
 
-  document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(window.spSincronizarCitasCrmLocal, 150);
+  function engancharEventosAgendaCarritoV147() {
+    window.spSincronizarCitasCrmLocal();
 
-    var selDia = document.getElementById('spCartSelectDiaLV');
-    if (selDia) {
-      selDia.addEventListener('change', function() {
-        setTimeout(window.spAplicarBloqueoHorasCrmEnSelect, 30);
-      });
-    }
-
-    if (typeof window.spActualizarHorasSegunDiaCarrito === 'function' && !window._spHookHorasV146) {
-      var origHoras = window.spActualizarHorasSegunDiaCarrito;
-      window.spActualizarHorasSegunDiaCarrito = function() {
-        var r = origHoras.apply(this, arguments);
+    if (typeof window.spActualizarHorasDisponiblesCarritoV125 === 'function' && !window.spActualizarHorasDisponiblesCarritoV125._hookV147) {
+      var origActHoras = window.spActualizarHorasDisponiblesCarritoV125;
+      var nuevaActHoras = function() {
+        var r = origActHoras.apply(this, arguments);
         window.spAplicarBloqueoHorasCrmEnSelect();
         return r;
       };
-      window._spHookHorasV146 = true;
+      nuevaActHoras._hookV147 = true;
+      window.spActualizarHorasDisponiblesCarritoV125 = nuevaActHoras;
     }
 
-    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window._spHookAbrirCarritoV146) {
-      var origAbrir = window.spAbrirCarritoConfigurador;
-      window.spAbrirCarritoConfigurador = function() {
-        var res = origAbrir.apply(this, arguments);
+    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window.spAbrirCarritoConfigurador._hookV147) {
+      var origOpen = window.spAbrirCarritoConfigurador;
+      var nuevoOpen = function() {
+        var r = origOpen.apply(this, arguments);
         window.spSincronizarCitasCrmLocal();
-        return res;
+        setTimeout(window.spAplicarBloqueoHorasCrmEnSelect, 120);
+        return r;
       };
-      window._spHookAbrirCarritoV146 = true;
+      nuevoOpen._hookV147 = true;
+      window.spAbrirCarritoConfigurador = nuevoOpen;
     }
-  });
+
+    if (typeof window.spConfirmarPedidoYAgendarCita === 'function' && !window.spConfirmarPedidoYAgendarCita._hookV147) {
+      var origConfirm = window.spConfirmarPedidoYAgendarCita;
+      var nuevoConfirm = function() {
+        try {
+          var selDia = document.getElementById('spCartSelectDiaLV');
+          var selHora = document.getElementById('spCartSelectHoraManana');
+          var inpNom = document.getElementById('spCartInputNombre');
+          var inpNeg = document.getElementById('spCartInputNegocioCiudad');
+          var inpTel = document.getElementById('spCartInputTelefono');
+          var ymd = selDia ? selDia.value : '';
+          var hhmm = selHora ? String(selHora.value || '').substring(0, 5) : '';
+          if (ymd && hhmm) {
+            window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(ymd + ' ' + hhmm);
+            try {
+              localStorage.setItem('sp_citas_ocupadas_crm_v147', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
+            } catch (e) {}
+            var nombreCompleto = ((inpNom ? inpNom.value : '') + (inpNeg && inpNeg.value ? (' — ' + inpNeg.value) : '')).trim();
+            fetch('http://127.0.0.1:5000/api/crm/registrar-pedido-web', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                origen: 'Carrito Configurador Web',
+                nombre: nombreCompleto || 'Cliente Web',
+                telefono: inpTel ? inpTel.value : '',
+                fecha_cita_iso: ymd + 'T' + hhmm + ':00',
+                horario: (selDia && selDia.options[selDia.selectedIndex] ? selDia.options[selDia.selectedIndex].text : ymd) + ' a las ' + hhmm + ' h'
+              })
+            }).catch(function() {});
+          }
+        } catch (err) {}
+        return origConfirm.apply(this, arguments);
+      };
+      nuevoConfirm._hookV147 = true;
+      window.spConfirmarPedidoYAgendarCita = nuevoConfirm;
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(engancharEventosAgendaCarritoV147, 250);
+    });
+  } else {
+    setTimeout(engancharEventosAgendaCarritoV147, 250);
+  }
 })();
 </script>
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V146_END] -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V147_END] -->
 '''
 
 JS_PUENTE_TEST_A_CARRITO = r"""window.spAbrirCarritoConDiagnosticoPreseleccionado = function() {
@@ -1626,18 +1633,12 @@ def actualizar_index_html_completo(ruta_index):
         print(f"  ⚠️ No se encontró {ruta_index}")
         return
 
-    # Paso 0 de seguridad: si el archivo actual tenía algún bloque roto por la inyección anterior, restaurar el último backup sano
-    restaurar_ultimo_backup_sano_si_hace_falta(ruta_index)
-
     with open(ruta_index, "r", encoding="utf-8") as f:
         html = f.read()
 
-    # Limpiar restos de marcadores antiguos si existían
-    html = re.sub(
-        r"<!-- \[SP_AGENDA_CRM_WEB_SYNC_V14[56]_START\] -->[\s\S]*?<!-- \[SP_AGENDA_CRM_WEB_SYNC_V14[56]_END\] -->",
-        "",
-        html
-    )
+    # PASO 0 CRÍTICO: Limpiar la inyección que se había metido dentro del literal `'</div></body></html>'`
+    # de `spDescargarConversacionConsultor` y que rompía todo el bloque JS de la Tecnosala y del Carrito.
+    html = limpiar_inyeccion_rota_en_string_js(html)
 
     # 1. Reemplazar el bloque completo de #vista-tarifas con el botón dorado integrado y alineado dentro del contenedor sin salirse por la derecha
     patron_vista_tarifas = re.compile(
@@ -1762,8 +1763,11 @@ def actualizar_index_html_completo(ruta_index):
         '<p class="text-[11px] text-amber-900 font-bold leading-tight">🔥 Incluye Sábados y Domingos (mañana y tarde) para no interrumpir tu horario de apertura.</p>'
     )
 
-    # 14. Inyectar el coordinador limpio de citas CRM <-> Carrito (#spCartSelectDiaLV y #spCartSelectHoraManana) antes de </body>
-    html = html.replace("</body>", BLOQUE_JS_COORDINADOR_AGENDA_WEB_V146.strip() + "\n</body>")
+    # 14. Inyectar el coordinador limpio de citas CRM <-> Carrito ÚNICAMENTE en el último </body> real del archivo
+    # usando rsplit("</body>", 1) para jamás tocar cadenas de texto internas de JavaScript.
+    if "</body>" in html:
+        partes_body = html.rsplit("</body>", 1)
+        html = partes_body[0] + BLOQUE_JS_COORDINADOR_AGENDA_WEB_V146.strip() + "\n</body>" + partes_body[1]
 
     escribir_archivo_con_backup(ruta_index, html)
 
