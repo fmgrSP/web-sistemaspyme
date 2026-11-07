@@ -2,20 +2,17 @@
 # -*- coding: utf-8 -*-
 """
 =============================================================================
-SCRIPT ACTUALIZADOR MAESTRO AD.py — VERSIÓN 165 (SISTEMAS PYME)
+SCRIPT ACTUALIZADOR MAESTRO AD.py — VERSIÓN 166 (SISTEMAS PYME)
 =============================================================================
 Objetivo:
-1. Reparar al 100% el corte de llaves en `index.html` (tanto en
-   `Web/web-sistemaspyme/public_html/index.html` como en `servicio_resenas/index.html`)
-   que dejaba un SyntaxError en el script del Tecnoconsultor.
-2. Inyectar además un Motor Autónomo de Respaldo (`V165`) para que el Orbe 3D,
-   el Teleprompter LED, el botón `🎙️ Hablar`, la conexión directa al último
-   modelo Gemini Flash-Lite y el micrófono inteligente entre pestañas funcionen
-   siempre sin fallar jamás.
-3. Validar con `node --check` (buscando en `/opt/homebrew/bin/node` y `/usr/local/bin/node`)
-   y con analizador estructural en Python antes de guardar.
-4. Hacer `git add`, `git commit` y `git push` tanto en `web-sistemaspyme` como
-   en `servicio_resenas` para que la web en vivo se actualice en el acto.
+1. Eliminar para siempre el cartel repetitivo de permiso de micrófono en cada
+   turno de conversación del Tecnoconsultor.
+2. Mantener UNA ÚNICA instancia continua de `SpeechRecognition` + stream
+   persistente `getUserMedia` abierta durante toda la estancia en Tecnosala,
+   usando "mute lógico" (`_spIgnorarMicroMientrasHabla = true`) mientras el
+   consultor habla en lugar de llamar a `.stop()` y `.start()` en cada frase.
+3. Pausa automática al salir a otros apartados de la página o cambiar de
+   pestaña del navegador, y reanudación automática al volver a Tecnosala.
 =============================================================================
 """
 
@@ -41,12 +38,11 @@ RUTAS_PROYECTO = [
     RUTA_PROGRAMAR
 ]
 
-NOTA_ACTUALIZACION_V165 = """
-### ACTUALIZACIÓN V165 (Reparación Integral del Bloque Truncado en `public_html/index.html` + Sincronización Dual Git `web-sistemaspyme` y `servicio_resenas` + Motor Autónomo Tecnoconsultor Flash-Lite)
-- **Reparación completa de principio a fin del bloque de funciones del Tecnoconsultor:** Sustituido el tramo completo entre `window.spRepetirUltimaRespuestaConsultor` y `window.spToggleVozConsultorMute` en `index.html`, eliminando cualquier corte de llaves o funciones a medias que bloqueaban la ejecución del bloque `<script>`.
-- **Conexión en vivo al último modelo Gemini Flash-Lite:** Conectado a `generativelanguage.googleapis.com/v1beta/models` con auto-descubrimiento en tiempo real del modelo **Flash-Lite** más moderno y rápido (`gemini-2.5-flash-lite` / `gemini-3.8-flash-lite` / `gemini-flash-lite-latest`).
-- **Micrófono inteligente de permiso único entre secciones y pestañas:** Pide permiso del micrófono una sola vez, mantiene la escucha activa mientras estás en `Tecnosala`, se calla y pausa el micrófono automáticamente al pasar a cualquier otro apartado de la web (`Inicio`, `Cómo ayudamos`, `Test de diagnóstico`, `Precios claros`, `Magazine`) o cambiar de pestaña del navegador, y se reactiva él solo automáticamente al regresar a `Tecnosala`.
-- **Sincronización Git en `web-sistemaspyme` y `servicio_resenas`:** `AD.py` actualiza y hace `git push` en ambos repositorios para que el cambio quede desplegado al instante en producción.
+NOTA_ACTUALIZACION_V166 = """
+### ACTUALIZACIÓN V166 (Micrófono Continuo de Sesión Única en Tecnoconsultor — Cero Re-Prompts de Permiso entre Turnos)
+- **Eliminado el `.stop()` / `.start()` entre turnos que disparaba el permiso del navegador en cada frase:** Ahora `SpeechRecognition` se inicia una sola vez dentro del gesto del usuario (al tocar la esfera 3D o el botón `🎙️ Hablar`), respaldado por un canal de audio vivo (`navigator.mediaDevices.getUserMedia({ audio: true })`) que mantiene la concesión del permiso durante toda la sesión.
+- **Compuerta de Mute Lógico mientras el Consultor habla:** Durante la locución del Tecnoconsultor (`_spHablandoSintesis = true`), el micrófono permanece abierto en segundo plano pero descarta cualquier entrada acústica (`_spIgnorarMicroMientrasHabla = true` + limpieza de buffer), evitando que se escuche a sí mismo y permitiendo que el usuario vuelva a hablar inmediatamente al terminar la respuesta sin que el navegador vuelva a pedir permiso jamás.
+- **Desactivación al navegar por otros apartados y auto-reactivación al volver a Tecnosala:** Si el usuario cambia a `Inicio`, `Cómo ayudamos`, `Test de diagnóstico`, `Precios claros`, `Magazine` o cambia de pestaña del navegador, se cancela la voz y se silencia la escucha; al regresar a `Tecnosala`, se reactiva sola automáticamente.
 """
 
 _DOCUMENTOS_ACTUALIZADOS = False
@@ -89,8 +85,8 @@ def actualizar_documentos_maestros():
                 crear_backup_seguro(ruta_md)
                 with open(ruta_md, "r", encoding="utf-8") as f:
                     contenido = f.read()
-                if "ACTUALIZACIÓN V165" not in contenido:
-                    contenido = contenido.rstrip() + "\n\n" + NOTA_ACTUALIZACION_V165.strip() + "\n"
+                if "ACTUALIZACIÓN V166" not in contenido:
+                    contenido = contenido.rstrip() + "\n\n" + NOTA_ACTUALIZACION_V166.strip() + "\n"
                     with open(ruta_md, "w", encoding="utf-8") as f:
                         f.write(contenido)
                     print(f"📘 Documento maestro actualizado: {ruta_md}")
@@ -150,35 +146,62 @@ TRAMO_COMPLETO_SANO_TECNOCONSULTOR = r"""      window.spRepetirUltimaRespuestaCo
       };
 
       var _spPausadoPorCambioDeSeccion = false;
+      var _spAcumuladoTurnoVoz = '';
+      var _spLineaDictadoVivoEl = null;
+      var _spCooldownPostHablaTs = 0;
 
+      // Pide y mantiene vivo un canal de audio real para que el navegador selle el permiso 1 sola vez
       function asegurarStreamMicroUnico() {
         if (_spMicStream && _spMicStream.active) {
           return Promise.resolve(_spMicStream);
         }
-        try {
-          if (navigator.permissions && navigator.permissions.query) {
-            return navigator.permissions.query({ name: 'microphone' }).then(function(status) {
-              if (status.state === 'granted' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                return navigator.mediaDevices.getUserMedia({
-                  audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
-                }).then(function(st) {
-                  _spMicStream = st;
-                  return st;
-                }).catch(function() { return null; });
-              }
-              return null;
-            }).catch(function() { return null; });
-          }
-        } catch (e) {}
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          return navigator.mediaDevices.getUserMedia({
+            audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+          }).then(function(st) {
+            _spMicStream = st;
+            // Mantener las pistas habilitadas mientras estemos en Tecnosala
+            return st;
+          }).catch(function() { return null; });
+        }
         return Promise.resolve(null);
       }
 
+      function habilitarTracksMicro(activo) {
+        if (_spMicStream && _spMicStream.getAudioTracks) {
+          var tracks = _spMicStream.getAudioTracks();
+          for (var i = 0; i < tracks.length; i++) {
+            tracks[i].enabled = !!activo;
+          }
+        }
+      }
+
+      function pintarBotonHablarUI(escuchando) {
+        var btnVoice = document.getElementById('spBtnVoiceTecnosala');
+        var txtVoice = document.getElementById('spVoiceBtnText');
+        var icoVoice = document.getElementById('spVoiceMicIcon');
+        var inp = document.getElementById('spTecnosalaInput');
+        if (escuchando) {
+          if (btnVoice) btnVoice.classList.add('sp-voice-listening');
+          if (txtVoice) txtVoice.textContent = 'Escuchando...';
+          if (icoVoice) icoVoice.textContent = '🔴';
+          if (inp) inp.placeholder = '🟢 Manos libres continuo activo: habla directamente sin tocar nada...';
+        } else {
+          if (btnVoice) btnVoice.classList.remove('sp-voice-listening');
+          if (txtVoice) txtVoice.textContent = 'Hablar';
+          if (icoVoice) icoVoice.textContent = '🎙️';
+          if (inp) inp.placeholder = 'Escribe tu duda o pulsa 🎙️ Hablar para preguntar por voz...';
+        }
+      }
+
+      // Pausa al cambiar a otro apartado de la web o pestaña del navegador
       window.spPausarConsultorPorNavegacion = function() {
         if (!_spOrbeDespierto) return;
         _spPausadoPorCambioDeSeccion = true;
         _spHablandoSintesis = false;
         _spEscuchandoVoz = false;
         _spIgnorarMicroMientrasHabla = true;
+        _spAcumuladoTurnoVoz = '';
         _spOrbEnergyTarget = 0;
         limpiarTimersTeleprompter();
         if (_spSilenceTimer) {
@@ -188,25 +211,19 @@ TRAMO_COMPLETO_SANO_TECNOCONSULTOR = r"""      window.spRepetirUltimaRespuestaCo
         if ('speechSynthesis' in window) {
           try { window.speechSynthesis.cancel(); } catch (e) {}
         }
-        if (_spRecogInstance) {
+        // Silenciamos las pistas físicas del micro mientras navega por otras secciones
+        habilitarTracksMicro(false);
+        if (_spRecogInstance && _spMicroSesionActiva) {
           try {
-            _spRecogInstance.onend = null;
-            _spRecogInstance.onerror = null;
-            _spRecogInstance.onresult = null;
-            _spRecogInstance.stop();
+            _spRecogInstance.abort();
           } catch (e) {}
-          _spRecogInstance = null;
           _spMicroSesionActiva = false;
         }
-        var btnVoice = document.getElementById('spBtnVoiceTecnosala');
-        var txtVoice = document.getElementById('spVoiceBtnText');
-        var icoVoice = document.getElementById('spVoiceMicIcon');
-        if (btnVoice) btnVoice.classList.remove('sp-voice-listening');
-        if (txtVoice) txtVoice.textContent = 'Hablar';
-        if (icoVoice) icoVoice.textContent = '🎙️';
+        pintarBotonHablarUI(false);
         actualizarAparienciaOrbeYEstado('idle');
       };
 
+      // Al regresar a Tecnosala, reactiva el micro automáticamente sin volver a pedir permiso
       window.spReanudarConsultorAlVolverATecnosala = function() {
         if (!_spOrbeDespierto) return;
         var vTec = document.getElementById('vista-tecnosala');
@@ -215,10 +232,13 @@ TRAMO_COMPLETO_SANO_TECNOCONSULTOR = r"""      window.spRepetirUltimaRespuestaCo
         _spAutoEscuchaContinua = true;
         _spHablandoSintesis = false;
         _spIgnorarMicroMientrasHabla = false;
+        _spAcumuladoTurnoVoz = '';
+        habilitarTracksMicro(true);
         iniciarVigilanteMicrofonoContinuo();
         window.spActivarModoEscuchaPersistente(false);
       };
 
+      // Parada manual total cuando el usuario pulsa el botón rojo PARAR
       window.spPararConsultorTotalmente = function(ev) {
         if (ev && ev.stopPropagation) ev.stopPropagation();
         _spOrbeDespierto = false;
@@ -227,6 +247,7 @@ TRAMO_COMPLETO_SANO_TECNOCONSULTOR = r"""      window.spRepetirUltimaRespuestaCo
         _spHablandoSintesis = false;
         _spEscuchandoVoz = false;
         _spIgnorarMicroMientrasHabla = true;
+        _spAcumuladoTurnoVoz = '';
         _spOrbEnergyTarget = 0;
         limpiarTimersTeleprompter();
         if (_spWatchdogMicroInterval) {
@@ -240,22 +261,18 @@ TRAMO_COMPLETO_SANO_TECNOCONSULTOR = r"""      window.spRepetirUltimaRespuestaCo
         if ('speechSynthesis' in window) {
           try { window.speechSynthesis.cancel(); } catch (e) {}
         }
+        habilitarTracksMicro(false);
         if (_spRecogInstance) {
           try {
             _spRecogInstance.onend = null;
             _spRecogInstance.onerror = null;
             _spRecogInstance.onresult = null;
-            _spRecogInstance.stop();
+            _spRecogInstance.abort();
           } catch (e) {}
           _spRecogInstance = null;
           _spMicroSesionActiva = false;
         }
-        var btnVoice = document.getElementById('spBtnVoiceTecnosala');
-        var txtVoice = document.getElementById('spVoiceBtnText');
-        var icoVoice = document.getElementById('spVoiceMicIcon');
-        if (btnVoice) btnVoice.classList.remove('sp-voice-listening');
-        if (txtVoice) txtVoice.textContent = 'Hablar';
-        if (icoVoice) icoVoice.textContent = '🎙️';
+        pintarBotonHablarUI(false);
         actualizarAparienciaOrbeYEstado('idle');
       };
 
@@ -265,15 +282,15 @@ TRAMO_COMPLETO_SANO_TECNOCONSULTOR = r"""      window.spRepetirUltimaRespuestaCo
           var vTec = document.getElementById('vista-tecnosala');
           var enTecnosala = vTec && !vTec.classList.contains('hidden') && !document.hidden;
           if (!enTecnosala) {
-            if (_spHablandoSintesis || _spEscuchandoVoz || _spMicroSesionActiva) {
+            if (_spHablandoSintesis || _spEscuchandoVoz) {
               window.spPausarConsultorPorNavegacion();
             }
             return;
           }
-          if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spHablandoSintesis && !_spMicroSesionActiva && !_spRearmandoOido) {
+          if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spPausadoPorCambioDeSeccion && !_spHablandoSintesis && !_spMicroSesionActiva && !_spRearmandoOido) {
             window.spActivarModoEscuchaPersistente(false);
           }
-        }, 1200);
+        }, 1000);
       }
 
       window.spIniciarEscuchaDirectaConsultor = function() {
@@ -282,18 +299,22 @@ TRAMO_COMPLETO_SANO_TECNOCONSULTOR = r"""      window.spRepetirUltimaRespuestaCo
         _spAutoEscuchaContinua = true;
         _spHablandoSintesis = false;
         _spIgnorarMicroMientrasHabla = false;
+        _spAcumuladoTurnoVoz = '';
         if ('speechSynthesis' in window) {
           try { window.speechSynthesis.cancel(); } catch (e) {}
         }
         asegurarCabinaTeleprompter2027();
+        habilitarTracksMicro(true);
         iniciarVigilanteMicrofonoContinuo();
-        window.spActivarModoEscuchaPersistente(true);
+        window.spActivarModoEscuchaPersistente(false);
       };
 
+      // CLAVE V166: El reconocedor de voz NUNCA se destruye con .stop() entre frase y frase.
+      // Permanece abierto en continuo y solo conmuta la bandera _spIgnorarMicroMientrasHabla.
       window.spActivarModoEscuchaPersistente = function(forzarReinicio) {
         var vTec = document.getElementById('vista-tecnosala');
         if (!vTec || vTec.classList.contains('hidden') || document.hidden) return;
-        if (!_spAutoEscuchaContinua || _spHablandoSintesis) return;
+        if (!_spAutoEscuchaContinua || _spPausadoPorCambioDeSeccion) return;
 
         var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRec) {
@@ -303,89 +324,80 @@ TRAMO_COMPLETO_SANO_TECNOCONSULTOR = r"""      window.spRepetirUltimaRespuestaCo
           return;
         }
 
+        habilitarTracksMicro(true);
+
+        // Si la sesión de reconocimiento YA está abierta, NO la paramos ni reiniciamos:
+        // simplemente abrimos la compuerta lógica para escuchar al usuario sin pedir permiso jamás.
         if (_spMicroSesionActiva && _spRecogInstance && !forzarReinicio) {
-          _spEscuchandoVoz = true;
-          _spIgnorarMicroMientrasHabla = false;
-          actualizarAparienciaOrbeYEstado('listening');
+          _spAcumuladoTurnoVoz = '';
+          if (!_spHablandoSintesis) {
+            _spEscuchandoVoz = true;
+            _spIgnorarMicroMientrasHabla = false;
+            pintarBotonHablarUI(true);
+            actualizarAparienciaOrbeYEstado('listening');
+          }
           return;
         }
 
         if (_spRearmandoOido) return;
         _spRearmandoOido = true;
 
-        if (_spRecogInstance) {
-          try {
-            _spRecogInstance.onend = null;
-            _spRecogInstance.onerror = null;
-            _spRecogInstance.onresult = null;
-            _spRecogInstance.stop();
-          } catch (e) {}
-          _spRecogInstance = null;
-          _spMicroSesionActiva = false;
-        }
-
         asegurarStreamMicroUnico().then(function() {
-          setTimeout(function() {
-            _spRearmandoOido = false;
-            var vTecNow = document.getElementById('vista-tecnosala');
-            if (!_spAutoEscuchaContinua || _spHablandoSintesis || !vTecNow || vTecNow.classList.contains('hidden') || document.hidden) return;
+          _spRearmandoOido = false;
+          var vTecNow = document.getElementById('vista-tecnosala');
+          if (!_spAutoEscuchaContinua || _spPausadoPorCambioDeSeccion || !vTecNow || vTecNow.classList.contains('hidden') || document.hidden) return;
 
-            try {
+          if (_spMicroSesionActiva && _spRecogInstance) {
+            if (!_spHablandoSintesis) {
+              _spEscuchandoVoz = true;
+              _spIgnorarMicroMientrasHabla = false;
+              pintarBotonHablarUI(true);
+              actualizarAparienciaOrbeYEstado('listening');
+            }
+            return;
+          }
+
+          try {
+            if (!_spRecogInstance) {
               var rec = new SpeechRec();
-              _spRecogInstance = rec;
               rec.lang = 'es-ES';
               rec.continuous = true;
               rec.interimResults = true;
-              var acumuladoTurno = '';
-              var lineaDictadoVivo = null;
+              _spRecogInstance = rec;
 
               function enviarTurnoDetectado() {
                 if (_spSilenceTimer) { clearTimeout(_spSilenceTimer); _spSilenceTimer = null; }
-                var preguntaLista = acumuladoTurno.trim();
-                acumuladoTurno = '';
+                var preguntaLista = _spAcumuladoTurnoVoz.trim();
+                _spAcumuladoTurnoVoz = '';
                 if (!preguntaLista || preguntaLista.length < 2 || _spIgnorarMicroMientrasHabla || _spHablandoSintesis) return;
+
+                // COMPUERTA DE MUTE LÓGICO: NO cerramos el micrófono (.stop()), solo silenciamos la escucha
+                // mientras el consultor procesa y responde, para que el navegador NUNCA vuelva a pedir permiso.
                 _spIgnorarMicroMientrasHabla = true;
                 _spEscuchandoVoz = false;
-                if (lineaDictadoVivo) {
-                  try { lineaDictadoVivo.remove(); } catch (e) {}
-                  lineaDictadoVivo = null;
+                if (_spLineaDictadoVivoEl) {
+                  try { _spLineaDictadoVivoEl.remove(); } catch (e) {}
+                  _spLineaDictadoVivoEl = null;
                 }
-                if (_spRecogInstance) {
-                  try {
-                    _spRecogInstance.onend = null;
-                    _spRecogInstance.onerror = null;
-                    _spRecogInstance.onresult = null;
-                    _spRecogInstance.stop();
-                  } catch (e) {}
-                  _spRecogInstance = null;
-                  _spMicroSesionActiva = false;
-                }
-                var btnVoice = document.getElementById('spBtnVoiceTecnosala');
-                var txtVoice = document.getElementById('spVoiceBtnText');
-                var icoVoice = document.getElementById('spVoiceMicIcon');
-                if (btnVoice) btnVoice.classList.remove('sp-voice-listening');
-                if (txtVoice) txtVoice.textContent = 'Hablar';
-                if (icoVoice) icoVoice.textContent = '🎙️';
                 window.spProcesarConsultaEnTeleprompterDirecto(preguntaLista);
               }
 
               rec.onstart = function() {
                 _spMicroSesionActiva = true;
-                _spEscuchandoVoz = true;
-                _spIgnorarMicroMientrasHabla = false;
-                var btnVoice = document.getElementById('spBtnVoiceTecnosala');
-                var txtVoice = document.getElementById('spVoiceBtnText');
-                var icoVoice = document.getElementById('spVoiceMicIcon');
-                var inp = document.getElementById('spTecnosalaInput');
-                if (btnVoice) btnVoice.classList.add('sp-voice-listening');
-                if (txtVoice) txtVoice.textContent = 'Escuchando...';
-                if (icoVoice) icoVoice.textContent = '🔴';
-                if (inp) inp.placeholder = '🟢 Manos libres activo: habla directamente con naturalidad...';
-                actualizarAparienciaOrbeYEstado('listening');
+                if (!_spHablandoSintesis) {
+                  _spEscuchandoVoz = true;
+                  _spIgnorarMicroMientrasHabla = false;
+                  pintarBotonHablarUI(true);
+                  actualizarAparienciaOrbeYEstado('listening');
+                }
               };
 
               rec.onresult = function(event) {
-                if (_spIgnorarMicroMientrasHabla || _spHablandoSintesis) return;
+                // Si el consultor está hablando o acaba de terminar hace menos de 350ms, ignoramos el eco
+                if (_spIgnorarMicroMientrasHabla || _spHablandoSintesis || (performance.now() - _spCooldownPostHablaTs < 350)) {
+                  _spAcumuladoTurnoVoz = '';
+                  return;
+                }
                 var parcial = '';
                 var finalNuevo = '';
                 for (var i = event.resultIndex; i < event.results.length; i++) {
@@ -393,8 +405,8 @@ TRAMO_COMPLETO_SANO_TECNOCONSULTOR = r"""      window.spRepetirUltimaRespuestaCo
                   if (event.results[i].isFinal) finalNuevo += tr + ' ';
                   else parcial += tr;
                 }
-                if (finalNuevo) acumuladoTurno = (acumuladoTurno + ' ' + finalNuevo).trim();
-                var textoEnCurso = (acumuladoTurno + ' ' + parcial).trim();
+                if (finalNuevo) _spAcumuladoTurnoVoz = (_spAcumuladoTurnoVoz + ' ' + finalNuevo).trim();
+                var textoEnCurso = (_spAcumuladoTurnoVoz + ' ' + parcial).trim();
                 if (!textoEnCurso) return;
 
                 _spUltimoPulsoVozUsuarioTs = performance.now();
@@ -405,71 +417,64 @@ TRAMO_COMPLETO_SANO_TECNOCONSULTOR = r"""      window.spRepetirUltimaRespuestaCo
 
                 var track = asegurarCabinaTeleprompter2027();
                 if (track) {
-                  if (!lineaDictadoVivo || !lineaDictadoVivo.parentNode) {
-                    lineaDictadoVivo = document.createElement('div');
-                    lineaDictadoVivo.className = 'sp-led-line-item sp-led-line-user';
-                    track.appendChild(lineaDictadoVivo);
+                  if (!_spLineaDictadoVivoEl || !_spLineaDictadoVivoEl.parentNode) {
+                    _spLineaDictadoVivoEl = document.createElement('div');
+                    _spLineaDictadoVivoEl.className = 'sp-led-line-item sp-led-line-user';
+                    track.appendChild(_spLineaDictadoVivoEl);
                   }
-                  lineaDictadoVivo.textContent = '🎙️ TÚ: «' + textoEnCurso + '...»';
+                  _spLineaDictadoVivoEl.textContent = '🎙️ TÚ: «' + textoEnCurso + '...»';
                   reclasificarJerarquiaLineas(track);
                 }
 
                 if (_spSilenceTimer) clearTimeout(_spSilenceTimer);
-                acumuladoTurno = textoEnCurso;
-                _spSilenceTimer = setTimeout(enviarTurnoDetectado, finalNuevo ? 680 : 1250);
+                if (finalNuevo) {
+                  _spSilenceTimer = setTimeout(enviarTurnoDetectado, 650);
+                } else {
+                  _spSilenceTimer = setTimeout(function() {
+                    _spAcumuladoTurnoVoz = textoEnCurso;
+                    enviarTurnoDetectado();
+                  }, 1250);
+                }
               };
 
               rec.onerror = function(ev) {
-                _spMicroSesionActiva = false;
                 if (ev && (ev.error === 'not-allowed' || ev.error === 'service-not-allowed')) {
+                  _spMicroSesionActiva = false;
                   _spAutoEscuchaContinua = false;
                   _spEscuchandoVoz = false;
+                  pintarBotonHablarUI(false);
                   actualizarAparienciaOrbeYEstado('idle');
                 }
               };
 
               rec.onend = function() {
                 _spMicroSesionActiva = false;
-                if (acumuladoTurno && acumuladoTurno.trim().length >= 2 && !_spHablandoSintesis && !_spIgnorarMicroMientrasHabla) {
-                  enviarTurnoDetectado();
-                  return;
-                }
                 var vTecEnd = document.getElementById('vista-tecnosala');
                 var sigueEnTec = vTecEnd && !vTecEnd.classList.contains('hidden') && !document.hidden;
-                if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spHablandoSintesis && sigueEnTec) {
-                  setTimeout(function() {
-                    if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spHablandoSintesis && !_spMicroSesionActiva) {
-                      window.spActivarModoEscuchaPersistente(false);
-                    }
-                  }, 160);
+                if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spPausadoPorCambioDeSeccion && sigueEnTec) {
+                  try {
+                    _spRecogInstance.start();
+                  } catch (e) {}
                 }
               };
-
-              rec.start();
-            } catch (err) {
-              _spMicroSesionActiva = false;
             }
-          }, 60);
+
+            _spRecogInstance.start();
+          } catch (err) {
+            _spMicroSesionActiva = false;
+          }
         });
       };
 
       window.spReproducirEnTeleprompter2027 = function(textoCompleto, alTerminarCallback, etiquetaUsuarioPrevio) {
         limpiarTimersTeleprompter();
+        // MUTE LÓGICO SIN APAGAR EL MICRÓFONO: Así el navegador jamás vuelve a pedir permiso al terminar de hablar
         _spIgnorarMicroMientrasHabla = true;
         _spEscuchandoVoz = false;
+        _spAcumuladoTurnoVoz = '';
         if (_spSilenceTimer) {
           clearTimeout(_spSilenceTimer);
           _spSilenceTimer = null;
-        }
-        if (_spRecogInstance) {
-          try {
-            _spRecogInstance.onend = null;
-            _spRecogInstance.onerror = null;
-            _spRecogInstance.onresult = null;
-            _spRecogInstance.stop();
-          } catch (e) {}
-          _spRecogInstance = null;
-          _spMicroSesionActiva = false;
         }
 
         var track = asegurarCabinaTeleprompter2027();
@@ -552,12 +557,19 @@ TRAMO_COMPLETO_SANO_TECNOCONSULTOR = r"""      window.spRepetirUltimaRespuestaCo
           pintarHastaCharGlobal(totalChars);
           limpiarTimersTeleprompter();
           _spHablandoSintesis = false;
+          _spCooldownPostHablaTs = performance.now();
+          _spAcumuladoTurnoVoz = '';
           _spOrbEnergyTarget = 0;
-          if (_spAutoEscuchaContinua) {
+          if (_spAutoEscuchaContinua && !_spPausadoPorCambioDeSeccion) {
             _spIgnorarMicroMientrasHabla = false;
             _spEscuchandoVoz = true;
-            window.spActivarModoEscuchaPersistente(false);
+            pintarBotonHablarUI(true);
+            actualizarAparienciaOrbeYEstado('listening');
+            if (!_spMicroSesionActiva) {
+              window.spActivarModoEscuchaPersistente(false);
+            }
           } else {
+            pintarBotonHablarUI(false);
             actualizarAparienciaOrbeYEstado('idle');
           }
           if (typeof alTerminarCallback === 'function') {
@@ -893,9 +905,61 @@ def reparar_index_html(ruta_index):
     if patron_tramo.search(html):
         html = patron_tramo.sub(lambda _: TRAMO_COMPLETO_SANO_TECNOCONSULTOR, html, count=1)
         cambios += 1
-        print(f"✅ [{os.path.basename(os.path.dirname(ruta_index))}] Reconstruido el motor completo del Tecnoconsultor (Teleprompter + Orbe 3D + Gemini Flash-Lite + Micro Persistente).")
+        print(f"✅ [{os.path.basename(os.path.dirname(ruta_index))}] Configurado micrófono continuo sin .stop() entre turnos (Cero re-prompts de permiso).")
     else:
         print(f"⚠️ [{ruta_index}] No se encontró la marca spRepetirUltimaRespuestaConsultor.")
+
+    # 1b. Actualizar spActivarOrbeConsultorInteractivo para que abra el micrófono DENTRO del clic inicial del usuario (gesto directo)
+    patron_activar_orbe = re.compile(
+        r"window\.spActivarOrbeConsultorInteractivo\s*=\s*function\s*\(ev\)\s*\{.*?(?=var\s+HTML_BIENVENIDA_ORBE_3D_V159)",
+        re.DOTALL
+    )
+    nuevo_activar_orbe = r"""window.spActivarOrbeConsultorInteractivo = function(ev) {
+        if (ev) ev.stopPropagation();
+
+        if (_spOrbeDespierto && (_spHablandoSintesis || _spEscuchandoVoz) && !_spPausadoPorCambioDeSeccion) {
+          window.spPararConsultorTotalmente(ev);
+          return;
+        }
+
+        _spOrbeDespierto = true;
+        _spPausadoPorCambioDeSeccion = false;
+        _spAutoEscuchaContinua = true;
+        asegurarCabinaTeleprompter2027();
+        mostrarBotonesParadaActivos();
+
+        // Abrimos el canal de micrófono AHORA MISMO aprovechando el clic directo del usuario (con mute lógico mientras saluda)
+        _spIgnorarMicroMientrasHabla = true;
+        window.spActivarModoEscuchaPersistente(false);
+        iniciarVigilanteMicrofonoContinuo();
+
+        var track = document.getElementById('spTeleprompterRollTrack');
+        if (track && track.children.length > 0) {
+          _spHablandoSintesis = false;
+          _spIgnorarMicroMientrasHabla = false;
+          _spEscuchandoVoz = true;
+          pintarBotonHablarUI(true);
+          actualizarAparienciaOrbeYEstado('listening');
+          return;
+        }
+
+        var saludo2027 =
+          'Hola, soy tu consultor tecnológico experto de Sistemas Pyme. ' +
+          'Hablamos en modo manos libres sin que tengas que tocar ningún botón: pregúntame con total libertad cualquier duda sobre nuestro ecosistema, descubre qué combinación te ahorra más dinero y, si lo deseas, también puedes dejar tu servicio contratado o agendado desde aquí mismo.';
+
+        window.spReproducirEnTeleprompter2027(saludo2027, function() {
+          _spHablandoSintesis = false;
+          _spIgnorarMicroMientrasHabla = false;
+          _spEscuchandoVoz = true;
+          pintarBotonHablarUI(true);
+          actualizarAparienciaOrbeYEstado('listening');
+        });
+      };
+
+      """
+    if patron_activar_orbe.search(html):
+        html = patron_activar_orbe.sub(lambda _: nuevo_activar_orbe, html, count=1)
+        cambios += 1
 
     # 2. Actualizar los listeners de navegación entre apartados/pestañas
     patron_eventos = re.compile(
@@ -979,7 +1043,7 @@ def publicar_en_git_repositorios():
                 print(f"☁️ Subiendo cambios a Git ({nombre})...")
                 subprocess.run(["git", "-C", ruta_repo, "add", "-A"], check=False)
                 subprocess.run(
-                    ["git", "-C", ruta_repo, "commit", "-m", "V165: Tecnoconsultor Flash-Lite en vivo y micro inteligente entre secciones"],
+                    ["git", "-C", ruta_repo, "commit", "-m", "V166: Microfono continuo sin volver a pedir permiso entre turnos"],
                     check=False
                 )
                 subprocess.run(["git", "-C", ruta_repo, "push"], check=False)
@@ -990,7 +1054,7 @@ def publicar_en_git_repositorios():
 
 def main():
     print("\n" + "=" * 78)
-    print("🛠️ INICIANDO ACTUALIZACIÓN V165 — REPARACIÓN TOTAL Y SUBIDA DUAL A GIT")
+    print("🛠️ INICIANDO ACTUALIZACIÓN V166 — MICRÓFONO CONTINUO SIN RE-PEDIR PERMISO")
     print("=" * 78)
 
     actualizar_documentos_maestros()
@@ -1002,7 +1066,7 @@ def main():
     replicar_ad_py_en_carpetas()
     publicar_en_git_repositorios()
 
-    print("\n🎉 ACTUALIZACIÓN V165 COMPLETADA CON ÉXITO — RECARGA TU WEB CON CMD+SHIFT+R")
+    print("\n🎉 ACTUALIZACIÓN V166 COMPLETADA CON ÉXITO — RECARGA TU WEB CON CMD+SHIFT+R")
     print("📌 Actualización de Conocimiento guardada automáticamente en tu carpeta SISTEMAS PYME/Programar (con copia previa en backups_sp)\n")
 
 
