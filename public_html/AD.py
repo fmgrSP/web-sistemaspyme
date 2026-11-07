@@ -2,19 +2,22 @@
 # -*- coding: utf-8 -*-
 """
 =============================================================================
-SCRIPT ACTUALIZADOR MAESTRO: AD.py (Versión V174 — SISTEMAS PYME)
+SCRIPT ACTUALIZADOR MAESTRO: AD.py (Versión V176 — SISTEMAS PYME)
 =============================================================================
-1. Corrige el IndentationError de la línea 81 y valida con py_compile + node.
-2. Restaura al 100% la fluidez e inteligencia del Tecnoconsultor en index.html:
-   - Mientras él habla: sus frases salen sincronizadas en BLANCO en el
-     Teleprompter LED y la esfera 3D late al ritmo de su voz.
-   - En el instante en que termina de hablar: el micrófono está abierto para ti
-     y recoge tu voz en tiempo real escribiéndola en AMARILLO en el Teleprompter.
-   - Al terminar de hablar (~0,8s de pausa): responde en ~1 segundo con
-     inteligencia conversacional real conectada a Gemini Flash-Lite.
-3. Limpia de Git los archivos auxiliares (`AD.py`, `_sp_servidor_ia_8765.py`,
-   `.sp_servidor_neuronal_8765.py`) y los añade a `.gitignore` para evitar el
-   bloqueo GH013 de GitHub Push Protection en `web-sistemaspyme`.
+1. Repara el SyntaxError de la línea 3211 en `index.html` que dejó inoperativo
+   el bloque del Carrito Configurador y del Reproductor Podcast.
+2. Restaura al 100% la secuencia interactiva de la Diapositiva 3 de "Cómo
+   ayudamos" (Las 2 Super-Auditorías):
+   - Cara A (Portada de la tarjeta) -> Clic abre Cara B (Estadísticas).
+   - En Cara B: Si pinchas dentro de cualquiera de las 3 cajas de estadísticas,
+     se transforma mostrando la explicación detallada de esa estadística.
+   - Si pinchas dentro de ese texto detallado, vuelve a la Cara B (las 3 cajas).
+   - Si pinchas fuera de las 3 estadísticas (en el fondo de la tarjeta) o en el
+     botón "🛠️ Técnico", pasa a la Cara C (Técnico).
+3. Extrae todo el motor del Tecnoconsultor (micrófono, voz, teleprompter blanco
+   y amarillo e inteligencia Gemini) a un archivo externo independiente:
+   `tecnoconsultor.js`, llamado desde `index.html` mediante
+   `<script src="tecnoconsultor.js"></script>`. Así `index.html` queda blindado.
 =============================================================================
 """
 
@@ -71,27 +74,33 @@ def crear_backup_seguro(ruta_archivo):
     return destino
 
 
-def validar_bloques_js_en_html(contenido_html, etiqueta_archivo="index.html"):
-    bloques = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)</script>", contenido_html, flags=re.IGNORECASE)
-    if not bloques:
-        return True
+def validar_js_con_node(codigo_js, nombre_descriptivo="script"):
     node_bin = shutil.which("node")
     if not node_bin:
         return True
-    tmp_js = "/tmp/_sp_check_syntax_v174.js"
-    for idx, codigo_js in enumerate(bloques, 1):
-        if not codigo_js.strip():
-            continue
-        with open(tmp_js, "w", encoding="utf-8") as f:
-            f.write(codigo_js)
-        res = subprocess.run([node_bin, "--check", tmp_js], capture_output=True, text=True)
-        if res.returncode != 0:
-            print(f"❌ Error de sintaxis JS detectado en bloque #{idx} de {etiqueta_archivo}:\n{res.stderr}")
-            return False
+    tmp_js = "/tmp/_sp_check_syntax_v176.js"
+    with open(tmp_js, "w", encoding="utf-8") as f:
+        f.write(codigo_js)
+    res = subprocess.run([node_bin, "--check", tmp_js], capture_output=True, text=True)
     try:
         os.remove(tmp_js)
     except Exception:
         pass
+    if res.returncode != 0:
+        print(f"❌ Error de sintaxis JS detectado en {nombre_descriptivo}:\n{res.stderr}")
+        return False
+    return True
+
+
+def validar_bloques_js_en_html(contenido_html, etiqueta_archivo="index.html"):
+    bloques = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)</script>", contenido_html, flags=re.IGNORECASE)
+    if not bloques:
+        return True
+    for idx, codigo_js in enumerate(bloques, 1):
+        if not codigo_js.strip():
+            continue
+        if not validar_js_con_node(codigo_js, f"bloque #{idx} de {etiqueta_archivo}"):
+            return False
     print(f"✅ Validación Gateway `node --check` superada en los {len(bloques)} bloques <script> de {etiqueta_archivo}.")
     return True
 
@@ -99,10 +108,14 @@ def validar_bloques_js_en_html(contenido_html, etiqueta_archivo="index.html"):
 # =============================================================================
 # 3. ACTUALIZACIÓN DE LOS 2 DOCUMENTOS MAESTROS (.md) Y DRIVE/SHEETS
 # =============================================================================
-NOTA_V174 = """
-### ACTUALIZACIÓN V175 (07/11/2026 18:45 — Regreso a la Arquitectura Limpia Original del Tecnoconsultor: Ciclo Puro Blanco -> Amarillo -> Respuesta IA en <1s con API Key Real del Mac)
-- **Eliminación total de filtros anti-eco que bloqueaban la voz del usuario:** Restaurado el ciclo limpio de 3 estados (1. Mientras el consultor habla en blanco, el micro está en pausa; 2. En el milisegundo en que termina de hablar, se abre el micro limpio de cero y transcribe cada palabra tuya en amarillo en tiempo real; 3. Al callarte 0,8s, envía tu pregunta).
-- **Conexión con la API Key viva del Mac (`.env` / `config_b2b.json`) y Render:** Rescata automáticamente la clave real operativa de Gemini del entorno de Francisco para que tanto el servidor local como el navegador respondan en menos de 1 segundo con inteligencia real a cualquier pregunta o repregunta.
+NOTA_V176 = """
+### ACTUALIZACIÓN V176 (07/11/2026 19:10 — Extracción Modular de `tecnoconsultor.js`, Reparación del Carrito y Secuencia Cara A -> B -> Detalle -> C en Auditorías)
+- **Reparación del SyntaxError en el bloque del Carrito (`index.html`):** Eliminadas las 6 líneas huérfanas tras `iniciarVigilanteMicrofonoContinuo` que rompían la ejecución del Carrito Configurador y del Reproductor Podcast.
+- **Restauración completa de la secuencia interactiva en la Diapositiva 3 de «Cómo ayudamos» (`#ca-slide-auditorias`):**
+  1. Clic en Cara A abre la **Cara B (Estadísticas)**.
+  2. Clic en cualquiera de las 3 subcajas de estadísticas transforma la vista mostrando la explicación ampliada de esa estadística concreta; clic dentro de ese texto ampliado devuelve a las 3 cajas de la Cara B.
+  3. Clic fuera de las estadísticas (en el fondo de la tarjeta) o en el botón `🛠️ Técnico` abre la **Cara C (Explicación Técnica)**; y un nuevo clic en el fondo cierra de vuelta a la Cara A.
+- **Arquitectura Modular Independiente para el Tecnoconsultor (`tecnoconsultor.js`):** Todo el motor de micrófono, voz, teleprompter LED (blanco para el consultor y amarillo para el usuario) y conexión con Gemini vive ahora en su propio archivo externo `tecnoconsultor.js`, manteniendo `index.html` limpio y blindado.
 """
 
 
@@ -133,8 +146,8 @@ def actualizar_documentos_maestros():
         with open(ruta_origen, "r", encoding="utf-8") as f:
             texto = f.read()
 
-        if "ACTUALIZACIÓN V174 (" not in texto:
-            texto = texto.rstrip() + "\n\n" + NOTA_V174.strip() + "\n"
+        if "ACTUALIZACIÓN V176 (" not in texto:
+            texto = texto.rstrip() + "\n\n" + NOTA_V176.strip() + "\n"
 
         contenidos_finales[nombre_md] = texto
 
@@ -150,7 +163,7 @@ def actualizar_documentos_maestros():
         try:
             payload = {
                 "accion": "sincronizar_biblia_conocimiento",
-                "version": "V175",
+                "version": "V176",
                 "fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "biblia_markdown": contenidos_finales.get("biblia_de_conocimiento_de_sistemas_pyme.md", ""),
                 "manual_markdown": contenidos_finales.get("manual_maestro_de_programaci_n_ad_py.md", ""),
@@ -171,9 +184,7 @@ atexit.register(actualizar_documentos_maestros)
 
 
 def rescatar_api_keys_reales_del_mac():
-    """Lee las claves reales de Gemini que Francisco tiene activas en config_b2b.json o .env."""
     claves = []
-    # 1. Buscar en config_b2b.json del Scraper
     ruta_cfg = os.path.join(RUTA_SCRAPER, "config_b2b.json")
     if os.path.isfile(ruta_cfg):
         try:
@@ -192,7 +203,6 @@ def rescatar_api_keys_reales_del_mac():
         except Exception:
             pass
 
-    # 2. Buscar en archivos .env de Reseñas y Scraper
     for carpeta in [RUTA_RESENAS, RUTA_SCRAPER, RUTA_PROGRAMAR]:
         ruta_env = os.path.join(carpeta, ".env")
         if os.path.isfile(ruta_env):
@@ -210,27 +220,268 @@ def rescatar_api_keys_reales_del_mac():
                                 claves.append(v)
             except Exception:
                 pass
-
     return claves
 
 
 # =============================================================================
-# 4. BLOQUE MAESTRO V175 DEL TECNOCONSULTOR (ARQUITECTURA PURA Y DIRECTA)
+# 4. LÓGICA INTERACTIVA DE LA DIAPOSITIVA 3 DE "CÓMO AYUDAMOS" (AUDITORÍAS)
+#    Secuencia: Cara A -> Cara B -> Detalle Estadística -> Cara B -> Cara C -> Cara A
 # =============================================================================
-BLOQUE_CONSULTOR_V174 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
-<script id="spConsultorUltimateEngineV175">
-(function() {
-  /* =========================================================================
-     ARQUITECTURA PURA DE 3 PASOS (COMO EL PRIMER DÍA — V175):
-     1. HABLA EL CONSULTOR: Micrófono apagado. Sus palabras van saliendo en
-        BLANCO en el Teleprompter LED sincronizadas con su voz.
-     2. TERMINA DE HABLAR -> SE ABRE EL MICRÓFONO: En el instante en que se
-        calla, arranca el micrófono limpio. Todo lo que dices sale al vuelo
-        en AMARILLO en el Teleprompter sin filtros que borren tu voz.
-     3. PAUSA DE 0,8s -> RESPUESTA INTELIGENTE EN <1s: Envía tu pregunta a
-        Gemini Flash y te contesta al segundo a cualquier cosa que preguntes.
-     ========================================================================= */
+BLOQUE_AUDITORIAS_SECUENCIA_JS = r"""
+        /* =====================================================================
+           SECUENCIA INTERACTIVA COMPLETA DE LAS 2 TARJETAS DE AUDITORÍA (V176):
+           - Cara A (Cerrada) -> Clic abre Cara B (Estadísticas).
+           - En Cara B: Clic en cualquiera de las 3 estadísticas abre la explicación
+             detallada de esa estadística. Clic dentro de ese detalle vuelve a
+             mostrar las 3 cajas de la Cara B.
+           - En Cara B: Clic fuera de las estadísticas (en el fondo de la tarjeta)
+             o en el botón "🛠️ Técnico" pasa a la Cara C (Técnico).
+           - En Cara C: Clic fuera o en "✕" cierra y devuelve a la Cara A.
+           ===================================================================== */
+        var _spCaraActualAuditoria = { 1: 'A', 2: 'A' };
 
+        var DETALLE_ESTADISTICAS_AUDITORIA = {
+          1: {
+            1: {
+              titulo: '📊 x9 Ventas (Estudio Seer Interactive): Quien viene de ChatGPT compra 9 veces más',
+              texto: 'En una búsqueda tradicional en Google el usuario abre 8 o 10 pestañas para comparar precios y solo convierte el 1,76%. En cambio, cuando alguien pregunta a ChatGPT o Gemini quién es el mejor profesional de su ciudad y la IA te recomienda a ti con argumentos de autoridad, aterriza en tu web con la decisión tomada y convierte al 15,9% (9 veces más ventas).',
+              color: 'border-cyan-500/70 bg-white/98 text-slate-800'
+            },
+            2: {
+              titulo: '📊 +115% Visibilidad (Universidad de Princeton / GEO): El doble de apariciones',
+              texto: 'Los motores de Inteligencia Artificial no leen páginas web como un humano: buscan datos estructurados verificables (Grafo Schema.org enlazado a Wikidata y archivo /llms.txt). Al inyectar tu carnet digital invisible en el código, las IAs entienden tu especialidad, tus horarios y tus reseñas, multiplicando un +115,1% tus recomendaciones.',
+              color: 'border-teal-500/70 bg-white/98 text-slate-800'
+            },
+            3: {
+              titulo: '📊 69% Sin Clics (Similarweb / SparkToro): Deciden leyendo el resumen de la IA',
+              texto: 'Casi 7 de cada 10 búsquedas hoy se resuelven directamente leyendo el resumen que genera la IA arriba del todo sin entrar en las webs antiguas. Además, el 44% de las citas de la IA salen de las primeras 100 palabras de tu portada y el 83% de los negocios recomendados por la IA ni siquiera estaban en el Top 10 clásico.',
+              color: 'border-sky-500/70 bg-white/98 text-slate-800'
+            }
+          },
+          2: {
+            1: {
+              titulo: '📊 +156% Más Ventas (Attention Insight MIT): Colocar tu propuesta donde van los ojos',
+              texto: 'En la mayoría de webs locales el botón de contacto o la propuesta principal está en una zona ciega que solo mira el 12% de las visitas. Al reubicar tu mensaje clave y tu prueba social (estrellas de Google) exactamente en el recorrido visual de los primeros 4 segundos, las conversiones suben un +156%.',
+              color: 'border-amber-500/70 bg-white/98 text-slate-800'
+            },
+            2: {
+              titulo: '📊 +103% El Doble de Llamadas (Ley de Hick): Quitar fricción y casillas intimidantes',
+              texto: 'Cuando un cliente entra desde el móvil y se encuentra un formulario largo de 6 o 7 campos o textos legales agresivos, sufre fatiga de decisión y cierra la página. Al reducir la fricción (con botón en la zona del pulgar en Modo Ágil o simplificando campos en Modo Corporativo), duplicamos del 3,3% al 6,7% quienes te contactan.',
+              color: 'border-emerald-500/70 bg-white/98 text-slate-800'
+            },
+            3: {
+              titulo: '📊 10 Días de Sonda Térmica Real: Cero suposiciones, 94% de certeza matemática',
+              texto: 'En lugar de cambiar tu web a ciegas o esperar 6 meses, instalamos durante 10 días nuestra Sonda Térmica (100% anónima y legal) que graba dónde hacen clic, en qué casilla exacta abandonan tu formulario y cuántas llamadas pierde tu teléfono fijo al mediodía, por la noche o en fin de semana.',
+              color: 'border-sky-500/70 bg-white/98 text-slate-800'
+            }
+          }
+        };
+
+        window.spVolverATresCajasCaraB = function(num, ev) {
+          if (ev && ev.stopPropagation) ev.stopPropagation();
+          var grid3 = document.getElementById('spCaStatGrid3_' + num);
+          var singleExp = document.getElementById('spCaStatSingleExpand_' + num);
+          var foot = document.getElementById('spCaStatFoot_' + num);
+          var subHead = document.getElementById('spCaAuditSubHead_' + num);
+          var statRes = document.getElementById('spCaAuditStatResumen_' + num);
+          var statDeep = document.getElementById('spCaAuditStatDeep_' + num);
+          var linkBtn = document.getElementById('spLinkToggleVista_' + num);
+
+          if (statRes) statRes.classList.remove('hidden');
+          if (statDeep) statDeep.classList.add('hidden');
+          if (grid3) grid3.classList.remove('hidden');
+          if (foot) foot.classList.remove('hidden');
+          if (subHead) subHead.classList.remove('hidden');
+          if (singleExp) {
+            singleExp.classList.add('hidden');
+            singleExp.innerHTML = '';
+          }
+          if (linkBtn) linkBtn.innerHTML = '➕ Profundizar más &rarr;';
+        };
+
+        window.spToggleExpandirCajaStat = function(num, statIdx, ev) {
+          if (ev && ev.stopPropagation) ev.stopPropagation();
+          var grid3 = document.getElementById('spCaStatGrid3_' + num);
+          var singleExp = document.getElementById('spCaStatSingleExpand_' + num);
+          var foot = document.getElementById('spCaStatFoot_' + num);
+          var subHead = document.getElementById('spCaAuditSubHead_' + num);
+          if (!singleExp || !grid3) return;
+
+          var info = (DETALLE_ESTADISTICAS_AUDITORIA[num] || {})[statIdx];
+          if (!info) return;
+
+          grid3.classList.add('hidden');
+          if (foot) foot.classList.add('hidden');
+          if (subHead) subHead.classList.add('hidden');
+
+          singleExp.className = 'rounded-2xl p-3.5 border-2 shadow-inner cursor-pointer transition hover:scale-[1.01] ' + info.color;
+          singleExp.innerHTML =
+            '<div class="flex items-center justify-between gap-2 border-b border-slate-200 pb-1.5 mb-1.5">' +
+              '<h5 class="text-[13.5px] sm:text-[14.5px] font-black text-brand-navy leading-snug">' + info.titulo + '</h5>' +
+              '<span class="text-[11px] font-extrabold text-teal-700 underline whitespace-nowrap flex-shrink-0">&larr; Volver a las 3 cifras</span>' +
+            '</div>' +
+            '<p class="text-[12.5px] sm:text-[13.2px] leading-relaxed font-medium text-slate-700">' + info.texto + '</p>' +
+            '<span class="block text-right text-[10.5px] font-bold text-slate-500 mt-1.5">👆 Pincha dentro de este cuadro para volver a las estadísticas</span>';
+
+          singleExp.onclick = function(e) {
+            window.spVolverATresCajasCaraB(num, e);
+          };
+          singleExp.classList.remove('hidden');
+        };
+
+        window.spCambiarCaraInternaAuditoria = function(num, caraDestino, ev) {
+          if (ev && ev.stopPropagation) ev.stopPropagation();
+          var caraB = document.getElementById('spCaAuditCaraB_' + num);
+          var caraC = document.getElementById('spCaAuditCaraC_' + num);
+          var btnB = document.getElementById('spBtnCaraB_' + num);
+          var btnC = document.getElementById('spBtnCaraC_' + num);
+          var linkBtn = document.getElementById('spLinkToggleVista_' + num);
+
+          _spCaraActualAuditoria[num] = caraDestino;
+
+          if (caraDestino === 'C') {
+            if (caraB) caraB.classList.add('hidden');
+            if (caraC) caraC.classList.remove('hidden');
+            var techRes = document.getElementById('spCaAuditTechResumen_' + num);
+            var techDeep = document.getElementById('spCaAuditTechDeep_' + num);
+            if (techRes) techRes.classList.remove('hidden');
+            if (techDeep) techDeep.classList.add('hidden');
+            if (btnB && btnC) {
+              if (num === 1) {
+                btnB.className = 'px-3 py-1 rounded-full text-xs font-bold bg-white/85 text-cyan-900 border border-cyan-400/60 cursor-pointer transition';
+                btnC.className = 'px-3 py-1 rounded-full text-xs font-black bg-cyan-600 text-white shadow cursor-pointer transition';
+              } else {
+                btnB.className = 'px-3 py-1 rounded-full text-xs font-bold bg-white/85 text-amber-900 border border-amber-400/60 cursor-pointer transition';
+                btnC.className = 'px-3 py-1 rounded-full text-xs font-black bg-amber-500 text-slate-950 shadow cursor-pointer transition';
+              }
+            }
+          } else {
+            if (caraC) caraC.classList.add('hidden');
+            if (caraB) caraB.classList.remove('hidden');
+            window.spVolverATresCajasCaraB(num);
+            if (btnB && btnC) {
+              if (num === 1) {
+                btnB.className = 'px-3 py-1 rounded-full text-xs font-black bg-cyan-600 text-white shadow cursor-pointer transition';
+                btnC.className = 'px-3 py-1 rounded-full text-xs font-bold bg-white/85 text-cyan-900 border border-cyan-400/60 cursor-pointer transition';
+              } else {
+                btnB.className = 'px-3 py-1 rounded-full text-xs font-black bg-amber-500 text-slate-950 shadow cursor-pointer transition';
+                btnC.className = 'px-3 py-1 rounded-full text-xs font-bold bg-white/85 text-amber-900 border border-amber-400/60 cursor-pointer transition';
+              }
+            }
+          }
+          if (linkBtn) linkBtn.innerHTML = '➕ Profundizar más &rarr;';
+        };
+
+        window.spToggleProfundizarCaraAuditoria = function(num, ev) {
+          if (ev && ev.stopPropagation) ev.stopPropagation();
+          var caraAct = _spCaraActualAuditoria[num] || 'B';
+          var linkBtn = document.getElementById('spLinkToggleVista_' + num);
+
+          if (caraAct === 'B') {
+            var statRes = document.getElementById('spCaAuditStatResumen_' + num);
+            var statDeep = document.getElementById('spCaAuditStatDeep_' + num);
+            if (!statRes || !statDeep) return;
+            var abriendo = statDeep.classList.contains('hidden');
+            if (abriendo) {
+              statRes.classList.add('hidden');
+              statDeep.classList.remove('hidden');
+              if (linkBtn) linkBtn.innerHTML = '&larr; Volver a Cara B';
+            } else {
+              statDeep.classList.add('hidden');
+              statRes.classList.remove('hidden');
+              window.spVolverATresCajasCaraB(num);
+              if (linkBtn) linkBtn.innerHTML = '➕ Profundizar más &rarr;';
+            }
+          } else {
+            var techRes = document.getElementById('spCaAuditTechResumen_' + num);
+            var techDeep = document.getElementById('spCaAuditTechDeep_' + num);
+            if (!techRes || !techDeep) return;
+            var abriendoT = techDeep.classList.contains('hidden');
+            if (abriendoT) {
+              techRes.classList.add('hidden');
+              techDeep.classList.remove('hidden');
+              if (linkBtn) linkBtn.innerHTML = '&larr; Volver a Técnico';
+            } else {
+              techDeep.classList.add('hidden');
+              techRes.classList.remove('hidden');
+              if (linkBtn) linkBtn.innerHTML = '➕ Profundizar más &rarr;';
+            }
+          }
+        };
+
+        window.spCerrarTarjetaAuditoriaACaraA = function(num, ev) {
+          if (ev && ev.stopPropagation) ev.stopPropagation();
+          var circle = document.getElementById('spCaAuditCircle_' + num);
+          if (circle) circle.classList.remove('sp-circle-open');
+          _spCaraActualAuditoria[num] = 'A';
+          window.spVolverATresCajasCaraB(num);
+        };
+
+        window.spToggleAuditCircleCA = function(num, ev) {
+          if (ev && ev.stopPropagation) ev.stopPropagation();
+          var card = document.getElementById('spCaAuditCard_' + num);
+          var badge = document.getElementById('spCaAuditBadge_' + num);
+          var circle = document.getElementById('spCaAuditCircle_' + num);
+          if (!circle) return;
+
+          var clickEnBotonMas = false;
+          if (ev && ev.target && badge && (ev.target === badge || badge.contains(ev.target))) {
+            clickEnBotonMas = true;
+          }
+
+          if (card && badge) {
+            var cRect = card.getBoundingClientRect();
+            var bRect = badge.getBoundingClientRect();
+            if (cRect.width > 0 && cRect.height > 0) {
+              var cx = (((bRect.left + bRect.width / 2) - cRect.left) / cRect.width * 100).toFixed(1) + '%';
+              var cy = (((bRect.top + bRect.height / 2) - cRect.top) / cRect.height * 100).toFixed(1) + '%';
+              circle.style.setProperty('--sp-cx', cx);
+              circle.style.setProperty('--sp-cy', cy);
+            }
+          }
+
+          var otroNum = (num === 1) ? 2 : 1;
+          var otroCircle = document.getElementById('spCaAuditCircle_' + otroNum);
+
+          // Si está en Cara A (cerrada): abrir en Cara B (Estadísticas)
+          if (!circle.classList.contains('sp-circle-open')) {
+            if (otroCircle) {
+              otroCircle.classList.remove('sp-circle-open');
+              _spCaraActualAuditoria[otroNum] = 'A';
+            }
+            circle.classList.add('sp-circle-open');
+            window.spCambiarCaraInternaAuditoria(num, 'B');
+            return;
+          }
+
+          // Si ya está abierta y pinchamos fuera de las cajas de estadísticas:
+          // - Si estábamos en Cara B -> pasamos a Cara C (Técnico)
+          // - Si estábamos en Cara C (o pinchó en '+') -> volvemos a Cara A (cerrar)
+          if (!clickEnBotonMas && _spCaraActualAuditoria[num] === 'B') {
+            window.spCambiarCaraInternaAuditoria(num, 'C');
+          } else {
+            window.spCerrarTarjetaAuditoriaACaraA(num);
+          }
+        };
+"""
+
+
+# =============================================================================
+# 5. ARCHIVO INDEPENDIENTE `tecnoconsultor.js` (EL CEREBRO, VOZ Y MICRÓFONO)
+# =============================================================================
+CODIGO_TECNOCONSULTOR_JS = r"""/**
+ * ============================================================================
+ * ARCHIVO INDEPENDIENTE: tecnoconsultor.js (SISTEMAS PYME — V176)
+ * ============================================================================
+ * Contiene en exclusiva toda la lógica del Consultor Tecnológico Inteligente:
+ * 1. Control del Orbe Holográfico 3D y Teleprompter LED.
+ * 2. Locución con voz española (en BLANCO en el Teleprompter).
+ * 3. Reconocimiento de voz por micrófono (en AMARILLO en tiempo real).
+ * 4. Conexión con IA Gemini Flash-Lite y respaldo de Base de Conocimiento.
+ * 5. Puente automático hacia el Carrito Configurador de index.html.
+ * ============================================================================
+ */
+(function() {
   var _activo = false;
   var _pausadoPorSalir = false;
   var _estado = 'idle'; // 'idle' | 'speaking' | 'listening' | 'thinking'
@@ -248,6 +499,11 @@ BLOQUE_CONSULTOR_V174 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
   var _orbFrame = null;
   var _orbEnergia = 0;
   var _tsUltimaVozUsuario = 0;
+  var _contadorVariantes = {};
+
+  function normalizarSinTildes(str) {
+    return String(str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
 
   function enTecnosala() {
     var sec = document.getElementById('vista-tecnosala');
@@ -438,8 +694,39 @@ BLOQUE_CONSULTOR_V174 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
   }
 
   /* =========================================================================
-     PASO 2 PURO: ABRIR MICRÓFONO CUANDO EL CONSULTOR ACABA DE HABLAR
-     Sin filtros que borren tu voz: todo lo que dices va directo en AMARILLO.
+     BÚSQUEDA LOCAL EN LA BASE DE CONOCIMIENTO HUMANA (RESPALDO INSTANTÁNEO)
+     ========================================================================= */
+  window.spObtenerRespuestaOmniscienteCompleta = function(preguntaRaw) {
+    var qNorm = normalizarSinTildes(preguntaRaw);
+    var bd = window.SP_BASE_CONOCIMIENTO_HUMANA || [];
+    var mejorItem = null;
+    var mejorPts = 0;
+    for (var i = 0; i < bd.length; i++) {
+      var it = bd[i];
+      var pts = 0;
+      for (var j = 0; j < (it.claves || []).length; j++) {
+        var kw = normalizarSinTildes(it.claves[j]);
+        if (kw && qNorm.indexOf(kw) !== -1) {
+          pts += (kw.split(' ').length >= 2) ? 45 : 15;
+        }
+      }
+      if (pts > mejorPts) {
+        mejorPts = pts;
+        mejorItem = it;
+      }
+    }
+    if (mejorItem && mejorPts > 0) {
+      var piscina = [mejorItem.respuesta].concat(mejorItem.variantes || []);
+      var k = mejorItem.id || 'def';
+      var idx = (_contadorVariantes[k] || 0) % piscina.length;
+      _contadorVariantes[k] = idx + 1;
+      return piscina[idx];
+    }
+    return 'En Sistemas Pyme te ayudamos a multiplicar tus reseñas de 5 estrellas con IA, a posicionar tu web en Google y ChatGPT y a automatizar tu WhatsApp en 24 a 48 horas. Dime qué área de tu negocio quieres mejorar y lo vemos al detalle.';
+  };
+
+  /* =========================================================================
+     CONTROL DEL MICRÓFONO (SE ABRE CUANDO EL CONSULTOR ACABA DE HABLAR)
      ========================================================================= */
   function detenerMicrofono() {
     if (_timerSilencio) {
@@ -507,7 +794,6 @@ BLOQUE_CONSULTOR_V174 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
       var inp = document.getElementById('spTecnosalaInput');
       if (inp) inp.value = textoAcumulado;
 
-      // Pintar en AMARILLO en el Teleprompter en tiempo real
       var track = asegurarCabina();
       if (track) {
         if (!_lineaAmarilla || _lineaAmarilla.parentNode !== track) {
@@ -541,7 +827,6 @@ BLOQUE_CONSULTOR_V174 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
 
     rec.onend = function() {
       _recEscuchando = false;
-      // Si el usuario seguía en modo escucha y hizo una pausa en silencio sin hablar aún, mantenemos el micro abierto
       if (_activo && !_pausadoPorSalir && enTecnosala() && _estado === 'listening') {
         setTimeout(function() {
           if (_activo && !_pausadoPorSalir && enTecnosala() && _estado === 'listening' && !_recEscuchando) {
@@ -559,7 +844,7 @@ BLOQUE_CONSULTOR_V174 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
   }
 
   /* =========================================================================
-     PASO 1 PURO: EL CONSULTOR HABLA EN BLANCO Y AL ACABAR ABRE TU MICRO
+     LOCUCIÓN EN BLANCO EN EL TELEPROMPTER Y APERTURA AUTOMÁTICA DE MICRO AL FINAL
      ========================================================================= */
   window.spReproducirEnTeleprompter2027 = function(textoCompleto, alTerminarCallback) {
     detenerMicrofono();
@@ -715,12 +1000,10 @@ BLOQUE_CONSULTOR_V174 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
   };
 
   /* =========================================================================
-     PASO 3 PURO: INTELIGENCIA CONVERSACIONAL EN < 1 SEGUNDO
+     CONEXIÓN CON IA GEMINI (< 1s) + RESPALDO OMNISCIENTE
      ========================================================================= */
   function obtenerRespuestaInteligente(preguntaUsuario) {
-    var apoyo = (typeof window.spObtenerRespuestaOmniscienteCompleta === 'function')
-      ? window.spObtenerRespuestaOmniscienteCompleta(preguntaUsuario)
-      : '';
+    var apoyo = window.spObtenerRespuestaOmniscienteCompleta(preguntaUsuario);
     var hist = _historial.slice(-12).join('\n');
 
     var prompt =
@@ -741,7 +1024,6 @@ BLOQUE_CONSULTOR_V174 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
 
     var promesas = [];
 
-    // 1. Servidor Local IA en tu Mac (puerto 8765 con tus claves reales de .env / config_b2b.json)
     promesas.push(
       fetch('http://127.0.0.1:8765/api/consultor-ia', {
         method: 'POST',
@@ -757,7 +1039,6 @@ BLOQUE_CONSULTOR_V174 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
       })
     );
 
-    // 2. Servidor Render en producción (/api/consultor-ia y /api/tecnosala-consulta)
     promesas.push(
       fetch('https://servicio-resenas.onrender.com/api/consultor-ia', {
         method: 'POST',
@@ -796,7 +1077,7 @@ BLOQUE_CONSULTOR_V174 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
           resuelto = true;
           resolve(apoyo);
         }
-      }, 2400);
+      }, 2200);
 
       for (var i = 0; i < promesas.length; i++) {
         promesas[i].then(function(txt) {
@@ -817,6 +1098,9 @@ BLOQUE_CONSULTOR_V174 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
     });
   }
 
+  /* =========================================================================
+     API PÚBLICA CONECTADA A LOS BOTONES DE LA TECNOSALA EN `index.html`
+     ========================================================================= */
   window.spProcesarConsultaEnTeleprompterDirecto = function(textoPregunta) {
     var limpia = String(textoPregunta || '').trim();
     if (!limpia) return;
@@ -945,6 +1229,37 @@ BLOQUE_CONSULTOR_V174 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
     window.spProcesarConsultaEnTeleprompterDirecto(txt);
   };
 
+  window.spEjecutarConsultaTecnosala = function(claveFaq) {
+    var mapaTitulos = {
+      rgpd: '¿Cómo evitáis multas de Protección de Datos en reseñas?',
+      fijo: '¿Puedo usar el teléfono fijo de siempre de mi local?',
+      informe360: '¿Qué incluye el Informe Mensual 360°?',
+      instalacion: '¿Tengo que cambiar el programa que ya uso?',
+      seogeo: '¿Cómo lográis que ChatGPT y Google me recomienden?',
+      precios: '¿Cuánto cuesta y cómo se amortiza?'
+    };
+    var preg = mapaTitulos[claveFaq] || claveFaq;
+    window.spProcesarConsultaEnTeleprompterDirecto(preg);
+  };
+
+  window.spCambiarVozPreferidaConsultor = function(ev) {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    if (!('speechSynthesis' in window)) return;
+    var todas = window.speechSynthesis.getVoices() || [];
+    var es = todas.filter(function(v) { return /^es[-_]es/i.test(v.lang || ''); });
+    if (!es.length) return;
+    var actual = elegirVozEspanola();
+    var idx = 0;
+    for (var i = 0; i < es.length; i++) {
+      if (actual && es[i].name === actual.name) { idx = i; break; }
+    }
+    var sig = es[(idx + 1) % es.length];
+    _vozCache = sig;
+    _nombreVoz = String(sig.name || 'Voz').replace(/^Microsoft\s+/i, '').split(/[\s(]/)[0];
+    var btn = document.getElementById('spBtnCambiarTimbreVoz');
+    if (btn) btn.innerHTML = '🎙️ Voz: ' + _nombreVoz;
+  };
+
   window.spToggleVozConsultorMute = function(ev) {
     if (ev && ev.stopPropagation) ev.stopPropagation();
     _mute = !_mute;
@@ -975,12 +1290,11 @@ BLOQUE_CONSULTOR_V174 = r"""<!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
     }
   }, 600);
 })();
-</script>
-<!-- [SP_CONSULTOR_ULTIMATE_V168_END] -->"""
+"""
 
 
 # =============================================================================
-# 5. MICRO-SERVIDOR LOCAL EN PUERTO 8765 CON TUS CLAVES REALES DEL MAC
+# 6. MICRO-SERVIDOR LOCAL EN PUERTO 8765 CON TUS CLAVES REALES DEL MAC
 # =============================================================================
 CODIGO_SERVIDOR_8765 = r'''#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -997,7 +1311,6 @@ def llamar_gemini_con_claves(prompt):
     modelos = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-flash-lite", "gemini-1.5-flash"]
     for key in CLAVES_MAC:
         for mod in modelos:
-            # 1. Intentar Google AI Studio (generativelanguage.googleapis.com)
             for base_url in [
                 f"https://generativelanguage.googleapis.com/v1beta/models/{mod}:generateContent?key={key}",
                 f"https://aiplatform.googleapis.com/v1beta1/publishers/google/models/{mod}:generateContent?key={key}",
@@ -1071,44 +1384,68 @@ if __name__ == "__main__":
 '''
 
 
-def parchar_index_html(ruta_index):
-    print(f"🔧 Reparando Tecnoconsultor en: {ruta_index}")
+def parchar_index_y_extraer_tecnoconsultor(ruta_index):
+    print(f"🔧 Auditando y reparando: {ruta_index}")
     crear_backup_seguro(ruta_index)
 
     with open(ruta_index, "r", encoding="utf-8") as f:
         html = f.read()
 
-    # 1. Neutralizar el vigilante antiguo para que jamás compita con el motor V174
+    # 1. REPARAR EL SYNTAX ERROR DE LA LÍNEA 3211 (las 6 líneas huérfanas tras iniciarVigilanteMicrofonoContinuo)
     html = re.sub(
-        r"function iniciarVigilanteMicrofonoContinuo\(\)\s*\{[\s\S]*?\n\s*\}",
-        "function iniciarVigilanteMicrofonoContinuo() { /* Neutralizado por V174 */ }",
+        r"function iniciarVigilanteMicrofonoContinuo\(\)\s*\{\s*/\*\s*Neutralizado por V\d+\s*\*/\s*\}\s*if\s*\(_spOrbeDespierto[\s\S]*?\},\s*900\);\s*\}",
+        "function iniciarVigilanteMicrofonoContinuo() { /* Neutralizado en tecnoconsultor.js */ }",
         html,
-        count=1,
     )
 
-    # 2. Reemplazar el bloque [SP_CONSULTOR_ULTIMATE_V168_START] ... [SP_CONSULTOR_ULTIMATE_V168_END]
-    patron_v168 = re.compile(
-        r"<!-- \[SP_CONSULTOR_ULTIMATE_V168_START\] -->[\s\S]*?<!-- \[SP_CONSULTOR_ULTIMATE_V168_END\] -->"
+    # 2. REEMPLAZAR `window.spToggleAuditCircleCA` POR LA SECUENCIA COMPLETA CARA A -> B -> DETALLE -> C
+    patron_audit_ca = re.compile(
+        r"window\.spToggleAuditCircleCA\s*=\s*function\s*\(num,\s*ev\)\s*\{[\s\S]*?\n\s*\};"
     )
-    if patron_v168.search(html):
-        html = patron_v168.sub(lambda _m: BLOQUE_CONSULTOR_V174, html)
+    if "window.spToggleExpandirCajaStat" not in html and patron_audit_ca.search(html):
+        html = patron_audit_ca.sub(lambda _m: BLOQUE_AUDITORIAS_SECUENCIA_JS.strip(), html, count=1)
+
+    # 3. EXTRAER EL BLOQUE DEL TECNOCONSULTOR DE `index.html` Y SUSTITUIRLO POR `<script src="tecnoconsultor.js"></script>`
+    enlace_externo = (
+        '<!-- [SP_CONSULTOR_EXTERNO_START] -->\n'
+        '<script src="tecnoconsultor.js?v=176"></script>\n'
+        '<!-- [SP_CONSULTOR_EXTERNO_END] -->'
+    )
+
+    patron_bloque_consultor = re.compile(
+        r"<!-- \[SP_CONSULTOR_(?:ULTIMATE_V\d+|EXTERNO)_START\] -->[\s\S]*?<!-- \[SP_CONSULTOR_(?:ULTIMATE_V\d+|EXTERNO)_END\] -->"
+    )
+    if patron_bloque_consultor.search(html):
+        html = patron_bloque_consultor.sub(lambda _m: enlace_externo, html)
     else:
         pos_body = html.rfind("</body>")
         if pos_body != -1:
-            html = html[:pos_body] + "\n" + BLOQUE_CONSULTOR_V174 + "\n" + html[pos_body:]
+            html = html[:pos_body] + "\n" + enlace_externo + "\n" + html[pos_body:]
 
+    # 4. GUARDAR EL ARCHIVO INDEPENDIENTE `tecnoconsultor.js` EN LA MISMA CARPETA QUE `index.html`
+    carpeta_index = os.path.dirname(ruta_index)
+    ruta_tc_js = os.path.join(carpeta_index, "tecnoconsultor.js")
+    if os.path.isfile(ruta_tc_js):
+        crear_backup_seguro(ruta_tc_js)
+    if not validar_js_con_node(CODIGO_TECNOCONSULTOR_JS, "tecnoconsultor.js"):
+        raise RuntimeError("Error de sintaxis en tecnoconsultor.js")
+    with open(ruta_tc_js, "w", encoding="utf-8") as f_tc:
+        f_tc.write(CODIGO_TECNOCONSULTOR_JS)
+    print(f"✅ Archivo externo creado y validado: {ruta_tc_js}")
+
+    # 5. VALIDAR TODOS LOS BLOQUES <script> DE `index.html` CON NODE.JS
     if not validar_bloques_js_en_html(html, os.path.basename(ruta_index)):
         raise RuntimeError(f"Abortado por seguridad: {ruta_index} no superó la validación JS.")
 
     with open(ruta_index, "w", encoding="utf-8") as f:
         f.write(html)
-    print(f"✅ {ruta_index} actualizado y verificado.")
+    print(f"✅ {ruta_index} reparado (Carrito + Auditorías Cara A/B/C + enlace a tecnoconsultor.js).")
 
 
 def limpiar_y_sincronizar_git(ruta_repo, nombre_repo):
     if not os.path.isdir(os.path.join(ruta_repo, ".git")):
         return
-    print(f"☁️ Limpiando secretos antiguos y subiendo a Git ({nombre_repo})...")
+    print(f"☁️ Sincronizando repositorio Git ({nombre_repo})...")
     gitignore_path = os.path.join(ruta_repo, ".gitignore")
     reglas_ignorar = [
         "AD.py",
@@ -1129,7 +1466,6 @@ def limpiar_y_sincronizar_git(ruta_repo, nombre_repo):
         with open(gitignore_path, "a", encoding="utf-8") as f:
             f.write("\n" + "\n".join(nuevas) + "\n")
 
-    # Quitar del índice de Git los archivos que causaban el bloqueo GH013
     for archivo_sensible in [
         "AD.py",
         "public_html/AD.py",
@@ -1140,7 +1476,6 @@ def limpiar_y_sincronizar_git(ruta_repo, nombre_repo):
     ]:
         subprocess.run(["git", "rm", "--cached", "--ignore-unmatch", archivo_sensible], cwd=ruta_repo, capture_output=True)
 
-    # Si estamos en web-sistemaspyme y había commits locales bloqueados por GH013, rehacemos el commit limpio sobre origin/main
     subprocess.run(["git", "fetch", "origin"], cwd=ruta_repo, capture_output=True)
     check_origin = subprocess.run(["git", "rev-parse", "--verify", "origin/main"], cwd=ruta_repo, capture_output=True, text=True)
     if check_origin.returncode == 0:
@@ -1157,7 +1492,7 @@ def limpiar_y_sincronizar_git(ruta_repo, nombre_repo):
 
     subprocess.run(["git", "add", "."], cwd=ruta_repo, capture_output=True)
     subprocess.run(
-        ["git", "commit", "-m", "V174: Tecnoconsultor fluido blanco/amarillo <1s y limpieza Git"],
+        ["git", "commit", "-m", "V176: Reparacion Carrito y Auditorias Cara A/B/C + extraccion tecnoconsultor.js"],
         cwd=ruta_repo,
         capture_output=True,
     )
@@ -1196,8 +1531,8 @@ def levantar_servidor_local_8765(carpeta_web):
             start_new_session=True,
         )
         time.sleep(0.4)
-        print(f"🟢 Servidor Local IA activo en http://127.0.0.1:8765/index.html#tecnosala ({len(claves_reales)} clave(s) Gemini del Mac cargadas)")
-        subprocess.Popen(["open", "http://127.0.0.1:8765/index.html#tecnosala"])
+        print(f"🟢 Servidor Local IA activo en http://127.0.0.1:8765/index.html ({len(claves_reales)} clave(s) Gemini del Mac cargadas)")
+        subprocess.Popen(["open", "http://127.0.0.1:8765/index.html"])
     except Exception as e:
         print(f"⚠️ Aviso al iniciar servidor 8765: {e}")
 
@@ -1216,11 +1551,22 @@ def auto_replicar_ad_py():
 
 def main():
     print("======================================================================")
-    print("🚀 INICIANDO ACTUALIZACIÓN V174 — TECNOCONSULTOR FLUIDO + DESBLOQUEO GIT")
+    print("🚀 INICIANDO ACTUALIZACIÓN V176 — REPARACIÓN CARRITO/AUDITORÍAS + TECNOCONSULTOR.JS")
     print("======================================================================")
 
     actualizar_documentos_maestros()
     auto_replicar_ad_py()
+
+    # Eliminar duplicado prohibido index_2.html si existe
+    for carpeta in CARPETAS_TRABAJO + [os.getcwd()]:
+        posible_dup = os.path.join(carpeta, "index_2.html")
+        if os.path.isfile(posible_dup):
+            crear_backup_seguro(posible_dup)
+            try:
+                os.remove(posible_dup)
+                print(f"🧹 Eliminado duplicado {posible_dup} (copia en backups_sp).")
+            except Exception:
+                pass
 
     rutas_procesadas = set()
     carpeta_principal_web = None
@@ -1229,7 +1575,7 @@ def main():
         if os.path.isfile(cand):
             real = os.path.realpath(cand)
             if real not in rutas_procesadas:
-                parchar_index_html(cand)
+                parchar_index_y_extraer_tecnoconsultor(cand)
                 rutas_procesadas.add(real)
                 if not carpeta_principal_web:
                     carpeta_principal_web = os.path.dirname(cand)
@@ -1244,7 +1590,7 @@ def main():
         levantar_servidor_local_8765(carpeta_principal_web)
 
     print("======================================================================")
-    print("🎉 ACTUALIZACIÓN V174 COMPLETADA CON ÉXITO")
+    print("🎉 ACTUALIZACIÓN V176 COMPLETADA CON ÉXITO")
     print("📌 Actualización de Conocimiento guardada automáticamente en tu carpeta SISTEMAS PYME/Programar (con copia previa en backups_sp)")
     print("======================================================================")
 
