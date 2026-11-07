@@ -71,7 +71,7 @@ RUTA_SCRAPER = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Scrape
 RUTA_SERVICIO_RESENAS = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Servicios/Servicio Reseñas/servicio_resenas"
 RUTA_PROGRAMAR = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Programar"
 
-VERSION_ACTUAL = "V162"
+VERSION_ACTUAL = "V163"
 FECHA_EJECUCION = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 TIMESTAMP_BAK = datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -798,61 +798,67 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
 <script>
 (function() {
   /* =========================================================================
-     1. COORDINACIÓN LIMPIA DEL TECNOCONSULTOR SOBRE SU MOTOR ORIGINAL NATIVO
-        (CERO getUserMedia Y CERO RECONOCEDOR DUPLICADO = NUNCA SALE DOBLE PERMISO)
+     1. COORDINACIÓN LIMPIA Y AUTÓNOMA DEL TECNOCONSULTOR (V163):
+        - Garantiza que al pulsar la Esfera 3D o "🎙️ Hablar" SIEMPRE se cree
+          la cabina del Teleprompter LED, hable y escuche en manos libres.
+        - Se calla y apaga el micro al salir de Tecnosala y se reactiva solo al volver.
+        - Usa el buscador dinámico del modelo más nuevo y rápido Flash-Lite de Google
+          (gemini-3.8-flash-lite / auto-descubierto en /v1beta/models).
      ========================================================================= */
   window._spConsultorEstabaActivoAntesDeSalir = false;
 
-  /* Guardamos referencias al motor original nativo del Orbe 3D (el que crea la cabina del Teleprompter y habla) */
+  /* Reparación y respaldo autónomo si por cualquier motivo no se hubiera enlazado el Orbe */
   var _origActivarOrbeNativo = window.spActivarOrbeConsultorInteractivo;
   var _origPararTotalNativo = window.spPararConsultorTotalmente;
 
-  if (typeof _origActivarOrbeNativo === 'function' && !_origActivarOrbeNativo._wrappedV160) {
+  if (typeof _origActivarOrbeNativo === 'function' && !_origActivarOrbeNativo._wrappedV163) {
     var nuevoActivarOrbe = function(ev) {
       window._spConsultorEstabaActivoAntesDeSalir = true;
       return _origActivarOrbeNativo.apply(this, arguments);
     };
-    nuevoActivarOrbe._wrappedV160 = true;
+    nuevoActivarOrbe._wrappedV163 = true;
     window.spActivarOrbeConsultorInteractivo = nuevoActivarOrbe;
   }
 
-  if (typeof _origPararTotalNativo === 'function' && !_origPararTotalNativo._wrappedV160) {
+  if (typeof _origPararTotalNativo === 'function' && !_origPararTotalNativo._wrappedV163) {
     var nuevoPararTotal = function(ev) {
-      /* Si el usuario pulsa manualmente PARAR (con evento de clic), desactivamos el auto-retorno */
       if (ev) {
         window._spConsultorEstabaActivoAntesDeSalir = false;
       }
       return _origPararTotalNativo.apply(this, arguments);
     };
-    nuevoPararTotal._wrappedV160 = true;
+    nuevoPararTotal._wrappedV163 = true;
     window.spPararConsultorTotalmente = nuevoPararTotal;
   }
 
   /* Al cambiar de sección en la web:
      - Si sale de Tecnosala -> se calla y apaga el micro en el acto (pero recuerda que estaba activo)
      - Si vuelve a entrar en Tecnosala y ya lo había activado -> vuelve a activar la escucha solo */
-  if (typeof window.cambiarVista === 'function' && !window.cambiarVista._hookAutoTecnosalaV160) {
-    var _origCambiarVistaV160 = window.cambiarVista;
-    var nuevaCambiarVistaV160 = function(vistaDestino) {
+  if (typeof window.cambiarVista === 'function' && !window.cambiarVista._hookAutoTecnosalaV163) {
+    var _origCambiarVistaV163 = window.cambiarVista;
+    var nuevaCambiarVistaV163 = function(vistaDestino) {
       var estabaActivo = window._spConsultorEstabaActivoAntesDeSalir;
       if (vistaDestino !== 'tecnosala') {
         if (typeof _origPararTotalNativo === 'function') {
           try { _origPararTotalNativo(); } catch (e) {}
         }
+        if ('speechSynthesis' in window) {
+          try { window.speechSynthesis.cancel(); } catch (e) {}
+        }
         window._spConsultorEstabaActivoAntesDeSalir = estabaActivo;
       }
-      var res = _origCambiarVistaV160.apply(this, arguments);
+      var res = _origCambiarVistaV163.apply(this, arguments);
       if (vistaDestino === 'tecnosala' && window._spConsultorEstabaActivoAntesDeSalir) {
         setTimeout(function() {
           if (typeof window.spIniciarEscuchaDirectaConsultor === 'function') {
             window.spIniciarEscuchaDirectaConsultor();
           }
-        }, 220);
+        }, 250);
       }
       return res;
     };
-    nuevaCambiarVistaV160._hookAutoTecnosalaV160 = true;
-    window.cambiarVista = nuevaCambiarVistaV160;
+    nuevaCambiarVistaV163._hookAutoTecnosalaV163 = true;
+    window.cambiarVista = nuevaCambiarVistaV163;
   }
 
   document.addEventListener('visibilitychange', function() {
@@ -860,6 +866,9 @@ BLOQUE_JS_MAESTRO_WEB_V152 = r'''
     if (document.hidden) {
       if (typeof _origPararTotalNativo === 'function') {
         try { _origPararTotalNativo(); } catch (e) {}
+      }
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
       }
       window._spConsultorEstabaActivoAntesDeSalir = estabaActivo;
     } else {
@@ -2136,7 +2145,7 @@ def reparar_index_html_v152(html):
     html = re.sub(
         r"function instalarMicrofonoContinuoSinRePromptV129\(\)\s*\{[\s\S]*?\n  \}\n\n  function obtenerTramosPorDiaSemanaV125",
         """function instalarMicrofonoContinuoSinRePromptV129() {
-    /* V160: Desactivado para no duplicar getUserMedia ni interferir con el motor nativo del Orbe 3D */
+    /* V163: Desactivado para no duplicar getUserMedia ni interferir con el motor nativo del Orbe 3D */
   }
 
   function obtenerTramosPorDiaSemanaV125""",
@@ -2144,16 +2153,18 @@ def reparar_index_html_v152(html):
         count=1
     )
 
-    # 5. Actualizar `llamarVertexDirectoNavegador` en el motor nativo para que busque dinámicamente en la base de datos
-    #    de Google (`/v1beta/models`) el modelo Flash-Lite más nuevo (> 2.5) o use `gemini-3.8-flash-lite` en su defecto
-    viejo_vertex = re.compile(
-        r"function llamarVertexDirectoNavegador\(promptCompleto\)\s*\{[\s\S]*?return intentar\(0\);\s*\}",
+    # 5. REPARACIÓN CRÍTICA DE LA EXPRESIÓN REGULAR ROTA `/^models//` EN `llamarVertexDirectoNavegador`:
+    #    Sustituimos todo el bloque desde `(var _spColaModelosFlashLiteCache|function llamarVertexDirectoNavegador)`
+    #    hasta `function consultarCerebroGenerativoIA` usando CERO expresiones regulares con barras `/`
+    #    para que jamás pueda romperse el bloque `<script>` principal de la Tecnosala.
+    patron_vertex_completo = re.compile(
+        r"(?:var\s+_spColaModelosFlashLiteCache\s*=[\s\S]*?)?function\s+llamarVertexDirectoNavegador\s*\(promptCompleto\)\s*\{[\s\S]*?(?=\n\s*function\s+consultarCerebroGenerativoIA\s*\()",
         re.MULTILINE
     )
-    nuevo_vertex = """var _spColaModelosFlashLiteCache = null;
+    nuevo_vertex_limpio = """var _spColaModelosFlashLiteCache = null;
       function _descubrirModelosFlashLiteGoogle(k) {
         if (_spColaModelosFlashLiteCache) return Promise.resolve(_spColaModelosFlashLiteCache);
-        var porDefecto = ['gemini-3.8-flash-lite', 'gemini-3.8-flash-lite-preview', 'gemini-flash-lite-latest', 'gemini-3.0-flash-lite', 'gemini-2.0-flash-lite-001'];
+        var porDefecto = ['gemini-3.8-flash-lite', 'gemini-3.8-flash-lite-preview', 'gemini-flash-lite-latest', 'gemini-3.0-flash-lite', 'gemini-2.5-flash-lite', 'gemini-2.0-flash-lite-001'];
         return fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=100&key=' + encodeURIComponent(k))
           .then(function(r) { return r && r.ok ? r.json() : null; })
           .then(function(d) {
@@ -2163,12 +2174,13 @@ def reparar_index_html_v152(html):
               var m = mods[i];
               var met = m.supportedGenerationMethods || [];
               if (met.indexOf('generateContent') === -1) continue;
-              var id = String(m.name || '').replace(/^models\\//, '');
+              var rawName = String(m.name || '');
+              var id = rawName.indexOf('models/') === 0 ? rawName.substring(7) : rawName;
               var low = id.toLowerCase();
               if (low.indexOf('gemini-') !== 0 || low.indexOf('flash-lite') === -1) continue;
-              var mVer = low.match(/gemini-(\\d+(?:\\.\\d+)?)/);
-              var ver = mVer ? parseFloat(mVer[1]) : 99.0;
-              if (ver > 0 && ver <= 2.5) continue;
+              var restoVer = low.substring(7);
+              var verNum = parseFloat(restoVer);
+              var ver = isNaN(verNum) ? 99.0 : verNum;
               lite.push({ id: id, ver: ver });
             }
             lite.sort(function(a, b) { return b.ver - a.ver; });
@@ -2215,8 +2227,8 @@ def reparar_index_html_v152(html):
           return intentar(0);
         });
       }"""
-    if viejo_vertex.search(html):
-        html = viejo_vertex.sub(lambda _: nuevo_vertex, html, count=1)
+    if patron_vertex_completo.search(html):
+        html = patron_vertex_completo.sub(lambda _: nuevo_vertex_limpio + "\n", html, count=1)
 
     # 6. Asegurar que en el HTML inyectado de la agenda del carrito ponga "🟢 Calendario Activo" completo
     html = html.replace(
@@ -2232,7 +2244,7 @@ def reparar_index_html_v152(html):
     if patron_vista_tarifas.search(html):
         html = patron_vista_tarifas.sub(lambda _: HTML_VISTA_TARIFAS_V152 + "\n\n\n                    ", html, count=1)
 
-    # 8. Inyectar el bloque maestro V160 justo antes del último </body> real (usando rsplit)
+    # 8. Inyectar el bloque maestro V163 justo antes del último </body> real (usando rsplit)
     if "</body>" in html:
         partes = html.rsplit("</body>", 1)
         html = partes[0].rstrip() + "\n" + BLOQUE_JS_MAESTRO_WEB_V152.strip() + "\n</body>" + partes[1]
