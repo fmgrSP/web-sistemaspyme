@@ -2,37 +2,27 @@
 # -*- coding: utf-8 -*-
 """
 ================================================================================
-SISTEMAS PYME — ACTUALIZADOR MAESTRO SEGURO COMPLETO (AD.py - VERSIÓN V148)
+SISTEMAS PYME — ACTUALIZADOR MAESTRO SEGURO COMPLETO (AD.py - VERSIÓN V149)
 ================================================================================
-Este archivo está 100% COMPLETO de principio a fin (CERO '# ... existing code ...').
-Puedes guardarlo como `AD.py` y ejecutarlo directamente con:
+Archivo 100% COMPLETO de principio a fin (CERO '# ... existing code ...').
+Guárdalo como `AD.py` y ejecútalo en tu Terminal con:
     python3 AD.py
 
-Qué hace esta versión V148:
-1. PASO 1 PRIORITARIO + BLINDAJE `atexit`:
-   - Actualiza sin recortar ni una línea los 2 únicos documentos maestros `.md`
-     en `/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Programar`:
-       1) `biblia_de_conocimiento_de_sistemas_pyme.md`
-       2) `manual_maestro_de_programaci_n_ad_py.md`
-   - Sincroniza ambos documentos hacia Google Sheets (`Biblia_IA_Viva` y
-     `Manual_Maestro_AD`) y hacia Google Drive para las Gemas de Gemini.
-2. REPARACIÓN RAÍZ DE `index.html` (Tecnosala + Carrito + Precios + Diagnóstico):
-   - Limpia el código que se había colado dentro de la cadena `'</div></body></html>'`
-     de `spDescargarConversacionConsultor`, devolviendo la vida al 100% tanto al
-     Carrito como al Consultor de la Tecnosala.
-   - Elimina para siempre el bucle infinito del cartelito de permiso de micrófono
-     en Chrome cuando abres la web como archivo local (`file://`), anulando la
-     doble llamada a `getUserMedia` y el temporizador de `950 ms`.
-   - Colorea y diferencia cada tarjeta del Carrito de Compra (`#spModalCarritoCarta`)
-     con su propia identidad cromática luminosa (Azul Cielo, Ámbar/Dorado, Pizarra,
-     Azul Real, Verde Esmeralda, Índigo/Violeta y Coral/Oro) manteniendo letra
-     intermedia apta para presbicia y cero scroll.
-   - Conecta en tiempo real el selector de día y hora del Carrito (`#spCartSelectDiaLV`
-     y `#spCartSelectHoraManana`) con tu CRM y tu Bitácora (`/api/horarios-ocupados-agenda`),
-     bloqueando el sábado a las 11:00 (`⛔ 11:00 - 11:30 (Ocupado en Agenda CRM)`).
-3. COORDINADOR DE AGENDA EN `servidor_local_b2b.py`:
-   - Añade/actualiza `/api/horarios-ocupados-agenda` y `/api/registrar-cita-web-en-crm`
-     y valida la sintaxis con `ast.parse` y `node --check`.
+Qué soluciona esta versión V149:
+1. OÍDO FLUIDO ORIGINAL EN EL TECNOCONSULTOR (TECNOSALA):
+   - Restaura al 100% el motor original del Orbe 3D (`spActivarModoEscuchaPersistente`
+     con `continuous = true`, transcripción en vivo `🎙️ «...»` en el Teleprompter LED
+     y latido de la esfera con tu voz).
+   - Elimina la función `asegurarPermisoUnicoMicrofonoV129` (`getUserMedia` duplicado)
+     y el segundo reconocedor que se peleaba con el del Orbe y cortaba las frases.
+2. COLOR EN TARJETA 4 (ATRILES NFC), TARJETA 5 (RESERVA FASE 2) Y CAJA DE CITA:
+   - Tarjeta 4 (Atriles NFC + QR): Fondo Ámbar / Dorado cálido con borde izquierdo `#d97706`.
+   - Tarjeta 5 (Reserva Prioritaria Fase 2): Fondo Azul Cielo / Cian con borde izquierdo `#0284c7`.
+   - Caja de Cita de Alta (`#spCartBoxCitaAlta`): Fondo degradado Turquesa-Esmeralda-Ámbar
+     (`#ecfdf5 -> #e0f2fe -> #fef3c7`) con borde `#0d9488` y selectores destacados.
+3. COORDINACIÓN CON EL CRM Y BITÁCORA (`/api/horarios-ocupados-agenda`):
+   - Mantiene sincronizadas las horas ocupadas del CRM/Bitácora (como el sábado a las 11:00)
+     sin tocar ni interferir con el micrófono de la Tecnosala.
 ================================================================================
 """
 
@@ -48,7 +38,7 @@ import subprocess
 import urllib.request
 from datetime import datetime
 
-VERSION_ACTUAL = "V148"
+VERSION_ACTUAL = "V149"
 FECHA_EJECUCION = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 TIMESTAMP_BAK = datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -120,7 +110,7 @@ def validar_bloques_js_en_html(ruta_html):
             for idx, b in enumerate(bloques):
                 if "application/ld+json" in b or not b.strip():
                     continue
-                tmp_js = f"/tmp/_sp_check_v148_{idx}.js"
+                tmp_js = f"/tmp/_sp_check_v149_{idx}.js"
                 with open(tmp_js, "w", encoding="utf-8") as tf:
                     tf.write(b)
                 proc = subprocess.run([node_bin, "--check", tmp_js], capture_output=True, text=True)
@@ -139,19 +129,19 @@ def validar_bloques_js_en_html(ruta_html):
 
 
 # ==============================================================================
-# 2. CSS COMPLETO DEL CARRITO LUMINOSO CON TARJETAS COLOREADAS Y CERO SCROLL
+# 2. CSS COMPLETO DEL CARRITO CON COLOR EN TARJETAS 1, 2, 3, 4, 5 Y CAJA DE CITA
 # ==============================================================================
-CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
+CSS_CARRITO_COLOREADO_TOTAL_V149 = r"""
     /* =========================================================================
        MODAL CARRITO CONFIGURADOR EN MODO CRISTAL LUMINOSO CRO (NEUROMARKETING)
-       TARJETAS COLOREADAS INDIVIDUALMENTE + APTO PARA PRESBICIA + CERO SCROLL
+       TARJETAS 1, 2, 3, 4, 5 Y CAJA DE CITA COLOREADAS + CERO SCROLL
        ========================================================================= */
     #spModalCarritoCarta {
       padding: 0.5rem 1rem !important;
       overflow: hidden !important;
     }
     #spModalCarritoCarta > div {
-      max-width: 74rem !important; /* 1184px: ancho panorámico para que nada salte de línea */
+      max-width: 74rem !important;
       max-height: 96vh !important;
       overflow: hidden !important;
       padding: 0.9rem 1.4rem !important;
@@ -160,17 +150,14 @@ CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
       border: 2.5px solid #0d9488 !important;
       box-shadow: 0 28px 65px -12px rgba(11, 34, 57, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.95) !important;
     }
-    /* Cabecera compacta en 1 sola línea sin el banner superior de ruido */
     #spModalCarritoCarta > div > div:first-child {
       padding-bottom: 0.45rem !important;
       margin-bottom: 0.55rem !important;
       border-bottom: 1.5px solid #cbd5e1 !important;
     }
-    /* Ocultar cualquier banner superior sobrante */
     #spModalCarritoCarta > div > div:first-child span.bg-amber-950\/90 {
       display: none !important;
     }
-    /* Botón X de cerrar bien visible sobre fondo blanco */
     #spModalCarritoCarta button[onclick*="spCerrarCarritoConfigurador"] {
       width: 2.15rem !important;
       height: 2.15rem !important;
@@ -186,9 +173,8 @@ CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
       color: #ffffff !important;
       border-color: #be123c !important;
     }
-    /* Títulos principales del Carrito */
     #spModalCarritoCarta h3 {
-      font-size: 1.24rem !important; /* ~20px: claro y en 1 sola línea */
+      font-size: 1.24rem !important;
       line-height: 1.2 !important;
       color: #0b2239 !important;
       margin-top: 0 !important;
@@ -198,22 +184,19 @@ CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
       color: #0b2239 !important;
       letter-spacing: 0.02em !important;
     }
-    /* Espaciado vertical compacto entre bloques de las columnas */
     #spModalCarritoCarta .lg\:col-span-7 {
       gap: 0.45rem !important;
     }
     #spModalCarritoCarta .lg\:col-span-7.space-y-3 > * + * {
       margin-top: 0.45rem !important;
     }
-    /* Etiquetas de los pasos 1, 2, 3, 4 y 5 (punto intermedio nítido 12.5px) */
     #spModalCarritoCarta label {
-      font-size: 0.78rem !important; /* ~12.5px */
+      font-size: 0.78rem !important;
       font-weight: 900 !important;
       color: #065f46 !important;
       letter-spacing: 0.02em !important;
       margin-bottom: 0.22rem !important;
     }
-    /* Botones de selección base (Pasos 1, 2 y 3) */
     #spModalCarritoCarta .sp-cart-item-btn {
       border: 2px solid #cbd5e1 !important;
       background: #ffffff !important;
@@ -225,17 +208,15 @@ CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
       color: #0f172a !important;
       box-shadow: 0 3px 10px -2px rgba(11, 34, 57, 0.07), inset 0 1px 0 #ffffff !important;
     }
-    /* Título principal dentro de cada tarjeta seleccionable (~14.5px) */
     #spModalCarritoCarta .sp-cart-item-btn > span:first-child {
-      font-size: 0.91rem !important; /* ~14.5px */
+      font-size: 0.91rem !important;
       font-weight: 900 !important;
       color: #0b2239 !important;
       line-height: 1.2 !important;
       margin-bottom: 0.1rem !important;
     }
-    /* Subtítulos y precios dentro de cada tarjeta seleccionable (~12.4px) */
     #spModalCarritoCarta .sp-cart-item-btn > span:not(:first-child) {
-      font-size: 0.775rem !important; /* ~12.4px */
+      font-size: 0.775rem !important;
       font-weight: 600 !important;
       color: #334155 !important;
       line-height: 1.24 !important;
@@ -246,9 +227,6 @@ CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
       transform: translateY(-1.5px) !important;
     }
 
-    /* =====================================================================
-       PALETA CROMÁTICA DIFERENCIADA POR TARJETA EN EL CARRITO DE COMPRA
-       ===================================================================== */
     /* 1A. Modalidad Mensual Flexible -> Azul Cielo / Cian */
     #spModalCarritoCarta #spCartMod_mensual {
       background: linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 100%) !important;
@@ -291,8 +269,6 @@ CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
       border: 2.5px solid #1e293b !important;
       box-shadow: 0 8px 18px -4px rgba(30, 41, 59, 0.28), inset 0 1px 0 #ffffff !important;
     }
-    #spModalCarritoCarta #spCartPlan_ninguno.sp-cart-selected > span:first-child { color: #0f172a !important; }
-    #spModalCarritoCarta #spCartPlan_ninguno.sp-cart-selected > span:not(:first-child) { color: #1e293b !important; font-weight: 700 !important; }
 
     /* 2B. 1 Servicio (Plan Base) -> Azul Real / Cobalto Suave */
     #spModalCarritoCarta #spCartPlan_base {
@@ -324,7 +300,7 @@ CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
     #spModalCarritoCarta #spCartPlan_duo.sp-cart-selected > span:first-child { color: #022c22 !important; }
     #spModalCarritoCarta #spCartPlan_duo.sp-cart-selected > span:not(:first-child) { color: #064e3b !important; font-weight: 700 !important; }
 
-    /* 3A. Sin Auditoría por ahora -> Malva / Neutro Suave */
+    /* 3A. Sin Auditoría por ahora -> Neutro Suave */
     #spModalCarritoCarta #spCartAud_0 {
       background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%) !important;
       border-color: #cbd5e1 !important;
@@ -333,7 +309,6 @@ CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
     #spModalCarritoCarta #spCartAud_0.sp-cart-selected {
       background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%) !important;
       border: 2.5px solid #334155 !important;
-      box-shadow: 0 6px 14px -4px rgba(51, 65, 85, 0.25), inset 0 1px 0 #ffffff !important;
     }
 
     /* 3B. +1 Super-Auditoría -> Índigo / Violeta Tecnológico */
@@ -351,7 +326,7 @@ CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
     #spModalCarritoCarta #spCartAud_1.sp-cart-selected > span:first-child { color: #1e1b4b !important; }
     #spModalCarritoCarta #spCartAud_1.sp-cart-selected > span:not(:first-child) { color: #312e81 !important; font-weight: 700 !important; }
 
-    /* 3C. +2 Super-Auditorías -> Oro / Coral Cálido de Máximo Ahorro */
+    /* 3C. +2 Super-Auditorías -> Oro / Coral Cálido */
     #spModalCarritoCarta #spCartAud_2 {
       background: linear-gradient(145deg, #fff7ed 0%, #ffedd5 100%) !important;
       border-color: #fdba74 !important;
@@ -366,53 +341,112 @@ CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
     #spModalCarritoCarta #spCartAud_2.sp-cart-selected > span:first-child { color: #431407 !important; }
     #spModalCarritoCarta #spCartAud_2.sp-cart-selected > span:not(:first-child) { color: #7c2d12 !important; font-weight: 700 !important; }
 
-    /* 4 y 5. Cajas de Atriles NFC (Ámbar suave) y Reserva Fase 2 (Azul Cielo suave) */
-    #spModalCarritoCarta .sm\:col-span-5 {
-      background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%) !important;
-      border: 1.5px solid #f59e0b !important;
+    /* =====================================================================
+       TARJETA 4 (ATRILES NFC), TARJETA 5 (RESERVA FASE 2) Y CAJA DE CITA
+       CON COLOR VIVO Y DIFERENCIADO (MÁXIMA ESPECIFICIDAD CSS)
+       ===================================================================== */
+    #spModalCarritoCarta #spCartBoxAtriles4,
+    #spModalCarritoCarta div.sm\:col-span-5 {
+      background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 55%, #fde68a 100%) !important;
+      border: 2px solid #f59e0b !important;
+      border-left: 5px solid #d97706 !important;
+      box-shadow: 0 6px 16px -4px rgba(217, 119, 6, 0.22), inset 0 1px 0 #ffffff !important;
+      border-radius: 0.9rem !important;
     }
-    #spModalCarritoCarta .sm\:col-span-7 {
-      background: linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 100%) !important;
-      border: 1.5px solid #0284c7 !important;
+    #spModalCarritoCarta #spCartBoxAtriles4 label,
+    #spModalCarritoCarta div.sm\:col-span-5 label {
+      color: #92400e !important;
+      font-size: 0.8rem !important;
+      font-weight: 900 !important;
+    }
+    #spModalCarritoCarta #spCartAtrilSelect {
+      background: #ffffff !important;
+      border: 2px solid #d97706 !important;
+      color: #78350f !important;
+      font-weight: 800 !important;
     }
 
-    /* Campos de formulario y desplegables compactos de alto contraste (13.8px) */
+    #spModalCarritoCarta #spCartBoxReserva5,
+    #spModalCarritoCarta div.sm\:col-span-7 {
+      background: linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 55%, #bae6fd 100%) !important;
+      border: 2px solid #38bdf8 !important;
+      border-left: 5px solid #0284c7 !important;
+      box-shadow: 0 6px 16px -4px rgba(2, 132, 199, 0.22), inset 0 1px 0 #ffffff !important;
+      border-radius: 0.9rem !important;
+    }
+    #spModalCarritoCarta #spCartBoxReserva5 label,
+    #spModalCarritoCarta div.sm\:col-span-7 label {
+      color: #075985 !important;
+      font-size: 0.8rem !important;
+      font-weight: 900 !important;
+    }
+    #spModalCarritoCarta #spCartReservaFase2 {
+      background: #ffffff !important;
+      border: 2px solid #0284c7 !important;
+      color: #0c4a6e !important;
+      font-weight: 800 !important;
+    }
+
+    /* CAJA DONDE SE COGE LA CITA (🗓️ CITA DE ALTA): COLOR TURQUESA-ESMERALDA-ÁMBAR LUMINOSO */
+    #spModalCarritoCarta #spCartBoxCitaAlta,
+    #spModalCarritoCarta #spCartFormInputsWrap > div:last-child {
+      background: linear-gradient(135deg, #ecfdf5 0%, #e0f2fe 52%, #fef3c7 100%) !important;
+      border: 2px solid #0d9488 !important;
+      border-left: 5px solid #059669 !important;
+      box-shadow: 0 8px 20px -4px rgba(13, 148, 136, 0.25), inset 0 1px 0 #ffffff !important;
+      border-radius: 0.9rem !important;
+      padding: 0.55rem 0.75rem !important;
+    }
+    #spModalCarritoCarta #spCartSelectDiaLV {
+      background: #ffffff !important;
+      border: 2px solid #0d9488 !important;
+      color: #064e3b !important;
+      font-weight: 800 !important;
+    }
+    #spModalCarritoCarta #spCartSelectHoraManana {
+      background: #fffbeb !important;
+      border: 2px solid #d97706 !important;
+      color: #78350f !important;
+      font-weight: 900 !important;
+    }
+
+    /* Columna derecha del Resumen con tinte verde-perla suave */
+    #spModalCarritoCarta .lg\:col-span-5 {
+      background: linear-gradient(165deg, #ffffff 0%, #f0fdfa 60%, #ecfdf5 100%) !important;
+      border: 2px solid #14b8a6 !important;
+      padding: 0.7rem 0.95rem !important;
+      box-shadow: 0 10px 25px -6px rgba(13, 148, 136, 0.18) !important;
+    }
+
+    /* Campos de formulario de Nombre, Negocio y Teléfono con borde visible y fondo suave */
     #spModalCarritoCarta select,
     #spModalCarritoCarta input[type="text"],
     #spModalCarritoCarta input[type="tel"],
     #spModalCarritoCarta input[type="datetime-local"] {
       background: #ffffff !important;
       color: #0b2239 !important;
-      border: 1.5px solid #94a3b8 !important;
-      font-size: 0.86rem !important; /* ~13.8px */
+      border: 1.5px solid #64748b !important;
+      font-size: 0.86rem !important;
       font-weight: 700 !important;
       padding: 0.38rem 0.68rem !important;
-      height: 2.25rem !important; /* 36px fijo para ahorrar altura vertical */
+      height: 2.25rem !important;
       border-radius: 0.65rem !important;
       box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+    }
+    #spModalCarritoCarta #spCartInputNegocioCiudad {
+      background: #fffbeb !important;
+      border: 2px solid #f59e0b !important;
+      color: #78350f !important;
     }
     #spModalCarritoCarta select:focus,
     #spModalCarritoCarta input:focus {
       border-color: #0d9488 !important;
-      box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2) !important;
+      box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.25) !important;
     }
     #spModalCarritoCarta input::placeholder {
       color: #475569 !important;
       font-weight: 600 !important;
     }
-    /* Cajas contenedoras secundarias */
-    #spModalCarritoCarta .bg-slate-950,
-    #spModalCarritoCarta .bg-slate-950\/80,
-    #spModalCarritoCarta .bg-slate-900,
-    #spModalCarritoCarta .bg-slate-900\/95 {
-      background: #f8fafc !important;
-      border: 1.5px solid #cbd5e1 !important;
-      color: #0b2239 !important;
-    }
-    #spModalCarritoCarta .lg\:col-span-5 {
-      padding: 0.7rem 0.95rem !important;
-    }
-    /* Píldora superior derecha "2 servicios mensuales" con alto contraste */
     #spModalCarritoCarta #spCartCountModulosBadge {
       background: #065f46 !important;
       color: #ffffff !important;
@@ -421,9 +455,8 @@ CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
       font-weight: 800 !important;
       padding: 0.15rem 0.55rem !important;
     }
-    /* Líneas del Resumen de tu Pedido (sin partir "324 €" en dos renglones) */
     #spModalCarritoCarta #spCartSummaryLines {
-      font-size: 0.83rem !important; /* ~13.3px */
+      font-size: 0.83rem !important;
       line-height: 1.32 !important;
       color: #0b2239 !important;
       margin-bottom: 0.35rem !important;
@@ -446,9 +479,8 @@ CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
       white-space: nowrap !important;
       flex-shrink: 0 !important;
     }
-    /* Caja de Total Desembolso Día 1 compacta */
     #spModalCarritoCarta .bg-emerald-950\/60 {
-      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important;
       border: 2px solid #059669 !important;
       padding: 0.45rem 0.75rem !important;
       margin-bottom: 0.45rem !important;
@@ -460,7 +492,7 @@ CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
     }
     #spModalCarritoCarta #spCartTotalDia1 {
       color: #064e3b !important;
-      font-size: 1.35rem !important; /* ~21.6px rotundo y sin comer altura */
+      font-size: 1.35rem !important;
       font-weight: 900 !important;
       white-space: nowrap !important;
     }
@@ -469,23 +501,16 @@ CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
       font-size: 0.82rem !important;
       font-weight: 900 !important;
     }
-    /* Todos los textos que eran amarillos pálidos pasan a Cobre/Ámbar Oscuro (#92400e) */
     #spModalCarritoCarta .text-amber-300,
     #spModalCarritoCarta .text-amber-200,
     #spModalCarritoCarta .text-amber-200\/95 {
       color: #92400e !important;
       font-weight: 800 !important;
     }
-    #spModalCarritoCarta #spCartSelectDiaLV,
-    #spModalCarritoCarta #spCartSelectHoraManana {
-      font-size: 0.82rem !important; /* ~13.1px */
-      color: #0b2239 !important;
-      font-weight: 800 !important;
-    }
     #spModalCarritoCarta #spCartSyncCalBadge {
-      color: #047857 !important;
-      background: #d1fae5 !important;
-      padding: 0.1rem 0.45rem !important;
+      color: #ffffff !important;
+      background: #059669 !important;
+      padding: 0.12rem 0.5rem !important;
       border-radius: 9999px !important;
       font-size: 0.72rem !important;
       font-weight: 800 !important;
@@ -499,10 +524,9 @@ CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
       font-size: 0.78rem !important;
       line-height: 1.28 !important;
     }
-    /* Subselector de Plan Base (S1 vs S2) en modo luminoso compacto */
     #spModalCarritoCarta #spSubSelectorBaseS1S2 {
-      background: #f0fdfa !important;
-      border: 1.5px solid #0d9488 !important;
+      background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%) !important;
+      border: 2px solid #0d9488 !important;
       padding: 0.45rem 0.65rem !important;
       margin-top: 0.35rem !important;
     }
@@ -516,7 +540,6 @@ CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
       color: #334155 !important;
       font-size: 0.75rem !important;
     }
-    /* Botón principal de Confirmar Pedido siempre visible sin scroll */
     #spModalCarritoCarta #spBtnSubmitCarrito {
       font-size: 0.95rem !important;
       padding: 0.62rem 1rem !important;
@@ -525,145 +548,38 @@ CSS_CARRITO_COLOREADO_SIN_SCROLL_V148 = r"""
 
 
 # ==============================================================================
-# 3. BLOQUE JS INYECTADO AL FINAL DE `index.html`:
-#    - DESACTIVA EL BUCLE DEL MICRÓFONO EN TECNOSALA (PROTOCOLO file://)
-#    - CONECTA EL CARRITO CON LAS CITAS DEL CRM Y LA BITÁCORA
-#    - CONECTA EL BOTÓN DE COMPRAR DEL TEST DE DIAGNÓSTICO CON PRESELECCIÓN
+# 3. BLOQUE JS LIGERO PARA COORDINAR EL CARRITO CON EL CRM (SIN TOCAR EL MICRO
+#    DEL TECNOCONSULTOR PARA QUE FUNCIONE EXACTAMENTE IGUAL DE FLUIDO QUE ANTES)
 # ==============================================================================
-BLOQUE_JS_FINAL_WEB_V148 = r'''
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V148_START] -->
+BLOQUE_JS_SOLO_AGENDA_Y_COLORES_V149 = r'''
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V149_START] -->
 <script>
 (function() {
-  /* =========================================================================
-     1. FIN DEL BUCLE INFINITO DE PERMISO DE MICRÓFONO EN TECNOSALA
-        (Cuando se abre index.html como archivo local file://, Chrome no guarda
-         el permiso; eliminamos la doble llamada a getUserMedia y los reintentos
-         automáticos cada 950ms para que la ventana de permiso se cierre al instante)
-     ========================================================================= */
-  window._spUltimoIntentoStartMicro = 0;
-  window._spSesionMicroUnicaActiva = false;
-
-  window.spActivarModoEscuchaPersistente = function(forzarManual) {
-    var vistaTec = document.getElementById('vista-tecnosala');
-    if (!vistaTec || vistaTec.classList.contains('hidden')) return;
-    var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRec) return;
-
-    if (window.speechSynthesis && window.speechSynthesis.speaking) return;
-
-    var ahora = Date.now();
-    if (!forzarManual && (ahora - window._spUltimoIntentoStartMicro < 2500)) return;
-    if (window._spSesionMicroUnicaActiva) return;
-
-    window._spUltimoIntentoStartMicro = ahora;
-
-    try {
-      if (!window._spReconocedorLimpioV148) {
-        var rec = new SpeechRec();
-        rec.lang = 'es-ES';
-        rec.continuous = (window.location.protocol !== 'file:');
-        rec.interimResults = true;
-        var textoFrase = '';
-        var timerSilencio = null;
-
-        rec.onstart = function() {
-          window._spSesionMicroUnicaActiva = true;
-          var inp = document.getElementById('spTecnosalaInput');
-          if (inp) inp.setAttribute('placeholder', '🟢 Escuchando tu voz ahora... habla con naturalidad');
-          var btnV = document.getElementById('spBtnVoiceTecnosala');
-          var txtV = document.getElementById('spVoiceBtnText');
-          if (btnV) btnV.classList.add('sp-voice-listening');
-          if (txtV) txtV.textContent = 'Escuchando...';
-        };
-
-        rec.onresult = function(ev) {
-          if (window.speechSynthesis && window.speechSynthesis.speaking) {
-            textoFrase = '';
-            return;
-          }
-          var acumulado = '';
-          var esFinal = false;
-          for (var i = ev.resultIndex; i < ev.results.length; i++) {
-            acumulado += ev.results[i][0].transcript;
-            if (ev.results[i].isFinal) esFinal = true;
-          }
-          textoFrase = acumulado.trim();
-          var inp = document.getElementById('spTecnosalaInput');
-          if (inp && textoFrase) inp.value = textoFrase;
-
-          if (timerSilencio) clearTimeout(timerSilencio);
-          timerSilencio = setTimeout(function() {
-            var enviar = textoFrase.trim();
-            textoFrase = '';
-            if (enviar.length >= 2) {
-              try { rec.stop(); } catch (e) {}
-              window._spSesionMicroUnicaActiva = false;
-              if (typeof window.spProcesarConsultaEnTeleprompterDirecto === 'function') {
-                window.spProcesarConsultaEnTeleprompterDirecto(enviar);
-              }
-            }
-          }, esFinal ? 500 : 1000);
-        };
-
-        rec.onerror = function() {
-          window._spSesionMicroUnicaActiva = false;
-          var btnV = document.getElementById('spBtnVoiceTecnosala');
-          var txtV = document.getElementById('spVoiceBtnText');
-          if (btnV) btnV.classList.remove('sp-voice-listening');
-          if (txtV) txtV.textContent = 'Hablar';
-        };
-
-        rec.onend = function() {
-          window._spSesionMicroUnicaActiva = false;
-          var btnV = document.getElementById('spBtnVoiceTecnosala');
-          var txtV = document.getElementById('spVoiceBtnText');
-          if (btnV) btnV.classList.remove('sp-voice-listening');
-          if (txtV) txtV.textContent = 'Hablar';
-          var inp = document.getElementById('spTecnosalaInput');
-          if (inp) inp.setAttribute('placeholder', 'Escribe tu duda o pulsa 🎙️ Hablar o el Orbe para preguntar por voz...');
-          if (textoFrase && textoFrase.trim().length >= 2) {
-            var enviar = textoFrase.trim();
-            textoFrase = '';
-            if (typeof window.spProcesarConsultaEnTeleprompterDirecto === 'function') {
-              window.spProcesarConsultaEnTeleprompterDirecto(enviar);
-            }
-          }
-        };
-
-        window._spReconocedorLimpioV148 = rec;
-      }
-
-      window._spReconocedorLimpioV148.start();
-    } catch (e) {
-      window._spSesionMicroUnicaActiva = false;
+  /* 1. Asignar IDs explícitos a las cajas 4, 5 y Cita de Alta del Carrito para garantizar su color vivo */
+  function aplicarIdsColorCajasCarritoV149() {
+    var selAtr = document.getElementById('spCartAtrilSelect');
+    if (selAtr && selAtr.parentNode) {
+      selAtr.parentNode.id = 'spCartBoxAtriles4';
     }
-  };
-
-  window.spIniciarEscuchaDirectaConsultor = function() {
-    window.spActivarModoEscuchaPersistente(true);
-  };
-
-  window.spToggleDictadoVozTecnosala = function() {
-    if (window._spSesionMicroUnicaActiva && window._spReconocedorLimpioV148) {
-      try { window._spReconocedorLimpioV148.stop(); } catch (e) {}
-      window._spSesionMicroUnicaActiva = false;
-      return;
+    var selRes = document.getElementById('spCartReservaFase2');
+    if (selRes && selRes.parentNode) {
+      selRes.parentNode.id = 'spCartBoxReserva5';
     }
-    window.spActivarModoEscuchaPersistente(true);
-  };
+    var selDia = document.getElementById('spCartSelectDiaLV');
+    if (selDia && selDia.parentNode && selDia.parentNode.parentNode) {
+      selDia.parentNode.parentNode.id = 'spCartBoxCitaAlta';
+    }
+  }
 
-  /* =========================================================================
-     2. PRESELECCIÓN AUTOMÁTICA DEL DIAGNÓSTICO AL ABRIR EL CARRITO DESDE EL TEST
-     ========================================================================= */
+  /* 2. Puente del botón final del Test de Diagnóstico al Carrito */
   window.spAbrirCarritoConDiagnosticoPreseleccionado = function() {
     if (typeof window.spAbrirCarritoConfigurador === 'function') {
       window.spAbrirCarritoConfigurador('duo', 1);
+      setTimeout(aplicarIdsColorCajasCarritoV149, 40);
     }
   };
 
-  /* =========================================================================
-     3. COORDINACIÓN DE CITAS ENTRE CARRITO WEB Y AGENDA CRM / BITÁCORA
-     ========================================================================= */
+  /* 3. Coordinación en tiempo real de las horas ocupadas del CRM y la Bitácora */
   window.SP_SLOTS_OCUPADOS_CRM_EXTRA = window.SP_SLOTS_OCUPADOS_CRM_EXTRA || new Set();
 
   function normalizarSlotEspacio(slotRaw) {
@@ -675,6 +591,7 @@ BLOQUE_JS_FINAL_WEB_V148 = r'''
   }
 
   window.spAplicarBloqueoHorasCrmEnSelect = function() {
+    aplicarIdsColorCajasCarritoV149();
     var selDia = document.getElementById('spCartSelectDiaLV');
     var selHora = document.getElementById('spCartSelectHoraManana');
     var inpISO = document.getElementById('spCartInputFechaHoraISO');
@@ -717,7 +634,7 @@ BLOQUE_JS_FINAL_WEB_V148 = r'''
 
   window.spSincronizarCitasCrmLocal = function() {
     try {
-      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v148') || '[]');
+      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v149') || '[]');
       if (Array.isArray(guardados)) {
         guardados.forEach(function(sl) {
           var norm = normalizarSlotEspacio(sl);
@@ -742,7 +659,7 @@ BLOQUE_JS_FINAL_WEB_V148 = r'''
               if (norm) window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(norm);
             });
             try {
-              localStorage.setItem('sp_citas_ocupadas_crm_v148', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
+              localStorage.setItem('sp_citas_ocupadas_crm_v149', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
             } catch (e) {}
           }
         })
@@ -752,33 +669,35 @@ BLOQUE_JS_FINAL_WEB_V148 = r'''
     });
   };
 
-  function engancharEventosAgendaCarritoV148() {
+  function engancharEventosAgendaCarritoV149() {
+    aplicarIdsColorCajasCarritoV149();
     window.spSincronizarCitasCrmLocal();
 
-    if (typeof window.spActualizarHorasDisponiblesCarritoV125 === 'function' && !window.spActualizarHorasDisponiblesCarritoV125._hookV148) {
+    if (typeof window.spActualizarHorasDisponiblesCarritoV125 === 'function' && !window.spActualizarHorasDisponiblesCarritoV125._hookV149) {
       var origActHoras = window.spActualizarHorasDisponiblesCarritoV125;
       var nuevaActHoras = function() {
         var r = origActHoras.apply(this, arguments);
         window.spAplicarBloqueoHorasCrmEnSelect();
         return r;
       };
-      nuevaActHoras._hookV148 = true;
+      nuevaActHoras._hookV149 = true;
       window.spActualizarHorasDisponiblesCarritoV125 = nuevaActHoras;
     }
 
-    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window.spAbrirCarritoConfigurador._hookV148) {
+    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window.spAbrirCarritoConfigurador._hookV149) {
       var origOpen = window.spAbrirCarritoConfigurador;
       var nuevoOpen = function() {
         var r = origOpen.apply(this, arguments);
+        aplicarIdsColorCajasCarritoV149();
         window.spSincronizarCitasCrmLocal();
         setTimeout(window.spAplicarBloqueoHorasCrmEnSelect, 120);
         return r;
       };
-      nuevoOpen._hookV148 = true;
+      nuevoOpen._hookV149 = true;
       window.spAbrirCarritoConfigurador = nuevoOpen;
     }
 
-    if (typeof window.spConfirmarPedidoYAgendarCita === 'function' && !window.spConfirmarPedidoYAgendarCita._hookV148) {
+    if (typeof window.spConfirmarPedidoYAgendarCita === 'function' && !window.spConfirmarPedidoYAgendarCita._hookV149) {
       var origConfirm = window.spConfirmarPedidoYAgendarCita;
       var nuevoConfirm = function() {
         try {
@@ -792,7 +711,7 @@ BLOQUE_JS_FINAL_WEB_V148 = r'''
           if (ymd && hhmm) {
             window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(ymd + ' ' + hhmm);
             try {
-              localStorage.setItem('sp_citas_ocupadas_crm_v148', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
+              localStorage.setItem('sp_citas_ocupadas_crm_v149', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
             } catch (e) {}
             var nombreCompleto = ((inpNom ? inpNom.value : '') + (inpNeg && inpNeg.value ? (' — ' + inpNeg.value) : '')).trim();
             fetch('http://127.0.0.1:5000/api/crm/registrar-pedido-web', {
@@ -810,245 +729,90 @@ BLOQUE_JS_FINAL_WEB_V148 = r'''
         } catch (err) {}
         return origConfirm.apply(this, arguments);
       };
-      nuevoConfirm._hookV148 = true;
+      nuevoConfirm._hookV149 = true;
       window.spConfirmarPedidoYAgendarCita = nuevoConfirm;
     }
   }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(engancharEventosAgendaCarritoV148, 250);
+      setTimeout(engancharEventosAgendaCarritoV149, 250);
     });
   } else {
-    setTimeout(engancharEventosAgendaCarritoV148, 250);
+    setTimeout(engancharEventosAgendaCarritoV149, 250);
   }
 })();
 </script>
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V148_END] -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V149_END] -->
 '''
 
 
 # ==============================================================================
-# 4. COORDINADOR DE AGENDA EN `servidor_local_b2b.py`
+# 4. REPARACIÓN DE `index.html`: DEVOLVER EL MOTOR DE VOZ ORIGINAL DEL ORBE 3D
 # ==============================================================================
-BLOQUE_AGENDA_CRM_PY = r'''
-# === [SP_AGENDA_CRM_COORDINATOR_V145_START] ===
-def _extraer_slots_ocupados_universal_sp_v145():
-    """
-    Lee todas las citas agendadas en crm_b2b_db.json (campos fecha_cita, hora_cita,
-    fecha_proximo_contacto, hora_proximo_contacto, notas_seguimiento, bitacora_seguimiento,
-    tareas_checklist) y en leads_contrataciones_web.json.
-    """
-    ocupados_set = set()
-    detalle_citas = []
-
-    hoy_dt = datetime.now()
-    anio_actual = hoy_dt.year
-
-    meses_es = {
-        "enero": 1, "ene": 1, "febrero": 2, "feb": 2, "marzo": 3, "mar": 3,
-        "abril": 4, "abr": 4, "mayo": 5, "may": 5, "junio": 6, "jun": 6,
-        "julio": 7, "jul": 7, "agosto": 8, "ago": 8, "septiembre": 9, "sep": 9, "set": 9,
-        "octubre": 10, "oct": 10, "noviembre": 11, "nov": 11, "diciembre": 12, "dic": 12
-    }
-    dias_sem_es = {
-        "lunes": 0, "martes": 1, "miercoles": 2, "miércoles": 2,
-        "jueves": 3, "viernes": 4, "sabado": 5, "sábado": 5, "domingo": 6
-    }
-
-    def _normalizar_hora_a_slots(h_str):
-        if not h_str:
-            return []
-        s = str(h_str).strip().lower()
-        m = re.search(r'\b([01]?\d|2[0-3])[:\.]([0-5]\d)\b', s)
-        if m:
-            hh = int(m.group(1))
-            mm = int(m.group(2))
-        else:
-            m2 = re.search(r'(?:a\s+las\s+|hora\s*[:=]?\s*|\b)([01]?\d|2[0-3])\s*(?:h|horas|am|pm)?\b', s)
-            if not m2:
-                return []
-            hh = int(m2.group(1))
-            mm = 0
-            if "tarde" in s and 1 <= hh <= 8:
-                hh += 12
-        slot_principal = f"{hh:02d}:{'30' if mm >= 30 else '00'}"
-        slots_out = [slot_principal]
-        if mm == 0:
-            slots_out.append(f"{hh:02d}:30")
-        return slots_out
-
-    def _normalizar_fecha_str(f_str):
-        if not f_str:
-            return None
-        s = str(f_str).strip().lower()
-        m_iso = re.search(r'\b(202\d)-([01]\d)-([0-3]\d)\b', s)
-        if m_iso:
-            return f"{m_iso.group(1)}-{m_iso.group(2)}-{m_iso.group(3)}"
-        m_dmy = re.search(r'\b([0-3]?\d)[/\-]([01]?\d)(?:[/\-](202\d|\d{2}))?\b', s)
-        if m_dmy:
-            dd = int(m_dmy.group(1))
-            mm = int(m_dmy.group(2))
-            yy_raw = m_dmy.group(3)
-            yy = int(yy_raw) if yy_raw else anio_actual
-            if yy < 100:
-                yy += 2000
-            if 1 <= mm <= 12 and 1 <= dd <= 31:
-                return f"{yy:04d}-{mm:02d}-{dd:02d}"
-        m_txt = re.search(r'\b([0-3]?\d)\s+de\s+([a-záéíóú]+)', s)
-        if m_txt:
-            dd = int(m_txt.group(1))
-            mes_nom = texto_sin_tildes(m_txt.group(2))
-            mm = meses_es.get(mes_nom) or meses_es.get(mes_nom[:3])
-            if mm:
-                return f"{anio_actual:04d}-{mm:02d}-{dd:02d}"
-        for d_nom, d_idx in dias_sem_es.items():
-            if re.search(rf'\b{d_nom}\b', s):
-                dias_dif = (d_idx - hoy_dt.weekday()) % 7
-                f_calc = hoy_dt + pd.Timedelta(days=dias_dif)
-                return f_calc.strftime("%Y-%m-%d")
-        return None
-
-    def _registrar_ocupado(fecha_iso, hora_raw, origen_txt=""):
-        if not fecha_iso:
-            return
-        for sl in _normalizar_hora_a_slots(hora_raw):
-            clave = f"{fecha_iso}|{sl}"
-            if clave not in ocupados_set:
-                ocupados_set.add(clave)
-                detalle_citas.append({
-                    "slot": clave,
-                    "fecha": fecha_iso,
-                    "hora": sl,
-                    "origen": origen_txt or "CRM"
-                })
-
-    def _escanear_texto_libre_en_busca_de_cita(texto_libre, nombre_neg=""):
-        if not texto_libre or not isinstance(texto_libre, str):
-            return
-        t_low = texto_libre.lower()
-        for m_dt in re.finditer(r'(202\d-[01]\d-[0-3]\d)[t\s_]+([012]?\d:[0-5]\d)', t_low):
-            _registrar_ocupado(m_dt.group(1), m_dt.group(2), nombre_neg)
-
-        for m_dmy in re.finditer(r'([0-3]?\d[/\-][01]?\d(?:[/\-]202\d)?)\s*(?:a\s+las\s+|[-·•]\s*|\s+)([012]?\d(?::[0-5]\d|\s*h\b))', t_low):
-            f_iso = _normalizar_fecha_str(m_dmy.group(1))
-            if f_iso:
-                _registrar_ocupado(f_iso, m_dmy.group(2), nombre_neg)
-
-        for m_sem in re.finditer(r'\b(lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo)\b[^\n.;]{0,35}?\b(?:a\s+las\s+|hora\s+)?([012]?\d(?::[0-5]\d|\s*h\b|:00)?)', t_low):
-            dia_palabra = m_sem.group(1)
-            hora_palabra = m_sem.group(2)
-            if re.search(r'(:[0-5]\d|\bh\b|a\s+las)', m_sem.group(0)):
-                f_iso = _normalizar_fecha_str(dia_palabra)
-                if f_iso:
-                    _registrar_ocupado(f_iso, hora_palabra, nombre_neg)
-
-    try:
-        crm_data = load_crm()
-        for k_pid, rec in (crm_data or {}).items():
-            if not isinstance(rec, dict):
-                continue
-            nom = str(rec.get("nombre") or k_pid).strip()
-
-            for k_f in ("fecha_cita", "fecha_proximo_contacto", "proxima_accion_fecha", "cita_fecha", "fecha_reunion", "proximo_contacto", "cita"):
-                val_f = rec.get(k_f)
-                if val_f:
-                    f_iso = _normalizar_fecha_str(val_f)
-                    h_asociada = (
-                        rec.get("hora_cita")
-                        or rec.get("hora_proximo_contacto")
-                        or rec.get("proxima_accion_hora")
-                        or rec.get("cita_hora")
-                        or val_f
-                    )
-                    if f_iso:
-                        _registrar_ocupado(f_iso, h_asociada, f"CRM: {nom}")
-                    _escanear_texto_libre_en_busca_de_cita(str(val_f), f"CRM: {nom}")
-
-            for k_txt in ("notas", "notas_seguimiento", "objetivo", "proxima_accion", "comentario_cita", "resumen_cita"):
-                if rec.get(k_txt):
-                    _escanear_texto_libre_en_busca_de_cita(str(rec.get(k_txt)), f"CRM: {nom}")
-
-            for k_list in ("bitacora", "bitacora_seguimiento", "bitacora_notas", "historial_bitacora", "tareas", "tareas_checklist", "checklist", "citas"):
-                lista_items = rec.get(k_list)
-                if isinstance(lista_items, list):
-                    for item_b in lista_items:
-                        if isinstance(item_b, dict):
-                            if item_b.get("completada") is True or item_b.get("done") is True or item_b.get("hecha") is True:
-                                continue
-                            f_b = _normalizar_fecha_str(item_b.get("fecha_cita") or item_b.get("fecha_objetivo") or item_b.get("fecha"))
-                            h_b = item_b.get("hora_cita") or item_b.get("hora")
-                            if f_b and h_b:
-                                _registrar_ocupado(f_b, h_b, f"Bitácora: {nom}")
-                            txt_b = " ".join(str(item_b.get(c) or "") for c in ("texto", "nota", "titulo", "descripcion", "detalle", "fecha"))
-                            _escanear_texto_libre_en_busca_de_cita(txt_b, f"Bitácora: {nom}")
-                        elif isinstance(item_b, str):
-                            _escanear_texto_libre_en_busca_de_cita(item_b, f"Bitácora: {nom}")
-    except Exception as e_crm:
-        print(f"⚠️ Aviso leyendo citas del CRM en V148: {e_crm}")
-
-    return {
-        "status": "ok",
-        "slots_ocupados": sorted(list(ocupados_set)),
-        "detalle_citas": detalle_citas,
-        "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    }
-
-
-@app.route("/api/horarios-ocupados-agenda", methods=["GET", "POST"])
-def api_horarios_ocupados_agenda_v145():
-    res = _extraer_slots_ocupados_universal_sp_v145()
-    return jsonify(res)
-# === [SP_AGENDA_CRM_COORDINATOR_V145_END] ===
-'''
-
-
-# ==============================================================================
-# 5. FUNCIONES DE REPARACIÓN DE `index.html` Y `servidor_local_b2b.py`
-# ==============================================================================
-def limpiar_inyeccion_rota_en_string_js(html):
-    """
-    1) Elimina cualquier bloque `<script>` que un replace anterior hubiera metido
-       por error dentro del literal `'</div></body></html>'` de `spDescargarConversacionConsultor`.
-    2) Desactiva el `setInterval` de 950ms que reabría el micrófono en bucle en `file://`.
-    3) Actualiza el CSS del Carrito con las tarjetas coloreadas individualmente.
-    """
-    # 1. Quitar cualquier bloque [SP_AGENDA_CRM_WEB_SYNC_...] en cualquier parte del HTML
+def reparar_index_html_voz_original_y_colores(html):
+    # 1. Quitar cualquier bloque [SP_AGENDA_CRM_WEB_SYNC_V14...] anterior
     html = re.sub(
-        r"<!-- \[SP_AGENDA_CRM_WEB_SYNC_V14[5678]_START\] -->[\s\S]*?<!-- \[SP_AGENDA_CRM_WEB_SYNC_V14[5678]_END\] -->\s*",
+        r"<!-- \[SP_AGENDA_CRM_WEB_SYNC_V14[56789]_START\] -->[\s\S]*?<!-- \[SP_AGENDA_CRM_WEB_SYNC_V14[56789]_END\] -->\s*",
         "",
         html
     )
 
-    # 2. Asegurar que el cierre de `spDescargarConversacionConsultor` quede en 1 sola línea limpia
+    # 2. Asegurar que el literal `'</div></body></html>'` de spDescargarConversacionConsultor esté limpio
     html = re.sub(
         r"'</div>\s*</body></html>';",
         "'</div></body></html>';",
         html
     )
 
-    # 3. Desactivar el bucle de 950ms que apilaba permisos de micrófono en protocolo file://
+    # 3. Restaurar el vigilante original del Orbe 3D si fue comentado en V148, pero con margen prudente de 2200ms
     html = html.replace(
-        "if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spHablandoSintesis && !_spMicroSesionActiva && !_spRearmandoOido) {\n            window.spActivarModoEscuchaPersistente(false);\n          }",
-        "/* Bucle de 950ms desactivado en V148 para no apilar ventanas de permiso de micrófono en file:// */"
+        "/* Bucle de 950ms desactivado en V148 para no apilar ventanas de permiso de micrófono en file:// */",
+        "if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spHablandoSintesis && !_spMicroSesionActiva && !_spRearmandoOido && window.location.protocol !== 'file:') {\n            window.spActivarModoEscuchaPersistente(false);\n          }"
     )
 
-    # 4. Sustituir el bloque CSS del Carrito por el nuevo con cada tarjeta coloreada y cero scroll
+    # 4. LA CLAVE DEL PROBLEMA DE ESCUCHA:
+    # En `spScriptMejorasCarritoYMigradoPersistenteV130`, la función `instalarMicrofonoContinuoSinRePromptV129()`
+    # sobrescribía `window.spActivarModoEscuchaPersistente` y llamaba a `navigator.mediaDevices.getUserMedia({ audio: true })`
+    # peleándose con el motor original del Orbe 3D (que es el que muestra `🎙️ «...»` en el Teleprompter LED y mueve la esfera).
+    # Neutralizamos `instalarMicrofonoContinuoSinRePromptV129` para que el motor original del Orbe 3D funcione 100% libre y fluido como antes:
+    html = re.sub(
+        r"function instalarMicrofonoContinuoSinRePromptV129\(\)\s*\{[\s\S]*?\n  \}\n\n  function obtenerTramosPorDiaSemanaV125",
+        """function instalarMicrofonoContinuoSinRePromptV129() {
+    /* Desactivado en V149: deja actuar al motor original nativo del Orbe 3D sin doble micrófono ni getUserMedia */
+  }
+
+  function obtenerTramosPorDiaSemanaV125""",
+        html,
+        count=1
+    )
+
+    # 5. Añadir IDs directos a las cajas 4, 5 y Cita en el HTML estático del Carrito
+    html = html.replace(
+        '<div class="sm:col-span-5 bg-slate-950/80 border border-white/10 rounded-xl p-2.5">',
+        '<div id="spCartBoxAtriles4" class="sm:col-span-5 bg-slate-950/80 border border-white/10 rounded-xl p-2.5">'
+    )
+    html = html.replace(
+        '<div class="sm:col-span-7 bg-slate-950/80 border border-white/10 rounded-xl p-2.5">',
+        '<div id="spCartBoxReserva5" class="sm:col-span-7 bg-slate-950/80 border border-white/10 rounded-xl p-2.5">'
+    )
+
+    # 6. Actualizar el bloque CSS del Carrito con los nuevos colores para Tarjeta 4, Tarjeta 5 y Caja de Cita
     patron_css_carrito = re.compile(
         r"/\*\s*={10,}\s*\n\s*MODAL CARRITO CONFIGURADOR EN MODO CRISTAL LUMINOSO[\s\S]*?/\*\s*===\s*\[SP_HARDWARE_TERMINAL_Y_PRECIOS_V115_END\]\s*===\s*\*/",
         re.MULTILINE
     )
     if patron_css_carrito.search(html):
         html = patron_css_carrito.sub(
-            lambda _: CSS_CARRITO_COLOREADO_SIN_SCROLL_V148.strip() + "\n    /* === [SP_HARDWARE_TERMINAL_Y_PRECIOS_V115_END] === */",
+            lambda _: CSS_CARRITO_COLOREADO_TOTAL_V149.strip() + "\n    /* === [SP_HARDWARE_TERMINAL_Y_PRECIOS_V115_END] === */",
             html,
             count=1
         )
 
-    # 5. Inyectar nuestro bloque JS V148 ÚNICAMENTE en el último </body> real del documento (con rsplit)
+    # 7. Inyectar el bloque JS de coordinación de agenda y colores al final antes de </body> (con rsplit)
     if "</body>" in html:
         partes = html.rsplit("</body>", 1)
-        html = partes[0].rstrip() + "\n" + BLOQUE_JS_FINAL_WEB_V148.strip() + "\n</body>" + partes[1]
+        html = partes[0].rstrip() + "\n" + BLOQUE_JS_SOLO_AGENDA_Y_COLORES_V149.strip() + "\n</body>" + partes[1]
 
     return html
 
@@ -1064,50 +828,19 @@ def actualizar_index_html():
         with open(ruta, "r", encoding="utf-8") as f:
             html_actual = f.read()
 
-        html_nuevo = limpiar_inyeccion_rota_en_string_js(html_actual)
+        html_nuevo = reparar_index_html_voz_original_y_colores(html_actual)
         escribir_archivo_con_backup(ruta, html_nuevo)
         validar_bloques_js_en_html(ruta)
 
 
-def actualizar_servidor_local_b2b():
-    rutas_servidor = [
-        os.path.join(RUTA_SCRAPER, "servidor_local_b2b.py"),
-        os.path.join(RUTA_SERVICIO_RESENAS, "servidor_local_b2b.py"),
-    ]
-    for ruta in rutas_servidor:
-        if not os.path.exists(ruta):
-            continue
-        with open(ruta, "r", encoding="utf-8") as f:
-            contenido = f.read()
-
-        if "# === [SP_AGENDA_CRM_COORDINATOR_V145_START] ===" in contenido:
-            contenido = re.sub(
-                r"# === \[SP_AGENDA_CRM_COORDINATOR_V145_START\] ===[\s\S]*?# === \[SP_AGENDA_CRM_COORDINATOR_V145_END\] ===",
-                lambda _: BLOQUE_AGENDA_CRM_PY.strip(),
-                contenido
-            )
-        else:
-            patron_main = r"if\s+__name__\s*==\s*['\"]__main__['\"]\s*:"
-            m = re.search(patron_main, contenido)
-            if m:
-                idx = m.start()
-                contenido = contenido[:idx] + "\n\n" + BLOQUE_AGENDA_CRM_PY.strip() + "\n\n" + contenido[idx:]
-            else:
-                contenido = contenido.rstrip() + "\n\n" + BLOQUE_AGENDA_CRM_PY.strip() + "\n"
-
-        escribir_archivo_con_backup(ruta, contenido)
-        validar_sintaxis_python(ruta)
-
-
 # ==============================================================================
-# 6. PASO 1 PRIORITARIO + BLINDAJE ATEXIT: ACTUALIZAR LOS 2 DOCUMENTOS .MD
+# 5. PASO 1 PRIORITARIO + BLINDAJE ATEXIT: ACTUALIZAR LOS 2 DOCUMENTOS .MD
 # ==============================================================================
-NOTA_HISTORIAL_V148 = f"""
+NOTA_HISTORIAL_V149 = f"""
 ---
-### ACTUALIZACIÓN {VERSION_ACTUAL} ({FECHA_EJECUCION}) — Reparación Raíz de Tecnosala y Carrito, Fin del Bucle de Permiso de Micrófono en `file://` y Tarjetas Coloreadas en el Carrito de Compra
-- **Reparación Raíz del Bloque JS Principal de `index.html`:** Limpiada la inyección accidental dentro del literal `'</div></body></html>'` de `spDescargarConversacionConsultor` y sustituido `replace("</body>")` por `rsplit("</body>", 1)` para que el Carrito y la Tecnosala funcionen al 100% con 0 errores en `node --check`.
-- **Fin del Bucle de Permiso de Micrófono en la Tecnosala:** Eliminada la doble llamada a `navigator.mediaDevices.getUserMedia` y el temporizador de `950 ms` que en protocolo local (`file://`) volvía a pedir permiso de micrófono sin cerrar nunca la ventana del navegador.
-- **Paleta Cromática Diferenciada por Tarjeta en el Carrito (`#spModalCarritoCarta`):** Cada opción del Carrito luce ahora su propio color (Azul Cielo en Mensual Flexible, Ámbar/Dorado en Plan Anual, Pizarra en Solo Auditoría/Atril, Azul Real en Plan Base, Verde Esmeralda en Pack Escudo Dúo, Índigo en +1 Super-Auditoría y Coral/Oro en +2 Super-Auditorías) y coordina las horas ocupadas en tiempo real con el CRM y la Bitácora (`/api/horarios-ocupados-agenda`).
+### ACTUALIZACIÓN {VERSION_ACTUAL} ({FECHA_EJECUCION}) — Restauración del Oído Fluido Original del Tecnoconsultor (Orbe 3D) y Coloreado de Tarjetas 4 (Atriles), 5 (Reserva Fase 2) y Caja de Cita en el Carrito
+- **Restauración del Motor de Escucha Original del Orbe 3D en la Tecnosala:** Neutralizada la función duplicada `instalarMicrofonoContinuoSinRePromptV129` que abría un segundo `webkitSpeechRecognition` y llamaba a `getUserMedia` interfiriendo con el oído nativo del Orbe 3D. Ahora el Tecnoconsultor vuelve a escuchar con total fluidez, pintando en tiempo real `🎙️ «...»` en el Teleprompter LED y moviendo la esfera al ritmo de la voz.
+- **Coloreado de la Tarjeta 4 (`#spCartBoxAtriles4`), Tarjeta 5 (`#spCartBoxReserva5`) y Caja de Cita (`#spCartBoxCitaAlta`) en el Carrito de Compra:** Aplicados degradados luminosos diferenciados (Ámbar cálido en Atriles NFC, Azul Cielo en Reserva Prioritaria Fase 2 y Turquesa-Esmeralda-Ámbar en la Caja de Cita de Alta) con selectores CSS de alta especificidad.
 """
 
 
@@ -1127,7 +860,7 @@ def actualizar_documentos_maestros_md():
             with open(ruta_md, "r", encoding="utf-8") as f:
                 txt = f.read()
             if f"ACTUALIZACIÓN {VERSION_ACTUAL}" not in txt:
-                txt = txt.rstrip() + "\n" + NOTA_HISTORIAL_V148
+                txt = txt.rstrip() + "\n" + NOTA_HISTORIAL_V149
                 escribir_archivo_con_backup(ruta_md, txt)
             textos_enviar[os.path.basename(ruta_md)] = txt
 
@@ -1183,7 +916,7 @@ def sincronizar_git_repositorios():
             try:
                 subprocess.run(["git", "-C", carpeta_git, "add", "-A"], check=False)
                 subprocess.run(
-                    ["git", "-C", carpeta_git, "commit", "-m", f"feat({VERSION_ACTUAL}): reparacion Tecnosala sin bucle de micro, Carrito coloreado y agenda CRM"],
+                    ["git", "-C", carpeta_git, "commit", "-m", f"feat({VERSION_ACTUAL}): oido fluido original en Tecnosala y colores en tarjetas 4, 5 y Cita del Carrito"],
                     check=False, capture_output=True
                 )
                 subprocess.run(["git", "-C", carpeta_git, "push"], check=False, capture_output=True)
@@ -1192,26 +925,14 @@ def sincronizar_git_repositorios():
                 pass
 
 
-def reiniciar_prospector_puerto_5000():
-    lanzador = os.path.join(RUTA_SCRAPER, "Lanzar_Prospeccion.command")
-    if os.path.exists(lanzador):
-        try:
-            subprocess.Popen(["open", "-g", lanzador])
-            print("  🔄 Servidor Prospector B2B (puerto 5000) actualizado.")
-        except Exception:
-            pass
-
-
 def ejecutar_actualizacion():
     print("=" * 78)
-    print(f"🚀 INICIANDO ACTUALIZACIÓN MAESTRA {VERSION_ACTUAL} — TECNOSALA, CARRITO COLOREADO Y AGENDA CRM")
+    print(f"🚀 INICIANDO ACTUALIZACIÓN MAESTRA {VERSION_ACTUAL} — VOZ FLUIDA ORIGINAL + COLORES CARRITO 4, 5 Y CITA")
     print("=" * 78)
     actualizar_documentos_maestros_md()
-    actualizar_servidor_local_b2b()
     actualizar_index_html()
     replicar_ad_py_en_carpetas_oficiales()
     sincronizar_git_repositorios()
-    reiniciar_prospector_puerto_5000()
     print("=" * 78)
     print(f"🎉 ACTUALIZACIÓN {VERSION_ACTUAL} COMPLETADA CON ÉXITO — RECARGA TU WEB CON CMD+SHIFT+R")
     print("=" * 78)

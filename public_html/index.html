@@ -6525,14 +6525,14 @@
     }
                     /* =========================================================================
        MODAL CARRITO CONFIGURADOR EN MODO CRISTAL LUMINOSO CRO (NEUROMARKETING)
-       TARJETAS COLOREADAS INDIVIDUALMENTE + APTO PARA PRESBICIA + CERO SCROLL
+       TARJETAS 1, 2, 3, 4, 5 Y CAJA DE CITA COLOREADAS + CERO SCROLL
        ========================================================================= */
     #spModalCarritoCarta {
       padding: 0.5rem 1rem !important;
       overflow: hidden !important;
     }
     #spModalCarritoCarta > div {
-      max-width: 74rem !important; /* 1184px: ancho panorámico para que nada salte de línea */
+      max-width: 74rem !important;
       max-height: 96vh !important;
       overflow: hidden !important;
       padding: 0.9rem 1.4rem !important;
@@ -6541,17 +6541,14 @@
       border: 2.5px solid #0d9488 !important;
       box-shadow: 0 28px 65px -12px rgba(11, 34, 57, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.95) !important;
     }
-    /* Cabecera compacta en 1 sola línea sin el banner superior de ruido */
     #spModalCarritoCarta > div > div:first-child {
       padding-bottom: 0.45rem !important;
       margin-bottom: 0.55rem !important;
       border-bottom: 1.5px solid #cbd5e1 !important;
     }
-    /* Ocultar cualquier banner superior sobrante */
     #spModalCarritoCarta > div > div:first-child span.bg-amber-950\/90 {
       display: none !important;
     }
-    /* Botón X de cerrar bien visible sobre fondo blanco */
     #spModalCarritoCarta button[onclick*="spCerrarCarritoConfigurador"] {
       width: 2.15rem !important;
       height: 2.15rem !important;
@@ -6567,9 +6564,8 @@
       color: #ffffff !important;
       border-color: #be123c !important;
     }
-    /* Títulos principales del Carrito */
     #spModalCarritoCarta h3 {
-      font-size: 1.24rem !important; /* ~20px: claro y en 1 sola línea */
+      font-size: 1.24rem !important;
       line-height: 1.2 !important;
       color: #0b2239 !important;
       margin-top: 0 !important;
@@ -6579,22 +6575,19 @@
       color: #0b2239 !important;
       letter-spacing: 0.02em !important;
     }
-    /* Espaciado vertical compacto entre bloques de las columnas */
     #spModalCarritoCarta .lg\:col-span-7 {
       gap: 0.45rem !important;
     }
     #spModalCarritoCarta .lg\:col-span-7.space-y-3 > * + * {
       margin-top: 0.45rem !important;
     }
-    /* Etiquetas de los pasos 1, 2, 3, 4 y 5 (punto intermedio nítido 12.5px) */
     #spModalCarritoCarta label {
-      font-size: 0.78rem !important; /* ~12.5px */
+      font-size: 0.78rem !important;
       font-weight: 900 !important;
       color: #065f46 !important;
       letter-spacing: 0.02em !important;
       margin-bottom: 0.22rem !important;
     }
-    /* Botones de selección base (Pasos 1, 2 y 3) */
     #spModalCarritoCarta .sp-cart-item-btn {
       border: 2px solid #cbd5e1 !important;
       background: #ffffff !important;
@@ -6606,17 +6599,15 @@
       color: #0f172a !important;
       box-shadow: 0 3px 10px -2px rgba(11, 34, 57, 0.07), inset 0 1px 0 #ffffff !important;
     }
-    /* Título principal dentro de cada tarjeta seleccionable (~14.5px) */
     #spModalCarritoCarta .sp-cart-item-btn > span:first-child {
-      font-size: 0.91rem !important; /* ~14.5px */
+      font-size: 0.91rem !important;
       font-weight: 900 !important;
       color: #0b2239 !important;
       line-height: 1.2 !important;
       margin-bottom: 0.1rem !important;
     }
-    /* Subtítulos y precios dentro de cada tarjeta seleccionable (~12.4px) */
     #spModalCarritoCarta .sp-cart-item-btn > span:not(:first-child) {
-      font-size: 0.775rem !important; /* ~12.4px */
+      font-size: 0.775rem !important;
       font-weight: 600 !important;
       color: #334155 !important;
       line-height: 1.24 !important;
@@ -6627,9 +6618,6 @@
       transform: translateY(-1.5px) !important;
     }
 
-    /* =====================================================================
-       PALETA CROMÁTICA DIFERENCIADA POR TARJETA EN EL CARRITO DE COMPRA
-       ===================================================================== */
     /* 1A. Modalidad Mensual Flexible -> Azul Cielo / Cian */
     #spModalCarritoCarta #spCartMod_mensual {
       background: linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 100%) !important;
@@ -6672,8 +6660,6 @@
       border: 2.5px solid #1e293b !important;
       box-shadow: 0 8px 18px -4px rgba(30, 41, 59, 0.28), inset 0 1px 0 #ffffff !important;
     }
-    #spModalCarritoCarta #spCartPlan_ninguno.sp-cart-selected > span:first-child { color: #0f172a !important; }
-    #spModalCarritoCarta #spCartPlan_ninguno.sp-cart-selected > span:not(:first-child) { color: #1e293b !important; font-weight: 700 !important; }
 
     /* 2B. 1 Servicio (Plan Base) -> Azul Real / Cobalto Suave */
     #spModalCarritoCarta #spCartPlan_base {
@@ -6705,7 +6691,7 @@
     #spModalCarritoCarta #spCartPlan_duo.sp-cart-selected > span:first-child { color: #022c22 !important; }
     #spModalCarritoCarta #spCartPlan_duo.sp-cart-selected > span:not(:first-child) { color: #064e3b !important; font-weight: 700 !important; }
 
-    /* 3A. Sin Auditoría por ahora -> Malva / Neutro Suave */
+    /* 3A. Sin Auditoría por ahora -> Neutro Suave */
     #spModalCarritoCarta #spCartAud_0 {
       background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%) !important;
       border-color: #cbd5e1 !important;
@@ -6714,7 +6700,6 @@
     #spModalCarritoCarta #spCartAud_0.sp-cart-selected {
       background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%) !important;
       border: 2.5px solid #334155 !important;
-      box-shadow: 0 6px 14px -4px rgba(51, 65, 85, 0.25), inset 0 1px 0 #ffffff !important;
     }
 
     /* 3B. +1 Super-Auditoría -> Índigo / Violeta Tecnológico */
@@ -6732,7 +6717,7 @@
     #spModalCarritoCarta #spCartAud_1.sp-cart-selected > span:first-child { color: #1e1b4b !important; }
     #spModalCarritoCarta #spCartAud_1.sp-cart-selected > span:not(:first-child) { color: #312e81 !important; font-weight: 700 !important; }
 
-    /* 3C. +2 Super-Auditorías -> Oro / Coral Cálido de Máximo Ahorro */
+    /* 3C. +2 Super-Auditorías -> Oro / Coral Cálido */
     #spModalCarritoCarta #spCartAud_2 {
       background: linear-gradient(145deg, #fff7ed 0%, #ffedd5 100%) !important;
       border-color: #fdba74 !important;
@@ -6747,53 +6732,112 @@
     #spModalCarritoCarta #spCartAud_2.sp-cart-selected > span:first-child { color: #431407 !important; }
     #spModalCarritoCarta #spCartAud_2.sp-cart-selected > span:not(:first-child) { color: #7c2d12 !important; font-weight: 700 !important; }
 
-    /* 4 y 5. Cajas de Atriles NFC (Ámbar suave) y Reserva Fase 2 (Azul Cielo suave) */
-    #spModalCarritoCarta .sm\:col-span-5 {
-      background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%) !important;
-      border: 1.5px solid #f59e0b !important;
+    /* =====================================================================
+       TARJETA 4 (ATRILES NFC), TARJETA 5 (RESERVA FASE 2) Y CAJA DE CITA
+       CON COLOR VIVO Y DIFERENCIADO (MÁXIMA ESPECIFICIDAD CSS)
+       ===================================================================== */
+    #spModalCarritoCarta #spCartBoxAtriles4,
+    #spModalCarritoCarta div.sm\:col-span-5 {
+      background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 55%, #fde68a 100%) !important;
+      border: 2px solid #f59e0b !important;
+      border-left: 5px solid #d97706 !important;
+      box-shadow: 0 6px 16px -4px rgba(217, 119, 6, 0.22), inset 0 1px 0 #ffffff !important;
+      border-radius: 0.9rem !important;
     }
-    #spModalCarritoCarta .sm\:col-span-7 {
-      background: linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 100%) !important;
-      border: 1.5px solid #0284c7 !important;
+    #spModalCarritoCarta #spCartBoxAtriles4 label,
+    #spModalCarritoCarta div.sm\:col-span-5 label {
+      color: #92400e !important;
+      font-size: 0.8rem !important;
+      font-weight: 900 !important;
+    }
+    #spModalCarritoCarta #spCartAtrilSelect {
+      background: #ffffff !important;
+      border: 2px solid #d97706 !important;
+      color: #78350f !important;
+      font-weight: 800 !important;
     }
 
-    /* Campos de formulario y desplegables compactos de alto contraste (13.8px) */
+    #spModalCarritoCarta #spCartBoxReserva5,
+    #spModalCarritoCarta div.sm\:col-span-7 {
+      background: linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 55%, #bae6fd 100%) !important;
+      border: 2px solid #38bdf8 !important;
+      border-left: 5px solid #0284c7 !important;
+      box-shadow: 0 6px 16px -4px rgba(2, 132, 199, 0.22), inset 0 1px 0 #ffffff !important;
+      border-radius: 0.9rem !important;
+    }
+    #spModalCarritoCarta #spCartBoxReserva5 label,
+    #spModalCarritoCarta div.sm\:col-span-7 label {
+      color: #075985 !important;
+      font-size: 0.8rem !important;
+      font-weight: 900 !important;
+    }
+    #spModalCarritoCarta #spCartReservaFase2 {
+      background: #ffffff !important;
+      border: 2px solid #0284c7 !important;
+      color: #0c4a6e !important;
+      font-weight: 800 !important;
+    }
+
+    /* CAJA DONDE SE COGE LA CITA (🗓️ CITA DE ALTA): COLOR TURQUESA-ESMERALDA-ÁMBAR LUMINOSO */
+    #spModalCarritoCarta #spCartBoxCitaAlta,
+    #spModalCarritoCarta #spCartFormInputsWrap > div:last-child {
+      background: linear-gradient(135deg, #ecfdf5 0%, #e0f2fe 52%, #fef3c7 100%) !important;
+      border: 2px solid #0d9488 !important;
+      border-left: 5px solid #059669 !important;
+      box-shadow: 0 8px 20px -4px rgba(13, 148, 136, 0.25), inset 0 1px 0 #ffffff !important;
+      border-radius: 0.9rem !important;
+      padding: 0.55rem 0.75rem !important;
+    }
+    #spModalCarritoCarta #spCartSelectDiaLV {
+      background: #ffffff !important;
+      border: 2px solid #0d9488 !important;
+      color: #064e3b !important;
+      font-weight: 800 !important;
+    }
+    #spModalCarritoCarta #spCartSelectHoraManana {
+      background: #fffbeb !important;
+      border: 2px solid #d97706 !important;
+      color: #78350f !important;
+      font-weight: 900 !important;
+    }
+
+    /* Columna derecha del Resumen con tinte verde-perla suave */
+    #spModalCarritoCarta .lg\:col-span-5 {
+      background: linear-gradient(165deg, #ffffff 0%, #f0fdfa 60%, #ecfdf5 100%) !important;
+      border: 2px solid #14b8a6 !important;
+      padding: 0.7rem 0.95rem !important;
+      box-shadow: 0 10px 25px -6px rgba(13, 148, 136, 0.18) !important;
+    }
+
+    /* Campos de formulario de Nombre, Negocio y Teléfono con borde visible y fondo suave */
     #spModalCarritoCarta select,
     #spModalCarritoCarta input[type="text"],
     #spModalCarritoCarta input[type="tel"],
     #spModalCarritoCarta input[type="datetime-local"] {
       background: #ffffff !important;
       color: #0b2239 !important;
-      border: 1.5px solid #94a3b8 !important;
-      font-size: 0.86rem !important; /* ~13.8px */
+      border: 1.5px solid #64748b !important;
+      font-size: 0.86rem !important;
       font-weight: 700 !important;
       padding: 0.38rem 0.68rem !important;
-      height: 2.25rem !important; /* 36px fijo para ahorrar altura vertical */
+      height: 2.25rem !important;
       border-radius: 0.65rem !important;
       box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+    }
+    #spModalCarritoCarta #spCartInputNegocioCiudad {
+      background: #fffbeb !important;
+      border: 2px solid #f59e0b !important;
+      color: #78350f !important;
     }
     #spModalCarritoCarta select:focus,
     #spModalCarritoCarta input:focus {
       border-color: #0d9488 !important;
-      box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2) !important;
+      box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.25) !important;
     }
     #spModalCarritoCarta input::placeholder {
       color: #475569 !important;
       font-weight: 600 !important;
     }
-    /* Cajas contenedoras secundarias */
-    #spModalCarritoCarta .bg-slate-950,
-    #spModalCarritoCarta .bg-slate-950\/80,
-    #spModalCarritoCarta .bg-slate-900,
-    #spModalCarritoCarta .bg-slate-900\/95 {
-      background: #f8fafc !important;
-      border: 1.5px solid #cbd5e1 !important;
-      color: #0b2239 !important;
-    }
-    #spModalCarritoCarta .lg\:col-span-5 {
-      padding: 0.7rem 0.95rem !important;
-    }
-    /* Píldora superior derecha "2 servicios mensuales" con alto contraste */
     #spModalCarritoCarta #spCartCountModulosBadge {
       background: #065f46 !important;
       color: #ffffff !important;
@@ -6802,9 +6846,8 @@
       font-weight: 800 !important;
       padding: 0.15rem 0.55rem !important;
     }
-    /* Líneas del Resumen de tu Pedido (sin partir "324 €" en dos renglones) */
     #spModalCarritoCarta #spCartSummaryLines {
-      font-size: 0.83rem !important; /* ~13.3px */
+      font-size: 0.83rem !important;
       line-height: 1.32 !important;
       color: #0b2239 !important;
       margin-bottom: 0.35rem !important;
@@ -6827,9 +6870,8 @@
       white-space: nowrap !important;
       flex-shrink: 0 !important;
     }
-    /* Caja de Total Desembolso Día 1 compacta */
     #spModalCarritoCarta .bg-emerald-950\/60 {
-      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important;
       border: 2px solid #059669 !important;
       padding: 0.45rem 0.75rem !important;
       margin-bottom: 0.45rem !important;
@@ -6841,7 +6883,7 @@
     }
     #spModalCarritoCarta #spCartTotalDia1 {
       color: #064e3b !important;
-      font-size: 1.35rem !important; /* ~21.6px rotundo y sin comer altura */
+      font-size: 1.35rem !important;
       font-weight: 900 !important;
       white-space: nowrap !important;
     }
@@ -6850,23 +6892,16 @@
       font-size: 0.82rem !important;
       font-weight: 900 !important;
     }
-    /* Todos los textos que eran amarillos pálidos pasan a Cobre/Ámbar Oscuro (#92400e) */
     #spModalCarritoCarta .text-amber-300,
     #spModalCarritoCarta .text-amber-200,
     #spModalCarritoCarta .text-amber-200\/95 {
       color: #92400e !important;
       font-weight: 800 !important;
     }
-    #spModalCarritoCarta #spCartSelectDiaLV,
-    #spModalCarritoCarta #spCartSelectHoraManana {
-      font-size: 0.82rem !important; /* ~13.1px */
-      color: #0b2239 !important;
-      font-weight: 800 !important;
-    }
     #spModalCarritoCarta #spCartSyncCalBadge {
-      color: #047857 !important;
-      background: #d1fae5 !important;
-      padding: 0.1rem 0.45rem !important;
+      color: #ffffff !important;
+      background: #059669 !important;
+      padding: 0.12rem 0.5rem !important;
       border-radius: 9999px !important;
       font-size: 0.72rem !important;
       font-weight: 800 !important;
@@ -6880,10 +6915,9 @@
       font-size: 0.78rem !important;
       line-height: 1.28 !important;
     }
-    /* Subselector de Plan Base (S1 vs S2) en modo luminoso compacto */
     #spModalCarritoCarta #spSubSelectorBaseS1S2 {
-      background: #f0fdfa !important;
-      border: 1.5px solid #0d9488 !important;
+      background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%) !important;
+      border: 2px solid #0d9488 !important;
       padding: 0.45rem 0.65rem !important;
       margin-top: 0.35rem !important;
     }
@@ -6897,7 +6931,6 @@
       color: #334155 !important;
       font-size: 0.75rem !important;
     }
-    /* Botón principal de Confirmar Pedido siempre visible sin scroll */
     #spModalCarritoCarta #spBtnSubmitCarrito {
       font-size: 0.95rem !important;
       padding: 0.62rem 1rem !important;
@@ -15103,7 +15136,7 @@
 
           <!-- 4. Hardware Atril NFC/QR y 5. Reserva Prioritaria Fase 2 -->
           <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
-            <div class="sm:col-span-5 bg-slate-950/80 border border-white/10 rounded-xl p-2.5">
+            <div id="spCartBoxAtriles4" class="sm:col-span-5 bg-slate-950/80 border border-white/10 rounded-xl p-2.5">
               <label class="block text-[10.5px] font-extrabold uppercase text-amber-300 mb-1">4. Atriles NFC + QR (Pago único):</label>
               <select id="spCartAtrilSelect" onchange="window.spRecalcularCarritoCarta()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-bold">
                 <option value="0">0 Atriles (0 €)</option>
@@ -15114,7 +15147,7 @@
                 <option value="5">5 Atriles NFC/QR (125 € • a 25 €/ud)</option>
               </select>
             </div>
-            <div class="sm:col-span-7 bg-slate-950/80 border border-white/10 rounded-xl p-2.5">
+            <div id="spCartBoxReserva5" class="sm:col-span-7 bg-slate-950/80 border border-white/10 rounded-xl p-2.5">
               <div class="flex items-center justify-between gap-1 mb-1">
                 <label class="block text-[10.5px] font-extrabold uppercase text-sky-300">5. Reserva Prioritaria Fase 2:</label>
               </div>
@@ -16676,7 +16709,9 @@
         _spWatchdogMicroInterval = setInterval(function() {
           var vistaTec = document.getElementById('vista-tecnosala');
           if (!vistaTec || vistaTec.classList.contains('hidden')) return;
-          /* Bucle de 950ms desactivado en V148 para no apilar ventanas de permiso de micrófono en file:// */
+          if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spHablandoSintesis && !_spMicroSesionActiva && !_spRearmandoOido && window.location.protocol !== 'file:') {
+            window.spActivarModoEscuchaPersistente(false);
+          }
         }, 950);
       }
 
@@ -17614,59 +17649,7 @@
   }
 
   function instalarMicrofonoContinuoSinRePromptV129() {
-    window.spActivarModoEscuchaPersistente = function() {
-      _spConsultorHablandoAhoraV129 = false;
-      _spEscuchaContinuaDeseadaV129 = true;
-      var inp = document.getElementById('spTecnosalaInput');
-      if (inp) inp.setAttribute('placeholder', '🟢 Tu turno: habla directamente (el micrófono sigue abierto)...');
-      arrancarReconocedorUnicoSinReiniciarV129();
-    };
-
-    window.spIniciarEscuchaDirectaConsultor = function() {
-      _spConsultorHablandoAhoraV129 = false;
-      _spEscuchaContinuaDeseadaV129 = true;
-      arrancarReconocedorUnicoSinReiniciarV129();
-    };
-
-    var origReprod = window.spReproducirEnTeleprompter2027;
-    if (typeof origReprod === 'function' && !origReprod._wrappedV129) {
-      var nuevoReprod = function(textoCompleto, alTerminarCallback, etiquetaUsuarioPrevio) {
-        _spConsultorHablandoAhoraV129 = true;
-        _spTextoAcumuladoFraseV129 = '';
-        if (_spTimerSilencioFraseV129) {
-          clearTimeout(_spTimerSilencioFraseV129);
-          _spTimerSilencioFraseV129 = null;
-        }
-        return origReprod.call(this, textoCompleto, function() {
-          _spConsultorHablandoAhoraV129 = false;
-          if (_spEscuchaContinuaDeseadaV129) {
-            arrancarReconocedorUnicoSinReiniciarV129();
-          }
-          if (typeof alTerminarCallback === 'function') alTerminarCallback();
-        }, etiquetaUsuarioPrevio);
-      };
-      nuevoReprod._wrappedV129 = true;
-      window.spReproducirEnTeleprompter2027 = nuevoReprod;
-    }
-
-    var origParar = window.spPararConsultorTotalmente;
-    if (typeof origParar === 'function' && !origParar._wrappedV129) {
-      var nuevoParar = function(ev) {
-        _spEscuchaContinuaDeseadaV129 = false;
-        _spConsultorHablandoAhoraV129 = false;
-        if (_spTimerSilencioFraseV129) {
-          clearTimeout(_spTimerSilencioFraseV129);
-          _spTimerSilencioFraseV129 = null;
-        }
-        if (_spReconocedorUnicoV129 && _spSesionMicroAbiertaV129) {
-          try { _spReconocedorUnicoV129.stop(); } catch (e) {}
-          _spSesionMicroAbiertaV129 = false;
-        }
-        return origParar.apply(this, arguments);
-      };
-      nuevoParar._wrappedV129 = true;
-      window.spPararConsultorTotalmente = nuevoParar;
-    }
+    /* Desactivado en V149: deja actuar al motor original nativo del Orbe 3D sin doble micrófono ni getUserMedia */
   }
 
   function obtenerTramosPorDiaSemanaV125(dow) {
@@ -18075,139 +18058,34 @@
 })();
 </script>
 <!-- === [FIN_SP_MEJORAS_V120_FIN_DE_SEMANA_Y_CARRITO_S1_S2] === -->
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V148_START] -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V149_START] -->
 <script>
 (function() {
-  /* =========================================================================
-     1. FIN DEL BUCLE INFINITO DE PERMISO DE MICRÓFONO EN TECNOSALA
-        (Cuando se abre index.html como archivo local file://, Chrome no guarda
-         el permiso; eliminamos la doble llamada a getUserMedia y los reintentos
-         automáticos cada 950ms para que la ventana de permiso se cierre al instante)
-     ========================================================================= */
-  window._spUltimoIntentoStartMicro = 0;
-  window._spSesionMicroUnicaActiva = false;
-
-  window.spActivarModoEscuchaPersistente = function(forzarManual) {
-    var vistaTec = document.getElementById('vista-tecnosala');
-    if (!vistaTec || vistaTec.classList.contains('hidden')) return;
-    var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRec) return;
-
-    if (window.speechSynthesis && window.speechSynthesis.speaking) return;
-
-    var ahora = Date.now();
-    if (!forzarManual && (ahora - window._spUltimoIntentoStartMicro < 2500)) return;
-    if (window._spSesionMicroUnicaActiva) return;
-
-    window._spUltimoIntentoStartMicro = ahora;
-
-    try {
-      if (!window._spReconocedorLimpioV148) {
-        var rec = new SpeechRec();
-        rec.lang = 'es-ES';
-        rec.continuous = (window.location.protocol !== 'file:');
-        rec.interimResults = true;
-        var textoFrase = '';
-        var timerSilencio = null;
-
-        rec.onstart = function() {
-          window._spSesionMicroUnicaActiva = true;
-          var inp = document.getElementById('spTecnosalaInput');
-          if (inp) inp.setAttribute('placeholder', '🟢 Escuchando tu voz ahora... habla con naturalidad');
-          var btnV = document.getElementById('spBtnVoiceTecnosala');
-          var txtV = document.getElementById('spVoiceBtnText');
-          if (btnV) btnV.classList.add('sp-voice-listening');
-          if (txtV) txtV.textContent = 'Escuchando...';
-        };
-
-        rec.onresult = function(ev) {
-          if (window.speechSynthesis && window.speechSynthesis.speaking) {
-            textoFrase = '';
-            return;
-          }
-          var acumulado = '';
-          var esFinal = false;
-          for (var i = ev.resultIndex; i < ev.results.length; i++) {
-            acumulado += ev.results[i][0].transcript;
-            if (ev.results[i].isFinal) esFinal = true;
-          }
-          textoFrase = acumulado.trim();
-          var inp = document.getElementById('spTecnosalaInput');
-          if (inp && textoFrase) inp.value = textoFrase;
-
-          if (timerSilencio) clearTimeout(timerSilencio);
-          timerSilencio = setTimeout(function() {
-            var enviar = textoFrase.trim();
-            textoFrase = '';
-            if (enviar.length >= 2) {
-              try { rec.stop(); } catch (e) {}
-              window._spSesionMicroUnicaActiva = false;
-              if (typeof window.spProcesarConsultaEnTeleprompterDirecto === 'function') {
-                window.spProcesarConsultaEnTeleprompterDirecto(enviar);
-              }
-            }
-          }, esFinal ? 500 : 1000);
-        };
-
-        rec.onerror = function() {
-          window._spSesionMicroUnicaActiva = false;
-          var btnV = document.getElementById('spBtnVoiceTecnosala');
-          var txtV = document.getElementById('spVoiceBtnText');
-          if (btnV) btnV.classList.remove('sp-voice-listening');
-          if (txtV) txtV.textContent = 'Hablar';
-        };
-
-        rec.onend = function() {
-          window._spSesionMicroUnicaActiva = false;
-          var btnV = document.getElementById('spBtnVoiceTecnosala');
-          var txtV = document.getElementById('spVoiceBtnText');
-          if (btnV) btnV.classList.remove('sp-voice-listening');
-          if (txtV) txtV.textContent = 'Hablar';
-          var inp = document.getElementById('spTecnosalaInput');
-          if (inp) inp.setAttribute('placeholder', 'Escribe tu duda o pulsa 🎙️ Hablar o el Orbe para preguntar por voz...');
-          if (textoFrase && textoFrase.trim().length >= 2) {
-            var enviar = textoFrase.trim();
-            textoFrase = '';
-            if (typeof window.spProcesarConsultaEnTeleprompterDirecto === 'function') {
-              window.spProcesarConsultaEnTeleprompterDirecto(enviar);
-            }
-          }
-        };
-
-        window._spReconocedorLimpioV148 = rec;
-      }
-
-      window._spReconocedorLimpioV148.start();
-    } catch (e) {
-      window._spSesionMicroUnicaActiva = false;
+  /* 1. Asignar IDs explícitos a las cajas 4, 5 y Cita de Alta del Carrito para garantizar su color vivo */
+  function aplicarIdsColorCajasCarritoV149() {
+    var selAtr = document.getElementById('spCartAtrilSelect');
+    if (selAtr && selAtr.parentNode) {
+      selAtr.parentNode.id = 'spCartBoxAtriles4';
     }
-  };
-
-  window.spIniciarEscuchaDirectaConsultor = function() {
-    window.spActivarModoEscuchaPersistente(true);
-  };
-
-  window.spToggleDictadoVozTecnosala = function() {
-    if (window._spSesionMicroUnicaActiva && window._spReconocedorLimpioV148) {
-      try { window._spReconocedorLimpioV148.stop(); } catch (e) {}
-      window._spSesionMicroUnicaActiva = false;
-      return;
+    var selRes = document.getElementById('spCartReservaFase2');
+    if (selRes && selRes.parentNode) {
+      selRes.parentNode.id = 'spCartBoxReserva5';
     }
-    window.spActivarModoEscuchaPersistente(true);
-  };
+    var selDia = document.getElementById('spCartSelectDiaLV');
+    if (selDia && selDia.parentNode && selDia.parentNode.parentNode) {
+      selDia.parentNode.parentNode.id = 'spCartBoxCitaAlta';
+    }
+  }
 
-  /* =========================================================================
-     2. PRESELECCIÓN AUTOMÁTICA DEL DIAGNÓSTICO AL ABRIR EL CARRITO DESDE EL TEST
-     ========================================================================= */
+  /* 2. Puente del botón final del Test de Diagnóstico al Carrito */
   window.spAbrirCarritoConDiagnosticoPreseleccionado = function() {
     if (typeof window.spAbrirCarritoConfigurador === 'function') {
       window.spAbrirCarritoConfigurador('duo', 1);
+      setTimeout(aplicarIdsColorCajasCarritoV149, 40);
     }
   };
 
-  /* =========================================================================
-     3. COORDINACIÓN DE CITAS ENTRE CARRITO WEB Y AGENDA CRM / BITÁCORA
-     ========================================================================= */
+  /* 3. Coordinación en tiempo real de las horas ocupadas del CRM y la Bitácora */
   window.SP_SLOTS_OCUPADOS_CRM_EXTRA = window.SP_SLOTS_OCUPADOS_CRM_EXTRA || new Set();
 
   function normalizarSlotEspacio(slotRaw) {
@@ -18219,6 +18097,7 @@
   }
 
   window.spAplicarBloqueoHorasCrmEnSelect = function() {
+    aplicarIdsColorCajasCarritoV149();
     var selDia = document.getElementById('spCartSelectDiaLV');
     var selHora = document.getElementById('spCartSelectHoraManana');
     var inpISO = document.getElementById('spCartInputFechaHoraISO');
@@ -18261,7 +18140,7 @@
 
   window.spSincronizarCitasCrmLocal = function() {
     try {
-      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v148') || '[]');
+      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v149') || '[]');
       if (Array.isArray(guardados)) {
         guardados.forEach(function(sl) {
           var norm = normalizarSlotEspacio(sl);
@@ -18286,7 +18165,7 @@
               if (norm) window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(norm);
             });
             try {
-              localStorage.setItem('sp_citas_ocupadas_crm_v148', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
+              localStorage.setItem('sp_citas_ocupadas_crm_v149', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
             } catch (e) {}
           }
         })
@@ -18296,33 +18175,35 @@
     });
   };
 
-  function engancharEventosAgendaCarritoV148() {
+  function engancharEventosAgendaCarritoV149() {
+    aplicarIdsColorCajasCarritoV149();
     window.spSincronizarCitasCrmLocal();
 
-    if (typeof window.spActualizarHorasDisponiblesCarritoV125 === 'function' && !window.spActualizarHorasDisponiblesCarritoV125._hookV148) {
+    if (typeof window.spActualizarHorasDisponiblesCarritoV125 === 'function' && !window.spActualizarHorasDisponiblesCarritoV125._hookV149) {
       var origActHoras = window.spActualizarHorasDisponiblesCarritoV125;
       var nuevaActHoras = function() {
         var r = origActHoras.apply(this, arguments);
         window.spAplicarBloqueoHorasCrmEnSelect();
         return r;
       };
-      nuevaActHoras._hookV148 = true;
+      nuevaActHoras._hookV149 = true;
       window.spActualizarHorasDisponiblesCarritoV125 = nuevaActHoras;
     }
 
-    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window.spAbrirCarritoConfigurador._hookV148) {
+    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window.spAbrirCarritoConfigurador._hookV149) {
       var origOpen = window.spAbrirCarritoConfigurador;
       var nuevoOpen = function() {
         var r = origOpen.apply(this, arguments);
+        aplicarIdsColorCajasCarritoV149();
         window.spSincronizarCitasCrmLocal();
         setTimeout(window.spAplicarBloqueoHorasCrmEnSelect, 120);
         return r;
       };
-      nuevoOpen._hookV148 = true;
+      nuevoOpen._hookV149 = true;
       window.spAbrirCarritoConfigurador = nuevoOpen;
     }
 
-    if (typeof window.spConfirmarPedidoYAgendarCita === 'function' && !window.spConfirmarPedidoYAgendarCita._hookV148) {
+    if (typeof window.spConfirmarPedidoYAgendarCita === 'function' && !window.spConfirmarPedidoYAgendarCita._hookV149) {
       var origConfirm = window.spConfirmarPedidoYAgendarCita;
       var nuevoConfirm = function() {
         try {
@@ -18336,7 +18217,7 @@
           if (ymd && hhmm) {
             window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(ymd + ' ' + hhmm);
             try {
-              localStorage.setItem('sp_citas_ocupadas_crm_v148', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
+              localStorage.setItem('sp_citas_ocupadas_crm_v149', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
             } catch (e) {}
             var nombreCompleto = ((inpNom ? inpNom.value : '') + (inpNeg && inpNeg.value ? (' — ' + inpNeg.value) : '')).trim();
             fetch('http://127.0.0.1:5000/api/crm/registrar-pedido-web', {
@@ -18354,20 +18235,20 @@
         } catch (err) {}
         return origConfirm.apply(this, arguments);
       };
-      nuevoConfirm._hookV148 = true;
+      nuevoConfirm._hookV149 = true;
       window.spConfirmarPedidoYAgendarCita = nuevoConfirm;
     }
   }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(engancharEventosAgendaCarritoV148, 250);
+      setTimeout(engancharEventosAgendaCarritoV149, 250);
     });
   } else {
-    setTimeout(engancharEventosAgendaCarritoV148, 250);
+    setTimeout(engancharEventosAgendaCarritoV149, 250);
   }
 })();
 </script>
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V148_END] -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V149_END] -->
 </body>
 </html>
