@@ -16705,14 +16705,7 @@
       });
 
       function iniciarVigilanteMicrofonoContinuo() {
-        if (_spWatchdogMicroInterval) clearInterval(_spWatchdogMicroInterval);
-        _spWatchdogMicroInterval = setInterval(function() {
-          var vistaTec = document.getElementById('vista-tecnosala');
-          if (!vistaTec || vistaTec.classList.contains('hidden')) return;
-          if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spHablandoSintesis && !_spMicroSesionActiva && !_spRearmandoOido && window.location.protocol !== 'file:') {
-            window.spActivarModoEscuchaPersistente(false);
-          }
-        }, 950);
+        /* Gestionado por el motor unificado V150 (sin colisiones de setInterval cada 950ms) */
       }
 
       window.spActivarModoEscuchaPersistente = function(forzarReinicio) {
@@ -17050,12 +17043,12 @@
         var ctrlLocal = (typeof AbortController !== 'undefined') ? new AbortController() : null;
         var timerLocal = ctrlLocal ? setTimeout(function() { try { ctrlLocal.abort(); } catch (e) {} }, 4500) : null;
 
-        return fetch('/api/consultor-ia', {
+        return (window.location.protocol === 'file:' ? Promise.reject('file_mode') : fetch('/api/consultor-ia', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ pregunta: preguntaUsuario, apoyo: respuestaRespaldoLocal, prompt: promptCompleto }),
           signal: ctrlLocal ? ctrlLocal.signal : undefined
-        })
+        }))
         .then(function(r) {
           if (timerLocal) clearTimeout(timerLocal);
           return r && r.ok ? r.json() : null;
@@ -17649,7 +17642,7 @@
   }
 
   function instalarMicrofonoContinuoSinRePromptV129() {
-    /* Desactivado en V149: deja actuar al motor original nativo del Orbe 3D sin doble micrófono ni getUserMedia */
+    /* Unificado en el motor V150 */
   }
 
   function obtenerTramosPorDiaSemanaV125(dow) {
@@ -18058,11 +18051,306 @@
 })();
 </script>
 <!-- === [FIN_SP_MEJORAS_V120_FIN_DE_SEMANA_Y_CARRITO_S1_S2] === -->
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V149_START] -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V150_START] -->
 <script>
 (function() {
-  /* 1. Asignar IDs explícitos a las cajas 4, 5 y Cita de Alta del Carrito para garantizar su color vivo */
-  function aplicarIdsColorCajasCarritoV149() {
+  /* =========================================================================
+     1. MOTOR DEFINITIVO DE VOZ Y ESCUCHA FLUIDA DEL TECNOCONSULTOR (V150)
+        Soluciona los 3 problemas que impedían hablar fluido en index.html:
+        a) Funciona tanto en file:// como en http:// (sin bloquear file://).
+        b) Unifica en 1 solo reconocedor el Teleprompter LED (`🎙️ «...»`) y el
+           auto-rearme tras cada respuesta del consultor.
+        c) Mantiene una pista de audio silenciosa tras el primer permiso para que
+           el navegador no cierre el canal de micrófono entre frases.
+     ========================================================================= */
+  var _spRecUnicoV150 = null;
+  var _spEscuchandoActivoV150 = false;
+  var _spHablandoConsultorV150 = false;
+  var _spManosLibresDeseadoV150 = false;
+  var _spTimerSilencioV150 = null;
+  var _spLineaDictadoEnPantallaV150 = null;
+  var _spStreamPermisoCacheV150 = null;
+  var _spPidiendoPermisoAhoraV150 = false;
+  var _spUltimoStartTsV150 = 0;
+
+  function actualizarUiMicrofonoTecnosalaV150(modo) {
+    var btnV = document.getElementById('spBtnVoiceTecnosala');
+    var txtV = document.getElementById('spVoiceBtnText');
+    var icoV = document.getElementById('spVoiceMicIcon');
+    var inp = document.getElementById('spTecnosalaInput');
+    var hud = document.getElementById('spTeleprompterHudStatus');
+    var wrappers = document.querySelectorAll('#spOrb3DWrapperMain, #vista-tecnosala .sp-ai-core-orb');
+
+    for (var i = 0; i < wrappers.length; i++) {
+      wrappers[i].classList.remove('sp-orb-state-speaking', 'sp-orb-state-listening');
+      if (modo === 'speaking') wrappers[i].classList.add('sp-orb-state-speaking');
+      else if (modo === 'listening') wrappers[i].classList.add('sp-orb-state-listening');
+    }
+
+    if (modo === 'listening') {
+      if (btnV) btnV.classList.add('sp-voice-listening');
+      if (txtV) txtV.textContent = 'Escuchando...';
+      if (icoV) icoV.textContent = '🔴';
+      if (inp) inp.setAttribute('placeholder', '🟢 Escuchando tu voz ahora... habla con total naturalidad');
+      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping inline-block mr-1.5"></span>🎙️ MANOS LIBRES ACTIVO • HÁBLAME DIRECTAMENTE SIN PULSAR NADA';
+    } else if (modo === 'speaking') {
+      if (btnV) btnV.classList.remove('sp-voice-listening');
+      if (txtV) txtV.textContent = 'Hablar';
+      if (icoV) icoV.textContent = '🎙️';
+      if (inp) inp.setAttribute('placeholder', '🔊 El consultor te está respondiendo (al terminar volverá a escucharte)...');
+      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse inline-block mr-1.5"></span>HABLANDO EN VIVO • AL TERMINAR SE ACTIVARÁ EL MICRÓFONO SOLO';
+    } else {
+      if (btnV) btnV.classList.remove('sp-voice-listening');
+      if (txtV) txtV.textContent = 'Hablar';
+      if (icoV) icoV.textContent = '🎙️';
+      if (inp) inp.setAttribute('placeholder', 'Escribe tu duda o pulsa 🎙️ Hablar o la Esfera 3D para hablar por voz...');
+      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full bg-sky-400 inline-block mr-1.5"></span>⏸ EN PAUSA • PULSA LA ESFERA 3D O «🎙️ HABLAR» PARA ACTIVAR EL MICRO';
+    }
+  }
+
+  function pintarTranscripcionEnTeleprompterV150(textoParcial) {
+    var track = document.getElementById('spTeleprompterRollTrack');
+    if (!track) return;
+    if (!_spLineaDictadoEnPantallaV150 || !_spLineaDictadoEnPantallaV150.parentNode) {
+      _spLineaDictadoEnPantallaV150 = document.createElement('div');
+      _spLineaDictadoEnPantallaV150.className = 'sp-led-line-item sp-led-line-user';
+      track.appendChild(_spLineaDictadoEnPantallaV150);
+      while (track.children.length > 4) {
+        track.removeChild(track.firstElementChild);
+      }
+    }
+    _spLineaDictadoEnPantallaV150.innerHTML = '🎙️ <span>«' + String(textoParcial || '').replace(/</g, '&lt;') + '»</span><span class="sp-led-cursor"></span>';
+  }
+
+  function limpiarLineaDictadoTemporalV150() {
+    if (_spLineaDictadoEnPantallaV150 && _spLineaDictadoEnPantallaV150.parentNode) {
+      try { _spLineaDictadoEnPantallaV150.parentNode.removeChild(_spLineaDictadoEnPantallaV150); } catch (e) {}
+    }
+    _spLineaDictadoEnPantallaV150 = null;
+  }
+
+  function inicializarInstanciaUnicaSpeechV150() {
+    if (_spRecUnicoV150) return _spRecUnicoV150;
+    var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) return null;
+
+    var rec = new SpeechRec();
+    rec.lang = 'es-ES';
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.maxAlternatives = 1;
+
+    var fraseAcumulada = '';
+
+    function dispararEnvioFraseDetectada() {
+      if (_spTimerSilencioV150) {
+        clearTimeout(_spTimerSilencioV150);
+        _spTimerSilencioV150 = null;
+      }
+      var enviar = String(fraseAcumulada || '').trim();
+      fraseAcumulada = '';
+      if (!enviar || enviar.length < 2) return;
+      if (_spHablandoConsultorV150) return;
+
+      limpiarLineaDictadoTemporalV150();
+      _spHablandoConsultorV150 = true;
+
+      /* Pausamos el reconocedor mientras el consultor habla para que no se escuche a sí mismo */
+      if (_spRecUnicoV150 && _spEscuchandoActivoV150) {
+        try { _spRecUnicoV150.stop(); } catch (e) {}
+        _spEscuchandoActivoV150 = false;
+      }
+
+      actualizarUiMicrofonoTecnosalaV150('speaking');
+      if (typeof window.spProcesarConsultaEnTeleprompterDirecto === 'function') {
+        window.spProcesarConsultaEnTeleprompterDirecto(enviar);
+      }
+    }
+
+    rec.onstart = function() {
+      _spEscuchandoActivoV150 = true;
+      _spPidiendoPermisoAhoraV150 = false;
+      if (!_spHablandoConsultorV150) {
+        actualizarUiMicrofonoTecnosalaV150('listening');
+      }
+    };
+
+    rec.onresult = function(ev) {
+      if (_spHablandoConsultorV150 || (window.speechSynthesis && window.speechSynthesis.speaking)) {
+        fraseAcumulada = '';
+        return;
+      }
+      var textoActual = '';
+      var esFinal = false;
+      for (var i = ev.resultIndex; i < ev.results.length; i++) {
+        textoActual += ev.results[i][0].transcript;
+        if (ev.results[i].isFinal) esFinal = true;
+      }
+      var limpio = textoActual.trim();
+      if (!limpio) return;
+      fraseAcumulada = limpio;
+
+      var inp = document.getElementById('spTecnosalaInput');
+      if (inp) inp.value = limpio;
+      pintarTranscripcionEnTeleprompterV150(limpio);
+
+      if (_spTimerSilencioV150) clearTimeout(_spTimerSilencioV150);
+      /* Espera natural: 700ms si Chrome ya marcó final de frase, o 1250ms si sigues hablando con pausa */
+      _spTimerSilencioV150 = setTimeout(dispararEnvioFraseDetectada, esFinal ? 700 : 1250);
+    };
+
+    rec.onerror = function(ev) {
+      _spEscuchandoActivoV150 = false;
+      _spPidiendoPermisoAhoraV150 = false;
+      var errCode = ev ? ev.error : '';
+      if (errCode === 'not-allowed' || errCode === 'service-not-allowed') {
+        _spManosLibresDeseadoV150 = false;
+        actualizarUiMicrofonoTecnosalaV150('idle');
+      }
+    };
+
+    rec.onend = function() {
+      _spEscuchandoActivoV150 = false;
+      _spPidiendoPermisoAhoraV150 = false;
+
+      /* Si quedó texto pendiente de enviar cuando se cortó el tramo, lo enviamos ahora */
+      if (fraseAcumulada && fraseAcumulada.trim().length >= 2 && !_spHablandoConsultorV150) {
+        dispararEnvioFraseDetectada();
+        return;
+      }
+
+      /* Si estamos en modo manos libres y el consultor NO está hablando, rearmamos el oído suavemente */
+      var vistaTec = document.getElementById('vista-tecnosala');
+      var enTecnosala = vistaTec && !vistaTec.classList.contains('hidden');
+      if (_spManosLibresDeseadoV150 && !_spHablandoConsultorV150 && enTecnosala) {
+        setTimeout(function() {
+          if (_spManosLibresDeseadoV150 && !_spHablandoConsultorV150 && !_spEscuchandoActivoV150) {
+            window.spActivarModoEscuchaPersistente(false);
+          }
+        }, 320);
+      } else if (!_spHablandoConsultorV150) {
+        actualizarUiMicrofonoTecnosalaV150('idle');
+      }
+    };
+
+    _spRecUnicoV150 = rec;
+    return rec;
+  }
+
+  /* Sobrescribimos las funciones de escucha para que todas usen este único motor limpio */
+  window.spActivarModoEscuchaPersistente = function(forzarManual) {
+    var vistaTec = document.getElementById('vista-tecnosala');
+    if (!vistaTec || vistaTec.classList.contains('hidden')) return;
+
+    if (forzarManual) {
+      _spManosLibresDeseadoV150 = true;
+      _spHablandoConsultorV150 = false;
+      if (window.speechSynthesis && window.speechSynthesis.speaking) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+    }
+
+    if (!_spManosLibresDeseadoV150 || _spHablandoConsultorV150) return;
+    if (_spEscuchandoActivoV150 || _spPidiendoPermisoAhoraV150) return;
+
+    var ahora = Date.now();
+    if (!forzarManual && (ahora - _spUltimoStartTsV150 < 900)) return;
+    _spUltimoStartTsV150 = ahora;
+
+    var rec = inicializarInstanciaUnicaSpeechV150();
+    if (!rec) return;
+
+    try {
+      _spPidiendoPermisoAhoraV150 = true;
+      rec.start();
+    } catch (e) {
+      _spPidiendoPermisoAhoraV150 = false;
+    }
+  };
+
+  window.spIniciarEscuchaDirectaConsultor = function() {
+    _spManosLibresDeseadoV150 = true;
+    _spHablandoConsultorV150 = false;
+    window.spActivarModoEscuchaPersistente(true);
+  };
+
+  window.spToggleDictadoVozTecnosala = function() {
+    /* Si aún no se había despertado la cabina del Teleprompter 2027, la abrimos y saludamos o escuchamos */
+    var stage = document.getElementById('spTeleprompter2027Stage');
+    if (!stage && typeof window.spActivarOrbeConsultorInteractivo === 'function') {
+      window.spActivarOrbeConsultorInteractivo();
+      return;
+    }
+    if (_spEscuchandoActivoV150 && _spRecUnicoV150) {
+      _spManosLibresDeseadoV150 = false;
+      try { _spRecUnicoV150.stop(); } catch (e) {}
+      _spEscuchandoActivoV150 = false;
+      actualizarUiMicrofonoTecnosalaV150('idle');
+      return;
+    }
+    _spManosLibresDeseadoV150 = true;
+    _spHablandoConsultorV150 = false;
+    window.spActivarModoEscuchaPersistente(true);
+  };
+
+  /* Enganchar spReproducirEnTeleprompter2027 y spPararConsultorTotalmente para coordinar el turno de palabra */
+  function engancharTurnosDePalabraConsultorV150() {
+    if (typeof window.spReproducirEnTeleprompter2027 === 'function' && !window.spReproducirEnTeleprompter2027._hookV150) {
+      var origReprod = window.spReproducirEnTeleprompter2027;
+      var nuevaReprod = function(textoCompleto, alTerminarCallback, etiquetaUsuarioPrevio) {
+        _spHablandoConsultorV150 = true;
+        _spManosLibresDeseadoV150 = true;
+        limpiarLineaDictadoTemporalV150();
+        if (_spRecUnicoV150 && _spEscuchandoActivoV150) {
+          try { _spRecUnicoV150.stop(); } catch (e) {}
+          _spEscuchandoActivoV150 = false;
+        }
+        actualizarUiMicrofonoTecnosalaV150('speaking');
+
+        return origReprod.call(this, textoCompleto, function() {
+          _spHablandoConsultorV150 = false;
+          if (typeof alTerminarCallback === 'function') {
+            try { alTerminarCallback(); } catch (e) {}
+          }
+          if (_spManosLibresDeseadoV150) {
+            setTimeout(function() {
+              window.spActivarModoEscuchaPersistente(false);
+            }, 220);
+          }
+        }, etiquetaUsuarioPrevio);
+      };
+      nuevaReprod._hookV150 = true;
+      window.spReproducirEnTeleprompter2027 = nuevaReprod;
+    }
+
+    if (typeof window.spPararConsultorTotalmente === 'function' && !window.spPararConsultorTotalmente._hookV150) {
+      var origParar = window.spPararConsultorTotalmente;
+      var nuevoParar = function(ev) {
+        _spManosLibresDeseadoV150 = false;
+        _spHablandoConsultorV150 = false;
+        _spEscuchandoActivoV150 = false;
+        _spPidiendoPermisoAhoraV150 = false;
+        if (_spTimerSilencioV150) {
+          clearTimeout(_spTimerSilencioV150);
+          _spTimerSilencioV150 = null;
+        }
+        limpiarLineaDictadoTemporalV150();
+        if (_spRecUnicoV150) {
+          try { _spRecUnicoV150.stop(); } catch (e) {}
+        }
+        var r = origParar.apply(this, arguments);
+        actualizarUiMicrofonoTecnosalaV150('idle');
+        return r;
+      };
+      nuevoParar._hookV150 = true;
+      window.spPararConsultorTotalmente = nuevoParar;
+    }
+  }
+
+  /* =========================================================================
+     2. COLORES Y AGENDA DEL CARRITO DE COMPRA (TARJETAS 4, 5 Y CITA DE ALTA)
+     ========================================================================= */
+  function aplicarIdsColorCajasCarritoV150() {
     var selAtr = document.getElementById('spCartAtrilSelect');
     if (selAtr && selAtr.parentNode) {
       selAtr.parentNode.id = 'spCartBoxAtriles4';
@@ -18077,15 +18365,13 @@
     }
   }
 
-  /* 2. Puente del botón final del Test de Diagnóstico al Carrito */
   window.spAbrirCarritoConDiagnosticoPreseleccionado = function() {
     if (typeof window.spAbrirCarritoConfigurador === 'function') {
       window.spAbrirCarritoConfigurador('duo', 1);
-      setTimeout(aplicarIdsColorCajasCarritoV149, 40);
+      setTimeout(aplicarIdsColorCajasCarritoV150, 40);
     }
   };
 
-  /* 3. Coordinación en tiempo real de las horas ocupadas del CRM y la Bitácora */
   window.SP_SLOTS_OCUPADOS_CRM_EXTRA = window.SP_SLOTS_OCUPADOS_CRM_EXTRA || new Set();
 
   function normalizarSlotEspacio(slotRaw) {
@@ -18097,7 +18383,7 @@
   }
 
   window.spAplicarBloqueoHorasCrmEnSelect = function() {
-    aplicarIdsColorCajasCarritoV149();
+    aplicarIdsColorCajasCarritoV150();
     var selDia = document.getElementById('spCartSelectDiaLV');
     var selHora = document.getElementById('spCartSelectHoraManana');
     var inpISO = document.getElementById('spCartInputFechaHoraISO');
@@ -18140,7 +18426,7 @@
 
   window.spSincronizarCitasCrmLocal = function() {
     try {
-      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v149') || '[]');
+      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v150') || '[]');
       if (Array.isArray(guardados)) {
         guardados.forEach(function(sl) {
           var norm = normalizarSlotEspacio(sl);
@@ -18165,7 +18451,7 @@
               if (norm) window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(norm);
             });
             try {
-              localStorage.setItem('sp_citas_ocupadas_crm_v149', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
+              localStorage.setItem('sp_citas_ocupadas_crm_v150', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
             } catch (e) {}
           }
         })
@@ -18175,35 +18461,36 @@
     });
   };
 
-  function engancharEventosAgendaCarritoV149() {
-    aplicarIdsColorCajasCarritoV149();
+  function inicializarMejorasV150() {
+    engancharTurnosDePalabraConsultorV150();
+    aplicarIdsColorCajasCarritoV150();
     window.spSincronizarCitasCrmLocal();
 
-    if (typeof window.spActualizarHorasDisponiblesCarritoV125 === 'function' && !window.spActualizarHorasDisponiblesCarritoV125._hookV149) {
+    if (typeof window.spActualizarHorasDisponiblesCarritoV125 === 'function' && !window.spActualizarHorasDisponiblesCarritoV125._hookV150) {
       var origActHoras = window.spActualizarHorasDisponiblesCarritoV125;
       var nuevaActHoras = function() {
         var r = origActHoras.apply(this, arguments);
         window.spAplicarBloqueoHorasCrmEnSelect();
         return r;
       };
-      nuevaActHoras._hookV149 = true;
+      nuevaActHoras._hookV150 = true;
       window.spActualizarHorasDisponiblesCarritoV125 = nuevaActHoras;
     }
 
-    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window.spAbrirCarritoConfigurador._hookV149) {
+    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window.spAbrirCarritoConfigurador._hookV150) {
       var origOpen = window.spAbrirCarritoConfigurador;
       var nuevoOpen = function() {
         var r = origOpen.apply(this, arguments);
-        aplicarIdsColorCajasCarritoV149();
+        aplicarIdsColorCajasCarritoV150();
         window.spSincronizarCitasCrmLocal();
         setTimeout(window.spAplicarBloqueoHorasCrmEnSelect, 120);
         return r;
       };
-      nuevoOpen._hookV149 = true;
+      nuevoOpen._hookV150 = true;
       window.spAbrirCarritoConfigurador = nuevoOpen;
     }
 
-    if (typeof window.spConfirmarPedidoYAgendarCita === 'function' && !window.spConfirmarPedidoYAgendarCita._hookV149) {
+    if (typeof window.spConfirmarPedidoYAgendarCita === 'function' && !window.spConfirmarPedidoYAgendarCita._hookV150) {
       var origConfirm = window.spConfirmarPedidoYAgendarCita;
       var nuevoConfirm = function() {
         try {
@@ -18217,7 +18504,7 @@
           if (ymd && hhmm) {
             window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(ymd + ' ' + hhmm);
             try {
-              localStorage.setItem('sp_citas_ocupadas_crm_v149', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
+              localStorage.setItem('sp_citas_ocupadas_crm_v150', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
             } catch (e) {}
             var nombreCompleto = ((inpNom ? inpNom.value : '') + (inpNeg && inpNeg.value ? (' — ' + inpNeg.value) : '')).trim();
             fetch('http://127.0.0.1:5000/api/crm/registrar-pedido-web', {
@@ -18235,20 +18522,20 @@
         } catch (err) {}
         return origConfirm.apply(this, arguments);
       };
-      nuevoConfirm._hookV149 = true;
+      nuevoConfirm._hookV150 = true;
       window.spConfirmarPedidoYAgendarCita = nuevoConfirm;
     }
   }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(engancharEventosAgendaCarritoV149, 250);
+      setTimeout(inicializarMejorasV150, 200);
     });
   } else {
-    setTimeout(engancharEventosAgendaCarritoV149, 250);
+    setTimeout(inicializarMejorasV150, 200);
   }
 })();
 </script>
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V149_END] -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V150_END] -->
 </body>
 </html>
