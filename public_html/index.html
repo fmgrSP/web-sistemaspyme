@@ -11685,7 +11685,7 @@
 
 
 
-                                                      <!-- ======================================================================= -->
+                                                        <!-- ======================================================================= -->
   <!-- VISTA 4 (SALA INDEPENDIENTE): PRECIOS CLAROS (ARQUITECTURA 4 GRUPOS)    -->
   <!-- ======================================================================= -->
   <section id="vista-tarifas" class="view-panel hidden bg-slate-50 text-slate-900">
@@ -11693,13 +11693,13 @@
     <!-- =================================================================== -->
     <!-- DIAPOSITIVA 1 DE PRECIOS: LOS 3 PLANES ACTIVOS HOY (100VH LUMINOSO) -->
     <!-- =================================================================== -->
-    <div id="tarifas-slide-planes" class="slide-section sp-tarifas-light-bg border-b border-teal-200/80 px-4 sm:px-6 relative overflow-hidden" style="min-height: calc(100vh - 5.75rem); padding-top: 1.9rem !important; padding-bottom: 0.75rem !important; justify-content: flex-start !important;">
+    <div id="tarifas-slide-planes" class="slide-section sp-tarifas-light-bg border-b border-teal-200/80 px-4 sm:px-6 relative overflow-hidden" style="min-height: calc(100vh - 5.75rem); padding-top: 1.7rem !important; padding-bottom: 1.2rem !important; justify-content: space-between !important;">
       <div class="absolute inset-0 sp-rhombus-grid-reverse pointer-events-none opacity-65" aria-hidden="true"></div>
 
-      <div class="max-w-6xl mx-auto w-full flex flex-col justify-start relative z-10">
+      <div class="max-w-6xl mx-auto w-full flex flex-col justify-between flex-1 relative z-10">
 
-        <!-- FILA 1: Encabezado encajado al 100% dentro del ancho de las 3 tarjetas (sin que el botón de compra se salga por la derecha) -->
-        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-2.5 pb-2.5 mb-3.5 border-b-2 border-teal-500/25 w-full">
+        <!-- FILA 1: Encabezado encajado al 100% dentro del ancho de las 3 tarjetas -->
+        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-2.5 pb-2.5 mb-2 border-b-2 border-teal-500/25 w-full">
           <h2 class="text-xl sm:text-2xl lg:text-[24px] font-black text-brand-navy tracking-tight leading-tight">
             Precios claros y <span class="sp-green-headline">amortización desde el primer cliente.</span>
           </h2>
@@ -11721,15 +11721,15 @@
           </div>
         </div>
 
-        <!-- FILA 2: Las 3 Tarjetas Protagonistas (Base 59€, Pack Escudo Básico 99€ y Pack Escudo Total 99€ + 1 o 2 Auditorías) -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-stretch mb-2.5">
+        <!-- FILA 2: Las 3 Tarjetas Protagonistas con Subcajas de Precio 100% Simétricas -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-stretch my-auto py-1">
 
-          <!-- TARJETA 1: PLAN PYME BASE (1 SERVICIO DEL GRUPO 1 = 59 €/MES) -->
+          <!-- TARJETA 1: PYME BASE (1 SERVICIO = 59 €/MES) -->
           <div class="sp-price-card-3d sp-price-card-slate px-5 py-3.5 flex flex-col justify-between">
             <div>
-              <div class="flex items-start justify-between gap-2 mb-1.5">
-                <div class="inline-flex flex-col items-center justify-center text-[10px] font-extrabold uppercase tracking-wider text-slate-800 bg-slate-100 px-3 py-1 rounded-xl border border-slate-300 leading-tight shadow-sm">
-                  <span class="whitespace-nowrap">1 Servicio Grupo 1</span>
+              <div class="flex items-start justify-between gap-2 mb-1.5 min-h-[34px]">
+                <div class="inline-flex items-center justify-center text-[10px] font-extrabold uppercase tracking-wider text-slate-800 bg-slate-100 px-3 py-1 rounded-xl border border-slate-300 leading-tight shadow-sm whitespace-nowrap">
+                  1 Servicio Activo
                 </div>
                 <div class="text-right leading-tight">
                   <span class="block text-[11px] font-bold text-slate-700 whitespace-nowrap">Setup único: <strong class="text-brand-navy font-black">150 €</strong></span>
@@ -11737,66 +11737,80 @@
                 </div>
               </div>
 
-              <h3 class="text-lg sm:text-[19px] font-black text-brand-navy mb-0.5 whitespace-nowrap">
-                Plan Pyme BASE <span class="text-slate-500 font-bold text-sm">(1 serv.)</span>
-              </h3>
-              <p class="text-xs text-slate-600 mb-2 leading-snug">
-                Un servicio del Grupo 1 de libre elección para empezar paso a paso:
-              </p>
+              <div class="mb-2 min-h-[48px] flex flex-col justify-center">
+                <h3 class="text-lg sm:text-[19px] font-black text-brand-navy whitespace-nowrap">
+                  Pyme BASE <span class="text-slate-500 font-bold text-sm">(1 serv.)</span>
+                </h3>
+                <p class="text-xs text-slate-600 leading-snug mt-0.5">
+                  1 servicio de libre elección (hoy S1 o S2) para empezar paso a paso:
+                </p>
+              </div>
 
-              <div class="bg-slate-50 border-2 border-slate-200/90 rounded-2xl px-3.5 py-2 mb-2 shadow-inner">
-                <div class="flex items-baseline gap-1.5" data-plan-price="base">
-                  <span class="text-2xl sm:text-[28px] font-black text-brand-navy">59 €</span>
-                  <span class="text-xs font-bold text-slate-500">/ mes</span>
+              <!-- Subcaja de Precio Simétrica 1 -->
+              <div class="bg-slate-50 border-2 border-slate-200/90 rounded-2xl px-3.5 py-2.5 mb-2.5 shadow-inner flex flex-col justify-between min-h-[96px]">
+                <div class="flex items-baseline justify-between gap-2 flex-nowrap" data-plan-price="base">
+                  <div class="flex items-baseline gap-1.5 whitespace-nowrap">
+                    <span class="text-2xl sm:text-[28px] font-black text-brand-navy whitespace-nowrap">59 €</span>
+                    <span class="text-xs font-bold text-slate-500 whitespace-nowrap">/ mes</span>
+                  </div>
+                  <span class="text-[10px] font-bold text-slate-500 bg-white px-2 py-0.5 rounded-lg border border-slate-200 whitespace-nowrap">Desde 1 módulo</span>
                 </div>
-                <span id="spSubPriceBase" class="block text-[10.5px] font-extrabold text-teal-800 mt-0.5">
+                <span id="spSubPriceBase" class="block text-[11px] font-extrabold text-slate-800 mt-1 whitespace-nowrap">
                   Día 1 Flex: 209 € (150 € Setup + 59 € Mes 1)
+                </span>
+                <span id="spSavingLineBase" class="block text-[10.5px] font-extrabold text-teal-800 bg-teal-50/90 border border-teal-200/80 rounded-lg px-2 py-0.5 mt-1 whitespace-nowrap truncate">
+                  ✓ Sin permanencia anual (solo 3 meses mín.)
                 </span>
               </div>
 
               <ul class="space-y-1 text-xs text-slate-700 leading-snug mb-2.5">
-                <li class="flex items-start gap-1.5"><span class="text-teal-600 font-black">✔</span><span><strong class="text-brand-navy">1 servicio activo del Grupo 1</strong> a elegir según tu prioridad hoy.</span></li>
+                <li class="flex items-start gap-1.5"><span class="text-teal-600 font-black">✔</span><span><strong class="text-brand-navy">1 servicio activo</strong> a elegir según tu prioridad hoy (S1 Reseñas IA o S2 WhatsApp).</span></li>
                 <li class="flex items-start gap-1.5"><span class="text-teal-600 font-black">✔</span><span>Incluye <strong class="text-brand-navy">Informe Mensual 360° Interactivo</strong> cada día 1 de mes.</span></li>
                 <li class="flex items-start gap-1.5"><span class="text-slate-400 font-black">•</span><span class="text-slate-600">Super-Auditorías Llave en Mano a tarifa estándar (350 € una / 590 € las dos).</span></li>
               </ul>
             </div>
 
-            <a id="spBtnWaPlanBase" href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20el%20Plan%20Pyme%20BASE%20%281%20servicio%20del%20Grupo%201%20por%2059%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-2 text-center rounded-xl bg-brand-navy hover:bg-slate-800 text-white font-extrabold text-xs sm:text-[13px] shadow-md transition-all block">
-              Elegir Plan Pyme BASE &rarr;
+            <a id="spBtnWaPlanBase" href="javascript:void(0)" onclick="window.spAbrirCarritoConfigurador('base', 0)" class="w-full py-2 text-center rounded-xl bg-brand-navy hover:bg-slate-800 text-white font-extrabold text-xs sm:text-[13px] shadow-md transition-all block cursor-pointer">
+              Elegir Pyme BASE &rarr;
             </a>
           </div>
 
-          <!-- TARJETA 2: PACK ESCUDO BÁSICO (2 SERVICIOS: S1 + S2 = 99 €/MES, SIN AUDITORÍA) -->
+          <!-- TARJETA 2: PACK ESCUDO BÁSICO (2 SERVICIOS: S1 + S2 = 99 €/MES) -->
           <div class="sp-price-card-3d sp-price-card-sky px-5 py-3.5 flex flex-col justify-between">
             <div>
-              <div class="flex items-start justify-between gap-2 mb-1.5">
-                <div class="inline-flex flex-col items-center justify-center text-[10px] font-extrabold uppercase tracking-wider text-sky-900 bg-sky-100/95 px-2.5 py-0.5 rounded-xl border border-sky-300 leading-tight shadow-sm">
-                  <span class="whitespace-nowrap">🛡️ 2 Servicios</span>
-                  <span class="text-[9px] text-sky-950 font-black whitespace-nowrap">(S1 + S2)</span>
+              <div class="flex items-start justify-between gap-2 mb-1.5 min-h-[34px]">
+                <div class="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-sky-900 bg-sky-100/95 px-2.5 py-1 rounded-xl border border-sky-300 leading-tight shadow-sm whitespace-nowrap">
+                  <span>🛡️ 2 Servicios (S1 + S2)</span>
                 </div>
                 <div class="text-right leading-tight">
                   <span class="block text-[11px] font-bold text-sky-950 whitespace-nowrap">Setup Dúo: <strong class="text-brand-navy font-black">225 €</strong></span>
-                  <span class="block text-[10px] font-extrabold text-emerald-700 whitespace-nowrap">(2.º al 50%)</span>
+                  <span class="block text-[10px] font-extrabold text-emerald-700 whitespace-nowrap">(2.º Setup al 50%)</span>
                 </div>
               </div>
 
-              <h3 class="text-lg sm:text-[19px] font-black text-brand-navy mb-0.5 whitespace-nowrap">
-                Pack Escudo Básico <span class="text-sky-700 font-bold text-sm">(Dúo)</span>
-              </h3>
-              <p class="text-xs text-slate-700 mb-2 leading-snug">
-                2 servicios de libre elección (hoy <strong class="text-brand-navy">S1 + S2</strong>; el 2.º suma solo <strong class="text-brand-navy">+40 €/mes</strong>):
-              </p>
+              <div class="mb-2 min-h-[48px] flex flex-col justify-center">
+                <h3 class="text-lg sm:text-[19px] font-black text-brand-navy whitespace-nowrap">
+                  Pack Escudo Básico <span class="text-sky-700 font-bold text-sm">(Dúo)</span>
+                </h3>
+                <p class="text-xs text-slate-700 leading-snug mt-0.5">
+                  2 servicios de libre elección (hoy <strong class="text-brand-navy">S1 + S2</strong>; el 2.º suma solo <strong class="text-brand-navy">+40 €/m</strong>):
+                </p>
+              </div>
 
-              <div class="bg-white/95 border-2 border-sky-300 rounded-2xl px-3.5 py-2 mb-2 shadow-inner">
-                <div class="flex items-baseline justify-between gap-2">
-                  <div class="flex items-baseline gap-1.5" data-plan-price="duo">
-                    <span class="text-2xl sm:text-[28px] font-black text-sky-700">99 €</span>
-                    <span class="text-xs font-bold text-slate-500">/ mes</span>
+              <!-- Subcaja de Precio Simétrica 2 -->
+              <div class="bg-white/95 border-2 border-sky-300 rounded-2xl px-3.5 py-2.5 mb-2.5 shadow-inner flex flex-col justify-between min-h-[96px]">
+                <div class="flex items-baseline justify-between gap-2 flex-nowrap" data-plan-price="duo">
+                  <div class="flex items-baseline gap-1.5 whitespace-nowrap">
+                    <span class="text-2xl sm:text-[28px] font-black text-sky-700 whitespace-nowrap">99 €</span>
+                    <span class="text-xs font-bold text-slate-500 whitespace-nowrap">/ mes</span>
                   </div>
-                  <span class="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-full whitespace-nowrap">Ahorras 19 €/m + 75 € Setup</span>
+                  <span class="text-[10px] font-extrabold text-sky-900 bg-sky-100 px-2 py-0.5 rounded-lg border border-sky-300 whitespace-nowrap">S1 + S2 Activos</span>
                 </div>
-                <span id="spSubPriceDuo" class="block text-[10.5px] font-extrabold text-sky-900 mt-0.5">
+                <span id="spSubPriceDuo" class="block text-[11px] font-extrabold text-sky-950 mt-1 whitespace-nowrap">
                   Día 1 Flex: 324 € (225 € Setup + 99 € Mes 1)
+                </span>
+                <span id="spSavingLineDuo" class="block text-[10.5px] font-extrabold text-emerald-800 bg-emerald-50 border border-emerald-300 rounded-lg px-2 py-0.5 mt-1 whitespace-nowrap truncate">
+                  🎁 Ahorras 19 €/mes en cuota + 75 € en Setup
                 </span>
               </div>
 
@@ -11807,31 +11821,31 @@
               </ul>
             </div>
 
-            <a id="spBtnWaPlanDuo" href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20me%20interesa%20el%20Pack%20Escudo%20B%C3%A1sico%20%28S1%20%2B%20S2%20por%2099%20%E2%82%AC%2Fmes%29" target="_blank" class="w-full py-2 text-center rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs sm:text-[13px] shadow-lg shadow-sky-600/25 transition-all block">
+            <a id="spBtnWaPlanDuo" href="javascript:void(0)" onclick="window.spAbrirCarritoConfigurador('duo', 0)" class="w-full py-2 text-center rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs sm:text-[13px] shadow-lg shadow-sky-600/25 transition-all block cursor-pointer">
               Elegir Pack Escudo Básico &rarr;
             </a>
           </div>
 
-          <!-- TARJETA 3 ESTRELLA: PACK ESCUDO TOTAL ★ (S1 + S2 POR 99 €/MES + 1 O 2 SUPER-AUDITORÍAS BONIFICADAS A 195 € C/U) -->
+          <!-- TARJETA 3 ESTRELLA: PACK ESCUDO TOTAL / PLUS ★ (MISMA SUBCAJA Y SIN TEXTO DUPLICADO ARRIBA) -->
           <div class="sp-price-card-3d sp-price-card-emerald px-5 py-3.5 flex flex-col justify-between relative">
             <div>
-              <div class="flex items-start justify-between gap-2 mb-1.5">
-                <div class="inline-flex flex-col items-center justify-center text-[10px] font-extrabold uppercase tracking-wider text-white bg-gradient-to-r from-emerald-600 to-teal-600 px-2.5 py-0.5 rounded-xl shadow-sm leading-tight">
-                  <span class="whitespace-nowrap">🚀 Recomendado</span>
-                  <span class="text-[9px] font-black text-emerald-50 whitespace-nowrap">(S1 + S2 + Auditoría)</span>
+              <div class="flex items-start justify-between gap-2 mb-1.5 min-h-[34px]">
+                <div class="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider text-white bg-gradient-to-r from-emerald-600 to-teal-600 px-2.5 py-1 rounded-xl shadow-sm leading-tight whitespace-nowrap">
+                  <span>🚀 Recomendado (Dúo + Auditoría)</span>
                 </div>
                 <div class="text-right leading-tight">
-                  <span id="spBadgeAhorroEscudoTotal" class="block text-[10px] font-black text-amber-900 bg-amber-100/95 px-2 py-0.5 rounded-md border border-amber-300 whitespace-nowrap">¡Ahorras 155 € en la Auditoría!</span>
-                  <span class="block text-[9px] font-extrabold text-teal-900 whitespace-nowrap mt-0.5">Setup Dúo: 225 € + Aud. a 195 €</span>
+                  <span id="spBadgeAhorroEscudoTotal" class="inline-block text-[10px] font-black text-amber-950 bg-amber-100 px-2.5 py-1 rounded-xl border border-amber-400 shadow-sm whitespace-nowrap">
+                    ¡Ahorras 155 € en la Auditoría!
+                  </span>
                 </div>
               </div>
 
-              <div class="flex flex-wrap items-center justify-between gap-1.5 mb-2">
+              <div class="flex flex-wrap items-center justify-between gap-1.5 mb-2 min-h-[48px]">
                 <h3 id="spTitleEscudoTotal" class="text-lg sm:text-[19px] font-black text-brand-navy whitespace-nowrap">
                   Pack Escudo Total ★
                 </h3>
                 <div class="inline-flex items-center bg-white/95 p-0.5 rounded-lg border-2 border-emerald-500/50 text-[10px] font-extrabold shadow-sm">
-                  <button type="button" id="btnEscudo1Aud" onclick="spSeleccionarNivelEscudoTotal(1)" class="px-2 py-0.5 rounded-md bg-emerald-600 text-white cursor-pointer transition-all whitespace-nowrap">
+                  <button type="button" id="btnEscudo1Aud" onclick="spSeleccionarNivelEscudoTotal(1)" class="px-2 py-0.5 rounded-md bg-emerald-600 text-white cursor-pointer transition-all whitespace-nowrap shadow-sm">
                     +1 Auditoría (195€)
                   </button>
                   <button type="button" id="btnEscudo2Aud" onclick="spSeleccionarNivelEscudoTotal(2)" class="px-2 py-0.5 rounded-md text-teal-900 hover:text-brand-navy cursor-pointer transition-all whitespace-nowrap">
@@ -11840,43 +11854,47 @@
                 </div>
               </div>
 
-              <div class="bg-white/95 border-2 border-emerald-500/70 rounded-2xl px-3.5 py-2 mb-2 shadow-inner">
-                <div class="flex items-baseline justify-between gap-1.5 flex-wrap">
-                  <div class="flex items-baseline gap-1" data-plan-price="trinity">
-                    <span class="text-2xl sm:text-[28px] font-black text-emerald-700">99 €</span>
-                    <span class="text-xs font-bold text-slate-500">/ mes</span>
+              <!-- Subcaja de Precio Simétrica 3 (Misma distribución que Pack Escudo Básico) -->
+              <div class="bg-white/95 border-2 border-emerald-500/70 rounded-2xl px-3.5 py-2.5 mb-2.5 shadow-inner flex flex-col justify-between min-h-[96px]">
+                <div class="flex items-baseline justify-between gap-1.5 flex-nowrap">
+                  <div class="flex items-baseline gap-1.5 whitespace-nowrap" data-plan-price="trinity">
+                    <span class="text-2xl sm:text-[28px] font-black text-emerald-700 whitespace-nowrap">99 €</span>
+                    <span class="text-xs font-bold text-slate-500 whitespace-nowrap">/ mes</span>
                   </div>
-                  <span id="spAuditAddonPriceTag" class="text-[10.5px] font-black text-amber-900 bg-amber-100 border border-amber-400 px-2 py-0.5 rounded-lg whitespace-nowrap">
-                    + 195 € (1 Super-Auditoría Llave en Mano)
+                  <span id="spAuditAddonPriceTag" class="text-[10px] font-black text-amber-950 bg-amber-100 border border-amber-400 px-2 py-0.5 rounded-lg whitespace-nowrap">
+                    + 195 € (1 Auditoría)
                   </span>
                 </div>
-                <span id="spSubPriceEscudoTotal" class="block text-[10.5px] font-extrabold text-teal-900 mt-0.5">
+                <span id="spSubPriceEscudoTotal" class="block text-[11px] font-extrabold text-teal-950 mt-1 whitespace-nowrap">
                   Día 1 Flex: 519 € (225€ Setup + 195€ Aud. + 99€ Mes 1)
+                </span>
+                <span id="spSavingLineEscudoTotal" class="block text-[10.5px] font-extrabold text-emerald-900 bg-emerald-100/90 border border-emerald-400 rounded-lg px-2 py-0.5 mt-1 whitespace-nowrap truncate">
+                  🎁 Ahorras 155 € en Auditoría + 75 € Setup + 19 €/m
                 </span>
               </div>
 
               <ul class="space-y-1 text-xs text-slate-800 leading-snug mb-2.5">
-                <li class="flex items-start gap-1.5"><span class="text-emerald-600 font-black">✔</span><span><strong class="text-brand-navy">Incluye S1 + S2 (Grupo 1)</strong> protegiendo y multiplicando tus 5★ en Google y WhatsApp.</span></li>
+                <li class="flex items-start gap-1.5"><span class="text-emerald-600 font-black">✔</span><span><strong class="text-brand-navy">Incluye S1 + S2</strong> protegiendo y multiplicando tus 5★ en Google y WhatsApp.</span></li>
                 <li class="flex items-start gap-1.5"><span class="text-emerald-600 font-black">✔</span><span id="spBulletAuditEscudo"><strong class="text-brand-navy">1 Super-Auditoría Llave en Mano a elegir</strong> (SEO+GEO IA o Neuro-CRO Web) por solo <strong class="text-emerald-800">195 €</strong> en vez de 350 €.</span></li>
                 <li class="flex items-start gap-1.5"><span class="text-amber-600 font-black">★</span><span id="spBulletBonusEscudo">Si eliges <strong class="text-brand-navy">+2 Auditorías (390 €)</strong> arriba, te llevas ambas implantadas ahorrando <strong class="text-emerald-800">310 €</strong>.</span></li>
               </ul>
             </div>
 
-            <a id="spBtnWaPlanEscudoTotal" href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20activar%20el%20Pack%20Escudo%20Total%20%28S1%20%2B%20S2%20por%2099%20%E2%82%AC%2Fmes%20%2B%201%20Super-Auditor%C3%ADa%20bonificada%20a%20195%20%E2%82%AC%29" target="_blank" class="sp-btn-s5-primary-3d w-full py-2 text-center rounded-xl text-white font-black text-xs sm:text-[13px] block">
+            <a id="spBtnWaPlanEscudoTotal" href="javascript:void(0)" onclick="window.spAbrirCarritoConfigurador('duo', (typeof _spNumAuditoriasEscudo !== 'undefined' ? _spNumAuditoriasEscudo : 1))" class="sp-btn-s5-primary-3d w-full py-2 text-center rounded-xl text-white font-black text-xs sm:text-[13px] block cursor-pointer">
               Activar Pack Escudo Total &rarr;
             </a>
           </div>
 
         </div>
 
-        <!-- FILA 3: Banner-Guía hacia la Diapositiva 2 (Las 2 Super-Auditorías, los 4 Grupos y Atril NFC) -->
-        <div class="pt-0.5 pb-1 flex justify-center">
-          <button type="button" onclick="spScrollLimpioSeccion('tarifas-slide-complementos')" class="group inline-flex items-center gap-3 px-6 py-2 rounded-2xl bg-white/95 hover:bg-teal-50 border-2 border-teal-500/50 hover:border-teal-600 shadow-md transition-all cursor-pointer">
-            <span class="text-sm">🔍🧠</span>
-            <span class="text-xs sm:text-[13px] font-extrabold text-brand-navy group-hover:text-teal-800">
-              Ver Tabla de las 2 Super-Auditorías (195 € / 350 € / 590 €), los 4 Grupos (S1 a S10) y Atril NFC
+        <!-- FILA 3: Banner-Guía Inferior Centrado Equidistante, con Flecha en Movimiento y Sin Precios -->
+        <div class="my-auto pt-3 pb-1 flex justify-center">
+          <button type="button" onclick="spScrollLimpioSeccion('tarifas-slide-complementos')" class="group inline-flex items-center gap-3.5 px-7 py-3 rounded-2xl bg-gradient-to-r from-brand-navy via-[#0f3456] to-teal-800 hover:from-teal-800 hover:to-brand-navy text-white border-2 border-teal-300/80 shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all cursor-pointer">
+            <span class="text-base">🔍🧠</span>
+            <span class="text-xs sm:text-[14px] font-black tracking-tight text-white">
+              Ver tabla de las 2 Super-Auditorías, los 4 Grupos (S1 a S10) y Atril NFC
             </span>
-            <span class="w-5 h-5 rounded-full bg-teal-500/15 border border-teal-500/50 flex items-center justify-center text-teal-700 group-hover:translate-y-0.5 transition-transform font-black text-xs">
+            <span class="w-7 h-7 rounded-full bg-emerald-400 text-slate-950 flex items-center justify-center font-black text-sm shadow-md animate-bounce">
               &darr;
             </span>
           </button>
@@ -11892,11 +11910,9 @@
       <div class="absolute inset-0 sp-rhombus-grid-reverse pointer-events-none opacity-65" aria-hidden="true"></div>
       <div class="max-w-6xl mx-auto w-full flex flex-col justify-between min-h-[calc(100vh-8.5rem)] relative z-10">
 
+        <!-- Cabecera limpia (sin el banner superior redundante) -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2.5 border-b-2 border-teal-500/25">
           <div>
-            <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-800 bg-amber-100/90 px-3 py-0.5 rounded-full border border-amber-300 inline-block mb-1">
-              Pagos Únicos Sin Cuotas Mensuales y Escalado por Nivel Técnico (S1 a S10 en 4 Grupos)
-            </span>
             <h3 class="text-2xl sm:text-3xl font-black text-brand-navy tracking-tight">
               Las 2 Super-Auditorías Gemelas, <span class="sp-green-headline">los 4 Grupos y Hardware NFC.</span>
             </h3>
@@ -11909,7 +11925,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 my-auto py-2.5 items-stretch">
 
-          <!-- Columna Izquierda (7 cols): Las 2 Super-Auditorías Gemelas (Tabla Oficial Suelo 195 €) -->
+          <!-- Columna Izquierda (7 cols): Las 2 Super-Auditorías Gemelas (Sin "Solo Código 200 €") -->
           <div class="lg:col-span-7 sp-light-card-3d-teal rounded-3xl p-5 flex flex-col justify-between">
             <div>
               <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
@@ -11923,13 +11939,13 @@
                 <div class="bg-sky-50/95 border-2 border-sky-300 rounded-2xl p-3.5 shadow-sm">
                   <strong class="text-sky-900 text-[13.5px] font-black block mb-1">1. Ingeniería de Entidades SEO/GEO IA</strong>
                   <p class="text-slate-700 leading-snug">
-                    <strong class="text-brand-navy">«Para que os encuentren gratis en Google Maps y os citen ChatGPT, Perplexity y Gemini»:</strong> 16 parámetros oficiales + Grafo <code>@graph</code> Wikidata + <code>/llms.txt</code>.
+                    <strong class="text-brand-navy">«Para que te encuentren en Google Maps y te citen ChatGPT, Perplexity y Gemini»:</strong> 22 parámetros + Grafo <code>@graph</code> Wikidata + <code>/llms.txt</code> (Tabla 1 Dueño + Tabla 2 Informático).
                   </p>
                 </div>
                 <div class="bg-amber-50/95 border-2 border-amber-300 rounded-2xl p-3.5 shadow-sm">
                   <strong class="text-amber-900 text-[13.5px] font-black block mb-1">2. Neuro-CRO + Sonda de 10-14 Días</strong>
                   <p class="text-slate-700 leading-snug">
-                    <strong class="text-brand-navy">«Para duplicar los clientes que os contactan»:</strong> Disponible en <strong>Perfil 1 (Modo Ágil)</strong> o <strong>Perfil 2 (Modo Corporativo Alto Standing)</strong>.
+                    <strong class="text-brand-navy">«Para duplicar las visitas web que te contactan»:</strong> Disponible en <strong>Modo Ágil</strong> (Comercios/Clínicas) o <strong>Modo Corporativo</strong> (Despachos y Firmas).
                   </p>
                 </div>
               </div>
@@ -11937,66 +11953,64 @@
 
             <div>
               <span class="block text-[11px] font-extrabold uppercase tracking-wider text-brand-navy mb-2">
-                Tabla Oficial de Precios de las Super-Auditorías (1 Auditoría vs. Las 2 Juntas):
+                Tabla Oficial de las Super-Auditorías (Solución Completa Llave en Mano o Lista para tu Técnico):
               </span>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-center">
-                <div class="bg-white rounded-2xl p-3 border-2 border-slate-200 flex flex-col justify-between shadow-sm">
-                  <span class="block text-[10px] font-extrabold text-slate-700 uppercase">1. Solo Código / DIY</span>
-                  <span class="block text-xl font-black text-brand-navy my-0.5">200 € <span class="text-[11px] font-bold text-slate-500">por 1</span></span>
-                  <span class="block text-[11px] font-extrabold text-teal-800">390 € las dos (195€ c/u)</span>
-                  <span class="block text-[10.5px] text-slate-600 leading-tight mt-1">PDF Parte 1 + Parte 2 (Códigos limpios) para que lo suba tu informático.</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-center">
+                <div class="bg-white rounded-2xl p-3.5 border-2 border-sky-300 flex flex-col justify-between shadow-sm">
+                  <span class="block text-[10.5px] font-extrabold text-sky-900 uppercase">1. Tarifa Estándar «Llave en Mano»</span>
+                  <span class="block text-2xl font-black text-sky-700 my-0.5">350 € <span class="text-xs font-bold text-slate-500">por 1 auditoría</span></span>
+                  <span class="block text-xs font-extrabold text-sky-900">590 € las dos juntas (Ahorras 110 €)</span>
+                  <span class="block text-[11px] text-slate-700 leading-snug mt-1.5">Contratada suelta o con Pyme Base. Incluye implantación por nosotros o entrega de todos los códigos e instrucciones a tu técnico.</span>
                 </div>
-                <div class="bg-white rounded-2xl p-3 border-2 border-sky-300 flex flex-col justify-between shadow-sm">
-                  <span class="block text-[10px] font-extrabold text-sky-900 uppercase">2. Oficial «Llave en Mano»</span>
-                  <span class="block text-xl font-black text-sky-700 my-0.5">350 € <span class="text-[11px] font-bold text-slate-500">por 1</span></span>
-                  <span class="block text-[11px] font-extrabold text-sky-900">590 € las dos (Ahorra 110€)</span>
-                  <span class="block text-[10.5px] text-slate-700 leading-tight mt-1">Suelta o con Plan Base. Incluye reunión con tu técnico, implantación y Sonda.</span>
-                </div>
-                <div class="bg-emerald-50 rounded-2xl p-3 border-2 border-emerald-500 flex flex-col justify-between shadow-md">
-                  <span class="block text-[10px] font-extrabold text-emerald-900 uppercase">3. Bonificada con Pack ★</span>
-                  <span class="block text-xl font-black text-emerald-700 my-0.5">195 € <span class="text-[11px] font-bold text-emerald-800">por 1</span></span>
-                  <span class="block text-[11px] font-black text-emerald-900">390 € las dos (Ahorra 310€)</span>
-                  <span class="block text-[10.5px] text-emerald-950 font-semibold leading-tight mt-1">Todo el servicio «Llave en Mano» bonificado un 44% con cualquier Pack de 2+ servicios.</span>
+                <div class="bg-emerald-50 rounded-2xl p-3.5 border-2 border-emerald-500 flex flex-col justify-between shadow-md">
+                  <span class="block text-[10.5px] font-extrabold text-emerald-900 uppercase">2. Bonificada con Pack 2+ Servicios ★</span>
+                  <span class="block text-2xl font-black text-emerald-700 my-0.5">195 € <span class="text-xs font-bold text-emerald-800">por 1 auditoría</span></span>
+                  <span class="block text-xs font-black text-emerald-900">390 € las dos juntas (Ahorras 310 €)</span>
+                  <span class="block text-[11px] text-emerald-950 font-semibold leading-snug mt-1.5">Todo el servicio «Llave en Mano» completo bonificado un 44% al activar cualquier Pack de 2 o más servicios.</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Columna Derecha (5 cols): Resumen de los 4 Grupos correlativos S1 a S10 + Hardware Atril NFC/QR -->
+          <!-- Columna Derecha (5 cols): Los servicios divididos en 4 Grupos (Sin repetir Grupo 3 ni Grupo 4) + Hardware Atril -->
           <div class="lg:col-span-5 flex flex-col justify-between gap-3.5">
 
             <div class="sp-light-card-3d-sky rounded-3xl p-4 flex-1 flex flex-col justify-between">
               <div>
                 <div class="flex items-center justify-between gap-2 mb-2">
                   <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-sky-900 bg-sky-100 px-2.5 py-0.5 rounded-full border border-sky-300">
-                    🚀 Los 4 Grupos en Orden de Dificultad (S1 a S10)
+                    🚀 Los servicios divididos en 4 Grupos (S1 a S10)
                   </span>
-                  <span class="text-[10.5px] font-extrabold text-emerald-700">🎁 Bóveda Gratis desde 3 serv.</span>
+                  <span class="text-[10.5px] font-extrabold text-emerald-700">🎁 Bóveda Gratis (3+ serv.)</span>
                 </div>
                 <ul class="space-y-1.5 text-[11.5px] text-slate-800 leading-snug">
                   <li class="flex justify-between gap-2 border-b border-sky-200/70 pb-1">
-                    <span><strong>Grupo 1 (S1 a S5 • Implantación Rápida):</strong></span>
-                    <strong class="text-brand-navy whitespace-nowrap">+40 €/m (+75 € Setup)</strong>
+                    <span><strong class="text-brand-navy">Grupo 1</strong> (S1 Reseñas, S2 WA, S3 Leads, S4 Gastos, S5 Inactivos):</span>
+                    <strong class="text-brand-navy whitespace-nowrap">59 € 1.º | +40 €/m</strong>
                   </li>
                   <li class="flex justify-between gap-2 border-b border-sky-200/70 pb-1">
-                    <span><strong>Grupo 2 (S6 Agenda, S7 Firma, S8 Cobros):</strong></span>
+                    <span><strong class="text-sky-900">Grupo 2</strong> (S6 Agenda, S7 Firma, S8 Cobros):</span>
                     <strong class="text-sky-800 whitespace-nowrap">+59 €/m (+110 €) <span class="text-[10px] text-slate-500 font-normal">| 79€ s.</span></strong>
                   </li>
-                  <li class="flex justify-between gap-2 border-b border-sky-200/70 pb-1">
-                    <span><strong>Grupo 3 (Sat.1 Instagram 3 en 1 Meta API):</strong></span>
-                    <strong class="text-pink-700 whitespace-nowrap">+49 €/m (+75 €) <span class="text-[10px] text-slate-500 font-normal">| 69€ s.</span></strong>
+                  <li class="pt-0.5">
+                    <div class="flex justify-between gap-2">
+                      <span><strong class="text-pink-800">Grupo 3</strong> · Sat.1 Instagram 3 en 1 (Meta API):</span>
+                      <strong class="text-pink-700 whitespace-nowrap">+49 €/m (+75 €) <span class="text-[10px] text-slate-500 font-normal">| 69€ s.</span></strong>
+                    </div>
+                    <div class="flex justify-between gap-2 pl-12 border-b border-sky-200/70 pb-1 mt-0.5 text-slate-700">
+                      <span>· Sat.2 Logística 360 / Sat.3 Redactor RAG:</span>
+                      <strong class="text-indigo-700 whitespace-nowrap">+59 € / +69 €/m <span class="text-[10px] text-slate-500 font-normal">combo</span></strong>
+                    </div>
                   </li>
-                  <li class="flex justify-between gap-2 border-b border-sky-200/70 pb-1">
-                    <span><strong>Grupo 3 (Sat.2 Logística / Sat.3 RAG B2B):</strong></span>
-                    <strong class="text-indigo-700 whitespace-nowrap">+59 € / +69 €/m <span class="text-[10px] text-slate-500 font-normal">combo</span></strong>
-                  </li>
-                  <li class="flex justify-between gap-2 border-b border-sky-200/70 pb-1">
-                    <span><strong>Grupo 4 (S9 Rescate Llamadas WA 250/m):</strong></span>
-                    <strong class="text-sky-800 whitespace-nowrap">+59 €/m (+110 €) <span class="text-[10px] text-slate-500 font-normal">| 79€ s.</span></strong>
-                  </li>
-                  <li class="flex justify-between gap-2">
-                    <span><strong>Grupo 4 (S10 Centralita Voz IA 24/7 250m):</strong></span>
-                    <strong class="text-indigo-900 whitespace-nowrap">+129 €/m (+250 €) <span class="text-[10px] text-slate-500 font-normal">| 169€ s.</span></strong>
+                  <li class="pt-0.5">
+                    <div class="flex justify-between gap-2">
+                      <span><strong class="text-indigo-950">Grupo 4</strong> · S9 Rescate Llamadas WA (250/m):</span>
+                      <strong class="text-sky-800 whitespace-nowrap">+59 €/m (+110 €) <span class="text-[10px] text-slate-500 font-normal">| 79€ s.</span></strong>
+                    </div>
+                    <div class="flex justify-between gap-2 pl-12 mt-0.5 text-slate-700">
+                      <span>· S10 Centralita Voz IA 24/7 (250 min):</span>
+                      <strong class="text-indigo-900 whitespace-nowrap">+129 €/m (+250 €) <span class="text-[10px] text-slate-500 font-normal">| 169€ s.</span></strong>
+                    </div>
                   </li>
                 </ul>
               </div>
@@ -16705,7 +16719,7 @@
       });
 
       function iniciarVigilanteMicrofonoContinuo() {
-        /* Gestionado por el motor unificado V150 (sin colisiones de setInterval cada 950ms) */
+        /* Gestionado por el motor unificado V151 */
       }
 
       window.spActivarModoEscuchaPersistente = function(forzarReinicio) {
@@ -18051,29 +18065,25 @@
 })();
 </script>
 <!-- === [FIN_SP_MEJORAS_V120_FIN_DE_SEMANA_Y_CARRITO_S1_S2] === -->
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V150_START] -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V151_START] -->
 <script>
 (function() {
   /* =========================================================================
-     1. MOTOR DEFINITIVO DE VOZ Y ESCUCHA FLUIDA DEL TECNOCONSULTOR (V150)
-        Soluciona los 3 problemas que impedían hablar fluido en index.html:
-        a) Funciona tanto en file:// como en http:// (sin bloquear file://).
-        b) Unifica en 1 solo reconocedor el Teleprompter LED (`🎙️ «...»`) y el
-           auto-rearme tras cada respuesta del consultor.
-        c) Mantiene una pista de audio silenciosa tras el primer permiso para que
-           el navegador no cierre el canal de micrófono entre frases.
+     1. REPARACIÓN DEL TECNOCONSULTOR EN `file://` Y SERVIDOR:
+        Cuando terminas de hablar y aparece tu frase en el Teleprompter LED,
+        garantiza que responda en voz alta en <1.8s sin quedarse colgado en
+        los 4 intentos de fetch a Vertex AI cuando abres desde `file://`.
      ========================================================================= */
-  var _spRecUnicoV150 = null;
-  var _spEscuchandoActivoV150 = false;
-  var _spHablandoConsultorV150 = false;
-  var _spManosLibresDeseadoV150 = false;
-  var _spTimerSilencioV150 = null;
-  var _spLineaDictadoEnPantallaV150 = null;
-  var _spStreamPermisoCacheV150 = null;
-  var _spPidiendoPermisoAhoraV150 = false;
-  var _spUltimoStartTsV150 = 0;
+  var _spRecUnicoV151 = null;
+  var _spEscuchandoActivoV151 = false;
+  var _spHablandoConsultorV151 = false;
+  var _spManosLibresDeseadoV151 = false;
+  var _spTimerSilencioV151 = null;
+  var _spLineaDictadoEnPantallaV151 = null;
+  var _spPidiendoPermisoAhoraV151 = false;
+  var _spUltimoStartTsV151 = 0;
 
-  function actualizarUiMicrofonoTecnosalaV150(modo) {
+  function actualizarUiMicrofonoTecnosalaV151(modo) {
     var btnV = document.getElementById('spBtnVoiceTecnosala');
     var txtV = document.getElementById('spVoiceBtnText');
     var icoV = document.getElementById('spVoiceMicIcon');
@@ -18108,29 +18118,29 @@
     }
   }
 
-  function pintarTranscripcionEnTeleprompterV150(textoParcial) {
+  function pintarTranscripcionEnTeleprompterV151(textoParcial) {
     var track = document.getElementById('spTeleprompterRollTrack');
     if (!track) return;
-    if (!_spLineaDictadoEnPantallaV150 || !_spLineaDictadoEnPantallaV150.parentNode) {
-      _spLineaDictadoEnPantallaV150 = document.createElement('div');
-      _spLineaDictadoEnPantallaV150.className = 'sp-led-line-item sp-led-line-user';
-      track.appendChild(_spLineaDictadoEnPantallaV150);
+    if (!_spLineaDictadoEnPantallaV151 || !_spLineaDictadoEnPantallaV151.parentNode) {
+      _spLineaDictadoEnPantallaV151 = document.createElement('div');
+      _spLineaDictadoEnPantallaV151.className = 'sp-led-line-item sp-led-line-user';
+      track.appendChild(_spLineaDictadoEnPantallaV151);
       while (track.children.length > 4) {
         track.removeChild(track.firstElementChild);
       }
     }
-    _spLineaDictadoEnPantallaV150.innerHTML = '🎙️ <span>«' + String(textoParcial || '').replace(/</g, '&lt;') + '»</span><span class="sp-led-cursor"></span>';
+    _spLineaDictadoEnPantallaV151.innerHTML = '🎙️ <span>«' + String(textoParcial || '').replace(/</g, '&lt;') + '»</span><span class="sp-led-cursor"></span>';
   }
 
-  function limpiarLineaDictadoTemporalV150() {
-    if (_spLineaDictadoEnPantallaV150 && _spLineaDictadoEnPantallaV150.parentNode) {
-      try { _spLineaDictadoEnPantallaV150.parentNode.removeChild(_spLineaDictadoEnPantallaV150); } catch (e) {}
+  function limpiarLineaDictadoTemporalV151() {
+    if (_spLineaDictadoEnPantallaV151 && _spLineaDictadoEnPantallaV151.parentNode) {
+      try { _spLineaDictadoEnPantallaV151.parentNode.removeChild(_spLineaDictadoEnPantallaV151); } catch (e) {}
     }
-    _spLineaDictadoEnPantallaV150 = null;
+    _spLineaDictadoEnPantallaV151 = null;
   }
 
-  function inicializarInstanciaUnicaSpeechV150() {
-    if (_spRecUnicoV150) return _spRecUnicoV150;
+  function inicializarInstanciaUnicaSpeechV151() {
+    if (_spRecUnicoV151) return _spRecUnicoV151;
     var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRec) return null;
 
@@ -18143,40 +18153,37 @@
     var fraseAcumulada = '';
 
     function dispararEnvioFraseDetectada() {
-      if (_spTimerSilencioV150) {
-        clearTimeout(_spTimerSilencioV150);
-        _spTimerSilencioV150 = null;
+      if (_spTimerSilencioV151) {
+        clearTimeout(_spTimerSilencioV151);
+        _spTimerSilencioV151 = null;
       }
       var enviar = String(fraseAcumulada || '').trim();
       fraseAcumulada = '';
       if (!enviar || enviar.length < 2) return;
-      if (_spHablandoConsultorV150) return;
+      if (_spHablandoConsultorV151) return;
 
-      limpiarLineaDictadoTemporalV150();
-      _spHablandoConsultorV150 = true;
+      limpiarLineaDictadoTemporalV151();
+      _spHablandoConsultorV151 = true;
 
-      /* Pausamos el reconocedor mientras el consultor habla para que no se escuche a sí mismo */
-      if (_spRecUnicoV150 && _spEscuchandoActivoV150) {
-        try { _spRecUnicoV150.stop(); } catch (e) {}
-        _spEscuchandoActivoV150 = false;
+      if (_spRecUnicoV151 && _spEscuchandoActivoV151) {
+        try { _spRecUnicoV151.stop(); } catch (e) {}
+        _spEscuchandoActivoV151 = false;
       }
 
-      actualizarUiMicrofonoTecnosalaV150('speaking');
-      if (typeof window.spProcesarConsultaEnTeleprompterDirecto === 'function') {
-        window.spProcesarConsultaEnTeleprompterDirecto(enviar);
-      }
+      actualizarUiMicrofonoTecnosalaV151('speaking');
+      window.spProcesarConsultaEnTeleprompterDirecto(enviar);
     }
 
     rec.onstart = function() {
-      _spEscuchandoActivoV150 = true;
-      _spPidiendoPermisoAhoraV150 = false;
-      if (!_spHablandoConsultorV150) {
-        actualizarUiMicrofonoTecnosalaV150('listening');
+      _spEscuchandoActivoV151 = true;
+      _spPidiendoPermisoAhoraV151 = false;
+      if (!_spHablandoConsultorV151) {
+        actualizarUiMicrofonoTecnosalaV151('listening');
       }
     };
 
     rec.onresult = function(ev) {
-      if (_spHablandoConsultorV150 || (window.speechSynthesis && window.speechSynthesis.speaking)) {
+      if (_spHablandoConsultorV151 || (window.speechSynthesis && window.speechSynthesis.speaking)) {
         fraseAcumulada = '';
         return;
       }
@@ -18192,165 +18199,522 @@
 
       var inp = document.getElementById('spTecnosalaInput');
       if (inp) inp.value = limpio;
-      pintarTranscripcionEnTeleprompterV150(limpio);
+      pintarTranscripcionEnTeleprompterV151(limpio);
 
-      if (_spTimerSilencioV150) clearTimeout(_spTimerSilencioV150);
-      /* Espera natural: 700ms si Chrome ya marcó final de frase, o 1250ms si sigues hablando con pausa */
-      _spTimerSilencioV150 = setTimeout(dispararEnvioFraseDetectada, esFinal ? 700 : 1250);
+      if (_spTimerSilencioV151) clearTimeout(_spTimerSilencioV151);
+      _spTimerSilencioV151 = setTimeout(dispararEnvioFraseDetectada, esFinal ? 620 : 1100);
     };
 
     rec.onerror = function(ev) {
-      _spEscuchandoActivoV150 = false;
-      _spPidiendoPermisoAhoraV150 = false;
+      _spEscuchandoActivoV151 = false;
+      _spPidiendoPermisoAhoraV151 = false;
       var errCode = ev ? ev.error : '';
       if (errCode === 'not-allowed' || errCode === 'service-not-allowed') {
-        _spManosLibresDeseadoV150 = false;
-        actualizarUiMicrofonoTecnosalaV150('idle');
+        _spManosLibresDeseadoV151 = false;
+        actualizarUiMicrofonoTecnosalaV151('idle');
       }
     };
 
     rec.onend = function() {
-      _spEscuchandoActivoV150 = false;
-      _spPidiendoPermisoAhoraV150 = false;
+      _spEscuchandoActivoV151 = false;
+      _spPidiendoPermisoAhoraV151 = false;
 
-      /* Si quedó texto pendiente de enviar cuando se cortó el tramo, lo enviamos ahora */
-      if (fraseAcumulada && fraseAcumulada.trim().length >= 2 && !_spHablandoConsultorV150) {
+      if (fraseAcumulada && fraseAcumulada.trim().length >= 2 && !_spHablandoConsultorV151) {
         dispararEnvioFraseDetectada();
         return;
       }
 
-      /* Si estamos en modo manos libres y el consultor NO está hablando, rearmamos el oído suavemente */
       var vistaTec = document.getElementById('vista-tecnosala');
       var enTecnosala = vistaTec && !vistaTec.classList.contains('hidden');
-      if (_spManosLibresDeseadoV150 && !_spHablandoConsultorV150 && enTecnosala) {
+      if (_spManosLibresDeseadoV151 && !_spHablandoConsultorV151 && enTecnosala) {
         setTimeout(function() {
-          if (_spManosLibresDeseadoV150 && !_spHablandoConsultorV150 && !_spEscuchandoActivoV150) {
+          if (_spManosLibresDeseadoV151 && !_spHablandoConsultorV151 && !_spEscuchandoActivoV151) {
             window.spActivarModoEscuchaPersistente(false);
           }
-        }, 320);
-      } else if (!_spHablandoConsultorV150) {
-        actualizarUiMicrofonoTecnosalaV150('idle');
+        }, 300);
+      } else if (!_spHablandoConsultorV151) {
+        actualizarUiMicrofonoTecnosalaV151('idle');
       }
     };
 
-    _spRecUnicoV150 = rec;
+    _spRecUnicoV151 = rec;
     return rec;
   }
 
-  /* Sobrescribimos las funciones de escucha para que todas usen este único motor limpio */
   window.spActivarModoEscuchaPersistente = function(forzarManual) {
     var vistaTec = document.getElementById('vista-tecnosala');
     if (!vistaTec || vistaTec.classList.contains('hidden')) return;
 
     if (forzarManual) {
-      _spManosLibresDeseadoV150 = true;
-      _spHablandoConsultorV150 = false;
+      _spManosLibresDeseadoV151 = true;
+      _spHablandoConsultorV151 = false;
       if (window.speechSynthesis && window.speechSynthesis.speaking) {
         try { window.speechSynthesis.cancel(); } catch (e) {}
       }
     }
 
-    if (!_spManosLibresDeseadoV150 || _spHablandoConsultorV150) return;
-    if (_spEscuchandoActivoV150 || _spPidiendoPermisoAhoraV150) return;
+    if (!_spManosLibresDeseadoV151 || _spHablandoConsultorV151) return;
+    if (_spEscuchandoActivoV151 || _spPidiendoPermisoAhoraV151) return;
 
     var ahora = Date.now();
-    if (!forzarManual && (ahora - _spUltimoStartTsV150 < 900)) return;
-    _spUltimoStartTsV150 = ahora;
+    if (!forzarManual && (ahora - _spUltimoStartTsV151 < 800)) return;
+    _spUltimoStartTsV151 = ahora;
 
-    var rec = inicializarInstanciaUnicaSpeechV150();
+    var rec = inicializarInstanciaUnicaSpeechV151();
     if (!rec) return;
 
     try {
-      _spPidiendoPermisoAhoraV150 = true;
+      _spPidiendoPermisoAhoraV151 = true;
       rec.start();
     } catch (e) {
-      _spPidiendoPermisoAhoraV150 = false;
+      _spPidiendoPermisoAhoraV151 = false;
     }
   };
 
   window.spIniciarEscuchaDirectaConsultor = function() {
-    _spManosLibresDeseadoV150 = true;
-    _spHablandoConsultorV150 = false;
+    _spManosLibresDeseadoV151 = true;
+    _spHablandoConsultorV151 = false;
     window.spActivarModoEscuchaPersistente(true);
   };
 
   window.spToggleDictadoVozTecnosala = function() {
-    /* Si aún no se había despertado la cabina del Teleprompter 2027, la abrimos y saludamos o escuchamos */
     var stage = document.getElementById('spTeleprompter2027Stage');
     if (!stage && typeof window.spActivarOrbeConsultorInteractivo === 'function') {
       window.spActivarOrbeConsultorInteractivo();
       return;
     }
-    if (_spEscuchandoActivoV150 && _spRecUnicoV150) {
-      _spManosLibresDeseadoV150 = false;
-      try { _spRecUnicoV150.stop(); } catch (e) {}
-      _spEscuchandoActivoV150 = false;
-      actualizarUiMicrofonoTecnosalaV150('idle');
+    if (_spEscuchandoActivoV151 && _spRecUnicoV151) {
+      _spManosLibresDeseadoV151 = false;
+      try { _spRecUnicoV151.stop(); } catch (e) {}
+      _spEscuchandoActivoV151 = false;
+      actualizarUiMicrofonoTecnosalaV151('idle');
       return;
     }
-    _spManosLibresDeseadoV150 = true;
-    _spHablandoConsultorV150 = false;
+    _spManosLibresDeseadoV151 = true;
+    _spHablandoConsultorV151 = false;
     window.spActivarModoEscuchaPersistente(true);
   };
 
-  /* Enganchar spReproducirEnTeleprompter2027 y spPararConsultorTotalmente para coordinar el turno de palabra */
-  function engancharTurnosDePalabraConsultorV150() {
-    if (typeof window.spReproducirEnTeleprompter2027 === 'function' && !window.spReproducirEnTeleprompter2027._hookV150) {
+  /* LA CLAVE POR LA QUE ANTES NO TE CONTESTABA AL HABLARLE:
+     Sobrescribimos `spProcesarConsultaEnTeleprompterDirecto` con un temporizador
+     salvavidas de 1.8 segundos para que NUNCA se quede mudo esperando un fetch colgado */
+  var _historialV151 = [];
+  window.spProcesarConsultaEnTeleprompterDirecto = function(textoPregunta) {
+    var limpia = String(textoPregunta || '').trim();
+    if (!limpia) return;
+
+    var inp = document.getElementById('spTecnosalaInput');
+    if (inp) inp.value = '';
+
+    _historialV151.push('Usuario: ' + limpia);
+    if (typeof window.spExtraerYPreconfigurarCarritoDesdeCharla === 'function') {
+      try { window.spExtraerYPreconfigurarCarritoDesdeCharla(limpia, _historialV151); } catch (e) {}
+    }
+
+    var respLocalGarantizada = (typeof window.spObtenerRespuestaOmniscienteCompleta === 'function')
+      ? window.spObtenerRespuestaOmniscienteCompleta(limpia)
+      : 'En Sistemas Pyme activamos en 24-48 horas tu sistema de Reseñas con IA en Google (59 €/mes), el Cortafuegos por WhatsApp (en Pack Escudo Básico Dúo por 99 €/mes), el Atril NFC (39 €) y nuestras 2 Super-Auditorías SEO/GEO IA y Neuro-CRO Web (195 € c/u con Pack o 350 € sueltas). ¿Qué área de tu negocio quieres impulsar primero?';
+
+    var respondidoYa = false;
+    function emitirRespuestaEnVivo(textoRespuesta) {
+      if (respondidoYa) return;
+      respondidoYa = true;
+      var textoFinal = String(textoRespuesta || respLocalGarantizada).replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
+      _historialV151.push('Consultor: ' + textoFinal);
+      if (typeof window.spReproducirEnTeleprompter2027 === 'function') {
+        window.spReproducirEnTeleprompter2027(textoFinal, null, limpia);
+      }
+    }
+
+    /* Salvavidas estricto: si en 1.6 segundos el servidor remoto no ha contestado, responde al instante con la Base Omnisciente */
+    var timerSalvavidas = setTimeout(function() {
+      emitirRespuestaEnVivo(respLocalGarantizada);
+    }, 1600);
+
+    fetch('http://127.0.0.1:5000/api/tecnosala-consulta', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pregunta: limpia, apoyo: respLocalGarantizada })
+    })
+    .then(function(r) { return r && r.ok ? r.json() : null; })
+    .then(function(d) {
+      clearTimeout(timerSalvavidas);
+      if (d && (d.respuesta || d.answer)) {
+        emitirRespuestaEnVivo(d.respuesta || d.answer);
+      } else {
+        emitirRespuestaEnVivo(respLocalGarantizada);
+      }
+    })
+    .catch(function() {
+      clearTimeout(timerSalvavidas);
+      emitirRespuestaEnVivo(respLocalGarantizada);
+    });
+  };
+
+  function engancharTurnosDePalabraConsultorV151() {
+    if (typeof window.spReproducirEnTeleprompter2027 === 'function' && !window.spReproducirEnTeleprompter2027._hookV151) {
       var origReprod = window.spReproducirEnTeleprompter2027;
       var nuevaReprod = function(textoCompleto, alTerminarCallback, etiquetaUsuarioPrevio) {
-        _spHablandoConsultorV150 = true;
-        _spManosLibresDeseadoV150 = true;
-        limpiarLineaDictadoTemporalV150();
-        if (_spRecUnicoV150 && _spEscuchandoActivoV150) {
-          try { _spRecUnicoV150.stop(); } catch (e) {}
-          _spEscuchandoActivoV150 = false;
+        _spHablandoConsultorV151 = true;
+        _spManosLibresDeseadoV151 = true;
+        limpiarLineaDictadoTemporalV151();
+        if (_spRecUnicoV151 && _spEscuchandoActivoV151) {
+          try { _spRecUnicoV151.stop(); } catch (e) {}
+          _spEscuchandoActivoV151 = false;
         }
-        actualizarUiMicrofonoTecnosalaV150('speaking');
+        actualizarUiMicrofonoTecnosalaV151('speaking');
 
         return origReprod.call(this, textoCompleto, function() {
-          _spHablandoConsultorV150 = false;
+          _spHablandoConsultorV151 = false;
           if (typeof alTerminarCallback === 'function') {
             try { alTerminarCallback(); } catch (e) {}
           }
-          if (_spManosLibresDeseadoV150) {
+          if (_spManosLibresDeseadoV151) {
             setTimeout(function() {
               window.spActivarModoEscuchaPersistente(false);
             }, 220);
           }
         }, etiquetaUsuarioPrevio);
       };
-      nuevaReprod._hookV150 = true;
+      nuevaReprod._hookV151 = true;
       window.spReproducirEnTeleprompter2027 = nuevaReprod;
     }
 
-    if (typeof window.spPararConsultorTotalmente === 'function' && !window.spPararConsultorTotalmente._hookV150) {
+    if (typeof window.spPararConsultorTotalmente === 'function' && !window.spPararConsultorTotalmente._hookV151) {
       var origParar = window.spPararConsultorTotalmente;
       var nuevoParar = function(ev) {
-        _spManosLibresDeseadoV150 = false;
-        _spHablandoConsultorV150 = false;
-        _spEscuchandoActivoV150 = false;
-        _spPidiendoPermisoAhoraV150 = false;
-        if (_spTimerSilencioV150) {
-          clearTimeout(_spTimerSilencioV150);
-          _spTimerSilencioV150 = null;
+        _spManosLibresDeseadoV151 = false;
+        _spHablandoConsultorV151 = false;
+        _spEscuchandoActivoV151 = false;
+        _spPidiendoPermisoAhoraV151 = false;
+        if (_spTimerSilencioV151) {
+          clearTimeout(_spTimerSilencioV151);
+          _spTimerSilencioV151 = null;
         }
-        limpiarLineaDictadoTemporalV150();
-        if (_spRecUnicoV150) {
-          try { _spRecUnicoV150.stop(); } catch (e) {}
+        limpiarLineaDictadoTemporalV151();
+        if (_spRecUnicoV151) {
+          try { _spRecUnicoV151.stop(); } catch (e) {}
         }
         var r = origParar.apply(this, arguments);
-        actualizarUiMicrofonoTecnosalaV150('idle');
+        actualizarUiMicrofonoTecnosalaV151('idle');
         return r;
       };
-      nuevoParar._hookV150 = true;
+      nuevoParar._hookV151 = true;
       window.spPararConsultorTotalmente = nuevoParar;
     }
   }
 
   /* =========================================================================
-     2. COLORES Y AGENDA DEL CARRITO DE COMPRA (TARJETAS 4, 5 Y CITA DE ALTA)
+     2. MOTOR SIMÉTRICO DE PRECIOS CLAROS (MENSUAL Y PLAN ANUAL SIN SALTOS DE €)
      ========================================================================= */
-  function aplicarIdsColorCajasCarritoV150() {
+  window._spModoTarifasActual = 'mensual';
+  window._spNumAuditoriasEscudo = 1;
+
+  window._spRenderizarTarjetasPrecios = function() {
+    var btnM = document.getElementById('btnSwitchMensual');
+    var btnA = document.getElementById('btnSwitchAnual');
+    var pBase = document.querySelector('[data-plan-price="base"]');
+    var pDuo = document.querySelector('[data-plan-price="duo"]');
+    var pTri = document.querySelector('[data-plan-price="trinity"]');
+    var subBase = document.getElementById('spSubPriceBase');
+    var subDuo = document.getElementById('spSubPriceDuo');
+    var subEsc = document.getElementById('spSubPriceEscudoTotal');
+    var savBase = document.getElementById('spSavingLineBase');
+    var savDuo = document.getElementById('spSavingLineDuo');
+    var savEsc = document.getElementById('spSavingLineEscudoTotal');
+    var titleEsc = document.getElementById('spTitleEscudoTotal');
+    var tagAud = document.getElementById('spAuditAddonPriceTag');
+    var bulletAud = document.getElementById('spBulletAuditEscudo');
+    var bulletBon = document.getElementById('spBulletBonusEscudo');
+    var badgeAhorro = document.getElementById('spBadgeAhorroEscudoTotal');
+    var btn1Aud = document.getElementById('btnEscudo1Aud');
+    var btn2Aud = document.getElementById('btnEscudo2Aud');
+    var waEsc = document.getElementById('spBtnWaPlanEscudoTotal');
+
+    var esPlus = (window._spNumAuditoriasEscudo === 2);
+    var costeAud = esPlus ? 390 : 195;
+    var ahorroAud = esPlus ? 310 : 155;
+
+    if (btn1Aud && btn2Aud) {
+      if (esPlus) {
+        btn2Aud.className = 'px-2 py-0.5 rounded-md bg-emerald-600 text-white cursor-pointer transition-all whitespace-nowrap shadow-sm';
+        btn1Aud.className = 'px-2 py-0.5 rounded-md text-teal-900 hover:text-brand-navy cursor-pointer transition-all whitespace-nowrap';
+      } else {
+        btn1Aud.className = 'px-2 py-0.5 rounded-md bg-emerald-600 text-white cursor-pointer transition-all whitespace-nowrap shadow-sm';
+        btn2Aud.className = 'px-2 py-0.5 rounded-md text-teal-900 hover:text-brand-navy cursor-pointer transition-all whitespace-nowrap';
+      }
+    }
+
+    if (titleEsc) titleEsc.textContent = esPlus ? 'Pack Escudo Plus ★' : 'Pack Escudo Total ★';
+    if (tagAud) tagAud.textContent = esPlus ? '+ 390 € (2 Auditorías)' : '+ 195 € (1 Auditoría)';
+    if (badgeAhorro) badgeAhorro.textContent = esPlus ? '¡Ahorras 310 € en las 2 Auditorías!' : '¡Ahorras 155 € en la Auditoría!';
+
+    if (bulletAud) {
+      bulletAud.innerHTML = esPlus
+        ? '<strong class="text-brand-navy">Las 2 Super-Auditorías Llave en Mano incluidas</strong> (SEO+GEO IA + Neuro-CRO Web) por <strong class="text-emerald-800">390 €</strong> en vez de 700 €.'
+        : '<strong class="text-brand-navy">1 Super-Auditoría Llave en Mano a elegir</strong> (SEO+GEO IA o Neuro-CRO Web) por solo <strong class="text-emerald-800">195 €</strong> en vez de 350 €.';
+    }
+    if (bulletBon) {
+      bulletBon.innerHTML = esPlus
+        ? 'Dejas blindados a la vez tu posicionamiento en Google/IA y la conversión de tu página web.'
+        : 'Si eliges <strong class="text-brand-navy">+2 Auditorías (390 €)</strong> arriba, te llevas ambas implantadas ahorrando <strong class="text-emerald-800">310 €</strong>.';
+    }
+
+    if (window._spModoTarifasActual === 'anual') {
+      if (btnA) btnA.className = 'px-3 py-1.5 rounded-xl text-xs font-extrabold bg-brand-navy text-white shadow-sm transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap';
+      if (btnM) btnM.className = 'px-3 py-1.5 rounded-xl text-xs font-extrabold text-slate-700 hover:text-brand-navy transition-all cursor-pointer whitespace-nowrap';
+
+      if (pBase) pBase.innerHTML = '<div class="flex items-baseline gap-1.5 whitespace-nowrap"><span class="text-2xl sm:text-[28px] font-black text-brand-navy whitespace-nowrap">49 €</span><span class="text-xs font-bold text-slate-500 whitespace-nowrap">/ mes eq. (590 €/año)</span></div><span class="text-[10px] font-bold text-slate-500 bg-white px-2 py-0.5 rounded-lg border border-slate-200 whitespace-nowrap">10 meses</span>';
+      if (subBase) subBase.textContent = 'Día 1 Anual: 740 € (590 € 10 meses + 150 € Setup)';
+      if (savBase) savBase.textContent = '🎁 Ahorras 118 € al año (pagas 10 meses = 2 meses gratis)';
+
+      if (pDuo) pDuo.innerHTML = '<div class="flex items-baseline gap-1.5 whitespace-nowrap"><span class="text-2xl sm:text-[28px] font-black text-sky-700 whitespace-nowrap">82,50 €</span><span class="text-xs font-bold text-slate-500 whitespace-nowrap">/ mes eq. (990 €/año)</span></div><span class="text-[10px] font-extrabold text-sky-900 bg-sky-100 px-2 py-0.5 rounded-lg border border-sky-300 whitespace-nowrap">S1 + S2</span>';
+      if (subDuo) subDuo.textContent = 'Día 1 Anual: 1.215 € (990 € 10 meses + 225 € Setup)';
+      if (savDuo) savDuo.textContent = '🎁 Ahorras 198 € en cuotas (2 meses gratis) + 75 € Setup';
+
+      if (pTri) pTri.innerHTML = '<span class="text-2xl sm:text-[28px] font-black text-emerald-700 whitespace-nowrap">82,50 €</span><span class="text-xs font-bold text-slate-500 whitespace-nowrap">/ mes eq. (990 €/año)</span>';
+      var totalAnualEsc = 1215 + costeAud;
+      if (subEsc) subEsc.textContent = 'Día 1 Anual: ' + totalAnualEsc + ' € (1.215 € Pack Anual + ' + costeAud + ' € Aud.)';
+      if (savEsc) savEsc.textContent = '🎁 Ahorras 198 € (2 meses gratis) + ' + ahorroAud + ' € en Auditoría + 75 € Setup';
+    } else {
+      if (btnM) btnM.className = 'px-3 py-1.5 rounded-xl text-xs font-extrabold bg-brand-navy text-white shadow-sm transition-all cursor-pointer whitespace-nowrap';
+      if (btnA) btnA.className = 'px-3 py-1.5 rounded-xl text-xs font-extrabold text-slate-700 hover:text-brand-navy transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap';
+
+      if (pBase) pBase.innerHTML = '<div class="flex items-baseline gap-1.5 whitespace-nowrap"><span class="text-2xl sm:text-[28px] font-black text-brand-navy whitespace-nowrap">59 €</span><span class="text-xs font-bold text-slate-500 whitespace-nowrap">/ mes</span></div><span class="text-[10px] font-bold text-slate-500 bg-white px-2 py-0.5 rounded-lg border border-slate-200 whitespace-nowrap">Desde 1 módulo</span>';
+      if (subBase) subBase.textContent = 'Día 1 Flex: 209 € (150 € Setup + 59 € Mes 1)';
+      if (savBase) savBase.textContent = '✓ Sin permanencia anual (solo 3 meses mín.)';
+
+      if (pDuo) pDuo.innerHTML = '<div class="flex items-baseline gap-1.5 whitespace-nowrap"><span class="text-2xl sm:text-[28px] font-black text-sky-700 whitespace-nowrap">99 €</span><span class="text-xs font-bold text-slate-500 whitespace-nowrap">/ mes</span></div><span class="text-[10px] font-extrabold text-sky-900 bg-sky-100 px-2 py-0.5 rounded-lg border border-sky-300 whitespace-nowrap">S1 + S2 Activos</span>';
+      if (subDuo) subDuo.textContent = 'Día 1 Flex: 324 € (225 € Setup + 99 € Mes 1)';
+      if (savDuo) savDuo.textContent = '🎁 Ahorras 19 €/mes en cuota + 75 € en Setup';
+
+      if (pTri) pTri.innerHTML = '<span class="text-2xl sm:text-[28px] font-black text-emerald-700 whitespace-nowrap">99 €</span><span class="text-xs font-bold text-slate-500 whitespace-nowrap">/ mes</span>';
+      var totalFlexEsc = 324 + costeAud;
+      if (subEsc) subEsc.textContent = 'Día 1 Flex: ' + totalFlexEsc + ' € (225€ Setup + ' + costeAud + '€ Aud. + 99€ Mes 1)';
+      if (savEsc) savEsc.textContent = '🎁 Ahorras ' + ahorroAud + ' € en Auditoría + 75 € Setup + 19 €/m';
+    }
+
+    if (waEsc) {
+      waEsc.textContent = esPlus ? 'Activar Pack Escudo Plus →' : 'Activar Pack Escudo Total →';
+      waEsc.onclick = function(ev) {
+        if (ev) ev.preventDefault();
+        window.spAbrirCarritoConfigurador('duo', window._spNumAuditoriasEscudo);
+      };
+    }
+  };
+
+  window.cambiarModoTarifas = function(modo) {
+    window._spModoTarifasActual = (modo === 'anual') ? 'anual' : 'mensual';
+    window._spRenderizarTarjetasPrecios();
+  };
+
+  window.spSeleccionarNivelEscudoTotal = function(numAud) {
+    window._spNumAuditoriasEscudo = (numAud === 2) ? 2 : 1;
+    window._spRenderizarTarjetasPrecios();
+  };
+
+  /* =========================================================================
+     3. LÓGICA TÁCTIL ORIGINAL DE LAS 2 TARJETAS DE AUDITORÍAS («CÓMO AYUDAMOS»)
+        - Cara A -> clic abre Cara B (Estadísticas con sus 3 subcajas).
+        - Si pinchas encima de una de las 3 subcajas de estadísticas -> abre la
+          explicación detallada de esa estadística.
+        - Si vuelves a pinchar en ese texto detallado -> regresa a la Cara B
+          con las 3 subcajas de estadísticas.
+        - Si estás en la Cara B y pinchas fuera de las 3 subcajas -> pasa a la
+          Cara C (Explicación Técnica).
+        - Si estás en la Cara C y pinchas en la tarjeta (o en ✕) -> vuelve a la Cara A.
+     ========================================================================= */
+  var DETALLE_SUBCAJAS_AUDITORIA = {
+    1: {
+      1: {
+        titulo: '📊 x9 Ventas desde ChatGPT y Asistentes IA (Seer Interactive):',
+        texto: 'En el buscador tradicional de Google solo compra el 1,76% de las visitas porque abren diez pestañas para comparar precios. En cambio, cuando un cliente pregunta a ChatGPT o Gemini «¿cuál es el mejor profesional de mi zona?» y la IA recomienda directamente tu negocio, la conversión a cliente real sube al <strong>15,9% (9 veces más cierres)</strong>.'
+      },
+      2: {
+        titulo: '📊 +115% más apariciones al estructurar tu Entidad (Univ. de Princeton):',
+        texto: 'El 83% de los negocios recomendados por las IAs no son las webs más grandes, sino aquellas cuyos datos internos están conectados mediante código estructurado <code>Schema.org JSON-LD</code> al nodo oficial de su ciudad en <strong>Wikidata</strong> y cuentan con archivo <code>/llms.txt</code>.'
+      },
+      3: {
+        titulo: '📊 El 69% decide leyendo el resumen de la IA (Similarweb / SparkToro):',
+        texto: 'Casi 7 de cada 10 búsquedas actuales se resuelven leyendo el bloque superior generado por la IA sin hacer clic en enlaces azules. El 44% de esas recomendaciones se extraen del bloque de respuesta directa de tu portada.'
+      }
+    },
+    2: {
+      1: {
+        titulo: '📊 +156% más ventas al colocar tu propuesta donde miran (MIT Attention Insight):',
+        texto: 'El visitante decide en los primeros 3 a 5 segundos si se queda en tu web o se marcha. Al situar tu titular de valor, tus estrellas de Google Maps y tu llamada a la acción en las zonas calientes de lectura ocular, los contactos aumentan un 156%.'
+      },
+      2: {
+        titulo: '📊 +103% el doble de llamadas eliminando fricción móvil (Ley de Hick):',
+        texto: 'Cada casilla innecesaria en un formulario o un teléfono que no se puede pulsar con el pulgar desde el móvil hace que la mitad de tus visitas abandone. Simplificar el contacto duplica del 3,3% al 6,7% quienes te llaman o escriben.'
+      },
+      3: {
+        titulo: '📊 Sonda Térmica de 10 a 14 días (Certeza matemática del 94%):',
+        texto: 'En lugar de cambiar tu web a ciegas, instalamos durante 10-14 días nuestra Sonda Árbitro 100% anónima (cumplidora AEPD) que mide en qué punto exacto abandonan tus visitas y cuántas llamadas pierde tu teléfono fijo fuera de horario (tanto en Modo Ágil como en Modo Corporativo).'
+      }
+    }
+  };
+
+  window.spCerrarTarjetaAuditoriaACaraA = function(num, ev) {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    var circle = document.getElementById('spCaAuditCircle_' + num);
+    if (circle) circle.classList.remove('sp-circle-open');
+    window.spRestaurarVista3SubcajasCaraB(num);
+  };
+
+  window.spRestaurarVista3SubcajasCaraB = function(num) {
+    var caraB = document.getElementById('spCaAuditCaraB_' + num);
+    var caraC = document.getElementById('spCaAuditCaraC_' + num);
+    var resStat = document.getElementById('spCaAuditStatResumen_' + num);
+    var deepStat = document.getElementById('spCaAuditStatDeep_' + num);
+    var grid3 = document.getElementById('spCaStatGrid3_' + num);
+    var foot = document.getElementById('spCaStatFoot_' + num);
+    var singleExp = document.getElementById('spCaStatSingleExpand_' + num);
+    var btnB = document.getElementById('spBtnCaraB_' + num);
+    var btnC = document.getElementById('spBtnCaraC_' + num);
+    var linkToggle = document.getElementById('spLinkToggleVista_' + num);
+
+    if (caraB) caraB.classList.remove('hidden');
+    if (caraC) caraC.classList.add('hidden');
+    if (resStat) resStat.classList.remove('hidden');
+    if (deepStat) deepStat.classList.add('hidden');
+    if (grid3) grid3.classList.remove('hidden');
+    if (foot) foot.classList.remove('hidden');
+    if (singleExp) {
+      singleExp.classList.add('hidden');
+      singleExp.innerHTML = '';
+    }
+    if (btnB && btnC) {
+      if (num === 1) {
+        btnB.className = 'px-3 py-1 rounded-full text-xs font-black bg-cyan-600 text-white shadow cursor-pointer transition';
+        btnC.className = 'px-3 py-1 rounded-full text-xs font-bold bg-white/85 text-cyan-900 border border-cyan-400/60 cursor-pointer transition';
+      } else {
+        btnB.className = 'px-3 py-1 rounded-full text-xs font-black bg-amber-500 text-slate-950 shadow cursor-pointer transition';
+        btnC.className = 'px-3 py-1 rounded-full text-xs font-bold bg-white/85 text-amber-900 border border-amber-400/60 cursor-pointer transition';
+      }
+    }
+    if (linkToggle) {
+      linkToggle.textContent = '🛠️ Ver explicación técnica (Cara C) →';
+    }
+  };
+
+  window.spCambiarCaraInternaAuditoria = function(num, caraDestino, ev) {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    var caraB = document.getElementById('spCaAuditCaraB_' + num);
+    var caraC = document.getElementById('spCaAuditCaraC_' + num);
+    var btnB = document.getElementById('spBtnCaraB_' + num);
+    var btnC = document.getElementById('spBtnCaraC_' + num);
+    var linkToggle = document.getElementById('spLinkToggleVista_' + num);
+
+    if (caraDestino === 'C') {
+      if (caraB) caraB.classList.add('hidden');
+      if (caraC) caraC.classList.remove('hidden');
+      if (btnB && btnC) {
+        if (num === 1) {
+          btnC.className = 'px-3 py-1 rounded-full text-xs font-black bg-cyan-600 text-white shadow cursor-pointer transition';
+          btnB.className = 'px-3 py-1 rounded-full text-xs font-bold bg-white/85 text-cyan-900 border border-cyan-400/60 cursor-pointer transition';
+        } else {
+          btnC.className = 'px-3 py-1 rounded-full text-xs font-black bg-amber-500 text-slate-950 shadow cursor-pointer transition';
+          btnB.className = 'px-3 py-1 rounded-full text-xs font-bold bg-white/85 text-amber-900 border border-amber-400/60 cursor-pointer transition';
+        }
+      }
+      if (linkToggle) linkToggle.textContent = '📊 Volver a Estadísticas (Cara B)';
+    } else {
+      window.spRestaurarVista3SubcajasCaraB(num);
+    }
+  };
+
+  /* Al pinchar encima de una de las 3 subcajas de estadísticas -> muestra su explicación detallada.
+     Al volver a pinchar en ese texto detallado -> regresa a la Cara B con las 3 subcajas. */
+  window.spToggleExpandirCajaStat = function(numCard, idxStat, ev) {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    var grid3 = document.getElementById('spCaStatGrid3_' + numCard);
+    var foot = document.getElementById('spCaStatFoot_' + numCard);
+    var singleExp = document.getElementById('spCaStatSingleExpand_' + numCard);
+    if (!singleExp || !grid3) return;
+
+    var info = (DETALLE_SUBCAJAS_AUDITORIA[numCard] || {})[idxStat];
+    if (!info) return;
+
+    grid3.classList.add('hidden');
+    if (foot) foot.classList.add('hidden');
+    var borderCol = (numCard === 1) ? 'border-cyan-500/70 hover:bg-cyan-50/90' : 'border-amber-500/70 hover:bg-amber-50/90';
+    var badgeCol = (numCard === 1) ? 'text-cyan-800' : 'text-amber-900';
+
+    singleExp.className = 'bg-white/95 rounded-2xl p-3.5 border-2 ' + borderCol + ' shadow-md text-left cursor-pointer transition my-1';
+    singleExp.innerHTML =
+      '<div class="flex items-center justify-between gap-2 border-b border-slate-200 pb-1.5 mb-1.5">' +
+        '<strong class="text-[13.5px] sm:text-[14.5px] font-black text-brand-navy">' + info.titulo + '</strong>' +
+        '<span class="text-[11px] font-extrabold ' + badgeCol + ' underline whitespace-nowrap">&larr; Pulsa aquí para volver</span>' +
+      '</div>' +
+      '<p class="text-[12.5px] sm:text-[13.5px] text-slate-800 leading-relaxed">' + info.texto + '</p>';
+
+    singleExp.onclick = function(eClick) {
+      if (eClick && eClick.stopPropagation) eClick.stopPropagation();
+      window.spRestaurarVista3SubcajasCaraB(numCard);
+    };
+  };
+
+  window.spToggleProfundizarCaraAuditoria = function(num, ev) {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    var caraC = document.getElementById('spCaAuditCaraC_' + num);
+    var estaEnCaraC = caraC && !caraC.classList.contains('hidden');
+    if (estaEnCaraC) {
+      window.spCambiarCaraInternaAuditoria(num, 'B', ev);
+    } else {
+      window.spCambiarCaraInternaAuditoria(num, 'C', ev);
+    }
+  };
+
+  /* Clic general en la tarjeta de Auditoría:
+     - Si está cerrada (Cara A) -> abre Cara B (con las 3 subcajas de estadísticas).
+     - Si está abierta en Cara B (con las 3 subcajas visibles) y pinchas fuera de las subcajas -> pasa a Cara C (Técnico).
+     - Si está abierta en un detalle de estadística -> vuelve a las 3 subcajas de Cara B.
+     - Si está en Cara C y pinchas fuera de botones -> cierra a Cara A. */
+  window.spToggleAuditCircleCA = function(num, ev) {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    var card = document.getElementById('spCaAuditCard_' + num);
+    var badge = document.getElementById('spCaAuditBadge_' + num);
+    var circle = document.getElementById('spCaAuditCircle_' + num);
+    if (!circle) return;
+
+    if (card && badge) {
+      var cRect = card.getBoundingClientRect();
+      var bRect = badge.getBoundingClientRect();
+      if (cRect.width > 0 && cRect.height > 0) {
+        var cx = (((bRect.left + bRect.width / 2) - cRect.left) / cRect.width * 100).toFixed(1) + '%';
+        var cy = (((bRect.top + bRect.height / 2) - cRect.top) / cRect.height * 100).toFixed(1) + '%';
+        circle.style.setProperty('--sp-cx', cx);
+        circle.style.setProperty('--sp-cy', cy);
+      }
+    }
+
+    var otroNum = (num === 1) ? 2 : 1;
+    var otroCircle = document.getElementById('spCaAuditCircle_' + otroNum);
+
+    if (!circle.classList.contains('sp-circle-open')) {
+      if (otroCircle) otroCircle.classList.remove('sp-circle-open');
+      window.spRestaurarVista3SubcajasCaraB(num);
+      circle.classList.add('sp-circle-open');
+      return;
+    }
+
+    /* Si ya estaba abierta: comprobar si está en un detalle expandido, en Cara B o en Cara C */
+    var singleExp = document.getElementById('spCaStatSingleExpand_' + num);
+    var caraC = document.getElementById('spCaAuditCaraC_' + num);
+    if (singleExp && !singleExp.classList.contains('hidden')) {
+      window.spRestaurarVista3SubcajasCaraB(num);
+    } else if (caraC && !caraC.classList.contains('hidden')) {
+      window.spCerrarTarjetaAuditoriaACaraA(num, ev);
+    } else {
+      window.spCambiarCaraInternaAuditoria(num, 'C', ev);
+    }
+  };
+
+  /* =========================================================================
+     4. COLORES Y AGENDA DEL CARRITO DE COMPRA (TARJETAS 4, 5 Y CITA DE ALTA)
+     ========================================================================= */
+  function aplicarIdsColorCajasCarritoV151() {
     var selAtr = document.getElementById('spCartAtrilSelect');
     if (selAtr && selAtr.parentNode) {
       selAtr.parentNode.id = 'spCartBoxAtriles4';
@@ -18368,7 +18732,7 @@
   window.spAbrirCarritoConDiagnosticoPreseleccionado = function() {
     if (typeof window.spAbrirCarritoConfigurador === 'function') {
       window.spAbrirCarritoConfigurador('duo', 1);
-      setTimeout(aplicarIdsColorCajasCarritoV150, 40);
+      setTimeout(aplicarIdsColorCajasCarritoV151, 40);
     }
   };
 
@@ -18383,7 +18747,7 @@
   }
 
   window.spAplicarBloqueoHorasCrmEnSelect = function() {
-    aplicarIdsColorCajasCarritoV150();
+    aplicarIdsColorCajasCarritoV151();
     var selDia = document.getElementById('spCartSelectDiaLV');
     var selHora = document.getElementById('spCartSelectHoraManana');
     var inpISO = document.getElementById('spCartInputFechaHoraISO');
@@ -18426,7 +18790,7 @@
 
   window.spSincronizarCitasCrmLocal = function() {
     try {
-      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v150') || '[]');
+      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v151') || '[]');
       if (Array.isArray(guardados)) {
         guardados.forEach(function(sl) {
           var norm = normalizarSlotEspacio(sl);
@@ -18451,7 +18815,7 @@
               if (norm) window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(norm);
             });
             try {
-              localStorage.setItem('sp_citas_ocupadas_crm_v150', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
+              localStorage.setItem('sp_citas_ocupadas_crm_v151', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
             } catch (e) {}
           }
         })
@@ -18461,81 +18825,46 @@
     });
   };
 
-  function inicializarMejorasV150() {
-    engancharTurnosDePalabraConsultorV150();
-    aplicarIdsColorCajasCarritoV150();
+  function inicializarMejorasV151() {
+    engancharTurnosDePalabraConsultorV151();
+    aplicarIdsColorCajasCarritoV151();
+    window._spRenderizarTarjetasPrecios();
     window.spSincronizarCitasCrmLocal();
 
-    if (typeof window.spActualizarHorasDisponiblesCarritoV125 === 'function' && !window.spActualizarHorasDisponiblesCarritoV125._hookV150) {
+    if (typeof window.spActualizarHorasDisponiblesCarritoV125 === 'function' && !window.spActualizarHorasDisponiblesCarritoV125._hookV151) {
       var origActHoras = window.spActualizarHorasDisponiblesCarritoV125;
       var nuevaActHoras = function() {
         var r = origActHoras.apply(this, arguments);
         window.spAplicarBloqueoHorasCrmEnSelect();
         return r;
       };
-      nuevaActHoras._hookV150 = true;
+      nuevaActHoras._hookV151 = true;
       window.spActualizarHorasDisponiblesCarritoV125 = nuevaActHoras;
     }
 
-    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window.spAbrirCarritoConfigurador._hookV150) {
+    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window.spAbrirCarritoConfigurador._hookV151) {
       var origOpen = window.spAbrirCarritoConfigurador;
       var nuevoOpen = function() {
         var r = origOpen.apply(this, arguments);
-        aplicarIdsColorCajasCarritoV150();
+        aplicarIdsColorCajasCarritoV151();
         window.spSincronizarCitasCrmLocal();
         setTimeout(window.spAplicarBloqueoHorasCrmEnSelect, 120);
         return r;
       };
-      nuevoOpen._hookV150 = true;
+      nuevoOpen._hookV151 = true;
       window.spAbrirCarritoConfigurador = nuevoOpen;
-    }
-
-    if (typeof window.spConfirmarPedidoYAgendarCita === 'function' && !window.spConfirmarPedidoYAgendarCita._hookV150) {
-      var origConfirm = window.spConfirmarPedidoYAgendarCita;
-      var nuevoConfirm = function() {
-        try {
-          var selDia = document.getElementById('spCartSelectDiaLV');
-          var selHora = document.getElementById('spCartSelectHoraManana');
-          var inpNom = document.getElementById('spCartInputNombre');
-          var inpNeg = document.getElementById('spCartInputNegocioCiudad');
-          var inpTel = document.getElementById('spCartInputTelefono');
-          var ymd = selDia ? selDia.value : '';
-          var hhmm = selHora ? String(selHora.value || '').substring(0, 5) : '';
-          if (ymd && hhmm) {
-            window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(ymd + ' ' + hhmm);
-            try {
-              localStorage.setItem('sp_citas_ocupadas_crm_v150', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
-            } catch (e) {}
-            var nombreCompleto = ((inpNom ? inpNom.value : '') + (inpNeg && inpNeg.value ? (' — ' + inpNeg.value) : '')).trim();
-            fetch('http://127.0.0.1:5000/api/crm/registrar-pedido-web', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                origen: 'Carrito Configurador Web',
-                nombre: nombreCompleto || 'Cliente Web',
-                telefono: inpTel ? inpTel.value : '',
-                fecha_cita_iso: ymd + 'T' + hhmm + ':00',
-                horario: (selDia && selDia.options[selDia.selectedIndex] ? selDia.options[selDia.selectedIndex].text : ymd) + ' a las ' + hhmm + ' h'
-              })
-            }).catch(function() {});
-          }
-        } catch (err) {}
-        return origConfirm.apply(this, arguments);
-      };
-      nuevoConfirm._hookV150 = true;
-      window.spConfirmarPedidoYAgendarCita = nuevoConfirm;
     }
   }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(inicializarMejorasV150, 200);
+      setTimeout(inicializarMejorasV151, 180);
     });
   } else {
-    setTimeout(inicializarMejorasV150, 200);
+    setTimeout(inicializarMejorasV151, 180);
   }
 })();
 </script>
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V150_END] -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V151_END] -->
 </body>
 </html>

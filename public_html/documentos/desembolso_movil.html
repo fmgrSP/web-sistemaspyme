@@ -2,125 +2,98 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>Desembolso Día 1 y Liquidación Inicial (Móvil) — Sistemas Pyme</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desembolso del Primer Día y Liquidación Transparente | Sistemas Pyme</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: 100%; background-color: #071629; color: #f1f5f9; font-family: 'Inter', sans-serif; font-size: 16.5px; line-height: 1.55; }
-    body.font-xl { font-size: 19px; line-height: 1.65; }
-    .topbar { position: sticky; top: 0; z-index: 100; background: rgba(7, 22, 41, 0.96); border-bottom: 2px solid #14b8a6; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .btn-back { background: #1e293b; color: #5eead4; border: 1px solid rgba(20,184,166,0.45); text-decoration: none; font-weight: 800; font-size: 13px; padding: 8px 12px; border-radius: 10px; }
-    .btn-action { background: #0d7d74; color: #fff; border: 1px solid #14b8a6; font-weight: 800; font-size: 12.5px; padding: 8px 11px; border-radius: 10px; text-decoration: none; cursor: pointer; }
-    .btn-action.sec { background: #1e293b; color: #cbd5e1; border-color: #475569; }
-    .container { max-width: 660px; margin: 0 auto; padding: 18px 16px 48px 16px; display: flex; flex-direction: column; gap: 16px; }
-    .hero-box { background: linear-gradient(145deg, #0b2545 0%, #0f172a 100%); border: 1.5px solid rgba(20, 184, 166, 0.45); border-radius: 18px; padding: 18px 16px; }
-    .badge { display: inline-block; background: rgba(20, 184, 166, 0.18); color: #5eead4; border: 1px solid rgba(20, 184, 166, 0.4); font-size: 11.5px; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 99px; margin-bottom: 8px; }
-    .hero-title { font-size: 1.38em; font-weight: 900; color: #fff; line-height: 1.22; margin-bottom: 6px; }
-    .section-head { background: linear-gradient(90deg, #0f766e 0%, #115e59 100%); color: #fff; padding: 11px 14px; border-radius: 12px; font-weight: 900; font-size: 0.95em; text-transform: uppercase; margin-top: 6px; }
-    .section-head.blue { background: linear-gradient(90deg, #1e3a8a 0%, #1d4ed8 100%); }
-    .section-head.amber { background: linear-gradient(90deg, #b45309 0%, #d97706 100%); }
-    .card { background: #0f172a; border: 1.5px solid rgba(255,255,255,0.12); border-left: 5px solid #14b8a6; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
-    .card.emerald { border-left-color: #10b981; border-color: rgba(16,185,129,0.45); background: linear-gradient(145deg, rgba(6,78,59,0.45) 0%, #0f172a 100%); }
-    .card.blue { border-left-color: #3b82f6; }
-    .card.amber { border-left-color: #f59e0b; }
-    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-    .card-title { font-size: 1.1em; font-weight: 900; color: #fff; }
-    .price-tag { background: rgba(20, 184, 166, 0.18); color: #5eead4; border: 1px solid rgba(20, 184, 166, 0.4); font-weight: 900; font-size: 0.95em; padding: 4px 10px; border-radius: 10px; white-space: nowrap; }
-    .data-grid { display: flex; flex-direction: column; gap: 7px; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; }
-    .data-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 0.9em; }
-    .data-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .data-label { color: #94a3b8; font-weight: 600; }
-    .data-val { color: #fff; font-weight: 800; text-align: right; }
-    .data-val.hi { color: #34d399; }
-    .cta-box { background: linear-gradient(145deg, #064e3b 0%, #0f172a 100%); border: 2px solid #10b981; border-radius: 18px; padding: 20px 16px; text-align: center; }
-    .btn-wa { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: #10b981; color: #052e16; font-weight: 900; padding: 14px 18px; border-radius: 14px; text-decoration: none; margin-top: 12px; }
+    body { font-family: 'Inter', sans-serif; background: #0f172a; color: #0f172a; margin: 0; padding: 24px 16px; }
+    h1, h2, h3, h4, .font-display { font-family: 'Montserrat', 'Inter', sans-serif; letter-spacing: -0.02em; }
+    .a4-sheet { max-width: 980px; margin: 0 auto; background: #ffffff; border-radius: 24px; padding: 36px 42px; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.6); border: 2px solid #0d9488; }
+    @media print {
+      body { background: #ffffff; padding: 0; }
+      .a4-sheet { box-shadow: none; border: none; padding: 12px; max-width: 100%; }
+      .no-print { display: none !important; }
+    }
   </style>
+
 </head>
 <body>
-  <header class="topbar">
-    <a href="../index.html#tarifas" onclick="if(window.opener && !window.opener.closed){event.preventDefault();window.close();}" class="btn-back">⬅ Volver a la Web</a>
-    <div style="display:flex; gap:6px;">
-      <button type="button" onclick="document.body.classList.toggle('font-xl')" class="btn-action">🔎 Letra A+</button>
-      <a href="desembolso.html?modo=impreso" class="btn-action sec">📄 Original A5</a>
-    </div>
-  </header>
-
-  <main class="container">
-    <div class="hero-box">
-      <span class="badge">Desglose Financiero Día 1</span>
-      <h1 class="hero-title">Tabla Desglosada de Puesta en Marcha y Desembolso Día 1</h1>
-      <p style="font-size:0.92em; color:#cbd5e1;">Importes exactos de inicio en Vía 1 (Mensual Flexible 3 meses) y Vía 2 (Plan Anual con 2 meses gratis).</p>
+  <div class="a4-sheet">
+    <div class="no-print flex flex-wrap items-center justify-between gap-3 pb-4 mb-5 border-b border-slate-200">
+      <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 font-extrabold text-xs border border-emerald-300">📊 DESEMBOLSO DEL PRIMER DÍA (VÍA FLEXIBLE VS. PLAN ANUAL)</span>
+      <div class="flex items-center gap-2">
+        <button onclick="window.print()" class="bg-[#0b2239] hover:bg-slate-800 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow cursor-pointer">🖨️ Imprimir / Guardar PDF</button>
+        <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20estoy%20revisando%20el%20documento%20de%20Desembolso%20del%20Primer%20D%C3%ADa" target="_blank" class="bg-[#0d7d74] text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow">💬 Consultar mi caso</a>
+      </div>
     </div>
 
-    <div class="section-head">1. Planes del Grupo 1 (Venta Rápida)</div>
-
-    <article class="card">
-      <div class="card-top"><span class="card-title">1. Plan Pyme BASE (1 serv.)</span><span class="price-tag">59 €/m</span></div>
-      <div class="data-grid">
-        <div class="data-row"><span class="data-label">Setup Único de Ingeniería:</span><span class="data-val">150 €</span></div>
-        <div class="data-row"><span class="data-label">🔄 Día 1 en Vía Flexible:</span><span class="data-val">209 € (150€ + 59€)</span></div>
-        <div class="data-row"><span class="data-label">⭐ Día 1 en Vía Anual (10m):</span><span class="data-val hi">740 € (Ahorras 118 €)</span></div>
-      </div>
-    </article>
-
-    <article class="card emerald">
-      <div class="card-top"><span class="card-title">2. Pack ESCUDO BÁSICO (Dúo: S1+S2)</span><span class="price-tag">99 €/m</span></div>
-      <div class="data-grid">
-        <div class="data-row"><span class="data-label">Setup Dúo (150€ + 75€):</span><span class="data-val">225 €</span></div>
-        <div class="data-row"><span class="data-label">🔄 Día 1 en Vía Flexible:</span><span class="data-val">324 € (225€ + 99€)</span></div>
-        <div class="data-row"><span class="data-label">⭐ Día 1 en Vía Anual (10m):</span><span class="data-val hi">1.215 € (Ahorras 198 €)</span></div>
-        <div class="data-row"><span class="data-label">Privilegio Super-Auditorías:</span><span class="data-val hi">195 € c/u (o 390 € las dos)</span></div>
-      </div>
-    </article>
-
-    <article class="card emerald">
-      <div class="card-top"><span class="card-title">3. Pack ESCUDO TOTAL ★ (Trinity: S1+S2+S3)</span><span class="price-tag">139 €/m</span></div>
-      <div class="data-grid">
-        <div class="data-row"><span class="data-label">Setup Trinity (150€ + 75€ + 75€):</span><span class="data-val">300 €</span></div>
-        <div class="data-row"><span class="data-label">🔄 Día 1 en Vía Flexible:</span><span class="data-val">439 € (300€ + 139€)</span></div>
-        <div class="data-row"><span class="data-label">⭐ Día 1 en Vía Anual (10m):</span><span class="data-val hi">1.690 € (Ahorras 278 €)</span></div>
-        <div class="data-row"><span class="data-label">Bóveda (150€) + Auditorías:</span><span class="data-val hi">🎁 GRATIS + Aud. a 195 € c/u</span></div>
-      </div>
-    </article>
-
-    <article class="card">
-      <div class="card-top"><span class="card-title">4. Planes QUATRO (4) y PENTIUM (5)</span><span class="price-tag">179€ / 219€</span></div>
-      <div class="data-grid">
-        <div class="data-row"><span class="data-label">QUATRO Día 1 Flex / Anual:</span><span class="data-val">554 € Flex | 2.165 € Anual</span></div>
-        <div class="data-row"><span class="data-label">PENTIUM Día 1 Flex / Anual:</span><span class="data-val">669 € Flex | 2.640 € Anual</span></div>
-      </div>
-    </article>
-
-    <div class="section-head blue">2. Desembolso Día 1 en Grupos 2, 3 y 4</div>
-    <article class="card blue">
-      <div class="data-grid">
-        <div class="data-row"><span class="data-label">Grupo 2 (S6, S7, S8), Logística o S4 Llamadas:</span><span class="data-val hi">Día 1 Combo: +169 € (59€+110€) | Suelto: 274 €</span></div>
-        <div class="data-row"><span class="data-label">Satélite Instagram 3 en 1:</span><span class="data-val hi">Día 1 Combo: +124 € (49€+75€) | Suelto: 219 €</span></div>
-        <div class="data-row"><span class="data-label">Satélite Cerebro Redactor RAG:</span><span class="data-val hi">Día 1 Combo: +219 € (69€+150€) | Suelto: 349 €</span></div>
-        <div class="data-row"><span class="data-label">S7 Centralita Voz IA 24/7 (250m):</span><span class="data-val hi">Día 1 Combo: +379 € (129€+250€) | Suelto: 519 €</span></div>
-      </div>
-    </article>
-
-    <div class="section-head amber">3. Super-Auditorías Web (Suelo Mínimo Blindado 195 €)</div>
-    <article class="card amber">
-      <div class="data-grid">
-        <div class="data-row"><span class="data-label">1. Modalidad Solo Código (DIY):</span><span class="data-val">200 € una | 390 € las dos</span></div>
-        <div class="data-row"><span class="data-label">2. Llave en Mano (Suelta o con Base):</span><span class="data-val">350 € una | 590 € las dos</span></div>
-        <div class="data-row"><span class="data-label">3. Bonificada con Pack (2+ serv.):</span><span class="data-val hi">195 € una | 390 € las dos</span></div>
-      </div>
-    </article>
-
-    <div class="cta-box">
-      <div style="font-size: 0.85em; font-weight: 800; color: #6ee7b7; text-transform: uppercase;">Atención Directa • Galicia</div>
-      <div style="font-size: 1.2em; font-weight: 900; color: #ffffff; margin-top: 4px;">Francisco M. Gallardo</div>
-      <div style="font-size: 0.92em; color: #cbd5e1; margin-top: 2px;">Tel: <strong>711 54 75 61</strong> • francisco@sistemaspyme.es</div>
-      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20he%20visto%20el%20desglose%20del%20D%C3%ADa%201%20y%20quiero%20activar%20mi%20plan" target="_blank" class="btn-wa">
-        💬 Hablar con Francisco por WhatsApp
-      </a>
+    <div class="bg-gradient-to-r from-[#0b2239] via-[#0f3456] to-[#059669] text-white rounded-3xl p-6 mb-6">
+      <h1 class="text-2xl sm:text-3xl font-black mb-1">Desembolso Exacto del Primer Día (Sin Sorpresas)</h1>
+      <p class="text-xs sm:text-sm text-emerald-100">Qué abonas el Día 1 al poner en marcha tu sistema (Setup de instalación única + primer período) tanto en Vía Flexible como en Plan Anual (pagas 10 meses y disfrutas de 2 meses gratis).</p>
     </div>
-  </main>
+
+    <!-- TABLA DE 4 COLUMNAS LIMPIAS -->
+    <div class="overflow-x-auto mb-5">
+      <table class="w-full text-left border-collapse text-xs sm:text-[13px]">
+        <thead>
+          <tr class="bg-[#0b2239] text-white">
+            <th class="p-3 rounded-tl-xl">Módulo / Pack</th>
+            <th class="p-3">1. Vía Flexible: Total Día 1<span class="block text-[10px] text-teal-300 font-normal">(Setup único + Mes 1)</span></th>
+            <th class="p-3">2. Plan Anual: Total Día 1<span class="block text-[10px] text-amber-300 font-normal">(Setup único + 10 Meses = 2 Gratis)</span></th>
+            <th class="p-3 rounded-tr-xl">3. Qué incluye y Ahorro Directo</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200 border border-slate-200">
+          <tr class="bg-white">
+            <td class="p-3 font-black text-[#0b2239]">Pyme Base<span class="block text-[11px] text-slate-500 font-normal">1 servicio libre elección</span></td>
+            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 209 €<span class="block text-[10.5px] text-slate-500 font-normal">(150 € Setup + 59 € Mes 1)</span></td>
+            <td class="p-3 font-black text-teal-800 whitespace-nowrap">Desde 740 €<span class="block text-[10.5px] text-slate-600 font-normal">(150 € Setup + 590 € Año)</span></td>
+            <td class="p-3 text-slate-700">1 servicio a elegir. En Plan Anual <strong>ahorras 118 €</strong> (2 meses gratis).</td>
+          </tr>
+          <tr class="bg-sky-50/70">
+            <td class="p-3 font-black text-sky-900">Escudo Básico<span class="block text-[11px] text-sky-700 font-normal">2 servicios libre elección</span></td>
+            <td class="p-3 font-black text-sky-800 whitespace-nowrap">Desde 324 €<span class="block text-[10.5px] text-slate-600 font-normal">(225 € Setup + 99 € Mes 1)</span></td>
+            <td class="p-3 font-black text-sky-900 whitespace-nowrap">Desde 1.215 €<span class="block text-[10.5px] text-slate-600 font-normal">(225 € Setup + 990 € Año)</span></td>
+            <td class="p-3 text-slate-800"><strong>Ahorras 75 € en Setup + 19 €/m</strong> (y en Plan Anual <strong>198 € extra</strong> por 2 meses gratis). Desbloquea Auditorías a 195 €.</td>
+          </tr>
+          <tr class="bg-emerald-50/90 border-l-4 border-l-emerald-500">
+            <td class="p-3 font-black text-emerald-950">Escudo Total ★<span class="block text-[11px] text-emerald-800 font-bold">2 servicios + 1 o 2 Auditorías</span></td>
+            <td class="p-3 font-black text-emerald-800 whitespace-nowrap">Desde 519 € (con 1 Aud.)<span class="block text-[10.5px] text-emerald-950 font-bold">o 714 € (con las 2 Auditorías)</span></td>
+            <td class="p-3 font-black text-emerald-900 whitespace-nowrap">Desde 1.410 € (con 1 Aud.)<span class="block text-[10.5px] text-emerald-950 font-bold">o 1.605 € (con las 2 Auditorías)</span></td>
+            <td class="p-3 text-slate-800">Incluye S1+S2 + Super-Auditoría(s) bonificada(s) a 195 € c/u. <strong>Ahorras 155 € (con 1) o 310 € (con las 2)</strong> + 75 € Setup.</td>
+          </tr>
+          <tr class="bg-amber-50/60">
+            <td class="p-3 font-black text-[#0b2239]">Pyme Trinity 🎁<span class="block text-[11px] text-amber-800 font-bold">3 servicios libre elección</span></td>
+            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 439 €<span class="block text-[10.5px] text-slate-600 font-normal">(300 € Setup + 139 € Mes 1)</span></td>
+            <td class="p-3 font-black text-teal-900 whitespace-nowrap">Desde 1.690 €<span class="block text-[10.5px] text-slate-600 font-normal">(300 € Setup + 1.390 € Año)</span></td>
+            <td class="p-3 text-slate-800">3 servicios mensuales + <strong>🎁 Bóveda de Contraseñas GRATIS (150 €)</strong>. En Anual <strong>ahorras 278 €</strong> en cuotas.</td>
+          </tr>
+          <tr class="bg-white">
+            <td class="p-3 font-black text-[#0b2239]">Pyme 4<span class="block text-[11px] text-slate-500 font-normal">4 servicios libre elección</span></td>
+            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 554 €<span class="block text-[10.5px] text-slate-600 font-normal">(375 € Setup + 179 € Mes 1)</span></td>
+            <td class="p-3 font-black text-teal-900 whitespace-nowrap">Desde 2.165 €<span class="block text-[10.5px] text-slate-600 font-normal">(375 € Setup + 1.790 € Año)</span></td>
+            <td class="p-3 text-slate-700">4 servicios mensuales + Bóveda GRATIS. En Anual <strong>ahorras 358 €</strong> en cuotas.</td>
+          </tr>
+          <tr class="bg-slate-50">
+            <td class="p-3 font-black text-[#0b2239]">Pyme Pentium<span class="block text-[11px] text-slate-500 font-normal">5 servicios libre elección</span></td>
+            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 669 €<span class="block text-[10.5px] text-slate-600 font-normal">(450 € Setup + 219 € Mes 1)</span></td>
+            <td class="p-3 font-black text-teal-900 whitespace-nowrap">Desde 2.640 €<span class="block text-[10.5px] text-slate-600 font-normal">(450 € Setup + 2.190 € Año)</span></td>
+            <td class="p-3 text-slate-700">5 servicios mensuales + Bóveda GRATIS. En Anual <strong>ahorras 438 €</strong> en cuotas.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="bg-sky-50 border-2 border-sky-300 rounded-2xl p-4 text-xs text-slate-800 leading-relaxed">
+      <strong class="text-sky-950 font-black block mb-1">📌 Nota sobre combinaciones entre los 4 Grupos:</strong>
+      Los importes «Desde» corresponden a elegir servicios del Grupo 1 (59 € el 1.º y +40 €/m los siguientes). Si en tu combinación eliges módulos del Grupo 2 (+59 €/m y +110 € Setup), Grupo 3 (+49 € a +69 €/m) o Grupo 4 (S9 +59 €/m o S10 Centralita Voz IA +129 €/m y +250 € Setup), el módulo más económico que elijas actúa como base y el resto suma su precio bonificado de combo.
+    </div>
+
+    <div class="text-center text-xs text-slate-500 mt-6 pt-3 border-t border-slate-200">
+      <strong>Sistemas Pyme — Francisco M. Gallardo (NIF 52938419D)</strong> • Tel / WhatsApp: <strong>711 54 75 61</strong> • Precios netos sin IVA (21%).
+    </div>
+  </div>
 </body>
 </html>

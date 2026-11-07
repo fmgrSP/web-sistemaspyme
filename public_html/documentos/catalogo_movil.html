@@ -2,463 +2,99 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Pyme Magazine Nº 1 — La Nueva Regla del «Boca a Boca» | Sistemas Pyme</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,800;1,600&display=swap" rel="stylesheet">
+  <title>Dossier Catálogo Completo (4 Grupos S1 a S10 + Auditorías + NFC) | Sistemas Pyme</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
-    @page {
-      size: A4 portrait;
-      margin: 0;
-    }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-    :root {
-      --navy: #0b2545;
-      --dark: #071629;
-      --teal: #0d7d74;
-      --teal-light: #f0fdfa;
-      --emerald: #10b981;
-      --amber: #d97706;
-      --slate-50: #f8fafc;
-      --slate-100: #f1f5f9;
-      --slate-200: #e2e8f0;
-      --slate-600: #475569;
-      --slate-700: #334155;
-      --slate-800: #1e293b;
-    }
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: #071629;
-      color: #0f172a;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 14px 8px 48px 8px;
-      gap: 18px;
-    }
-
-    /* BARRA SUPERIOR FLOTANTE DE LECTURA */
-    .top-bar {
-      position: sticky;
-      top: 10px;
-      z-index: 999;
-      width: 100%;
-      max-width: 210mm;
-      background: rgba(11, 37, 69, 0.96);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(20, 184, 166, 0.45);
-      border-radius: 14px;
-      padding: 10px 16px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
-      color: #fff;
-    }
-    .top-bar-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .btn-nav {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 13px;
-      padding: 8px 14px;
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      transition: all 0.2s;
-      cursor: pointer;
-    }
-    .btn-nav:hover {
-      background: #0d7d74;
-      border-color: #14b8a6;
-    }
-    .btn-nav.primary {
-      background: #0d7d74;
-      border-color: #2dd4bf;
-    }
-    .btn-nav.amber {
-      background: #d97706;
-      border-color: #fbbf24;
-    }
-
-    /* PÁGINA A4 REAL AUTO-ENCUADRADA CON LETRA GRANDOTA Y LEGIBLE EN MÓVIL Y PC */
-    .a4-page {
-      width: 100%;
-      max-width: 210mm;
-      background: #ffffff;
-      border-radius: 10px;
-      padding: 12mm 14mm;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-      overflow: hidden;
-    }
-
-    @media (max-width: 768px) {
-      body {
-        padding: 8px 4px 36px 4px;
-        gap: 14px;
-      }
-      .a4-page {
-        padding: 20px 16px;
-        border-radius: 12px;
-      }
-    }
-
+    body { font-family: 'Inter', sans-serif; background: #0f172a; color: #0f172a; margin: 0; padding: 24px 16px; }
+    h1, h2, h3, h4, .font-display { font-family: 'Montserrat', 'Inter', sans-serif; letter-spacing: -0.02em; }
+    .a4-sheet { max-width: 980px; margin: 0 auto; background: #ffffff; border-radius: 24px; padding: 36px 42px; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.6); border: 2px solid #0d9488; }
     @media print {
-      body {
-        background: none !important;
-        padding: 0 !important;
-        gap: 0 !important;
-      }
-      .no-print {
-        display: none !important;
-      }
-      .a4-page {
-        width: 210mm !important;
-        min-height: 297mm !important;
-        max-height: 297mm !important;
-        padding: 11mm 14mm !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        page-break-after: always !important;
-      }
-    }
-
-    /* CABECERA DE REVISTA */
-    .mag-header {
-      border-bottom: 3px solid var(--navy);
-      padding-bottom: 10px;
-      margin-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .mag-brand {
-      font-size: 13px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      color: var(--teal);
-    }
-    .mag-issue {
-      font-size: 12px;
-      font-weight: 800;
-      color: var(--slate-600);
-      background: var(--slate-100);
-      padding: 4px 10px;
-      border-radius: 6px;
-      border: 1px solid var(--slate-200);
-    }
-
-    /* BANNER HERO DEL ARTÍCULO */
-    .hero-article {
-      background: linear-gradient(135deg, #0b2545 0%, #0d7d74 100%);
-      color: #ffffff;
-      border-radius: 12px;
-      padding: 22px 24px;
-      margin-bottom: 18px;
-      box-shadow: 0 8px 20px rgba(11, 37, 69, 0.2);
-    }
-    .hero-kicker {
-      display: inline-block;
-      font-size: 11.5px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      background: rgba(255, 255, 255, 0.16);
-      color: #5eead4;
-      padding: 4px 10px;
-      border-radius: 99px;
-      margin-bottom: 10px;
-    }
-    .hero-title {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: 28px;
-      line-height: 1.18;
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-    .hero-lead {
-      font-size: 15px;
-      line-height: 1.5;
-      color: #e2e8f0;
-      font-weight: 500;
-    }
-
-    /* CUERPO EDITORIAL CON LETRA GRANDE Y LEGIBLE */
-    .editorial-section {
-      margin-bottom: 16px;
-    }
-    .sec-title {
-      font-size: 18px;
-      font-weight: 900;
-      color: var(--navy);
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border-left: 4px solid var(--teal);
-      padding-left: 10px;
-      line-height: 1.25;
-    }
-    .editorial-p {
-      font-size: 14.5px;
-      line-height: 1.62;
-      color: var(--slate-800);
-      margin-bottom: 10px;
-    }
-
-    .highlight-box {
-      background: #f0fdfa;
-      border: 1.5px solid #99f6e4;
-      border-left: 5px solid var(--teal);
-      border-radius: 10px;
-      padding: 14px 16px;
-      margin: 12px 0;
-    }
-    .highlight-box h4 {
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--navy);
-      margin-bottom: 5px;
-    }
-    .highlight-box p {
-      font-size: 14px;
-      line-height: 1.55;
-      color: var(--slate-700);
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-      margin: 12px 0;
-    }
-    @media (max-width: 640px) {
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
-      .hero-title {
-        font-size: 24px;
-      }
-      .editorial-p {
-        font-size: 15.5px;
-        line-height: 1.65;
-      }
-      .sec-title {
-        font-size: 18.5px;
-      }
-    }
-
-    .card-box {
-      background: var(--slate-50);
-      border: 1px solid var(--slate-200);
-      border-radius: 10px;
-      padding: 14px;
-    }
-    .card-box strong {
-      display: block;
-      font-size: 15px;
-      color: var(--navy);
-      margin-bottom: 5px;
-    }
-    .card-box p {
-      font-size: 13.8px;
-      line-height: 1.52;
-      color: var(--slate-700);
-    }
-
-    .page-footer {
-      border-top: 1.5px solid var(--slate-200);
-      padding-top: 10px;
-      margin-top: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      color: var(--slate-600);
-      font-weight: 600;
-      flex-wrap: wrap;
-      gap: 6px;
+      body { background: #ffffff; padding: 0; }
+      .a4-sheet { box-shadow: none; border: none; padding: 12px; max-width: 100%; }
+      .no-print { display: none !important; }
     }
   </style>
+
 </head>
 <body>
-
-  <!-- BARRA DE CONTROL SUPERIOR -->
-  <nav class="top-bar no-print">
-    <div class="top-bar-left">
-      <a href="../index.html#magazine" class="btn-nav">← Volver a la Web</a>
-      <a href="../index.html#play-podcast" class="btn-nav amber">🎧 Escuchar en Podcast</a>
+  <div class="a4-sheet">
+    <div class="no-print flex flex-wrap items-center justify-between gap-3 pb-4 mb-5 border-b border-slate-200">
+      <span class="px-3 py-1 rounded-full bg-indigo-100 text-indigo-900 font-extrabold text-xs border border-indigo-300">📘 DOSSIER CATÁLOGO OFICIAL • SECUENCIA S1 A S10 POR GRUPOS</span>
+      <div class="flex items-center gap-2">
+        <button onclick="window.print()" class="bg-[#0b2239] hover:bg-slate-800 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow cursor-pointer">🖨️ Imprimir / Guardar PDF</button>
+        <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20he%20visto%20el%20Dossier%20Cat%C3%A1logo%20y%20me%20gustar%C3%ADa%20comentarlo%20contigo" target="_blank" class="bg-[#0d7d74] text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow">💬 Hablar con Francisco</a>
+      </div>
     </div>
-    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <button type="button" onclick="window.print()" class="btn-nav primary">🖨️ Imprimir / Guardar PDF A4</button>
-    </div>
-  </nav>
 
-  <!-- ===================================================================== -->
-  <!-- PÁGINA 1 DE 2 (FORMATO A4 EDITORIAL CON LETRA GRANDE Y CLARA)          -->
-  <!-- ===================================================================== -->
-  <article class="a4-page">
-    <div>
-      <header class="mag-header">
-        <div>
-          <div class="mag-brand">📖 PYME MAGAZINE • PUBLICACIÓN EJECUTIVA DE SISTEMAS PYME</div>
-          <div style="font-size: 12.5px; color: #475569; font-weight: 600; margin-top: 2px;">Ingeniería de Reputación, Automatización e Inteligencia Artificial para Negocios Locales</div>
+    <div class="bg-gradient-to-r from-[#0b2239] via-[#103459] to-[#0d7d74] text-white rounded-3xl p-6 mb-6">
+      <h1 class="text-2xl sm:text-3xl font-black mb-1">Catálogo General de Soluciones Sistemas Pyme</h1>
+      <p class="text-xs sm:text-sm text-teal-100">Organizado con la misma secuencia numérica de la web: <strong>4 Grupos de Servicios Mensuales (S1 a S10 + Satélites)</strong>, <strong>2 Super-Auditorías Web Gemelas</strong> y <strong>Atril NFC + QR</strong>.</p>
+    </div>
+
+    <!-- GRUPO 1 -->
+    <div class="mb-5 bg-emerald-50/70 border-2 border-emerald-400 rounded-2xl p-5">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3 border-b border-emerald-300 pb-2">
+        <h2 class="text-base sm:text-lg font-black text-emerald-950">Grupo 1 (S1 a S5) • Esenciales de Reputación, Ventas y Gestión</h2>
+        <span class="text-xs font-extrabold bg-emerald-700 text-white px-3 py-1 rounded-full">1.º: 59 €/m (150€ Setup) • Adicionales: +40 €/m (+75€ Setup)</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-slate-800">
+        <div class="bg-white p-3 rounded-xl border border-emerald-200"><strong>⭐ S1. Respuesta a Reseñas en Google con IA (Activo Hoy):</strong> Contesta sola las de 4-5★ con SEO local y en 1-3★ frena y te envía 4 borradores al móvil aplicando el Método HEARD y blindaje RGPD (evita multas de 10.000-40.000 €).</div>
+        <div class="bg-white p-3 rounded-xl border border-emerald-200"><strong>🛡️ S2. Cortafuegos Preventivo por WhatsApp Oficial (Activo Hoy):</strong> Pregunta tras la visita qué tal fue todo; lleva a los felices a Google Maps y filtra quejas en privado por texto o nota de voz transcrita con IA.</div>
+        <div class="bg-white p-3 rounded-xl border border-emerald-200"><strong>⚡ S3. Respuesta a Leads en 10s + Portales (Ventas):</strong> Atiende por WhatsApp en menos de 10 segundos a quien pide presupuesto en tu web o portales y te avisa al móvil para cerrar en caliente.</div>
+        <div class="bg-white p-3 rounded-xl border border-emerald-200"><strong>🧾 S4. Facturas y Tickets al Gestor por Foto WA (Ahorro Tiempo):</strong> Haz una foto por WhatsApp a cualquier ticket o factura y la IA extrae NIF, base e IVA subiéndolo directo al Excel de tu gestoría.</div>
+        <div class="bg-white p-3 rounded-xl border border-emerald-200 md:col-span-2"><strong>🔄 S5. Reactivación de Clientes Inactivos (Ventas Recurrentes):</strong> Detecta clientes que llevan más de 60-90 días sin acudir y les envía una invitación personalizada por WhatsApp sin saturar.</div>
+      </div>
+    </div>
+
+    <!-- GRUPO 2 -->
+    <div class="mb-5 bg-sky-50/70 border-2 border-sky-400 rounded-2xl p-5">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3 border-b border-sky-300 pb-2">
+        <h2 class="text-base sm:text-lg font-black text-sky-950">Grupo 2 (S6 a S8) • Agenda, Contratos Digitales y Cobros</h2>
+        <span class="text-xs font-extrabold bg-sky-700 text-white px-3 py-1 rounded-full">En Combo: +59 €/m (+110€ Setup) • Suelto: 79 €/m (195€ Setup)</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-slate-800">
+        <div class="bg-white p-3 rounded-xl border border-sky-200"><strong>📅 S6. Sistema Anti-Plantón 24h + Huecos Flash:</strong> Confirma citas 24h antes por WhatsApp (-85% ausencias) y si alguien cancela avisa automáticamente a tu lista de espera.</div>
+        <div class="bg-white p-3 rounded-xl border border-sky-200"><strong>✍️ S7. Firma Digital de Presupuestos + Onboarding IA:</strong> Firma legal con el dedo en el móvil, creación automática de carpeta en Drive y solicitud de documentos.</div>
+        <div class="bg-white p-3 rounded-xl border border-sky-200"><strong>⚖️ S8. Escudo Anti-Morosidad Diplomático:</strong> Recordatorio neutral y educado (+3, +7 y +15 días) con factura PDF adjunta y enlace de pago.</div>
+      </div>
+    </div>
+
+    <!-- GRUPO 3 Y GRUPO 4 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+      <div class="bg-pink-50/70 border-2 border-pink-400 rounded-2xl p-4 text-xs space-y-2">
+        <div class="flex items-center justify-between border-b border-pink-300 pb-1.5">
+          <h2 class="text-sm font-black text-pink-950">Grupo 3 • Satélites de Sector y Boosters IA</h2>
+          <span class="text-[11px] font-extrabold text-pink-800">Desde +49 €/m combo</span>
         </div>
-        <span class="mag-issue">FASCÍCULO Nº 1 • EDICIÓN OFICIAL</span>
-      </header>
-
-      <div class="hero-article">
-        <span class="hero-kicker">Informe Especial • Psicología del Consumidor y Google Maps</span>
-        <h1 class="hero-title">La Nueva Regla del «Boca a Boca»: Por qué 10 clientes felices callan mientras 1 enfadado hunde tu nota media</h1>
-        <p class="hero-lead">
-          El 97% de los clientes mira tus estrellas en Google Maps y pregunta a ChatGPT o Gemini antes de cruzar tu puerta. Descubre el «Efecto Umbral», el juego oculto de los Google Local Guides y cómo blindar tu negocio en piloto automático.
-        </p>
+        <p><strong>• Sat.1 Instagram Inteligente 3 en 1 (Meta API):</strong> +49 €/m (+75€) en combo | 69 €/m (150€) suelto. Auto-DM en Reels/Posts, atención DMs 24/7 y menciones en Stories.</p>
+        <p><strong>• Sat.2 Escudo Logístico 360 (Reparto y E-commerce):</strong> +59 €/m (+110€) combo | 79 €/m (195€) suelto. Avisos «Sale hoy», «Llega hoy» y gestión de ausencias.</p>
+        <p><strong>• Sat.3 Cerebro Redactor Técnico B2B RAG:</strong> +69 €/m (+150€) combo | 99 €/m (250€) suelto. Redacta ofertas complejas leyendo tus catálogos privados.</p>
       </div>
 
-      <section class="editorial-section">
-        <h2 class="sec-title">01. El «Efecto Umbral» (Doorway Effect) y la Asimetría del Silencio</h2>
-        <p class="editorial-p">
-          Piensa en lo que ocurre todos los días en cualquier clínica, taller mecánico, restaurante o comercio: atiendes de diez a un cliente, te da las gracias con una sonrisa y le pides amablemente si puede dejarte una reseña en Google cuando llegue a casa. El cliente te dice que sí con total sinceridad. Sin embargo, <strong>en cuanto cruza la puerta de tu local, se sube al coche y entra al tráfico, su cerebro borra la tarea</strong>.
-        </p>
-        <p class="editorial-p">
-          La neurociencia denomina a este fenómeno <strong>«Efecto Umbral»</strong>: al cambiar de escenario físico, la memoria de trabajo archiva lo anterior. ¿El resultado? <strong>Más del 90% de tus clientes encantados jamás llegan a escribir su reseña</strong>, mientras que el único cliente que sufrió un malentendido mantiene el cortisol alto durante dos horas y escribe una crítica de 1 estrella que leen miles de vecinos.
-        </p>
-
-        <div class="highlight-box">
-          <h4>💡 La Solución en Mostrador o Mesas: Captura en 1 Segundo antes de cruzar la puerta</h4>
-          <p>
-            Con el <strong>Atril Inteligente de Mostrador (NFC + QR)</strong> (39 € la 1ª unidad, o 29 €/ud. adicional y 25 €/ud. en packs de 5+ para negocios con varias mesas, gabinetes o tocadores), el cliente acerca su móvil al pagar y se le abre tu pantalla oficial de 5★ en <strong>1 segundo</strong>, antes de salir por la puerta.
-          </p>
+      <div class="bg-indigo-50/70 border-2 border-indigo-400 rounded-2xl p-4 text-xs space-y-2">
+        <div class="flex items-center justify-between border-b border-indigo-300 pb-1.5">
+          <h2 class="text-sm font-black text-indigo-950">Grupo 4 (S9 y S10) • Telefonía y Voz IA 24/7</h2>
+          <span class="text-[11px] font-extrabold text-indigo-800">Línea SIP + Minutos Voz IA</span>
         </div>
-      </section>
-
-      <section class="editorial-section">
-        <h2 class="sec-title">02. El Secreto de los «Google Local Guides» y la Trampa del «Efecto Loro»</h2>
-        <p class="editorial-p">
-          Google premia con puntos e insignias a millones de usuarios llamados <strong>Local Guides</strong> por escribir reseñas largas. Para el algoritmo de Google Maps, una reseña de un Local Guide pesa hasta 10 veces más y se clava arriba del todo en tu ficha durante meses.
-        </p>
-        <div class="grid-2">
-          <div class="card-box">
-            <strong>❌ El Error Fatal: El «Efecto Loro» en SEO</strong>
-            <p>
-              Cuando un dueño enfadado responde diciendo: <em>«No es verdad que seamos caros ni que el trato en nuestra clínica fuera lento»</em>, está repitiendo las palabras clave negativas (<strong>caro, lento</strong>). El robot de Google indexa tus propias palabras y hunde tu posicionamiento.
-            </p>
-          </div>
-          <div class="card-box">
-            <strong>✅ La Respuesta Inteligente con IA (Servicio 1)</strong>
-            <p>
-              En valoraciones de <strong>4 y 5★</strong>, nuestra IA publica al instante en el idioma del cliente inyectando tus servicios y ciudad para subirte en Google. Si entra una crítica (1 a 3★), <strong>pausa la publicación</strong> y te avisa al WhatsApp con tu <strong>Gestor de 4 Tonos</strong>.
-            </p>
-          </div>
-        </div>
-      </section>
+        <p><strong>• S9. Rescate de Llamadas Perdidas por WhatsApp:</strong> +59 €/m (+110€ Setup) en combo | 79 €/m (195€) suelto. Si comunicas o estás atendiendo, envía un WhatsApp en 5 segundos reteniendo al cliente (incluye hasta 250 rescates/mes).</p>
+        <p><strong>• S10. Centralita Recepcionista de Voz IA 24/7:</strong> +129 €/m (+250€ Setup) en combo | 169 €/m (350€) suelto. Atiende llamadas con voz natural las 24h, responde dudas y agenda citas en tu calendario (incluye 250 min/mes).</p>
+      </div>
     </div>
 
-    <footer class="page-footer">
-      <span><strong>Sistemas Pyme</strong> — Francisco M. Gallardo (Consultor Tecnológico • Tel: 711 54 75 61)</span>
-      <span>sistemaspyme.es • Página 1 de 2</span>
-    </footer>
-  </article>
-
-  <!-- ===================================================================== -->
-  <!-- PÁGINA 2 DE 2 (FORMATO A4 EDITORIAL CON LETRA GRANDE Y CLARA)          -->
-  <!-- ===================================================================== -->
-  <article class="a4-page">
-    <div>
-      <header class="mag-header">
-        <div>
-          <div class="mag-brand">📖 PYME MAGAZINE • FASCÍCULO Nº 1</div>
-          <div style="font-size: 12.5px; color: #475569; font-weight: 600; margin-top: 2px;">Protocolo HEARD, Blindaje RGPD, Cortafuegos de WhatsApp y las 2 Auditorías Gemelas</div>
-        </div>
-        <span class="mag-issue">CONTINUACIÓN • PÁG. 2</span>
-      </header>
-
-      <section class="editorial-section">
-        <h2 class="sec-title">03. Protocolo Psicológico HEARD y Blindaje Médico/Legal RGPD</h2>
-        <p class="editorial-p">
-          Una respuesta a una reseña de 1 estrella <strong>no se escribe para convencer a quien puso la queja, sino para seducir a los 5.000 clientes futuros que la van a leer</strong>. Nuestro motor aplica el protocolo de Disney <strong>HEARD</strong> (Escuchar, Empatizar, Disculpar sin admitir falsedades, Resolver en privado y Diagnosticar) junto con un <strong>Escudo RGPD estricto</strong>: jamás confirma que el autor sea paciente o cliente (evitando multas de la AEPD de hasta 10.000 € en clínicas, asesorías y despachos).
-        </p>
-      </section>
-
-      <section class="editorial-section">
-        <h2 class="sec-title">04. El Cortafuegos Preventivo por WhatsApp (Servicio 2)</h2>
-        <p class="editorial-p">
-          La mejor reseña de 1 estrella es la que jamás llega a escribirse en Google. Con el <strong>Servicio 2: Filtrado y Captación de Reseñas (Encuesta Inteligente)</strong>, dos horas después de su cita o visita el cliente recibe un WhatsApp cercano con tres botones:
-        </p>
-        <div class="grid-2">
-          <div class="card-box" style="background:#f0fdf4; border-color:#86efac;">
-            <strong style="color:#166534;">🌟 Si pulsa «Excelente» → Directo a Google Maps</strong>
-            <p>
-              Le abrimos tu pantalla oficial de valoración en Google Maps en un solo toque desde el sofá de su casa, multiplicando hasta por 4 tu ritmo mensual de reseñas de 5 estrellas reales.
-            </p>
-          </div>
-          <div class="card-box" style="background:#fffbeb; border-color:#fcd34d;">
-            <strong style="color:#b45309;">🛡️ Si pulsa «Bien» o «Mejorable» → Retención Privada</strong>
-            <p>
-              Frena el envío a Google y le invita a contarte qué ocurrió por texto o <strong>nota de voz en privado</strong>. Nuestra IA transcribe el audio y te avisa al móvil al instante para solucionarlo en casa.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section class="editorial-section">
-        <h2 class="sec-title">05. El Doble Escáner: Auditoría 1 (SEO+GEO IA) y Auditoría 2 (Neuromarketing CRO)</h2>
-        <p class="editorial-p">
-          Tener una reputación impecable se multiplica cuando tu web domina los dos lados de la moneda comercial:
-        </p>
-        <div class="grid-2">
-          <div class="card-box">
-            <strong>🔍 Auditoría 1: SEO Local + GEO (IA) — «Que te encuentren»</strong>
-            <p>
-              Escáner de 16 parámetros e inyección de código <code>Schema.org JSON-LD</code>, <code>llms.txt</code> y optimización de Google Maps para que <strong>ChatGPT, Gemini, Perplexity y Google</strong> recomienden tu negocio el primero.
-            </p>
-          </div>
-          <div class="card-box">
-            <strong>🧠 Auditoría 2: Neuromarketing y CRO — «Que te compren»</strong>
-            <p>
-              Radiografía psicológica (Kahneman, Ley de Hick) y mapas térmicos para detectar por qué se escapan las visitas de tu web, eliminar fricciones en formularios y disparar los contactos por WhatsApp.
-            </p>
-          </div>
-        </div>
-
-        <div class="highlight-box" style="background: linear-gradient(135deg, #0b2545 0%, #095852 100%); border-color:#14b8a6; color:#fff;">
-          <h4 style="color:#5eead4; font-size:16px;">🚀 Oferta Estrella: Pack Escudo (99 €/mes) + Auditorías Bonificadas (195 € c/u)</h4>
-          <p style="color:#f1f5f9; font-size:13.8px;">
-            • <strong>Pack Escudo Básico (S1 + S2):</strong> <strong>99 €/mes</strong> (+225 € Setup Dúo).<br>
-            • <strong>Ventaja en cualquiera de las 2 Auditorías:</strong> Sueltas cuestan 200 € (Solo Código DIY: 390 € las dos) o 350 € Llave en Mano (590 € las dos juntas en Pack Firma Institucional), pero al activar tu Pack Escudo o Plan Dúo+ te regalamos los 150 € de implantación y cada auditoría se queda en solo <strong>195 € pago único</strong> (o <strong>390 € las dos juntas</strong>; suelo mínimo blindado de 195 € c/u). Y en el <strong>Pack Escudo Total ★ (Trinity S1+S2+S3 Leads en 10s por 139 €/mes)</strong> recibes además GRATIS la Bóveda de Contraseñas.
-          </p>
-        </div>
-      </section>
+    <!-- AUDITORÍAS Y ATRIL -->
+    <div class="bg-amber-50 border-2 border-amber-400 rounded-2xl p-4 text-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        <strong class="text-sm font-black text-[#0b2239] block">🔍🧠 Las 2 Super-Auditorías Web (SEO/GEO IA y Neuro-CRO) + ★ Atril NFC/QR (Pagos Únicos sin Cuotas)</strong>
+        <span class="text-slate-700">Super-Auditorías Llave en Mano: <strong>195 € c/u</strong> con cualquier Pack de 2+ servicios (390 € las dos) o <strong>350 €</strong> suelta (590 € las dos). Atril NFC+QR: <strong>39 €</strong> (1.ª ud) | <strong>29 €</strong> (2ª-4ª) | <strong>25 €</strong> (5+).</span>
+      </div>
     </div>
 
-    <footer class="page-footer">
-      <span>📞 Solicita tu diagnóstico gratuito por WhatsApp: <strong>711 54 75 61</strong> • francisco@sistemaspyme.es</span>
-      <span>sistemaspyme.es • Página 2 de 2</span>
-    </footer>
-  </article>
-
+    <div class="text-center text-xs text-slate-500 mt-5 pt-3 border-t border-slate-200">
+      <strong>Sistemas Pyme — Francisco M. Gallardo (NIF 52938419D)</strong> • Tel / WhatsApp: <strong>711 54 75 61</strong> • Web: <strong>sistemaspyme.es</strong>
+    </div>
+  </div>
 </body>
 </html>

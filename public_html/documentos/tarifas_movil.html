@@ -2,324 +2,129 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>Tarifas Oficiales y Arquitectura de 4 Grupos (Versión Móvil) — Sistemas Pyme</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tarifas Oficiales y Combinaciones por Grupos | Sistemas Pyme</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      width: 100%;
-      background-color: #071629;
-      color: #f1f5f9;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 16.5px;
-      line-height: 1.55;
-    }
-    body.font-xl { font-size: 19px; line-height: 1.65; }
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(7, 22, 41, 0.96);
-      backdrop-filter: blur(12px);
-      border-bottom: 2px solid #14b8a6;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-    .btn-back {
-      background: #1e293b;
-      color: #5eead4;
-      border: 1px solid rgba(20,184,166,0.45);
-      text-decoration: none;
-      font-weight: 800;
-      font-size: 13px;
-      padding: 8px 12px;
-      border-radius: 10px;
-    }
-    .btn-action {
-      background: #0d7d74;
-      color: #fff;
-      border: 1px solid #14b8a6;
-      font-weight: 800;
-      font-size: 12.5px;
-      padding: 8px 11px;
-      border-radius: 10px;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    .btn-action.sec { background: #1e293b; color: #cbd5e1; border-color: #475569; }
-    .container {
-      max-width: 660px;
-      margin: 0 auto;
-      padding: 18px 16px 48px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .hero-box {
-      background: linear-gradient(145deg, #0b2545 0%, #0f172a 100%);
-      border: 1.5px solid rgba(20, 184, 166, 0.45);
-      border-radius: 18px;
-      padding: 18px 16px;
-    }
-    .badge {
-      display: inline-block;
-      background: rgba(20, 184, 166, 0.18);
-      color: #5eead4;
-      border: 1px solid rgba(20, 184, 166, 0.4);
-      font-size: 11.5px;
-      font-weight: 800;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 99px;
-      margin-bottom: 8px;
-    }
-    .hero-title { font-size: 1.38em; font-weight: 900; color: #fff; line-height: 1.22; margin-bottom: 6px; }
-    .hero-sub { font-size: 0.92em; color: #cbd5e1; }
-    .section-head {
-      background: linear-gradient(90deg, #0f766e 0%, #115e59 100%);
-      color: #fff;
-      padding: 11px 14px;
-      border-radius: 12px;
-      font-weight: 900;
-      font-size: 0.95em;
-      text-transform: uppercase;
-      margin-top: 6px;
-    }
-    .section-head.blue { background: linear-gradient(90deg, #1e3a8a 0%, #1d4ed8 100%); }
-    .section-head.pink { background: linear-gradient(90deg, #831843 0%, #be185d 100%); }
-    .section-head.indigo { background: linear-gradient(90deg, #3730a3 0%, #4f46e5 100%); }
-    .section-head.amber { background: linear-gradient(90deg, #b45309 0%, #d97706 100%); }
-    .card {
-      background: #0f172a;
-      border: 1.5px solid rgba(255,255,255,0.12);
-      border-left: 5px solid #14b8a6;
-      border-radius: 16px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .card.emerald { border-left-color: #10b981; border-color: rgba(16,185,129,0.45); background: linear-gradient(145deg, rgba(6,78,59,0.45) 0%, #0f172a 100%); }
-    .card.blue { border-left-color: #3b82f6; }
-    .card.pink { border-left-color: #ec4899; }
-    .card.indigo { border-left-color: #6366f1; }
-    .card.amber { border-left-color: #f59e0b; }
-    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-    .card-title { font-size: 1.1em; font-weight: 900; color: #fff; line-height: 1.25; }
-    .card-subtitle {
-      display: inline-block;
-      font-size: 0.8em;
-      font-weight: 800;
-      color: #5eead4;
-      background: rgba(20, 184, 166, 0.14);
-      border: 1px solid rgba(20, 184, 166, 0.35);
-      padding: 2px 9px;
-      border-radius: 8px;
-      margin-top: 4px;
-    }
-    .price-tag {
-      background: rgba(20, 184, 166, 0.18);
-      color: #5eead4;
-      border: 1px solid rgba(20, 184, 166, 0.4);
-      font-weight: 900;
-      font-size: 0.96em;
-      padding: 4px 10px;
-      border-radius: 10px;
-      white-space: nowrap;
-    }
-    .price-tag.amber { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border-color: rgba(245, 158, 11, 0.45); }
-    .data-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-      background: rgba(0,0,0,0.35);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px;
-      padding: 12px;
-    }
-    .data-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 10px;
-      padding-bottom: 6px;
-      border-bottom: 1px dashed rgba(255,255,255,0.1);
-      font-size: 0.9em;
-    }
-    .data-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .data-label { color: #94a3b8; font-weight: 600; }
-    .data-val { color: #fff; font-weight: 800; text-align: right; }
-    .data-val.hi { color: #34d399; }
-    .cta-box {
-      background: linear-gradient(145deg, #064e3b 0%, #0f172a 100%);
-      border: 2px solid #10b981;
-      border-radius: 18px;
-      padding: 20px 16px;
-      text-align: center;
-    }
-    .btn-wa {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      background: #10b981;
-      color: #052e16;
-      font-weight: 900;
-      padding: 14px 18px;
-      border-radius: 14px;
-      text-decoration: none;
-      margin-top: 12px;
+    body { font-family: 'Inter', sans-serif; background: #0f172a; color: #0f172a; margin: 0; padding: 24px 16px; }
+    h1, h2, h3, h4, .font-display { font-family: 'Montserrat', 'Inter', sans-serif; letter-spacing: -0.02em; }
+    .a4-sheet { max-width: 980px; margin: 0 auto; background: #ffffff; border-radius: 24px; padding: 36px 42px; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.6); border: 2px solid #0d9488; }
+    @media print {
+      body { background: #ffffff; padding: 0; }
+      .a4-sheet { box-shadow: none; border: none; padding: 12px; max-width: 100%; }
+      .no-print { display: none !important; }
     }
   </style>
+
 </head>
 <body>
-  <header class="topbar">
-    <a href="../index.html#tarifas" onclick="if(window.opener && !window.opener.closed){event.preventDefault();window.close();}" class="btn-back">⬅ Volver a la Web</a>
-    <div style="display:flex; gap:6px;">
-      <button type="button" id="btnToggleFont" onclick="document.body.classList.toggle('font-xl')" class="btn-action">🔎 Letra A+</button>
-      <a href="tarifas.html?modo=impreso" class="btn-action sec">📄 Original A5</a>
-    </div>
-  </header>
-
-  <main class="container">
-    <div class="hero-box">
-      <span class="badge">Manual Oficial de Precios</span>
-      <h1 class="hero-title">Arquitectura de Tarifas en 4 Grupos y Super-Auditorías</h1>
-      <p class="hero-sub">Cero carga cognitiva: consulta de un vistazo los packs del Grupo 1, Operativa Avanzada, Satélites, Voz IA y las 2 Super-Auditorías.</p>
+  <div class="a4-sheet">
+    <div class="no-print flex flex-wrap items-center justify-between gap-3 pb-4 mb-5 border-b border-slate-200">
+      <span class="px-3 py-1 rounded-full bg-teal-100 text-teal-900 font-extrabold text-xs border border-teal-300">💶 TARIFAS OFICIALES Y ESCALADO MODULAR</span>
+      <div class="flex items-center gap-2">
+        <button onclick="window.print()" class="bg-[#0b2239] hover:bg-slate-800 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow cursor-pointer">🖨️ Imprimir / Guardar PDF</button>
+        <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20estoy%20viendo%20la%20tabla%20de%20Tarifas%20Oficiales%20y%20querr%C3%ADa%20consultar%20una%20combinaci%C3%B3n" target="_blank" class="bg-[#0d7d74] text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow">💬 Consultar combinación</a>
+      </div>
     </div>
 
-    <div class="section-head">1. Grupo 1: Núcleo de Implantación Rápida (59€ el 1º | +40€ extra)</div>
-    <p style="font-size:0.9em; color:#cbd5e1;">
-      Incluye los 5 servicios más rentables y rápidos: <strong>S1</strong> Reseñas Google IA, <strong>S2</strong> Cortafuegos Preventivo WhatsApp, <strong>S3 ★ Leads en 10 Segundos</strong>, <strong>S9</strong> Facturas por Foto WA y <strong>S5</strong> Reactivación de Clientes Inactivos.
-    </p>
-
-    <article class="card">
-      <div class="card-top">
-        <div>
-          <span class="card-title">Plan Pyme BASE (1 serv.)</span>
-          <span class="card-subtitle">Solo S1, o solo S2, o solo S3</span>
-        </div>
-        <span class="price-tag">59 € / mes</span>
-      </div>
-      <div class="data-grid">
-        <div class="data-row"><span class="data-label">Alta Técnica (Setup único):</span><span class="data-val">150 €</span></div>
-        <div class="data-row"><span class="data-label">Pago Día 1 (Vía Flexible):</span><span class="data-val">209 €</span></div>
-        <div class="data-row"><span class="data-label">Pago Día 1 (Vía Anual 10m):</span><span class="data-val hi">740 € (Ahorra 118 €)</span></div>
-      </div>
-    </article>
-
-    <article class="card emerald">
-      <div class="card-top">
-        <div>
-          <span class="card-title">Pack ESCUDO BÁSICO (Dúo: 2 serv.)</span>
-          <span class="card-subtitle">S1 + S2 (o S1 + S3)</span>
-        </div>
-        <span class="price-tag">99 € / mes</span>
-      </div>
-      <div class="data-grid">
-        <div class="data-row"><span class="data-label">Alta Técnica (150€ + 75€):</span><span class="data-val">225 €</span></div>
-        <div class="data-row"><span class="data-label">Pago Día 1 (Vía Flexible):</span><span class="data-val">324 €</span></div>
-        <div class="data-row"><span class="data-label">Pago Día 1 (Vía Anual 10m):</span><span class="data-val hi">1.215 € (Ahorra 198 €)</span></div>
-        <div class="data-row"><span class="data-label">Privilegio Desbloqueado:</span><span class="data-val hi">Auditorías a 195 € c/u (390 € las 2)</span></div>
-      </div>
-    </article>
-
-    <article class="card emerald">
-      <div class="card-top">
-        <div>
-          <span class="card-title">Pack ESCUDO TOTAL ★ (Trinity: 3 serv.)</span>
-          <span class="card-subtitle">S1 + S2 + S3 (Leads en 10s)</span>
-        </div>
-        <span class="price-tag amber">139 € / mes</span>
-      </div>
-      <p><strong>El Pack Estrella:</strong> protege tus reseñas en Google, filtra quejas en privado por WhatsApp y atiende a cada nuevo lead en menos de 10 segundos.</p>
-      <div class="data-grid">
-        <div class="data-row"><span class="data-label">Alta Técnica (150€ + 75€ + 75€):</span><span class="data-val">300 €</span></div>
-        <div class="data-row"><span class="data-label">Pago Día 1 (Vía Flexible):</span><span class="data-val">439 €</span></div>
-        <div class="data-row"><span class="data-label">Pago Día 1 (Vía Anual 10m):</span><span class="data-val hi">1.690 € (Ahorra 278 €)</span></div>
-        <div class="data-row"><span class="data-label">Regalo + Privilegio:</span><span class="data-val hi">🎁 Bóveda Gratis (150€) + Aud. a 195 € c/u</span></div>
-      </div>
-    </article>
-
-    <article class="card">
-      <div class="card-top">
-        <div>
-          <span class="card-title">Planes QUATRO (4) y PENTIUM (5)</span>
-          <span class="card-subtitle">+40 €/m y +75 € Setup por módulo</span>
-        </div>
-        <span class="price-tag">179€ / 219€</span>
-      </div>
-      <div class="data-grid">
-        <div class="data-row"><span class="data-label">Plan QUATRO (S1+S2+S3+S4):</span><span class="data-val">179 €/m + 375 € Setup (Día 1: 554 €)</span></div>
-        <div class="data-row"><span class="data-label">Plan PENTIUM (Los 5 serv. G1):</span><span class="data-val">219 €/m + 450 € Setup (Día 1: 669 €)</span></div>
-      </div>
-    </article>
-
-    <div class="section-head blue">2. Grupo 2: Operativa Avanzada (Agenda, Contratos y Cobros)</div>
-    <article class="card blue">
-      <div class="card-top">
-        <div>
-          <span class="card-title">S6 Anti-Plantón, S8 Firma Digital y S10 Anti-Morosidad</span>
-          <span class="card-subtitle">Computan al 100% para beneficios de Pack</span>
-        </div>
-        <span class="price-tag">+59 €/m combo</span>
-      </div>
-      <div class="data-grid">
-        <div class="data-row"><span class="data-label">Contratado SUELTO (único servicio):</span><span class="data-val">79 €/mes + 195 € Setup</span></div>
-        <div class="data-row"><span class="data-label">COMBINADO (con Grupo 1 u otro):</span><span class="data-val hi">+59 €/mes + +110 € Setup</span></div>
-      </div>
-    </article>
-
-    <div class="section-head pink">3. Grupo 3: Satélites Especializados y Boosters IA</div>
-    <article class="card pink">
-      <div class="data-grid">
-        <div class="data-row"><span class="data-label">📱 Satélite 1: Instagram 3 en 1:</span><span class="data-val hi">+49 €/m (+75€) combo | 69 €/m (150€) suelto</span></div>
-        <div class="data-row"><span class="data-label">📦 Satélite 2: Escudo Logístico 360:</span><span class="data-val hi">+59 €/m (+110€) combo | 79 €/m (195€) suelto</span></div>
-        <div class="data-row"><span class="data-label">🧠 Satélite 3: Cerebro Redactor RAG:</span><span class="data-val hi">+69 €/m (+150€) combo | 99 €/m (250€) suelto</span></div>
-        <div class="data-row"><span class="data-label">⚡ Boosters IA (Correo S9 / Prov. S10):</span><span class="data-val">+35 €/mes + +50 € Setup</span></div>
-      </div>
-    </article>
-
-    <div class="section-head indigo">4. Grupo 4: Satélites de Telefonía y Voz IA</div>
-    <article class="card indigo">
-      <div class="data-grid">
-        <div class="data-row"><span class="data-label">📞 S4 Rescate Llamadas Perdidas WA (250 rescates/m):</span><span class="data-val hi">+59 €/m (+110€) combo | 79 €/m (195€) suelto</span></div>
-        <div class="data-row"><span class="data-label">🎙️ S7 Centralita Voz IA 24/7 (Bolsa 250 min/m):</span><span class="data-val hi">+129 €/m (+250€) combo | 169 €/m (350€) suelto</span></div>
-      </div>
-    </article>
-
-    <div class="section-head amber">5. Las 2 Super-Auditorías Web Gemelas (Suelo Mínimo 195 € c/u)</div>
-    <article class="card amber">
-      <div class="card-top">
-        <div>
-          <span class="card-title">1) Ingeniería SEO/GEO IA y 2) Neuro-CRO con Sonda 10-14 Días</span>
-          <span class="card-subtitle">Pago Único • Sin Cuotas Mensuales</span>
-        </div>
-        <span class="price-tag amber">195 € en Pack</span>
-      </div>
-      <div class="data-grid">
-        <div class="data-row"><span class="data-label">1. Solo Código / DIY (Sin mano de obra):</span><span class="data-val">200 € una | 390 € las dos</span></div>
-        <div class="data-row"><span class="data-label">2. Oficial «Llave en Mano» (Suelta o Base):</span><span class="data-val">350 € una | 590 € las dos (Ahorra 110 €)</span></div>
-        <div class="data-row"><span class="data-label">3. BONIFICADA CON PACK (2+ serv. Mensual o Anual):</span><span class="data-val hi">195 € una | 390 € las dos (Ahorra 310 €)</span></div>
-        <div class="data-row"><span class="data-label">★ Hardware Atril NFC + QR Mostrador:</span><span class="data-val hi">39 € (1ª ud) | 29 € (2ª-4ª) | 25 € (5+ uds)</span></div>
-      </div>
-    </article>
-
-    <div class="cta-box">
-      <div style="font-size: 0.85em; font-weight: 800; color: #6ee7b7; text-transform: uppercase;">Atención Directa • Galicia</div>
-      <div style="font-size: 1.2em; font-weight: 900; color: #ffffff; margin-top: 4px;">Francisco M. Gallardo</div>
-      <div style="font-size: 0.92em; color: #cbd5e1; margin-top: 2px;">Tel: <strong>711 54 75 61</strong> • francisco@sistemaspyme.es</div>
-      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20estoy%20viendo%20las%20nuevas%20tarifas%20en%20el%20m%C3%B3vil%20y%20quiero%20informaci%C3%B3n%20para%20mi%20negocio" target="_blank" class="btn-wa">
-        💬 Hablar con Francisco por WhatsApp
-      </a>
+    <div class="bg-gradient-to-r from-[#0b2239] to-[#0d7d74] text-white rounded-3xl p-6 mb-6">
+      <h1 class="text-2xl sm:text-3xl font-black mb-1">Tarifas Oficiales y Planes de Libre Combinación</h1>
+      <p class="text-xs sm:text-sm text-teal-100">Con salvar o captar un solo cliente al mes, todo el sistema se amortiza solo. Modalidad Flexible (3 meses mín.) o Plan Anual (pagas 10 meses = 2 meses gratis).</p>
     </div>
-  </main>
+
+    <!-- TABLA 1: PLANES DE LIBRE ELECCIÓN EN 4 COLUMNAS LIMPIAS -->
+    <h2 class="text-base sm:text-lg font-black text-[#0b2239] mb-2">1. Planes Mensuales de Libre Elección (4 Columnas Claras)</h2>
+    <div class="overflow-x-auto mb-3">
+      <table class="w-full text-left border-collapse text-xs sm:text-[13px]">
+        <thead>
+          <tr class="bg-[#0b2239] text-white">
+            <th class="p-3 rounded-tl-xl">Nombre del Módulo / Pack</th>
+            <th class="p-3">1. Cuota al Mes</th>
+            <th class="p-3">2. Setup Único (Alta)</th>
+            <th class="p-3 rounded-tr-xl">3. En qué consiste (Libre Combinación entre los 4 Grupos)</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200 border border-slate-200">
+          <tr class="bg-white">
+            <td class="p-3 font-black text-[#0b2239]">Pyme Base</td>
+            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 59 € / mes<span class="block text-[10.5px] text-teal-700 font-bold">Anual: desde 49 €/m eq.</span></td>
+            <td class="p-3 font-bold text-slate-800 whitespace-nowrap">Desde 150 €</td>
+            <td class="p-3 text-slate-700"><strong>1 servicio de libre elección</strong> de cualquiera de los 4 grupos (ej. S1 Reseñas IA o S2 Cortafuegos WhatsApp). Incluye Informe Mensual 360°.</td>
+          </tr>
+          <tr class="bg-sky-50/70">
+            <td class="p-3 font-black text-sky-900">Escudo Básico</td>
+            <td class="p-3 font-black text-sky-700 whitespace-nowrap">Desde 99 € / mes<span class="block text-[10.5px] text-sky-900 font-bold">Anual: desde 82,50 €/m eq.</span></td>
+            <td class="p-3 font-bold text-sky-950 whitespace-nowrap">Desde 225 €<span class="block text-[10px] text-emerald-700 font-extrabold">(2.º Setup al 50%)</span></td>
+            <td class="p-3 text-slate-800"><strong>2 servicios de libre elección</strong> (ej. S1 Reseñas IA + S2 Cortafuegos WA). Desbloquea las Super-Auditorías a <strong>195 € c/u</strong> (en vez de 350 €).</td>
+          </tr>
+          <tr class="bg-emerald-50/90 border-l-4 border-l-emerald-500">
+            <td class="p-3 font-black text-emerald-950">Escudo Total ★</td>
+            <td class="p-3 font-black text-emerald-700 whitespace-nowrap">Desde 99 € / mes<span class="block text-[10.5px] text-amber-900 font-extrabold">+ 195 € (1 Aud.) o 390 € (las 2)</span></td>
+            <td class="p-3 font-bold text-emerald-950 whitespace-nowrap">Desde 225 € + Aud.<span class="block text-[10px] text-emerald-800 font-extrabold">(Ahorras 155 € o 310 €)</span></td>
+            <td class="p-3 text-slate-800"><strong>2 servicios de libre elección + 1 o 2 Super-Auditorías Llave en Mano</strong> bonificadas a 195 € c/u (SEO+GEO IA y/o Neuro-CRO Web).</td>
+          </tr>
+          <tr class="bg-amber-50/60">
+            <td class="p-3 font-black text-[#0b2239]">Pyme Trinity 🎁</td>
+            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 139 € / mes<span class="block text-[10.5px] text-teal-700 font-bold">Anual: desde 115,80 €/m eq.</span></td>
+            <td class="p-3 font-bold text-slate-800 whitespace-nowrap">Desde 300 €</td>
+            <td class="p-3 text-slate-800"><strong>3 servicios mensuales de libre elección</strong> de cualquier grupo + <strong>🎁 Bóveda Segura de Contraseñas GRATIS</strong> (valorada en 150 €) + Auditorías a 195 € c/u.</td>
+          </tr>
+          <tr class="bg-white">
+            <td class="p-3 font-black text-[#0b2239]">Pyme 4</td>
+            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 179 € / mes<span class="block text-[10.5px] text-teal-700 font-bold">Anual: desde 149,15 €/m eq.</span></td>
+            <td class="p-3 font-bold text-slate-800 whitespace-nowrap">Desde 375 €</td>
+            <td class="p-3 text-slate-700"><strong>4 servicios mensuales de libre elección</strong> combinando cualquier grupo + Bóveda de Contraseñas GRATIS + Auditorías bonificadas a 195 € c/u.</td>
+          </tr>
+          <tr class="bg-slate-50">
+            <td class="p-3 font-black text-[#0b2239]">Pyme Pentium</td>
+            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 219 € / mes<span class="block text-[10.5px] text-teal-700 font-bold">Anual: desde 182,50 €/m eq.</span></td>
+            <td class="p-3 font-bold text-slate-800 whitespace-nowrap">Desde 450 €</td>
+            <td class="p-3 text-slate-700"><strong>5 servicios mensuales de libre elección</strong> combinando cualquier grupo + Bóveda de Contraseñas GRATIS + Auditorías bonificadas a 195 € c/u.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- REGLA DE ORO DE COMBINACIÓN LIBRE ENTRE GRUPOS -->
+    <div class="bg-amber-50 border-2 border-amber-400 rounded-2xl p-4 mb-6 text-xs text-slate-800 leading-relaxed">
+      <strong class="text-amber-950 font-black block mb-1">💡 ¿Cómo se calcula tu cuota exacta al combinar servicios de distintos Grupos? (Regla del Módulo Base):</strong>
+      Puedes combinar libremente servicios de cualquiera de los 4 Grupos (por ejemplo, elegir para tu <em>Pyme Trinity</em> el servicio S4 del Grupo 1, el S6 del Grupo 2 y el S10 del Grupo 4). <strong>Tu primer servicio toma siempre la tarifa individual del módulo más económico que hayas incluido</strong> (59 €/m y 150 € Setup si incluyes al menos uno del Grupo 1; o la tarifa suelta de su grupo si todos pertenecen a los Grupos 2, 3 o 4), y <strong>todos los demás servicios se suman directamente con su tarifa reducida de combinación (Combo)</strong> detallada aquí abajo:
+    </div>
+
+    <!-- TABLA 2: LOS SERVICIOS DIVIDIDOS EN 4 GRUPOS + SUPER-AUDITORÍAS Y ATRIL -->
+    <h2 class="text-base sm:text-lg font-black text-[#0b2239] mb-2">2. Tarifas por Grupo (S1 a S10), Super-Auditorías y Hardware NFC</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+      <div class="border-2 border-sky-300 rounded-2xl p-4 bg-sky-50/40 space-y-2">
+        <h3 class="font-black text-[#0b2239] text-sm border-b border-sky-200 pb-1">🚀 Los servicios divididos en 4 Grupos (Cuota Combo vs. Suelto)</h3>
+        <ul class="space-y-1.5 text-slate-800">
+          <li class="flex justify-between gap-2"><span><strong>Grupo 1 (S1 a S5):</strong> Reseñas IA, Cortafuegos WA, Leads 10s, Facturas Foto, Inactivos</span><strong class="whitespace-nowrap text-teal-800">+40 €/m (+75€) | 59€ (150€) s.</strong></li>
+          <li class="flex justify-between gap-2"><span><strong>Grupo 2 (S6 a S8):</strong> Agenda Anti-Plantón, Firma Digital, Anti-Morosidad</span><strong class="whitespace-nowrap text-sky-800">+59 €/m (+110€) | 79€ (195€) s.</strong></li>
+          <li>
+            <div class="flex justify-between gap-2"><span><strong>Grupo 3</strong> · Sat.1 Instagram 3 en 1 (Meta API):</span><strong class="whitespace-nowrap text-pink-700">+49 €/m (+75€) | 69€ (150€) s.</strong></div>
+            <div class="flex justify-between gap-2 pl-12 mt-0.5 text-slate-700"><span>· Sat.2 Logística 360 / Sat.3 Redactor B2B RAG:</span><strong class="whitespace-nowrap text-indigo-700">+59€ / +69 €/m combo</strong></div>
+          </li>
+          <li>
+            <div class="flex justify-between gap-2"><span><strong>Grupo 4</strong> · S9 Rescate Llamadas Perdidas WA (250/m):</span><strong class="whitespace-nowrap text-sky-800">+59 €/m (+110€) | 79€ (195€) s.</strong></div>
+            <div class="flex justify-between gap-2 pl-12 mt-0.5 text-slate-700"><span>· S10 Centralita Voz IA 24/7 (250 min/m):</span><strong class="whitespace-nowrap text-indigo-900">+129 €/m (+250€) | 169€ (350€) s.</strong></div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="border-2 border-teal-400 rounded-2xl p-4 bg-teal-50/40 space-y-2">
+        <h3 class="font-black text-[#0b2239] text-sm border-b border-teal-200 pb-1">🔍🧠 Super-Auditorías Web y ★ Atril NFC + QR (Pagos Únicos)</h3>
+        <ul class="space-y-1.5 text-slate-800">
+          <li class="flex justify-between gap-2"><span><strong>Super-Auditoría Llave en Mano (Suelta o con Pyme Base):</strong><br><span class="text-[11px] text-slate-600">(Implantada por nosotros o entregando códigos e instrucciones a tu técnico)</span></span><strong class="whitespace-nowrap text-sky-800">350 € (1) | 590 € (las 2)</strong></li>
+          <li class="flex justify-between gap-2"><span><strong>Super-Auditoría Bonificada (Con Pack 2+ servicios ★):</strong></span><strong class="whitespace-nowrap text-emerald-700">195 € (1) | 390 € (las 2)</strong></li>
+          <li class="flex justify-between gap-2 pt-1 border-t border-teal-200"><span><strong>★ Atril Inteligente NFC + QR (Pago único sin cuotas):</strong></span><strong class="whitespace-nowrap text-amber-800">39 € (1.ª) | 29 € (2ª-4ª) | 25 € (5+)</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="text-center text-xs text-slate-500 mt-6 pt-3 border-t border-slate-200">
+      <strong>Sistemas Pyme — Francisco M. Gallardo (NIF 52938419D)</strong> • Tel / WhatsApp: <strong>711 54 75 61</strong> • Precios netos sin IVA (21%) • Domiciliación SEPA.
+    </div>
+  </div>
 </body>
 </html>
