@@ -2,155 +2,131 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Guía Técnica: Auditoría de Neuromarketing y Conversión Web (CRO) — Sistemas Pyme</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <title>Guía Técnica Ejecutiva: Super-Auditoría Neuro-CRO y Sonda Térmica | Sistemas Pyme</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    @page { size: A4 portrait; margin: 0; }
-    body { font-family: 'Inter', sans-serif; background: #0f172a; color: #1e293b; display: flex; flex-direction: column; align-items: center; padding: 18px 10px 40px 10px; gap: 18px; }
-    .toolbar { background: #1e293b; color: #fff; padding: 10px 18px; border-radius: 999px; display: flex; align-items: center; justify-content: space-between; gap: 14px; width: 100%; max-width: 210mm; border: 1px solid rgba(251,191,36,0.45); box-shadow: 0 10px 25px rgba(0,0,0,0.45); position: sticky; top: 10px; z-index: 50; }
-    .btn { background: #d97706; color: #fff; text-decoration: none; border: none; padding: 7px 15px; border-radius: 999px; font-size: 12px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
-    .btn.back { background: #0b2239; border: 1px solid #fbbf24; }
-    .sheet { width: 210mm; min-height: 297mm; background: #fff; padding: 12mm 14mm; border-radius: 10px; box-shadow: 0 15px 35px rgba(0,0,0,0.45); display: flex; flex-direction: column; justify-content: space-between; }
-    .header { background: linear-gradient(135deg, #0b2239 0%, #451a03 60%, #b45309 100%); color: #fff; padding: 18px 22px; border-radius: 12px; border-bottom: 4px solid #fbbf24; display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 14px; }
-    .tag { display: inline-block; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; background: rgba(251,191,36,0.2); color: #fde68a; padding: 3px 9px; border-radius: 999px; border: 1px solid rgba(251,191,36,0.5); margin-bottom: 5px; }
-    h1 { font-size: 20px; font-weight: 900; line-height: 1.18; }
-    .sub { font-size: 11px; color: #fef3c7; margin-top: 4px; line-height: 1.4; }
-    .intro-box { background: #fffbeb; border: 1.5px solid #fde68a; border-left: 5px solid #d97706; border-radius: 10px; padding: 11px 14px; font-size: 11px; line-height: 1.45; margin-bottom: 12px; }
-    .sec-title { background: #0b2545; color: #fff; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; padding: 6px 12px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; }
-    .dual-dictamen { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
-    .dict-card { background: #f8fafc; border: 1.5px solid #cbd5e1; border-top: 4px solid #0284c7; border-radius: 8px; padding: 10px 12px; font-size: 10px; line-height: 1.4; }
-    .dict-card.post { background: #fffdf7; border-color: #fde68a; border-top-color: #d97706; }
-    .dict-card h3 { font-size: 11.5px; font-weight: 900; color: #0b2545; margin-bottom: 5px; }
-    .dict-card ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
-    .mod-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
-    .mod-box { background: #f0fdfa; border: 1px solid #99f6e4; border-left: 4px solid #0d7d74; border-radius: 8px; padding: 8px 11px; font-size: 10px; line-height: 1.36; }
-    .mod-box strong { color: #0b2545; font-size: 10.5px; display: block; margin-bottom: 2px; }
-    .prices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
-    .p-card { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 9px 10px; text-align: center; }
-    .p-card.star { background: #ecfdf5; border-color: #10b981; }
-    .p-card .val { font-size: 17px; font-weight: 900; color: #b45309; display: block; margin: 2px 0; }
-    .footer { border-top: 1px solid #e2e8f0; padding-top: 8px; font-size: 9.5px; color: #64748b; display: flex; justify-content: space-between; }
-    @media screen and (max-width: 820px) {
-      .sheet { width: 100%; min-height: auto; padding: 16px; }
-      .dual-dictamen, .mod-grid, .prices { grid-template-columns: 1fr; }
-      .header { flex-direction: column; align-items: flex-start; }
-    }
+    body { font-family: 'Inter', sans-serif; background: #0f172a; color: #0f172a; margin: 0; padding: 24px 16px; }
+    h1, h2, h3, h4, .font-display { font-family: 'Montserrat', 'Inter', sans-serif; letter-spacing: -0.02em; }
+    .a4-sheet { max-width: 1020px; margin: 0 auto; background: #ffffff; border-radius: 24px; padding: 36px 42px; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.6); border: 2px solid #0d9488; }
     @media print {
-      body { background: #fff; padding: 0; }
-      .toolbar { display: none !important; }
-      .sheet { box-shadow: none; border-radius: 0; width: 210mm; height: 297mm; }
+      body { background: #ffffff; padding: 0; }
+      .a4-sheet { box-shadow: none; border: none; padding: 12px; max-width: 100%; }
+      .no-print { display: none !important; }
     }
   </style>
+
 </head>
 <body>
-  <div class="toolbar">
-    <span style="font-size:12.5px; font-weight:800;">🧠 Guía Técnica Oficial • Auditoría 2: Neuromarketing y Conversión Web (CRO)</span>
-    <div style="display:flex; gap:8px;">
-      <a href="../index.html#magazine" onclick="if(window.parent && window.parent!==window && window.parent.spCerrarVisorMagazineN1){event.preventDefault();window.parent.spCerrarVisorMagazineN1();}" class="btn back">← Volver a Magazine</a>
-      <button class="btn" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+  <div class="a4-sheet">
+    <div class="no-print flex flex-wrap items-center justify-between gap-3 pb-5 mb-6 border-b border-slate-200">
+      <div class="flex items-center gap-2">
+        <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-950 font-extrabold text-xs border border-amber-400">🧠 DOSSIER OFICIAL • SUPER-AUDITORÍA 2 (DUEÑO + INFORMÁTICO)</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="window.print()" class="bg-[#0b2239] hover:bg-slate-800 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow cursor-pointer">🖨️ Imprimir / Guardar PDF</button>
+        <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20acabo%20de%20leer%20la%20Gu%C3%ADa%20Neuro-CRO%20y%20quiero%20consultarte%20para%20mi%20web" target="_blank" class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow">💬 Consultar con Francisco</a>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-r from-[#451a03] via-[#78350f] to-[#0b2239] text-white rounded-3xl p-6 sm:p-8 mb-6 shadow-lg">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <span class="text-[11px] font-extrabold uppercase tracking-widest text-amber-300 bg-white/10 px-3 py-1 rounded-full border border-amber-300/40">Neuromarketing Aplicado y Sonda Térmica • Sistemas Pyme</span>
+        <span class="text-xs font-bold text-teal-300">Duplica las visitas de tu web que terminan llamándote</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-black leading-tight mb-2">
+        Super-Auditoría Neuro-CRO + Sonda Térmica de 10-14 Días
+      </h1>
+      <p class="text-sm sm:text-base text-amber-100 leading-relaxed">
+        Por qué el 80% de las personas que entran a mirar una web se marchan sin llamar ni escribir, y cómo duplicamos tus contactos reales midiendo con mapas de calor dónde miran, dónde dudan y dónde se atascan tus clientes.
+      </p>
+    </div>
+
+    <!-- BLOQUE 1: EXPLICACIÓN PARA EL DUEÑO (SIN TECNICISMOS) -->
+    <div class="bg-gradient-to-br from-amber-50 via-white to-sky-50 border-2 border-amber-400 rounded-3xl p-6 mb-7 shadow-sm">
+      <div class="inline-flex items-center gap-2 bg-amber-100 text-amber-950 font-black text-xs uppercase tracking-wider px-3.5 py-1 rounded-full border border-amber-300 mb-3">
+        <span>👔 PARTE 1: EXPLICACIÓN CLARA PARA EL DUEÑO DEL NEGOCIO (SIN TECNICISMOS)</span>
+      </div>
+      <h2 class="text-lg sm:text-xl font-black text-[#0b2239] mb-2">
+        ¿Qué hacemos exactamente en tu página web para que te entren el doble de clientes?
+      </h2>
+      <p class="text-xs sm:text-[13.5px] text-slate-700 leading-relaxed mb-4">
+        Cuando un cliente entra en tu web desde su teléfono móvil, <strong>decide en solo 3 a 5 segundos si le inspiras confianza o si cierra la página</strong>. Si tiene que buscar dónde está tu teléfono, rellenar un formulario largo con 6 casillas o no ve al instante las opiniones reales de otros clientes, se agobia y llama al siguiente de la lista.
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-[13px]">
+        <div class="bg-white rounded-2xl p-4 border border-amber-300 shadow-sm space-y-2">
+          <strong class="text-amber-900 font-black block text-sm">🔬 Paso 1: Ponemos una «Cámara Térmica» 10-14 días en tu web:</strong>
+          <ul class="space-y-1.5 text-slate-700 leading-snug">
+            <li>• <strong>No adivinamos a ciegas; medimos la realidad:</strong> Durante 10 a 14 días grabamos de forma 100% anónima y legal (cumpliendo la Guía AEPD) cómo se mueven tus visitas reales por tu web.</li>
+            <li>• <strong>Descubrimos tus fugas ocultas:</strong> Vemos en qué casilla exacta abandonan tu formulario, qué botones intentan pulsar sin éxito y <strong>cuántas personas intentan llamar a tu teléfono fijo al mediodía, por la noche o en fin de semana cuando estás cerrado</strong>.</li>
+          </ul>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-sky-300 shadow-sm space-y-2">
+          <strong class="text-sky-900 font-black block text-sm">🛠️ Paso 2: Implantamos las mejoras según el estilo de tu negocio:</strong>
+          <ul class="space-y-1.5 text-slate-700 leading-snug">
+            <li>• <strong>Modo Ágil (Clínicas, Talleres, Comercios, Hostelería):</strong> Ponemos el botón de WhatsApp en la zona del pulgar, la barra superior con tus estrellas de Google Maps y llamada en 1 toque, y reducimos las trabas del formulario.</li>
+            <li>• <strong>Modo Corporativo de Alto Standing (Despachos de Abogados, Notarías, Consultoras con Secretaria):</strong> Cero botones invasivos. Mantenemos tu sobriedad institucional, añadimos tus sellos de colegiación junto al formulario y medimos las llamadas perdidas fuera de horario.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOQUE 2: ESTADÍSTICAS DEL ESTUDIO -->
+    <h2 class="text-lg sm:text-xl font-black text-[#0b2239] mb-3">2. Las 3 Cifras Clave de Conversión Web (Neuromarketing CRO)</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-7">
+      <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4">
+        <span class="block text-2xl sm:text-3xl font-black text-amber-700 mb-1">+156% Contactos</span>
+        <strong class="block text-xs uppercase tracking-wider text-amber-950 mb-1">MIT Attention Insight</strong>
+        <p class="text-xs text-slate-700 leading-relaxed">Situar tu propuesta de valor y tus estrellas reales donde van los ojos en los primeros 4 segundos multiplica por más de dos las solicitudes.</p>
+      </div>
+      <div class="bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-4">
+        <span class="block text-2xl sm:text-3xl font-black text-emerald-700 mb-1">+103% Llamadas</span>
+        <strong class="block text-xs uppercase tracking-wider text-emerald-950 mb-1">Ley de Hick (Fricción Móvil)</strong>
+        <p class="text-xs text-slate-700 leading-relaxed">Eliminar campos intimidantes y facilitar el contacto directo con el pulgar duplica la tasa media de conversión del 3,3% al 6,7%.</p>
+      </div>
+      <div class="bg-sky-50 border-2 border-sky-300 rounded-2xl p-4">
+        <span class="block text-2xl sm:text-3xl font-black text-sky-700 mb-1">10 a 14 Días</span>
+        <strong class="block text-xs uppercase tracking-wider text-sky-950 mb-1">Sonda Árbitro + Panel Vivo</strong>
+        <p class="text-xs text-slate-700 leading-relaxed">Incluye acceso a tu <strong>Portal Privado de Telemetría</strong> para ver tus visitas por horas, ciudades, mapas de calor y clics reales.</p>
+      </div>
+    </div>
+
+    <!-- BLOQUE 3: PARTE TÉCNICA PARA EL INFORMÁTICO -->
+    <h2 class="text-lg sm:text-xl font-black text-[#0b2239] mb-3">3. Parte 2 (Para el Informático): Qué inyectamos o entregamos listo para pegar</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-7 text-xs sm:text-[13px]">
+      <div class="bg-slate-50 border border-slate-300 rounded-2xl p-5 space-y-1.5">
+        <strong class="text-[#0b2239] font-black block text-sm mb-1">1.º Dictamen Pre-Sonda + 4 Módulos Universales (75%):</strong>
+        <p class="text-slate-700">Auditoría de velocidad móvil (<code>LCP</code> en PageSpeed), enlaces <code>tel:</code> y <code>mailto:</code>, Ley de Hick en formularios, Efecto Cialdini de prueba social, Sonda Microsoft Clarity con enmascaramiento estricto AEPD y banner de cookies simétrico.</p>
+      </div>
+      <div class="bg-slate-50 border border-slate-300 rounded-2xl p-5 space-y-1.5">
+        <strong class="text-[#0b2239] font-black block text-sm mb-1">2.º Dictamen Post-Sonda + Pliego de 5 Prescripciones (25%):</strong>
+        <p class="text-slate-700">Tras los 10-14 días de grabación real, entregamos el informe de mapas de calor (<em>Scroll Map</em>, <em>Click Map</em> y <em>Rage Clicks</em>), el registro de llamadas fuera de horario y los 5 ajustes finos listos para aplicar.</p>
+      </div>
+    </div>
+
+    <!-- BLOQUE 4: INVERSIÓN OFICIAL (SIN 200 € SOLO CÓDIGO) -->
+    <h2 class="text-lg sm:text-xl font-black text-[#0b2239] mb-3">4. Inversión Oficial (Pago Único • Sin Cuotas Mensuales)</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-center">
+      <div class="bg-emerald-50 border-2 border-emerald-500 rounded-2xl p-5 shadow-md">
+        <span class="inline-block text-[11px] font-extrabold uppercase tracking-wider text-emerald-950 bg-emerald-200 px-3 py-0.5 rounded-full mb-2">1. Bonificada en Combo con Pack 2+ Servicios ★</span>
+        <div class="text-3xl font-black text-emerald-700 mb-1">195 € <span class="text-xs font-bold text-emerald-900">por 1 auditoría</span></div>
+        <div class="text-sm font-black text-emerald-950 mb-2">390 € si contratas las 2 Super-Auditorías juntas (Ahorras 310 €)</div>
+        <p class="text-xs text-emerald-950 leading-relaxed font-medium">Al activar cualquier Pack de 2 o más servicios mensuales (como el <strong>Pack Escudo Básico Dúo</strong> de 99 €/mes), tienes un <strong>44% de bonificación directa</strong>.</p>
+      </div>
+
+      <div class="bg-white border-2 border-amber-400 rounded-2xl p-5 shadow-sm">
+        <span class="inline-block text-[11px] font-extrabold uppercase tracking-wider text-amber-900 bg-amber-100 px-3 py-0.5 rounded-full mb-2">2. Tarifa Suelta «Llave en Mano»</span>
+        <div class="text-3xl font-black text-amber-700 mb-1">350 € <span class="text-xs font-bold text-slate-500">por 1 auditoría</span></div>
+        <div class="text-sm font-extrabold text-[#0b2239] mb-2">590 € si contratas las 2 Super-Auditorías juntas (Ahorras 110 €)</div>
+        <p class="text-xs text-slate-600 leading-relaxed">Contratada suelta o con Pyme Base. Incluye Sonda de 10-14 días, Portal de Telemetría e implantación por nosotros o entrega de todos los códigos e instrucciones a tu técnico.</p>
+      </div>
+    </div>
+
+    <div class="text-center text-xs text-slate-500 pt-3 border-t border-slate-200">
+      <strong>Sistemas Pyme — Francisco M. Gallardo (NIF 52938419D)</strong> • Tel / WhatsApp: <strong>711 54 75 61</strong> • Web: <strong>sistemaspyme.es</strong> • Precios netos sin IVA (21%).
     </div>
   </div>
-
-  <main class="sheet">
-    <div>
-      <header class="header">
-        <div>
-          <span class="tag">Auditoría Forense de Conversión y Telemetría Térmica • Sin Cuotas</span>
-          <h1>Guía Técnica: Auditoría de Neuromarketing y CRO Web</h1>
-          <p class="sub">«Para que se sientan a gusto y te compren»: Mapas de calor reales, Ley de Hick, Ergonomía del Pulgar y Portal Privado de Estadísticas para multiplicar los contactos de tu web.</p>
-        </div>
-        <div style="text-align:right; font-size:10px; line-height:1.35; flex-shrink:0;">
-          <strong style="font-size:12px; color:#fde68a; display:block;">Sistemas Pyme</strong>
-          Francisco M. Gallardo<br>Tel / WA: <strong>711 54 75 61</strong><br>sistemaspyme.es
-        </div>
-      </header>
-
-      <div class="intro-box">
-        <strong>¿Por qué el 80% de las visitas que entran en la web de un negocio local se marchan sin llamar ni escribir?</strong><br>
-        En el teléfono móvil, el cerebro humano decide en menos de <strong>8 segundos</strong> si una página le transmite seguridad y facilidad o si le da pereza rellenar un formulario largo. Nuestra auditoría aplica una <strong>Metodología de Doble Dictamen Honesto (Cero Datos Inventados)</strong> e instala en 10 minutos los elementos psicológicos que convierten curiosos en clientes reales.
-      </div>
-
-      <div class="sec-title">
-        <span>I. Metodología de Doble Dictamen Honesto (Pre-Sonda vs. Post-Sonda Térmica)</span>
-        <span>Telemetría Verificada</span>
-      </div>
-
-      <div class="dual-dictamen">
-        <div class="dict-card">
-          <h3>🔬 1er Dictamen Técnico Pre-Sonda (Tabla 3A • Medido Hoy)</h3>
-          <ul>
-            <li>✔ <strong>Velocidad Real Móvil (LCP Google PageSpeed):</strong> Medición exacta de cuántos segundos tarda en mostrarse tu portada en un smartphone.</li>
-            <li>✔ <strong>Ley de Hick en Formularios:</strong> Conteo del esfuerzo cognitivo (número de campos obligatorios + casillas legales que frenan al cliente).</li>
-            <li>✔ <strong>Ergonomía del Pulgar (Ley de Fitts):</strong> Comprobación de botones clicables <code>tel:</code>, <code>mailto:</code> y acceso directo a WhatsApp (<code>wa.me</code>).</li>
-            <li>✔ <strong>Efecto Cialdini (Prueba Social):</strong> Visibilidad inmediata de tu nota media y reseñas de Google Maps sin obligar a salir de la web.</li>
-          </ul>
-        </div>
-
-        <div class="dict-card post">
-          <h3>🔥 2º Dictamen con Sonda Térmica (Tabla 3B • Portal en Vivo)</h3>
-          <ul>
-            <li>✔ <strong>Mapas de Calor y Grabación de Sesiones:</strong> Vemos en vídeo dónde se detienen tus visitas, dónde dudan y en qué punto abandonan.</li>
-            <li>✔ <strong>Detector de «Clics de Rabia» (Rage Clicks):</strong> Identifica elementos donde el usuario pulsa repetidamente pensando que es un botón.</li>
-            <li>✔ <strong>Radar de Visitas Nocturnas (20:30h a 08:00h):</strong> Descubre cuántos clientes entran cuando estás cerrado y se van por no tener atención.</li>
-            <li>✔ <strong>Portal Privado del Cliente:</strong> Acceso permanente a tu panel de telemetría con filtro por horas, días, ciudades y conversión.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="sec-title">
-        <span>II. Protocolo de Ejecución 75% / 25% (4 Módulos Instalados por Nosotros en 10 Minutos)</span>
-        <span>Implantación Llave en Mano</span>
-      </div>
-
-      <div class="mod-grid">
-        <div class="mod-box">
-          <strong>💬 Módulo Neuro 1: Botón Flotante WhatsApp en Zona del Pulgar</strong>
-          Ubicado en el arco natural del pulgar derecho con mensaje psicológico pre-rellenado para iniciar la conversación en 1 toque sin formularios fríos.
-        </div>
-        <div class="mod-box">
-          <strong>⭐ Módulo Neuro 2: Barra Superior Fija (Sticky) con Estrellas y Llamada</strong>
-          Muestra permanentemente tu valoración oficial de Google Maps (Efecto Halo) junto a un botón directo de llamada en 1 clic durante todo el scroll.
-        </div>
-        <div class="mod-box">
-          <strong>🛡️ Módulo Neuro 3: Sello «Reductor de Ansiedad» Bajo Formulario</strong>
-          Micro-compromiso de tranquilidad (respuesta rápida, sin spam y trato directo) justo debajo del botón de envío que dispara la tasa de contacto.
-        </div>
-        <div class="mod-box">
-          <strong>📊 Módulo Neuro 4 + Pliego 25% para tu Informático</strong>
-          Instalación de la Sonda Térmica Oficial + entrega de pliego técnico con 5 prescripciones (poda de fugas, contraste Von Restorff y compresión WebP).
-        </div>
-      </div>
-
-      <div class="sec-title">
-        <span>III. Modalidades de Contratación (Pago Único • Misma Tarifa que la Auditoría SEO+GEO)</span>
-        <span>Precios netos sin IVA (21%)</span>
-      </div>
-
-      <div class="prices">
-        <div class="p-card">
-          <strong style="font-size:10px; text-transform:uppercase; color:#475569;">1. Solo Informe + Código</strong>
-          <span class="val" style="color:#0b2545;">200 €</span>
-          <span style="font-size:9.5px; color:#64748b;">Auditoría Neuro-CRO completa + paquete de los 4 módulos listos para tu informático.</span>
-        </div>
-        <div class="p-card">
-          <strong style="font-size:10px; text-transform:uppercase; color:#b45309;">2. Todo Incluido Llave en Mano</strong>
-          <span class="val">350 €</span>
-          <span style="font-size:9.5px; color:#475569;">Diagnóstico/Código (200 €) + nuestra implantación técnica (+150 €). Suelta o con 1 servicio.</span>
-        </div>
-        <div class="p-card star">
-          <strong style="font-size:10px; text-transform:uppercase; color:#065f46;">3. Bonificada con Pack Escudo ★</strong>
-          <span class="val" style="color:#059669;">195 €</span>
-          <span style="font-size:9.5px; color:#065f46; font-weight:700;">Al combinar con Pack Escudo Dúo (S1+S2): ahorras 155 € (o solo 95 € en Plan Anual Trinity+).</span>
-        </div>
-      </div>
-    </div>
-
-    <footer class="footer">
-      <span><strong>Sistemas Pyme</strong> — Ingeniería de Automatización y Neuromarketing Aplicado (Galicia)</span>
-      <span>Contacto directo con Francisco M. Gallardo: <strong>711 54 75 61</strong> • sistemaspyme.es</span>
-    </footer>
-  </main>
 </body>
 </html>

@@ -10,7 +10,7 @@
   <style>
     body { font-family: 'Inter', sans-serif; background: #0f172a; color: #0f172a; margin: 0; padding: 24px 16px; }
     h1, h2, h3, h4, .font-display { font-family: 'Montserrat', 'Inter', sans-serif; letter-spacing: -0.02em; }
-    .a4-sheet { max-width: 980px; margin: 0 auto; background: #ffffff; border-radius: 24px; padding: 36px 42px; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.6); border: 2px solid #0d9488; }
+    .a4-sheet { max-width: 1020px; margin: 0 auto; background: #ffffff; border-radius: 24px; padding: 36px 42px; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.6); border: 2px solid #0d9488; }
     @media print {
       body { background: #ffffff; padding: 0; }
       .a4-sheet { box-shadow: none; border: none; padding: 12px; max-width: 100%; }
@@ -31,64 +31,69 @@
 
     <div class="bg-gradient-to-r from-[#0b2239] via-[#0f3456] to-[#059669] text-white rounded-3xl p-6 mb-6">
       <h1 class="text-2xl sm:text-3xl font-black mb-1">Desembolso Exacto del Primer Día (Sin Sorpresas)</h1>
-      <p class="text-xs sm:text-sm text-emerald-100">Qué abonas el Día 1 al poner en marcha tu sistema (Setup de instalación única + primer período) tanto en Vía Flexible como en Plan Anual (pagas 10 meses y disfrutas de 2 meses gratis).</p>
+      <p class="text-xs sm:text-sm text-emerald-100">Qué abonas el Día 1 al poner en marcha tu sistema (Setup de instalación única + primer período) tanto en Vía Flexible como en Plan Anual (donde solo pagas 10 meses).</p>
     </div>
 
-    <!-- TABLA DE 4 COLUMNAS LIMPIAS -->
     <div class="overflow-x-auto mb-5">
       <table class="w-full text-left border-collapse text-xs sm:text-[13px]">
         <thead>
           <tr class="bg-[#0b2239] text-white">
             <th class="p-3 rounded-tl-xl">Módulo / Pack</th>
             <th class="p-3">1. Vía Flexible: Total Día 1<span class="block text-[10px] text-teal-300 font-normal">(Setup único + Mes 1)</span></th>
-            <th class="p-3">2. Plan Anual: Total Día 1<span class="block text-[10px] text-amber-300 font-normal">(Setup único + 10 Meses = 2 Gratis)</span></th>
+            <th class="p-3">2. Plan Anual: Total Día 1<span class="block text-[10px] text-amber-300 font-normal">(Setup único + 10 Meses)</span></th>
             <th class="p-3 rounded-tr-xl">3. Qué incluye y Ahorro Directo</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-200 border border-slate-200">
-          <tr class="bg-white">
-            <td class="p-3 font-black text-[#0b2239]">Pyme Base<span class="block text-[11px] text-slate-500 font-normal">1 servicio libre elección</span></td>
-            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 209 €<span class="block text-[10.5px] text-slate-500 font-normal">(150 € Setup + 59 € Mes 1)</span></td>
-            <td class="p-3 font-black text-teal-800 whitespace-nowrap">Desde 740 €<span class="block text-[10.5px] text-slate-600 font-normal">(150 € Setup + 590 € Año)</span></td>
-            <td class="p-3 text-slate-700">1 servicio a elegir. En Plan Anual <strong>ahorras 118 €</strong> (2 meses gratis).</td>
+        <tbody class="divide-y divide-slate-200 border border-slate-300">
+          <!-- Pyme Base: Pizarra -->
+          <tr class="bg-slate-100/90 border-l-8 border-l-slate-600">
+            <td class="p-3"><span class="inline-block px-2.5 py-1 rounded-lg bg-slate-800 text-white font-black text-xs">Pyme Base</span><span class="block text-[11px] text-slate-600 mt-0.5">1 servicio libre elección</span></td>
+            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 209 €<span class="block text-[10.5px] text-slate-600 font-normal">(59 € Mes 1 + 150 € Setup)</span></td>
+            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 740 €<span class="block text-[10.5px] text-slate-600 font-normal">(590 € Año + 150 € Setup)</span></td>
+            <td class="p-3 text-slate-800">1 servicio a elegir. En Plan Anual <strong>ahorras 118 € al año (solo pagas 10 meses)</strong>.</td>
           </tr>
-          <tr class="bg-sky-50/70">
-            <td class="p-3 font-black text-sky-900">Escudo Básico<span class="block text-[11px] text-sky-700 font-normal">2 servicios libre elección</span></td>
-            <td class="p-3 font-black text-sky-800 whitespace-nowrap">Desde 324 €<span class="block text-[10.5px] text-slate-600 font-normal">(225 € Setup + 99 € Mes 1)</span></td>
-            <td class="p-3 font-black text-sky-900 whitespace-nowrap">Desde 1.215 €<span class="block text-[10.5px] text-slate-600 font-normal">(225 € Setup + 990 € Año)</span></td>
-            <td class="p-3 text-slate-800"><strong>Ahorras 75 € en Setup + 19 €/m</strong> (y en Plan Anual <strong>198 € extra</strong> por 2 meses gratis). Desbloquea Auditorías a 195 €.</td>
+          <!-- Escudo Básico: Azul Cielo -->
+          <tr class="bg-sky-50/90 border-l-8 border-l-sky-600">
+            <td class="p-3"><span class="inline-block px-2.5 py-1 rounded-lg bg-sky-600 text-white font-black text-xs">Escudo Básico</span><span class="block text-[11px] text-sky-800 mt-0.5">2 servicios libre elección</span></td>
+            <td class="p-3 font-black text-sky-900 whitespace-nowrap">Desde 324 €<span class="block text-[10.5px] text-sky-800 font-normal">(99 € Mes 1 + 225 € Setup)</span></td>
+            <td class="p-3 font-black text-sky-900 whitespace-nowrap">Desde 1.215 €<span class="block text-[10.5px] text-sky-800 font-normal">(990 € Año + 225 € Setup)</span></td>
+            <td class="p-3 text-slate-800"><strong>Ahorras 75 € en Setup + 19 €/m</strong>. En Plan Anual <strong>ahorras 198 € (solo pagas 10 meses)</strong>. Desbloquea Auditorías a 195 €.</td>
           </tr>
-          <tr class="bg-emerald-50/90 border-l-4 border-l-emerald-500">
-            <td class="p-3 font-black text-emerald-950">Escudo Total ★<span class="block text-[11px] text-emerald-800 font-bold">2 servicios + 1 o 2 Auditorías</span></td>
-            <td class="p-3 font-black text-emerald-800 whitespace-nowrap">Desde 519 € (con 1 Aud.)<span class="block text-[10.5px] text-emerald-950 font-bold">o 714 € (con las 2 Auditorías)</span></td>
-            <td class="p-3 font-black text-emerald-900 whitespace-nowrap">Desde 1.410 € (con 1 Aud.)<span class="block text-[10.5px] text-emerald-950 font-bold">o 1.605 € (con las 2 Auditorías)</span></td>
-            <td class="p-3 text-slate-800">Incluye S1+S2 + Super-Auditoría(s) bonificada(s) a 195 € c/u. <strong>Ahorras 155 € (con 1) o 310 € (con las 2)</strong> + 75 € Setup.</td>
+          <!-- Escudo Total: Verde Esmeralda -->
+          <tr class="bg-emerald-50/95 border-l-8 border-l-emerald-600">
+            <td class="p-3"><span class="inline-block px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-black text-xs">Escudo Total ★</span><span class="block text-[11px] text-emerald-800 font-bold mt-0.5">2 servicios + 1 o 2 Auditorías</span></td>
+            <td class="p-3 font-black text-emerald-900 whitespace-nowrap">Desde 519 € (con 1 Aud.)<span class="block text-[10.5px] text-emerald-800 font-bold">o 714 € (con las 2 Auditorías)</span></td>
+            <td class="p-3 font-black text-emerald-900 whitespace-nowrap">Desde 1.410 € (con 1 Aud.)<span class="block text-[10.5px] text-emerald-800 font-bold">o 1.605 € (con las 2 Auditorías)</span></td>
+            <td class="p-3 text-slate-800">Incluye S1+S2 + Super-Auditoría(s) a 195 € c/u. <strong>Ahorras 155 € (con 1) o 310 € (con las 2)</strong> + 75 € Setup (y 198 € extra en Anual).</td>
           </tr>
-          <tr class="bg-amber-50/60">
-            <td class="p-3 font-black text-[#0b2239]">Pyme Trinity 🎁<span class="block text-[11px] text-amber-800 font-bold">3 servicios libre elección</span></td>
-            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 439 €<span class="block text-[10.5px] text-slate-600 font-normal">(300 € Setup + 139 € Mes 1)</span></td>
-            <td class="p-3 font-black text-teal-900 whitespace-nowrap">Desde 1.690 €<span class="block text-[10.5px] text-slate-600 font-normal">(300 € Setup + 1.390 € Año)</span></td>
-            <td class="p-3 text-slate-800">3 servicios mensuales + <strong>🎁 Bóveda de Contraseñas GRATIS (150 €)</strong>. En Anual <strong>ahorras 278 €</strong> en cuotas.</td>
+          <!-- Pyme Trinity: Ámbar -->
+          <tr class="bg-amber-50/90 border-l-8 border-l-amber-500">
+            <td class="p-3"><span class="inline-block px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-black text-xs">Pyme Trinity 🎁</span><span class="block text-[11px] text-amber-900 font-bold mt-0.5">3 servicios libre elección</span></td>
+            <td class="p-3 font-black text-amber-950 whitespace-nowrap">Desde 439 €<span class="block text-[10.5px] text-amber-900 font-normal">(139 € Mes 1 + 300 € Setup)</span></td>
+            <td class="p-3 font-black text-amber-950 whitespace-nowrap">Desde 1.690 €<span class="block text-[10.5px] text-amber-900 font-normal">(1.390 € Año + 300 € Setup)</span></td>
+            <td class="p-3 text-slate-800">3 servicios mensuales + <strong>🎁 Bóveda de Contraseñas GRATIS (150 €)</strong>. En Anual <strong>ahorras 278 € (solo pagas 10 meses)</strong>.</td>
           </tr>
-          <tr class="bg-white">
-            <td class="p-3 font-black text-[#0b2239]">Pyme 4<span class="block text-[11px] text-slate-500 font-normal">4 servicios libre elección</span></td>
-            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 554 €<span class="block text-[10.5px] text-slate-600 font-normal">(375 € Setup + 179 € Mes 1)</span></td>
-            <td class="p-3 font-black text-teal-900 whitespace-nowrap">Desde 2.165 €<span class="block text-[10.5px] text-slate-600 font-normal">(375 € Setup + 1.790 € Año)</span></td>
-            <td class="p-3 text-slate-700">4 servicios mensuales + Bóveda GRATIS. En Anual <strong>ahorras 358 €</strong> en cuotas.</td>
+          <!-- Pyme Quatro (con Q mayúscula): Índigo -->
+          <tr class="bg-indigo-50/90 border-l-8 border-l-indigo-600">
+            <td class="p-3"><span class="inline-block px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-black text-xs">Pyme Quatro</span><span class="block text-[11px] text-indigo-800 mt-0.5">4 servicios libre elección</span></td>
+            <td class="p-3 font-black text-indigo-950 whitespace-nowrap">Desde 554 €<span class="block text-[10.5px] text-indigo-800 font-normal">(179 € Mes 1 + 375 € Setup)</span></td>
+            <td class="p-3 font-black text-indigo-950 whitespace-nowrap">Desde 2.165 €<span class="block text-[10.5px] text-indigo-800 font-normal">(1.790 € Año + 375 € Setup)</span></td>
+            <td class="p-3 text-slate-800">4 servicios mensuales + Bóveda GRATIS. En Anual <strong>ahorras 358 € (solo pagas 10 meses)</strong>.</td>
           </tr>
-          <tr class="bg-slate-50">
-            <td class="p-3 font-black text-[#0b2239]">Pyme Pentium<span class="block text-[11px] text-slate-500 font-normal">5 servicios libre elección</span></td>
-            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 669 €<span class="block text-[10.5px] text-slate-600 font-normal">(450 € Setup + 219 € Mes 1)</span></td>
-            <td class="p-3 font-black text-teal-900 whitespace-nowrap">Desde 2.640 €<span class="block text-[10.5px] text-slate-600 font-normal">(450 € Setup + 2.190 € Año)</span></td>
-            <td class="p-3 text-slate-700">5 servicios mensuales + Bóveda GRATIS. En Anual <strong>ahorras 438 €</strong> en cuotas.</td>
+          <!-- Pyme Pentium: Púrpura -->
+          <tr class="bg-purple-50/90 border-l-8 border-l-purple-600">
+            <td class="p-3"><span class="inline-block px-2.5 py-1 rounded-lg bg-purple-700 text-white font-black text-xs">Pyme Pentium</span><span class="block text-[11px] text-purple-800 mt-0.5">5 servicios libre elección</span></td>
+            <td class="p-3 font-black text-purple-950 whitespace-nowrap">Desde 669 €<span class="block text-[10.5px] text-purple-800 font-normal">(219 € Mes 1 + 450 € Setup)</span></td>
+            <td class="p-3 font-black text-purple-950 whitespace-nowrap">Desde 2.640 €<span class="block text-[10.5px] text-purple-800 font-normal">(2.190 € Año + 450 € Setup)</span></td>
+            <td class="p-3 text-slate-800">5 servicios mensuales + Bóveda GRATIS. En Anual <strong>ahorras 438 € (solo pagas 10 meses)</strong>.</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="bg-sky-50 border-2 border-sky-300 rounded-2xl p-4 text-xs text-slate-800 leading-relaxed">
-      <strong class="text-sky-950 font-black block mb-1">📌 Nota sobre combinaciones entre los 4 Grupos:</strong>
-      Los importes «Desde» corresponden a elegir servicios del Grupo 1 (59 € el 1.º y +40 €/m los siguientes). Si en tu combinación eliges módulos del Grupo 2 (+59 €/m y +110 € Setup), Grupo 3 (+49 € a +69 €/m) o Grupo 4 (S9 +59 €/m o S10 Centralita Voz IA +129 €/m y +250 € Setup), el módulo más económico que elijas actúa como base y el resto suma su precio bonificado de combo.
+      <strong class="text-sky-950 font-black block mb-1">📌 Cómo funciona la combinación libre de servicios entre los 4 Grupos:</strong>
+      Los importes «Desde» corresponden a elegir servicios del Grupo 1. Si en tu combinación incluyes módulos de los Grupos 2, 3 o 4, el módulo más económico que hayas elegido marca el precio base y el resto se suma directamente con su precio bonificado en Combo (tanto en cuota como en Setup al 50%).
     </div>
 
     <div class="text-center text-xs text-slate-500 mt-6 pt-3 border-t border-slate-200">

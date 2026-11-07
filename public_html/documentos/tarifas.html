@@ -10,7 +10,7 @@
   <style>
     body { font-family: 'Inter', sans-serif; background: #0f172a; color: #0f172a; margin: 0; padding: 24px 16px; }
     h1, h2, h3, h4, .font-display { font-family: 'Montserrat', 'Inter', sans-serif; letter-spacing: -0.02em; }
-    .a4-sheet { max-width: 980px; margin: 0 auto; background: #ffffff; border-radius: 24px; padding: 36px 42px; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.6); border: 2px solid #0d9488; }
+    .a4-sheet { max-width: 1020px; margin: 0 auto; background: #ffffff; border-radius: 24px; padding: 36px 42px; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.6); border: 2px solid #0d9488; }
     @media print {
       body { background: #ffffff; padding: 0; }
       .a4-sheet { box-shadow: none; border: none; padding: 12px; max-width: 100%; }
@@ -31,94 +31,138 @@
 
     <div class="bg-gradient-to-r from-[#0b2239] to-[#0d7d74] text-white rounded-3xl p-6 mb-6">
       <h1 class="text-2xl sm:text-3xl font-black mb-1">Tarifas Oficiales y Planes de Libre Combinación</h1>
-      <p class="text-xs sm:text-sm text-teal-100">Con salvar o captar un solo cliente al mes, todo el sistema se amortiza solo. Modalidad Flexible (3 meses mín.) o Plan Anual (pagas 10 meses = 2 meses gratis).</p>
+      <p class="text-xs sm:text-sm text-teal-100">Con salvar o captar un solo cliente al mes, todo el sistema se amortiza solo. Modalidad Flexible (3 meses mín.) o Plan Anual (solo pagas 10 meses).</p>
     </div>
 
-    <!-- TABLA 1: PLANES DE LIBRE ELECCIÓN EN 4 COLUMNAS LIMPIAS -->
-    <h2 class="text-base sm:text-lg font-black text-[#0b2239] mb-2">1. Planes Mensuales de Libre Elección (4 Columnas Claras)</h2>
+    <!-- TABLA 1 CON CÓDIGO DE COLORES PARA TODOS LOS PACKS Y PYME QUATRO CON Q MAYÚSCULA -->
+    <h2 class="text-base sm:text-lg font-black text-[#0b2239] mb-2">1. Planes Mensuales de Libre Elección (Con Código de Colores Oficial)</h2>
     <div class="overflow-x-auto mb-3">
       <table class="w-full text-left border-collapse text-xs sm:text-[13px]">
         <thead>
           <tr class="bg-[#0b2239] text-white">
-            <th class="p-3 rounded-tl-xl">Nombre del Módulo / Pack</th>
-            <th class="p-3">1. Cuota al Mes</th>
+            <th class="p-3 rounded-tl-xl">Módulo / Pack</th>
+            <th class="p-3">1. Cuota al Mes / Año</th>
             <th class="p-3">2. Setup Único (Alta)</th>
             <th class="p-3 rounded-tr-xl">3. En qué consiste (Libre Combinación entre los 4 Grupos)</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-200 border border-slate-200">
-          <tr class="bg-white">
-            <td class="p-3 font-black text-[#0b2239]">Pyme Base</td>
-            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 59 € / mes<span class="block text-[10.5px] text-teal-700 font-bold">Anual: desde 49 €/m eq.</span></td>
+        <tbody class="divide-y divide-slate-200 border border-slate-300">
+          <!-- Pyme Base: Pizarra -->
+          <tr class="bg-slate-100/90 border-l-8 border-l-slate-600">
+            <td class="p-3"><span class="inline-block px-2.5 py-1 rounded-lg bg-slate-800 text-white font-black text-xs">Pyme Base</span></td>
+            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 59 € / mes<span class="block text-[10.5px] text-slate-700 font-bold">Anual: desde 590 € / año</span></td>
             <td class="p-3 font-bold text-slate-800 whitespace-nowrap">Desde 150 €</td>
-            <td class="p-3 text-slate-700"><strong>1 servicio de libre elección</strong> de cualquiera de los 4 grupos (ej. S1 Reseñas IA o S2 Cortafuegos WhatsApp). Incluye Informe Mensual 360°.</td>
+            <td class="p-3 text-slate-800"><strong>1 servicio de libre elección</strong> de cualquiera de los 4 grupos (ej. S1 Reseñas IA o S2 Cortafuegos WhatsApp). Incluye Informe Mensual 360°.</td>
           </tr>
-          <tr class="bg-sky-50/70">
-            <td class="p-3 font-black text-sky-900">Escudo Básico</td>
-            <td class="p-3 font-black text-sky-700 whitespace-nowrap">Desde 99 € / mes<span class="block text-[10.5px] text-sky-900 font-bold">Anual: desde 82,50 €/m eq.</span></td>
+          <!-- Escudo Básico: Azul Cielo -->
+          <tr class="bg-sky-50/90 border-l-8 border-l-sky-600">
+            <td class="p-3"><span class="inline-block px-2.5 py-1 rounded-lg bg-sky-600 text-white font-black text-xs">Escudo Básico</span></td>
+            <td class="p-3 font-black text-sky-800 whitespace-nowrap">Desde 99 € / mes<span class="block text-[10.5px] text-sky-900 font-bold">Anual: desde 990 € / año</span></td>
             <td class="p-3 font-bold text-sky-950 whitespace-nowrap">Desde 225 €<span class="block text-[10px] text-emerald-700 font-extrabold">(2.º Setup al 50%)</span></td>
             <td class="p-3 text-slate-800"><strong>2 servicios de libre elección</strong> (ej. S1 Reseñas IA + S2 Cortafuegos WA). Desbloquea las Super-Auditorías a <strong>195 € c/u</strong> (en vez de 350 €).</td>
           </tr>
-          <tr class="bg-emerald-50/90 border-l-4 border-l-emerald-500">
-            <td class="p-3 font-black text-emerald-950">Escudo Total ★</td>
-            <td class="p-3 font-black text-emerald-700 whitespace-nowrap">Desde 99 € / mes<span class="block text-[10.5px] text-amber-900 font-extrabold">+ 195 € (1 Aud.) o 390 € (las 2)</span></td>
+          <!-- Escudo Total: Verde Esmeralda -->
+          <tr class="bg-emerald-50/95 border-l-8 border-l-emerald-600">
+            <td class="p-3"><span class="inline-block px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-black text-xs">Escudo Total ★</span></td>
+            <td class="p-3 font-black text-emerald-800 whitespace-nowrap">Desde 99 € / mes<span class="block text-[10.5px] text-amber-900 font-extrabold">+ 195 € (1 Aud.) o 390 € (las 2)</span></td>
             <td class="p-3 font-bold text-emerald-950 whitespace-nowrap">Desde 225 € + Aud.<span class="block text-[10px] text-emerald-800 font-extrabold">(Ahorras 155 € o 310 €)</span></td>
             <td class="p-3 text-slate-800"><strong>2 servicios de libre elección + 1 o 2 Super-Auditorías Llave en Mano</strong> bonificadas a 195 € c/u (SEO+GEO IA y/o Neuro-CRO Web).</td>
           </tr>
-          <tr class="bg-amber-50/60">
-            <td class="p-3 font-black text-[#0b2239]">Pyme Trinity 🎁</td>
-            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 139 € / mes<span class="block text-[10.5px] text-teal-700 font-bold">Anual: desde 115,80 €/m eq.</span></td>
-            <td class="p-3 font-bold text-slate-800 whitespace-nowrap">Desde 300 €</td>
+          <!-- Pyme Trinity: Ámbar / Dorado -->
+          <tr class="bg-amber-50/90 border-l-8 border-l-amber-500">
+            <td class="p-3"><span class="inline-block px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-black text-xs">Pyme Trinity 🎁</span></td>
+            <td class="p-3 font-black text-amber-900 whitespace-nowrap">Desde 139 € / mes<span class="block text-[10.5px] text-amber-950 font-bold">Anual: desde 1.390 € / año</span></td>
+            <td class="p-3 font-bold text-amber-950 whitespace-nowrap">Desde 300 €</td>
             <td class="p-3 text-slate-800"><strong>3 servicios mensuales de libre elección</strong> de cualquier grupo + <strong>🎁 Bóveda Segura de Contraseñas GRATIS</strong> (valorada en 150 €) + Auditorías a 195 € c/u.</td>
           </tr>
-          <tr class="bg-white">
-            <td class="p-3 font-black text-[#0b2239]">Pyme 4</td>
-            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 179 € / mes<span class="block text-[10.5px] text-teal-700 font-bold">Anual: desde 149,15 €/m eq.</span></td>
-            <td class="p-3 font-bold text-slate-800 whitespace-nowrap">Desde 375 €</td>
-            <td class="p-3 text-slate-700"><strong>4 servicios mensuales de libre elección</strong> combinando cualquier grupo + Bóveda de Contraseñas GRATIS + Auditorías bonificadas a 195 € c/u.</td>
+          <!-- Pyme Quatro (con Q mayúscula): Índigo -->
+          <tr class="bg-indigo-50/90 border-l-8 border-l-indigo-600">
+            <td class="p-3"><span class="inline-block px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-black text-xs">Pyme Quatro</span></td>
+            <td class="p-3 font-black text-indigo-900 whitespace-nowrap">Desde 179 € / mes<span class="block text-[10.5px] text-indigo-950 font-bold">Anual: desde 1.790 € / año</span></td>
+            <td class="p-3 font-bold text-indigo-950 whitespace-nowrap">Desde 375 €</td>
+            <td class="p-3 text-slate-800"><strong>4 servicios mensuales de libre elección</strong> combinando cualquier grupo + Bóveda de Contraseñas GRATIS + Auditorías bonificadas a 195 € c/u.</td>
           </tr>
-          <tr class="bg-slate-50">
-            <td class="p-3 font-black text-[#0b2239]">Pyme Pentium</td>
-            <td class="p-3 font-black text-slate-900 whitespace-nowrap">Desde 219 € / mes<span class="block text-[10.5px] text-teal-700 font-bold">Anual: desde 182,50 €/m eq.</span></td>
-            <td class="p-3 font-bold text-slate-800 whitespace-nowrap">Desde 450 €</td>
-            <td class="p-3 text-slate-700"><strong>5 servicios mensuales de libre elección</strong> combinando cualquier grupo + Bóveda de Contraseñas GRATIS + Auditorías bonificadas a 195 € c/u.</td>
+          <!-- Pyme Pentium: Púrpura / Violeta -->
+          <tr class="bg-purple-50/90 border-l-8 border-l-purple-600">
+            <td class="p-3"><span class="inline-block px-2.5 py-1 rounded-lg bg-purple-700 text-white font-black text-xs">Pyme Pentium</span></td>
+            <td class="p-3 font-black text-purple-900 whitespace-nowrap">Desde 219 € / mes<span class="block text-[10.5px] text-purple-950 font-bold">Anual: desde 2.190 € / año</span></td>
+            <td class="p-3 font-bold text-purple-950 whitespace-nowrap">Desde 450 €</td>
+            <td class="p-3 text-slate-800"><strong>5 servicios mensuales de libre elección</strong> combinando cualquier grupo + Bóveda de Contraseñas GRATIS + Auditorías bonificadas a 195 € c/u.</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- REGLA DE ORO DE COMBINACIÓN LIBRE ENTRE GRUPOS -->
     <div class="bg-amber-50 border-2 border-amber-400 rounded-2xl p-4 mb-6 text-xs text-slate-800 leading-relaxed">
-      <strong class="text-amber-950 font-black block mb-1">💡 ¿Cómo se calcula tu cuota exacta al combinar servicios de distintos Grupos? (Regla del Módulo Base):</strong>
-      Puedes combinar libremente servicios de cualquiera de los 4 Grupos (por ejemplo, elegir para tu <em>Pyme Trinity</em> el servicio S4 del Grupo 1, el S6 del Grupo 2 y el S10 del Grupo 4). <strong>Tu primer servicio toma siempre la tarifa individual del módulo más económico que hayas incluido</strong> (59 €/m y 150 € Setup si incluyes al menos uno del Grupo 1; o la tarifa suelta de su grupo si todos pertenecen a los Grupos 2, 3 o 4), y <strong>todos los demás servicios se suman directamente con su tarifa reducida de combinación (Combo)</strong> detallada aquí abajo:
+      <strong class="text-amber-950 font-black block mb-1">💡 Regla de Combinación Libre entre cualquiera de los 4 Grupos:</strong>
+      Puedes combinar servicios de cualquier grupo. <strong>Tu primer servicio toma la tarifa individual del módulo más económico que hayas incluido</strong> (59 €/m y 150 € Setup si incluyes al menos uno del Grupo 1; o la tarifa suelta de su grupo si solo eliges de los Grupos 2, 3 o 4), y <strong>todos los demás servicios suman directamente su precio reducido de combinación (Combo)</strong>.
     </div>
 
-    <!-- TABLA 2: LOS SERVICIOS DIVIDIDOS EN 4 GRUPOS + SUPER-AUDITORÍAS Y ATRIL -->
+    <!-- TABLA 2: TARIFAS POR GRUPO CON SUBTÍTULO EN LÍNEA PROPIA Y MISMA SECUENCIA COMBO -> SUELTO -->
     <h2 class="text-base sm:text-lg font-black text-[#0b2239] mb-2">2. Tarifas por Grupo (S1 a S10), Super-Auditorías y Hardware NFC</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-      <div class="border-2 border-sky-300 rounded-2xl p-4 bg-sky-50/40 space-y-2">
-        <h3 class="font-black text-[#0b2239] text-sm border-b border-sky-200 pb-1">🚀 Los servicios divididos en 4 Grupos (Cuota Combo vs. Suelto)</h3>
-        <ul class="space-y-1.5 text-slate-800">
-          <li class="flex justify-between gap-2"><span><strong>Grupo 1 (S1 a S5):</strong> Reseñas IA, Cortafuegos WA, Leads 10s, Facturas Foto, Inactivos</span><strong class="whitespace-nowrap text-teal-800">+40 €/m (+75€) | 59€ (150€) s.</strong></li>
-          <li class="flex justify-between gap-2"><span><strong>Grupo 2 (S6 a S8):</strong> Agenda Anti-Plantón, Firma Digital, Anti-Morosidad</span><strong class="whitespace-nowrap text-sky-800">+59 €/m (+110€) | 79€ (195€) s.</strong></li>
-          <li>
-            <div class="flex justify-between gap-2"><span><strong>Grupo 3</strong> · Sat.1 Instagram 3 en 1 (Meta API):</span><strong class="whitespace-nowrap text-pink-700">+49 €/m (+75€) | 69€ (150€) s.</strong></div>
-            <div class="flex justify-between gap-2 pl-12 mt-0.5 text-slate-700"><span>· Sat.2 Logística 360 / Sat.3 Redactor B2B RAG:</span><strong class="whitespace-nowrap text-indigo-700">+59€ / +69 €/m combo</strong></div>
+      <div class="border-2 border-sky-300 rounded-2xl p-4 bg-sky-50/40 space-y-2.5">
+        <div class="border-b border-sky-200 pb-1.5">
+          <h3 class="font-black text-[#0b2239] text-sm">🚀 Los servicios divididos en 4 Grupos (S1 a S10)</h3>
+          <span class="block text-[11px] font-extrabold text-sky-800 mt-0.5">Cuota y Setup en Combo vs. Suelto</span>
+        </div>
+        <ul class="space-y-2 text-slate-800">
+          <li class="flex justify-between items-baseline gap-2 border-b border-sky-200/60 pb-1">
+            <span><strong>Grupo 1 (S1 a S5):</strong></span>
+            <span class="whitespace-nowrap"><strong class="text-emerald-800">Combo: +40 €/m (+75€ Setup)</strong> | 1.º: 59€/m (150€)</span>
           </li>
-          <li>
-            <div class="flex justify-between gap-2"><span><strong>Grupo 4</strong> · S9 Rescate Llamadas Perdidas WA (250/m):</span><strong class="whitespace-nowrap text-sky-800">+59 €/m (+110€) | 79€ (195€) s.</strong></div>
-            <div class="flex justify-between gap-2 pl-12 mt-0.5 text-slate-700"><span>· S10 Centralita Voz IA 24/7 (250 min/m):</span><strong class="whitespace-nowrap text-indigo-900">+129 €/m (+250€) | 169€ (350€) s.</strong></div>
+          <li class="flex justify-between items-baseline gap-2 border-b border-sky-200/60 pb-1">
+            <span><strong>Grupo 2 (S6 a S8):</strong></span>
+            <span class="whitespace-nowrap"><strong class="text-sky-800">Combo: +59 €/m (+110€ Setup)</strong> | Suelto: 79€/m (195€)</span>
+          </li>
+          <li class="border-b border-sky-200/60 pb-1 space-y-1">
+            <div class="flex justify-between items-baseline gap-2">
+              <span><strong>Grupo 3</strong> · Sat.1 Instagram 3 en 1:</span>
+              <span class="whitespace-nowrap"><strong class="text-pink-700">Combo: +49 €/m (+75€)</strong> | Suelto: 69€/m (150€)</span>
+            </div>
+            <div class="flex justify-between items-baseline gap-2 pl-12 text-slate-700">
+              <span>· Sat.2 Escudo Logístico 360:</span>
+              <span class="whitespace-nowrap"><strong class="text-indigo-700">Combo: +59 €/m (+110€)</strong> | Suelto: 79€/m (195€)</span>
+            </div>
+            <div class="flex justify-between items-baseline gap-2 pl-12 text-slate-700">
+              <span>· Sat.3 Redactor B2B RAG:</span>
+              <span class="whitespace-nowrap"><strong class="text-indigo-700">Combo: +69 €/m (+150€)</strong> | Suelto: 99€/m (250€)</span>
+            </div>
+          </li>
+          <li class="space-y-1">
+            <div class="flex justify-between items-baseline gap-2">
+              <span><strong>Grupo 4</strong> · S9 Llamadas Perdidas WA:</span>
+              <span class="whitespace-nowrap"><strong class="text-sky-800">Combo: +59 €/m (+110€)</strong> | Suelto: 79€/m (195€)</span>
+            </div>
+            <div class="flex justify-between items-baseline gap-2 pl-12 text-slate-700">
+              <span>· S10 Centralita Voz IA 24/7:</span>
+              <span class="whitespace-nowrap"><strong class="text-indigo-900">Combo: +129 €/m (+250€)</strong> | Suelto: 169€/m (350€)</span>
+            </div>
           </li>
         </ul>
       </div>
 
-      <div class="border-2 border-teal-400 rounded-2xl p-4 bg-teal-50/40 space-y-2">
-        <h3 class="font-black text-[#0b2239] text-sm border-b border-teal-200 pb-1">🔍🧠 Super-Auditorías Web y ★ Atril NFC + QR (Pagos Únicos)</h3>
-        <ul class="space-y-1.5 text-slate-800">
-          <li class="flex justify-between gap-2"><span><strong>Super-Auditoría Llave en Mano (Suelta o con Pyme Base):</strong><br><span class="text-[11px] text-slate-600">(Implantada por nosotros o entregando códigos e instrucciones a tu técnico)</span></span><strong class="whitespace-nowrap text-sky-800">350 € (1) | 590 € (las 2)</strong></li>
-          <li class="flex justify-between gap-2"><span><strong>Super-Auditoría Bonificada (Con Pack 2+ servicios ★):</strong></span><strong class="whitespace-nowrap text-emerald-700">195 € (1) | 390 € (las 2)</strong></li>
-          <li class="flex justify-between gap-2 pt-1 border-t border-teal-200"><span><strong>★ Atril Inteligente NFC + QR (Pago único sin cuotas):</strong></span><strong class="whitespace-nowrap text-amber-800">39 € (1.ª) | 29 € (2ª-4ª) | 25 € (5+)</strong></li>
-        </ul>
+      <div class="border-2 border-teal-400 rounded-2xl p-4 bg-teal-50/40 space-y-2.5 flex flex-col justify-between">
+        <div>
+          <div class="border-b border-teal-200 pb-1.5 mb-2">
+            <h3 class="font-black text-[#0b2239] text-sm">🔍🧠 Super-Auditorías Web y ★ Atril NFC + QR</h3>
+            <span class="block text-[11px] font-extrabold text-teal-800 mt-0.5">Pagos únicos sin cuotas mensuales (Combo vs. Suelto)</span>
+          </div>
+          <ul class="space-y-2.5 text-slate-800">
+            <li class="flex justify-between items-baseline gap-2 border-b border-teal-200/60 pb-1.5">
+              <span><strong>Super-Auditoría Web (1 unidad):</strong><br><span class="text-[11px] text-slate-600">SEO Local + GEO IA o Neuro-CRO Web</span></span>
+              <span class="whitespace-nowrap"><strong class="text-emerald-700">Combo: 195 €</strong> | Suelta: 350 €</span>
+            </li>
+            <li class="flex justify-between items-baseline gap-2 border-b border-teal-200/60 pb-1.5">
+              <span><strong>Doble Super-Auditoría (Las 2 juntas):</strong><br><span class="text-[11px] text-slate-600">SEO/GEO IA + Neuro-CRO implantadas</span></span>
+              <span class="whitespace-nowrap"><strong class="text-emerald-700">Combo: 390 €</strong> | Sueltas: 590 €</span>
+            </li>
+            <li class="flex justify-between items-baseline gap-2 pt-1">
+              <span><strong>★ Atril Inteligente NFC + QR:</strong><br><span class="text-[11px] text-slate-600">Soporte físico + telemetría en Informe 360°</span></span>
+              <span class="whitespace-nowrap"><strong class="text-amber-800">2ª-4ª: 29 € | 5+: 25 €</strong> | 1.ª: 39 €</span>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
 

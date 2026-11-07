@@ -2,98 +2,138 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>Anexo Técnico de Implantación (Setup + Super-Auditorías) — Sistemas Pyme</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anexo Técnico de Altas e Instalación Llave en Mano (Setup) | Sistemas Pyme</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: 100%; background-color: #071629; color: #f1f5f9; font-family: 'Inter', sans-serif; font-size: 16.5px; line-height: 1.55; }
-    body.font-xl { font-size: 19px; line-height: 1.65; }
-    .topbar { position: sticky; top: 0; z-index: 100; background: rgba(7, 22, 41, 0.96); border-bottom: 2px solid #14b8a6; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .btn-back { background: #1e293b; color: #5eead4; border: 1px solid rgba(20,184,166,0.45); text-decoration: none; font-weight: 800; font-size: 13px; padding: 8px 12px; border-radius: 10px; }
-    .btn-action { background: #0d7d74; color: #fff; border: 1px solid #14b8a6; font-weight: 800; font-size: 12.5px; padding: 8px 11px; border-radius: 10px; text-decoration: none; cursor: pointer; }
-    .btn-action.sec { background: #1e293b; color: #cbd5e1; border-color: #475569; }
-    .container { max-width: 660px; margin: 0 auto; padding: 18px 16px 48px 16px; display: flex; flex-direction: column; gap: 16px; }
-    .hero-box { background: linear-gradient(145deg, #0b2545 0%, #0f172a 100%); border: 1.5px solid rgba(20, 184, 166, 0.45); border-radius: 18px; padding: 18px 16px; }
-    .badge { display: inline-block; background: rgba(20, 184, 166, 0.18); color: #5eead4; border: 1px solid rgba(20, 184, 166, 0.4); font-size: 11.5px; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 99px; margin-bottom: 8px; }
-    .hero-title { font-size: 1.38em; font-weight: 900; color: #fff; line-height: 1.22; margin-bottom: 6px; }
-    .section-head { background: linear-gradient(90deg, #0f766e 0%, #115e59 100%); color: #fff; padding: 11px 14px; border-radius: 12px; font-weight: 900; font-size: 0.95em; text-transform: uppercase; margin-top: 6px; }
-    .section-head.blue { background: linear-gradient(90deg, #1e3a8a 0%, #1d4ed8 100%); }
-    .section-head.amber { background: linear-gradient(90deg, #b45309 0%, #d97706 100%); }
-    .card { background: #0f172a; border: 1.5px solid rgba(255,255,255,0.12); border-left: 5px solid #14b8a6; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
-    .card.emerald { border-left-color: #10b981; border-color: rgba(16,185,129,0.45); background: linear-gradient(145deg, rgba(6,78,59,0.45) 0%, #0f172a 100%); }
-    .card.blue { border-left-color: #3b82f6; }
-    .card.amber { border-left-color: #f59e0b; }
-    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-    .card-title { font-size: 1.08em; font-weight: 900; color: #fff; }
-    .price-tag { background: rgba(20, 184, 166, 0.18); color: #5eead4; border: 1px solid rgba(20, 184, 166, 0.4); font-weight: 900; font-size: 0.95em; padding: 4px 10px; border-radius: 10px; white-space: nowrap; }
-    .data-grid { display: flex; flex-direction: column; gap: 7px; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; }
-    .data-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 0.9em; }
-    .data-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .data-label { color: #94a3b8; font-weight: 600; }
-    .data-val { color: #fff; font-weight: 800; text-align: right; }
-    .data-val.hi { color: #34d399; }
-    .cta-box { background: linear-gradient(145deg, #064e3b 0%, #0f172a 100%); border: 2px solid #10b981; border-radius: 18px; padding: 20px 16px; text-align: center; }
-    .btn-wa { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: #10b981; color: #052e16; font-weight: 900; padding: 14px 18px; border-radius: 14px; text-decoration: none; margin-top: 12px; }
+    body { font-family: 'Inter', sans-serif; background: #0f172a; color: #0f172a; margin: 0; padding: 24px 16px; }
+    h1, h2, h3, h4, .font-display { font-family: 'Montserrat', 'Inter', sans-serif; letter-spacing: -0.02em; }
+    .a4-sheet { max-width: 1020px; margin: 0 auto; background: #ffffff; border-radius: 24px; padding: 36px 42px; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.6); border: 2px solid #0d9488; }
+    @media print {
+      body { background: #ffffff; padding: 0; }
+      .a4-sheet { box-shadow: none; border: none; padding: 12px; max-width: 100%; }
+      .no-print { display: none !important; }
+    }
   </style>
+
 </head>
 <body>
-  <header class="topbar">
-    <a href="../index.html#documentacion" onclick="if(window.opener && !window.opener.closed){event.preventDefault();window.close();}" class="btn-back">⬅ Volver a la Web</a>
-    <div style="display:flex; gap:6px;">
-      <button type="button" onclick="document.body.classList.toggle('font-xl')" class="btn-action">🔎 Letra A+</button>
-      <a href="setup.html?modo=impreso" class="btn-action sec">📄 Original A5</a>
-    </div>
-  </header>
-
-  <main class="container">
-    <div class="hero-box">
-      <span class="badge">Anexo Técnico Oficial</span>
-      <h1 class="hero-title">Altas Técnicas (Setup) por Grupos y Super-Auditorías</h1>
-      <p style="font-size:0.92em; color:#cbd5e1;">Reglas oficiales de puesta en marcha llave en mano en los 4 Grupos de servicios, Super-Auditorías y Atril NFC.</p>
+  <div class="a4-sheet">
+    <div class="no-print flex flex-wrap items-center justify-between gap-3 pb-4 mb-5 border-b border-slate-200">
+      <span class="px-3 py-1 rounded-full bg-indigo-100 text-indigo-900 font-extrabold text-xs border border-indigo-300">🔌 ANEXO TÉCNICO OFICIAL • ALTAS E INSTALACIÓN (SETUP ÚNICO)</span>
+      <div class="flex items-center gap-2">
+        <button onclick="window.print()" class="bg-[#0b2239] hover:bg-slate-800 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow cursor-pointer">🖨️ Imprimir / Guardar PDF</button>
+        <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20estoy%20viendo%20el%20Anexo%20T%C3%A9cnico%20de%20Setup" target="_blank" class="bg-[#0d7d74] text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow">💬 Consultar alta</a>
+      </div>
     </div>
 
-    <div class="section-head">1. Altas Técnicas del Grupo 1 (150 € el 1º | +75 € adicionales)</div>
-    <article class="card emerald">
-      <div class="data-grid">
-        <div class="data-row"><span class="data-label">Plan Pyme BASE (1 serv. G1):</span><span class="data-val">150 € Setup</span></div>
-        <div class="data-row"><span class="data-label">Pack ESCUDO BÁSICO (Dúo 2 serv.):</span><span class="data-val hi">225 € Setup (Ahorras 75 €)</span></div>
-        <div class="data-row"><span class="data-label">Pack ESCUDO TOTAL ★ (Trinity 3 serv.):</span><span class="data-val hi">300 € Setup + 🎁 Bóveda Gratis</span></div>
-        <div class="data-row"><span class="data-label">Plan QUATRO (4) / PENTIUM (5):</span><span class="data-val hi">375 € / 450 € Setup</span></div>
-      </div>
-    </article>
-
-    <div class="section-head blue">2. Altas Técnicas en Grupos 2, 3 y 4 (Suelto vs. Combinado)</div>
-    <article class="card blue">
-      <div class="data-grid">
-        <div class="data-row"><span class="data-label">Grupo 2 (S6, S7, S8), Logística o S4 Llamadas:</span><span class="data-val hi">+110 € combinado | 195 € suelto</span></div>
-        <div class="data-row"><span class="data-label">Satélite 1: Instagram 3 en 1:</span><span class="data-val hi">+75 € combinado | 150 € suelto</span></div>
-        <div class="data-row"><span class="data-label">Satélite 3: Cerebro Redactor B2B (RAG):</span><span class="data-val hi">+150 € combinado | 250 € suelto</span></div>
-        <div class="data-row"><span class="data-label">Satélite S7: Centralita Voz IA 24/7:</span><span class="data-val hi">+250 € combinado | 350 € suelto</span></div>
-        <div class="data-row"><span class="data-label">Boosters IA (Correo S9 / Prov. S10):</span><span class="data-val">+50 € Setup</span></div>
-      </div>
-    </article>
-
-    <div class="section-head amber">3. Las 2 Super-Auditorías y Hardware NFC</div>
-    <article class="card amber">
-      <div class="data-grid">
-        <div class="data-row"><span class="data-label">1. Llave en Mano o Entrega a tu Técnico</span><span class="data-val">200 € una | 390 € las dos</span></div>
-        <div class="data-row"><span class="data-label">2. Oficial Llave en Mano (Suelta/Base):</span><span class="data-val">350 € una | 590 € las dos</span></div>
-        <div class="data-row"><span class="data-label">3. Bonificada con Pack (2+ serv.):</span><span class="data-val hi">195 € una | 390 € las dos</span></div>
-        <div class="data-row"><span class="data-label">★ Atril NFC + QR Mostrador:</span><span class="data-val hi">39 € (1ª ud) | 29 € (2ª-4ª) | 25 € (5+)</span></div>
-      </div>
-    </article>
-
-    <div class="cta-box">
-      <div style="font-size: 0.85em; font-weight: 800; color: #6ee7b7; text-transform: uppercase;">Atención Directa • Galicia</div>
-      <div style="font-size: 1.2em; font-weight: 900; color: #ffffff; margin-top: 4px;">Francisco M. Gallardo</div>
-      <div style="font-size: 0.92em; color: #cbd5e1; margin-top: 2px;">Tel: <strong>711 54 75 61</strong> • francisco@sistemaspyme.es</div>
-      <a href="https://wa.me/34711547561?text=Hola%20Francisco%2C%20quiero%20programar%20la%20puesta%20en%20marcha%20en%20mi%20negocio" target="_blank" class="btn-wa">
-        💬 Hablar con Francisco por WhatsApp
-      </a>
+    <div class="bg-gradient-to-r from-[#0b2239] via-[#1e1b4b] to-[#0d7d74] text-white rounded-3xl p-6 mb-6">
+      <h1 class="text-2xl sm:text-3xl font-black mb-1">Anexo Técnico: Alta e Instalación «Llave en Mano» (Setup Único)</h1>
+      <p class="text-xs sm:text-sm text-indigo-100">Qué trabajo de ingeniería incluye la puesta en marcha inicial y tabla clara de costes de Setup en combinación (Combo) frente a módulo suelto.</p>
     </div>
-  </main>
+
+    <!-- BLOQUE 1: ¿POR QUÉ EXISTE EL ALTA TÉCNICA (SETUP) Y QUÉ INCLUYE? -->
+    <div class="bg-gradient-to-br from-amber-50 via-white to-teal-50 border-2 border-amber-400 rounded-3xl p-5 sm:p-6 mb-6 shadow-sm">
+      <h2 class="text-base sm:text-lg font-black text-[#0b2239] mb-2">
+        1. ¿Por qué existe un Alta Técnica inicial (Setup único) y por qué te ahorra decenas de horas?
+      </h2>
+      <p class="text-xs sm:text-[13px] text-slate-700 leading-relaxed mb-3.5">
+        A diferencia de las plataformas genéricas donde te dan un usuario y una contraseña para que tú te pelees durante semanas leyendo manuales, en <strong>Sistemas Pyme no vendemos software vacío: te entregamos el sistema 100% configurado, probado y funcionando sobre tu negocio real en 24 a 48 horas</strong>. El Setup se abona <strong>una sola vez en la vida del servicio</strong> y cubre las horas de ingeniería necesarias para:
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-slate-800">
+        <div class="bg-white p-3.5 rounded-2xl border border-amber-300">
+          <strong class="text-amber-950 font-black block mb-1">🔐 1. Alta y Verificación en Meta API Oficial y Google Cloud:</strong>
+          Vinculamos tu ficha oficial de Google Business Profile y registramos tu número (móvil o teléfono fijo del local) en WhatsApp Business Cloud API Oficial de Meta, aprobando tus plantillas verificadas en Español, Gallego o Catalán.
+        </div>
+        <div class="bg-white p-3.5 rounded-2xl border border-teal-300">
+          <strong class="text-teal-950 font-black block mb-1">🧠 2. Entrenamiento del Motor IA a la Medida de tu Oficio:</strong>
+          Calibramos los prompts de tu sector, tus palabras clave de SEO local (especialidad + ciudad), los 4 tonos de voz, el blindaje de secreto profesional RGPD y la conexión con tu Google Calendar, CRM o App de Recepción.
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOQUE 2: TABLA ULTRA-SENCILLA DE SETUP (EN COMBO VS. SUELTO) -->
+    <h2 class="text-base sm:text-lg font-black text-[#0b2239] mb-2">
+      2. Tabla Sencilla de Altas Técnicas (Setup en Combo vs. Setup Suelto)
+    </h2>
+    <p class="text-xs text-slate-600 mb-3">
+      <strong>Regla de Ahorro en Setup:</strong> Solo abonas el Setup completo en tu primer módulo; en todos los módulos adicionales que sumes disfrutas de cerca de un <strong>50% de bonificación directa en la instalación</strong>:
+    </p>
+
+    <div class="overflow-x-auto mb-6">
+      <table class="w-full text-left border-collapse text-xs sm:text-[13px]">
+        <thead>
+          <tr class="bg-[#0b2239] text-white">
+            <th class="p-3 rounded-tl-xl">Grupo / Módulo</th>
+            <th class="p-3">Servicios Incluidos</th>
+            <th class="p-3 bg-emerald-800">1. Setup en COMBO<span class="block text-[10px] text-emerald-200 font-normal">(Módulo adicional bonificado)</span></th>
+            <th class="p-3 rounded-tr-xl">2. Setup SUELTO<span class="block text-[10px] text-slate-300 font-normal">(Como 1.er módulo o único)</span></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200 border border-slate-300">
+          <tr class="bg-emerald-50/70 border-l-8 border-l-emerald-500">
+            <td class="p-3 font-black text-emerald-950">Grupo 1 (S1 a S5)</td>
+            <td class="p-3 text-slate-800">S1 Reseñas IA, S2 Cortafuegos WA, S3 Leads en 10s, S4 Facturas Foto WA, S5 Clientes Inactivos</td>
+            <td class="p-3 font-black text-emerald-800 text-sm whitespace-nowrap">+75 € <span class="text-[11px] font-bold">(50% dto.)</span></td>
+            <td class="p-3 font-bold text-slate-800 whitespace-nowrap">150 €</td>
+          </tr>
+          <tr class="bg-sky-50/70 border-l-8 border-l-sky-500">
+            <td class="p-3 font-black text-sky-950">Grupo 2 (S6 a S8)</td>
+            <td class="p-3 text-slate-800">S6 Agenda Anti-Plantón 24h + Huecos Flash, S7 Firma Digital + Onboarding, S8 Anti-Morosidad</td>
+            <td class="p-3 font-black text-sky-800 text-sm whitespace-nowrap">+110 € <span class="text-[11px] font-bold">(-85 € dto.)</span></td>
+            <td class="p-3 font-bold text-slate-800 whitespace-nowrap">195 €</td>
+          </tr>
+          <tr class="bg-pink-50/60 border-l-8 border-l-pink-500">
+            <td class="p-3 font-black text-pink-950">Grupo 3 · Satélite 1</td>
+            <td class="p-3 text-slate-800">Instagram Inteligente 3 en 1 (Auto-DM en Reels/Posts + Recepcionista DMs 24/7 + Stories)</td>
+            <td class="p-3 font-black text-pink-700 text-sm whitespace-nowrap">+75 € <span class="text-[11px] font-bold">(50% dto.)</span></td>
+            <td class="p-3 font-bold text-slate-800 whitespace-nowrap">150 €</td>
+          </tr>
+          <tr class="bg-pink-50/40 border-l-8 border-l-pink-400">
+            <td class="p-3 font-black text-pink-950">Grupo 3 · Satélite 2</td>
+            <td class="p-3 text-slate-800">Escudo Logístico 360 (Tracking WhatsApp «Sale hoy», «Llega hoy» y ausencias en reparto)</td>
+            <td class="p-3 font-black text-indigo-700 text-sm whitespace-nowrap">+110 € <span class="text-[11px] font-bold">(-85 € dto.)</span></td>
+            <td class="p-3 font-bold text-slate-800 whitespace-nowrap">195 €</td>
+          </tr>
+          <tr class="bg-pink-50/60 border-l-8 border-l-pink-500">
+            <td class="p-3 font-black text-pink-950">Grupo 3 · Satélite 3</td>
+            <td class="p-3 text-slate-800">Cerebro Redactor Técnico B2B con IA (Entrenamiento RAG sobre tus catálogos y tarifas)</td>
+            <td class="p-3 font-black text-indigo-700 text-sm whitespace-nowrap">+150 € <span class="text-[11px] font-bold">(-100 € dto.)</span></td>
+            <td class="p-3 font-bold text-slate-800 whitespace-nowrap">250 €</td>
+          </tr>
+          <tr class="bg-amber-50/60 border-l-8 border-l-amber-400">
+            <td class="p-3 font-black text-amber-950">Grupo 3 · Boosters IA</td>
+            <td class="p-3 text-slate-800">Add-on Lector de Facturas en Email (S4) o Vigilante de Pedidos a Proveedores (S8)</td>
+            <td class="p-3 font-black text-amber-800 text-sm whitespace-nowrap">+50 €</td>
+            <td class="p-3 font-bold text-slate-600 whitespace-nowrap">+50 € (Vinculado)</td>
+          </tr>
+          <tr class="bg-indigo-50/70 border-l-8 border-l-indigo-500">
+            <td class="p-3 font-black text-indigo-950">Grupo 4 · S9 Telefonía</td>
+            <td class="p-3 text-slate-800">Rescate de Llamadas Perdidas en 5s por WhatsApp (incluye configuración de desvío SIP)</td>
+            <td class="p-3 font-black text-sky-800 text-sm whitespace-nowrap">+110 € <span class="text-[11px] font-bold">(-85 € dto.)</span></td>
+            <td class="p-3 font-bold text-slate-800 whitespace-nowrap">195 €</td>
+          </tr>
+          <tr class="bg-indigo-50/90 border-l-8 border-l-indigo-700">
+            <td class="p-3 font-black text-indigo-950">Grupo 4 · S10 Voz IA</td>
+            <td class="p-3 text-slate-800">Centralita Recepcionista de Voz IA 24/7 conectada en vivo a tu agenda y WhatsApp</td>
+            <td class="p-3 font-black text-indigo-900 text-sm whitespace-nowrap">+250 € <span class="text-[11px] font-bold">(-100 € dto.)</span></td>
+            <td class="p-3 font-bold text-slate-800 whitespace-nowrap">350 €</td>
+          </tr>
+          <tr class="bg-teal-50/90 border-l-8 border-l-teal-600">
+            <td class="p-3 font-black text-teal-950">Super-Auditorías Web</td>
+            <td class="p-3 text-slate-800">Auditoría e Implantación Llave en Mano SEO Local + GEO (IA) o Neuro-CRO Web (Sin cuotas)</td>
+            <td class="p-3 font-black text-emerald-700 text-sm whitespace-nowrap">195 € (1) | 390 € (las 2)</td>
+            <td class="p-3 font-bold text-slate-800 whitespace-nowrap">350 € (1) | 590 € (las 2)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="text-center text-xs text-slate-500 pt-3 border-t border-slate-200">
+      <strong>Sistemas Pyme — Francisco M. Gallardo (NIF 52938419D)</strong> • Tel / WhatsApp: <strong>711 54 75 61</strong> • Precios netos sin IVA (21%).
+    </div>
+  </div>
 </body>
 </html>
