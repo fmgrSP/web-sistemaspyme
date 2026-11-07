@@ -18848,26 +18848,30 @@ window.spToggleVozConsultorMute = function(ev) {
 </script>
 <!-- [SP_AGENDA_CRM_WEB_SYNC_V160_END] -->
 
+
 <!-- [SP_CONSULTOR_ULTIMATE_V168_START] -->
 <script id="spConsultorUltimateEngineV168">
 (function() {
   /* =========================================================================
-     MOTOR MAESTRO ÚNICO DEL TECNOCONSULTOR (V169)
-     - Ubicado limpiamente antes del cierre real </body> al final del archivo.
-     - Conectado en paralelo ultrarrápido a Gemini Flash-Lite (gemini-2.5-flash-lite).
-     - Micrófono de permiso único: jamás se cierra entre turnos mientras estás
-       en Tecnosala; se apaga al ir a otros apartados o pestañas y se enciende
-       solo al volver a Tecnosala.
+     MOTOR MAESTRO ÚNICO DEL TECNOCONSULTOR (V170)
+     - Escucha paciente y completa: espera 2,2 segundos de silencio real tras
+       tu última palabra para no cortarte jamás a mitad de frase.
+     - Conectado de verdad al último modelo Gemini Flash-Lite con autodescubrimiento
+       dinámico + contexto completo de Sistemas Pyme (Cero modo bucle).
+     - Micrófono de permiso único: activo en Tecnosala, se apaga al cambiar de
+       apartado o pestaña y se vuelve a encender solo al regresar a Tecnosala.
      ========================================================================= */
 
   var _v168DespiertoPorUsuario = false;
   var _v168PausadoPorSalir = false;
   var _v168Hablando = false;
   var _v168Escuchando = false;
+  var _v168PensandoIA = false;
   var _v168VozMuteada = false;
   var _v168Rec = null;
   var _v168RecRunning = false;
-  var _v168BufferTexto = '';
+  var _v168FragmentosConfirmados = '';
+  var _v168FragmentoInterino = '';
   var _v168TimerSilencio = null;
   var _v168TimersTeleprompter = [];
   var _v168TimerWatchdogHabla = null;
@@ -18875,9 +18879,11 @@ window.spToggleVozConsultorMute = function(ev) {
   var _v168LineaUsuarioViva = null;
   var _v168Historial = [];
   var _v168TranscripcionDescarga = [];
+  var _v168UltimasRespuestasDadas = [];
   var _v168NombreVoz = 'Jorge';
   var _v168VozObj = null;
   var _v168EstadoApi = 'online';
+  var _v168ModelosFlashLiteCache = null;
 
   function estaEnTecnosalaVisible() {
     var sec = document.getElementById('vista-tecnosala');
@@ -18923,7 +18929,7 @@ window.spToggleVozConsultorMute = function(ev) {
     for (var i = 0; i < wrappers.length; i++) {
       wrappers[i].classList.remove('sp-orb-state-speaking', 'sp-orb-state-listening');
       if (modo === 'speaking') wrappers[i].classList.add('sp-orb-state-speaking');
-      else if (modo === 'listening') wrappers[i].classList.add('sp-orb-state-listening');
+      else if (modo === 'listening' || modo === 'thinking') wrappers[i].classList.add('sp-orb-state-listening');
     }
 
     var btnV = document.getElementById('spBtnVoiceTecnosala');
@@ -18938,15 +18944,22 @@ window.spToggleVozConsultorMute = function(ev) {
       if (btnV) btnV.classList.remove('sp-voice-listening');
       if (txtV) txtV.textContent = 'Hablando...';
       if (icoV) icoV.textContent = '🔊';
-      if (inp) inp.placeholder = '🔊 Escuchando respuesta del consultor (puedes pulsar ⏹ PARAR cuando quieras)...';
+      if (inp) inp.placeholder = '🔊 Escuchando respuesta del consultor (pulsa ⏹ PARAR si quieres interrumpirlo)...';
       if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full animate-pulse inline-block mr-1.5"></span>HABLANDO EN VIVO • AL TERMINAR TE ESCUCHO AUTOMÁTICAMENTE';
+    } else if (modo === 'thinking') {
+      if (btnStop) btnStop.classList.remove('hidden');
+      if (btnV) btnV.classList.remove('sp-voice-listening');
+      if (txtV) txtV.textContent = 'Pensando...';
+      if (icoV) icoV.textContent = '⚡';
+      if (inp) inp.placeholder = '⚡ Consultando a Gemini Flash-Lite en tiempo real...';
+      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full animate-ping inline-block mr-1.5"></span>⚡ GEMINI FLASH-LITE PROCESANDO TU CONSULTA...';
     } else if (modo === 'listening') {
       if (btnStop) btnStop.classList.remove('hidden');
       if (btnV) btnV.classList.add('sp-voice-listening');
       if (txtV) txtV.textContent = 'Escuchando...';
       if (icoV) icoV.textContent = '🔴';
-      if (inp) inp.placeholder = '🟢 MANOS LIBRES ACTIVO: Habla directamente sin tocar ningún botón...';
-      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full animate-pulse inline-block mr-1.5"></span>🎙️ MICRÓFONO ABIERTO EN MANOS LIBRES • HÁBLAME DIRECTAMENTE';
+      if (inp) inp.placeholder = '🟢 MANOS LIBRES ACTIVO: Habla con calma, espero a que termines tu frase...';
+      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full animate-pulse inline-block mr-1.5"></span>🎙️ MICRÓFONO ABIERTO • HABLA CON TRANQUILIDAD (ESPERO A QUE TERMINES)';
     } else {
       if (btnStop) btnStop.classList.add('hidden');
       if (btnV) btnV.classList.remove('sp-voice-listening');
@@ -19047,6 +19060,10 @@ window.spToggleVozConsultorMute = function(ev) {
     return _v168VozObj;
   }
 
+  /* =========================================================================
+     ESCUCHA HUMANA PACIENTE: ACUMULA TODAS TUS FRASES Y ESPERA 2,2 SEGUNDOS
+     DE SILENCIO REAL ANTES DE ENVIAR PARA NO CORTARTE JAMÁS A MITAD DE FRASE
+     ========================================================================= */
   function obtenerReconocedorMaestroV168() {
     if (_v168Rec) return _v168Rec;
     var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -19058,54 +19075,61 @@ window.spToggleVozConsultorMute = function(ev) {
     rec.interimResults = true;
     rec.maxAlternatives = 1;
 
-    function enviarFraseFinalUsuario() {
+    function dispararFraseCompletaUsuario() {
       if (_v168TimerSilencio) {
         clearTimeout(_v168TimerSilencio);
         _v168TimerSilencio = null;
       }
-      var pregunta = _v168BufferTexto.trim();
-      _v168BufferTexto = '';
-      if (!pregunta || pregunta.length < 2) return;
-      if (_v168Hablando || _v168PausadoPorSalir || !estaEnTecnosalaVisible()) return;
+      var fraseCompleta = (_v168FragmentosConfirmados + ' ' + _v168FragmentoInterino).replace(/\s+/g, ' ').trim();
+      _v168FragmentosConfirmados = '';
+      _v168FragmentoInterino = '';
+
+      if (!fraseCompleta || fraseCompleta.length < 2) return;
+      if (_v168Hablando || _v168PensandoIA || _v168PausadoPorSalir || !estaEnTecnosalaVisible()) return;
 
       _v168Escuchando = false;
       if (_v168LineaUsuarioViva) {
         try { _v168LineaUsuarioViva.remove(); } catch (e) {}
         _v168LineaUsuarioViva = null;
       }
-      window.spProcesarConsultaEnTeleprompterDirecto(pregunta);
+      window.spProcesarConsultaEnTeleprompterDirecto(fraseCompleta);
     }
 
     rec.onstart = function() {
       _v168RecRunning = true;
-      if (!_v168Hablando && !_v168PausadoPorSalir && estaEnTecnosalaVisible()) {
+      if (!_v168Hablando && !_v168PensandoIA && !_v168PausadoPorSalir && estaEnTecnosalaVisible()) {
         _v168Escuchando = true;
         actualizarUIEstado('listening');
       }
     };
 
     rec.onresult = function(event) {
-      if (_v168Hablando || _v168PausadoPorSalir || !estaEnTecnosalaVisible() || (performance.now() - _v168TsFinHabla < 450)) {
-        _v168BufferTexto = '';
+      // Mientras el consultor habla, piensa o acaba de callarse (<550ms), ignoramos cualquier eco
+      if (_v168Hablando || _v168PensandoIA || _v168PausadoPorSalir || !estaEnTecnosalaVisible() || (performance.now() - _v168TsFinHabla < 550)) {
+        _v168FragmentosConfirmados = '';
+        _v168FragmentoInterino = '';
         return;
       }
 
-      var interino = '';
-      var nuevoFinal = '';
-      for (var i = event.resultIndex; i < event.results.length; i++) {
-        var tr = event.results[i][0].transcript;
-        if (event.results[i].isFinal) nuevoFinal += tr + ' ';
-        else interino += tr;
-      }
+      var interinoActual = '';
+      var huboFinal = false;
 
-      if (nuevoFinal) {
-        _v168BufferTexto = (_v168BufferTexto + ' ' + nuevoFinal).trim();
+      for (var i = event.resultIndex; i < event.results.length; i++) {
+        var textoTramo = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          _v168FragmentosConfirmados = (_v168FragmentosConfirmados + ' ' + textoTramo).replace(/\s+/g, ' ').trim();
+          huboFinal = true;
+        } else {
+          interinoActual += textoTramo;
+        }
       }
-      var visible = (_v168BufferTexto + ' ' + interino).trim();
-      if (!visible) return;
+      _v168FragmentoInterino = interinoActual.trim();
+
+      var todoLoDichoHastaAhora = (_v168FragmentosConfirmados + ' ' + _v168FragmentoInterino).replace(/\s+/g, ' ').trim();
+      if (!todoLoDichoHastaAhora) return;
 
       var inp = document.getElementById('spTecnosalaInput');
-      if (inp) inp.value = visible;
+      if (inp) inp.value = todoLoDichoHastaAhora;
 
       var track = asegurarCabinaTeleprompterV168();
       if (track) {
@@ -19114,19 +19138,16 @@ window.spToggleVozConsultorMute = function(ev) {
           _v168LineaUsuarioViva.className = 'sp-led-line-item sp-led-line-user';
           track.appendChild(_v168LineaUsuarioViva);
         }
-        _v168LineaUsuarioViva.textContent = '🎙️ TÚ: «' + visible + '...»';
+        _v168LineaUsuarioViva.textContent = '🎙️ TÚ: «' + todoLoDichoHastaAhora + '...»';
         reclasificarLineasTrack(track);
       }
 
+      // Reiniciamos el reloj de paciencia cada vez que pronuncias una sílaba nueva:
+      // - Si sigues a mitad de frase (interino): espera 2,8 segundos de silencio.
+      // - Si hiciste una pausa (final): espera 2,1 segundos por si estás tomando aire para seguir hablando.
       if (_v168TimerSilencio) clearTimeout(_v168TimerSilencio);
-      if (nuevoFinal) {
-        _v168TimerSilencio = setTimeout(enviarFraseFinalUsuario, 550);
-      } else {
-        _v168TimerSilencio = setTimeout(function() {
-          _v168BufferTexto = visible;
-          enviarFraseFinalUsuario();
-        }, 1150);
-      }
+      var esperaSeguraMs = huboFinal ? 2100 : 2800;
+      _v168TimerSilencio = setTimeout(dispararFraseCompletaUsuario, esperaSeguraMs);
     };
 
     rec.onerror = function(ev) {
@@ -19145,7 +19166,7 @@ window.spToggleVozConsultorMute = function(ev) {
         } catch (e) {}
       } else {
         _v168Escuchando = false;
-        if (!_v168Hablando) actualizarUIEstado('idle');
+        if (!_v168Hablando && !_v168PensandoIA) actualizarUIEstado('idle');
       }
     };
 
@@ -19157,7 +19178,7 @@ window.spToggleVozConsultorMute = function(ev) {
     if (!estaEnTecnosalaVisible() || _v168PausadoPorSalir) return;
     var rec = obtenerReconocedorMaestroV168();
     if (!rec) return;
-    if (!_v168Hablando) {
+    if (!_v168Hablando && !_v168PensandoIA) {
       _v168Escuchando = true;
       actualizarUIEstado('listening');
     }
@@ -19170,11 +19191,16 @@ window.spToggleVozConsultorMute = function(ev) {
     }
   }
 
+  /* =========================================================================
+     LOCUCIÓN Y TELEPROMPTER SINCRONIZADO A 60 FPS
+     ========================================================================= */
   window.spReproducirEnTeleprompter2027 = function(textoCompleto, alTerminarCallback, preguntaPrevia) {
     limpiarTimersV168();
+    _v168PensandoIA = false;
     _v168Hablando = true;
     _v168Escuchando = false;
-    _v168BufferTexto = '';
+    _v168FragmentosConfirmados = '';
+    _v168FragmentoInterino = '';
     if (_v168TimerSilencio) {
       clearTimeout(_v168TimerSilencio);
       _v168TimerSilencio = null;
@@ -19261,7 +19287,8 @@ window.spToggleVozConsultorMute = function(ev) {
       limpiarTimersV168();
       _v168Hablando = false;
       _v168TsFinHabla = performance.now();
-      _v168BufferTexto = '';
+      _v168FragmentosConfirmados = '';
+      _v168FragmentoInterino = '';
 
       if (_v168DespiertoPorUsuario && !_v168PausadoPorSalir && estaEnTecnosalaVisible()) {
         _v168Escuchando = true;
@@ -19276,7 +19303,7 @@ window.spToggleVozConsultorMute = function(ev) {
     }
 
     actualizarUIEstado('speaking');
-    var maxDuracion = Math.max(3500, totalChars * 72 + 1600);
+    var maxDuracion = Math.max(4000, totalChars * 74 + 1800);
     _v168TimersTeleprompter.push(setTimeout(finalizarLocucionYPasarAEscucha, maxDuracion));
 
     function latidoTexto() {
@@ -19326,7 +19353,7 @@ window.spToggleVozConsultorMute = function(ev) {
               return;
             }
             var ahora = performance.now();
-            if ((ahora - tsInicio > 900 && !window.speechSynthesis.speaking && !window.speechSynthesis.pending) ||
+            if ((ahora - tsInicio > 950 && !window.speechSynthesis.speaking && !window.speechSynthesis.pending) ||
                 (charMostrado >= totalChars * 0.92 && (ahora - tsUltimaPalabraVoz > 1100))) {
               clearInterval(_v168TimerWatchdogHabla);
               finalizarLocucionYPasarAEscucha();
@@ -19342,71 +19369,223 @@ window.spToggleVozConsultorMute = function(ev) {
     }
   };
 
-  function pedirRespuestaGeminiFlashLiteV168(preguntaUsuario) {
-    var respaldoExperto = (typeof window.spObtenerRespuestaOmniscienteCompleta === 'function')
-      ? window.spObtenerRespuestaOmniscienteCompleta(preguntaUsuario)
-      : 'En Sistemas Pyme activamos en 24 a 48 horas tu sistema de Reseñas con IA en Google Maps (59 €/mes), el Cortafuegos Preventivo por WhatsApp Oficial (Pack Dúo 99 €/mes), el Atril NFC/QR (39 €) y las Super-Auditorías SEO/GEO IA y Neuro-CRO Web.';
+  /* =========================================================================
+     CEREBRO CONVERSACIONAL INTELIGENTE CON GEMINI FLASH-LITE + ANTI-BUCLE
+     ========================================================================= */
+  function normalizarTextoSimple(s) {
+    return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
 
-    var histStr = _v168Historial.slice(-6).join('\n');
-    var prompt =
-      (window.SP_CONTEXTO_MAESTRO_IA_RESUMEN || 'Eres el Consultor Tecnológico Experto de Sistemas Pyme (sistemaspyme.es), fundado por Francisco M. Gallardo.') + '\n\n' +
-      'HISTORIAL:\n' + (histStr || 'Recién iniciada') + '\n\n' +
-      'PREGUNTA DEL USUARIO: "' + preguntaUsuario + '"\n\n' +
-      'INSTRUCCIÓN: Responde en español de España en 2 a 3 frases directas, naturales y habladas (máximo 65 palabras), con datos exactos de Sistemas Pyme (Plan Base 1 servicio 59€/mes + 150€ Setup; Pack Escudo Dúo S1+S2 99€/mes + 225€ Setup; Atril NFC 39€; Super-Auditorías SEO/GEO IA y Neuro-CRO 195€ c/u con Pack Dúo o 350€ sueltas).';
+  function generarRespuestaContextualAntiBucle(preguntaRaw) {
+    var q = normalizarTextoSimple(preguntaRaw);
 
-    var k = obtenerClaveVertexV168();
-    var promesas = [];
-
-    if (k) {
-      var urlV25 = 'https://aiplatform.googleapis.com/v1beta1/publishers/google/models/gemini-2.5-flash-lite:generateContent?key=' + encodeURIComponent(k);
-      promesas.push(
-        fetch(urlV25, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.55, topP: 0.9, maxOutputTokens: 220 }
-          })
-        })
-        .then(function(r) { if (!r.ok) throw new Error('v25'); return r.json(); })
-        .then(function(d) {
-          var parts = d && d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts;
-          var txt = parts ? parts.map(function(p) { return p.thought ? '' : (p.text || ''); }).join(' ').trim() : '';
-          if (txt.length < 12) throw new Error('empty');
-          return { texto: txt, modelo: 'gemini-2.5-flash-lite' };
-        })
-      );
+    // 1. Si hay coincidencia específica en la base de ingeniería (y no es el comodín genérico), la usamos con rotación de variantes
+    if (typeof window.spObtenerRespuestaOmniscienteCompleta === 'function') {
+      var cand = window.spObtenerRespuestaOmniscienteCompleta(preguntaRaw);
+      if (cand && cand.indexOf('Dime qué servicio te interesa y te recomiendo la combinación') === -1) {
+        if (_v168UltimasRespuestasDadas.indexOf(cand) === -1) {
+          return cand;
+        }
+      }
     }
 
+    // 2. Respuestas conversacionales a medida según lo que el usuario esté diciendo o preguntando
+    var respuestasDinamicas = [];
+
+    if (/(hola|buenos dias|buenas tardes|buenas noches|que tal|como estas|me escuchas|probando|oye)/.test(q)) {
+      respuestasDinamicas = [
+        '¡Hola! Te escucho alto y claro. Cuéntame a qué se dedica tu negocio o qué te gustaría mejorar y vemos juntos qué herramienta te encaja mejor.',
+        '¡Buenas! Sí, te escucho perfectamente en manos libres. Dime qué tipo de negocio tienes o qué duda quieres resolver y vamos al grano.'
+      ];
+    } else if (/(clinica|dental|dentista|medico|fisioterapia|salud|paciente|psicolog|veterinari|estetica)/.test(q)) {
+      respuestasDinamicas = [
+        'Para una clínica o centro de salud, lo que mejor funciona es el Pack Escudo Dúo por 99 euros al mes: responde todas tus reseñas cuidando el secreto profesional RGPD para evitar multas de la AEPD y envía la encuesta post-visita por WhatsApp para frenar quejas en privado.',
+        'En el sector sanitario tienes dos ventajas clave con nosotros: el motor IA responde reseñas sin confirmar jamás tratamientos clínicos en público cumpliendo el RGPD, y el recordatorio Anti-Plantón reduce un 85 por ciento las citas vacías.'
+      ];
+    } else if (/(taller|mecanico|reforma|fontaner|instalador|electricista|carpinter|obra)/.test(q)) {
+      respuestasDinamicas = [
+        'En talleres y empresas de reformas o instalaciones suele pasar que mientras estás trabajando no puedes coger el teléfono. Con el Pack de Reputación y el rescate de llamadas perdidas o leads en 10 segundos por WhatsApp retienes al cliente al instante antes de que llame a otro.',
+        'Para tu sector lo más rentable es combinar el Gestor de Reseñas IA con el Cortafuegos de WhatsApp por 99 euros al mes: tus clientes contentos te suben al Top 3 de Google Maps y cualquier roce por tiempos o presupuestos te llega en privado al móvil.'
+      ];
+    } else if (/(restaurante|bar|hosteleria|hotel|cafeteria|comida|mesa)/.test(q)) {
+      respuestasDinamicas = [
+        'En hostelería y restauración, colocar nuestros Atriles NFC y QR en mostrador o mesas por 39 euros multiplica por tres las reseñas de 5 estrellas de los comensales felices, mientras nuestra IA las contesta en el idioma de cada cliente posicionando tu local.',
+        'Para restaurantes y hoteles, responder el cien por cien de las reseñas en el idioma del turista y frenar una sola mala crítica al mes amortiza de sobra los 59 euros del servicio.'
+      ];
+    } else if (/(despacho|abogad|asesoria|gestoria|inmobiliaria|notaria|arquitect|consultor|empresa)/.test(q)) {
+      respuestasDinamicas = [
+        'Para despachos profesionales, asesorías e inmobiliarias, recomendamos combinar el Pack de Reputación con la Super-Auditoría SEO Local y GEO para IA: así cuando alguien pregunta a ChatGPT o busca en Google el despacho más fiable de tu ciudad, sales recomendado el primero.',
+        'En firmas y despachos cuidamos al máximo la sobriedad: nuestra Auditoría Neuro-CRO incluye un Modo Corporativo que mide llamadas perdidas en tu teléfono fijo fuera de horario y mejora la conversión de tu web sin alterar su diseño.'
+      ];
+    } else if (/(precio|cuanto cuesta|cuanto vale|tarifa|mensual|anual|pagar|coste|euro|barato|caro)/.test(q)) {
+      respuestasDinamicas = [
+        'Nuestros precios son totalmente transparentes: empezar con 1 servicio son 59 euros al mes más 150 de alta única. Y el Pack Escudo Dúo con los 2 servicios activos, Reseñas IA más Cortafuegos de WhatsApp, son 99 euros al mes más 225 de alta, desbloqueando las Super-Auditorías a solo 195 euros.',
+        'Con captar o salvar un solo cliente al mes el sistema se paga solo: tienes el Plan Base por 59 euros al mes, el Pack Dúo por 99 euros al mes, el Atril NFC por 39 euros de pago único y, si eliges Plan Anual, te regalamos 2 meses completos.'
+      ];
+    } else if (/(auditoria|seo|geo|chatgpt|gemini|ia|google|posicionamiento|web|aparecer|encontrar)/.test(q)) {
+      respuestasDinamicas = [
+        'Tenemos dos Super-Auditorías de pago único sin cuotas: la de Ingeniería SEO Local y GEO inyecta tu grafo Schema conectado a Wikidata y el archivo llms.txt para que ChatGPT y Google te recomienden; y la de Neuromarketing CRO instala una sonda de 10 días para duplicar los contactos de tu web. Sueltas cuestan 350 euros, o solo 195 euros con el Pack Dúo.',
+        'La gente que llega recomendada por ChatGPT compra 9 veces más que en una búsqueda normal. Con nuestra Auditoría SEO y GEO pasamos tu web de cero elementos a Validado en Verde en Google sin cambiar ni un píxel de tu diseño visual.'
+      ];
+    } else if (/(whatsapp|encuesta|cortafuegos|queja|malentendido|negativa|estrella|fijo|audio|voz)/.test(q)) {
+      respuestasDinamicas = [
+        'El Cortafuegos funciona sobre el WhatsApp Oficial de tu negocio, incluso usando tu número fijo de toda la vida: tras la visita pregunta qué tal fue todo; si pulsan Excelente van directo a ponerte 5 estrellas en Google, y si pulsan Mejorable te cuentan la queja en privado por texto o nota de voz transcrita por IA.',
+        'Cuando entra una reseña delicada de 1 a 3 estrellas en Google, nuestra IA jamás publica a ciegas: frena la respuesta y te manda al móvil 4 propuestas redactadas con el método psicológico HEARD y blindaje RGPD para que tú apruebes la que prefieras en un clic.'
+      ];
+    } else {
+      respuestasDinamicas = [
+        'Sobre eso que me comentas («' + preguntaRaw.slice(0, 60) + '»), en Sistemas Pyme lo adaptamos llave en mano a tu negocio en 24 a 48 horas sin que tengas que cambiar tu forma de trabajar. ¿Prefieres que te explique cómo captar más reseñas y clientes hoy o cómo funcionan las auditorías para salir el primero en Google y ChatGPT?',
+        'Te entiendo perfectamente. Para darte la recomendación exacta para tu caso, dime a qué se dedica tu negocio o si tu prioridad ahora mismo es conseguir más reseñas de 5 estrellas, atraer más llamadas desde tu web o ahorrar tiempo con WhatsApp.'
+      ];
+    }
+
+    for (var r = 0; r < respuestasDinamicas.length; r++) {
+      if (_v168UltimasRespuestasDadas.indexOf(respuestasDinamicas[r]) === -1) {
+        return respuestasDinamicas[r];
+      }
+    }
+    return respuestasDinamicas[0];
+  }
+
+  function descubrirModelosFlashLiteV170(k) {
+    if (_v168ModelosFlashLiteCache) return Promise.resolve(_v168ModelosFlashLiteCache);
+    var listaBase = ['gemini-2.5-flash-lite', 'gemini-2.0-flash-lite-001', 'gemini-2.0-flash-lite', 'gemini-2.5-flash'];
+    return fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=100&key=' + encodeURIComponent(k))
+      .then(function(r) { return r && r.ok ? r.json() : null; })
+      .then(function(d) {
+        var mods = (d && Array.isArray(d.models)) ? d.models : [];
+        var hallados = [];
+        for (var i = 0; i < mods.length; i++) {
+          var m = mods[i];
+          var met = m.supportedGenerationMethods || [];
+          if (met.indexOf('generateContent') === -1) continue;
+          var name = String(m.name || '').replace(/^models\//, '');
+          if (name.toLowerCase().indexOf('flash-lite') !== -1) {
+            hallados.push(name);
+          }
+        }
+        for (var j = 0; j < listaBase.length; j++) {
+          if (hallados.indexOf(listaBase[j]) === -1) hallados.push(listaBase[j]);
+        }
+        _v168ModelosFlashLiteCache = hallados;
+        return hallados;
+      })
+      .catch(function() {
+        _v168ModelosFlashLiteCache = listaBase;
+        return listaBase;
+      });
+  }
+
+  function consultarGeminiDirectoMultiEndpointV170(promptCompleto) {
+    var k = obtenerClaveVertexV168();
+    if (!k) return Promise.reject('no_key');
+
+    return descubrirModelosFlashLiteV170(k).then(function(modelos) {
+      function probarSiguiente(idx) {
+        if (idx >= modelos.length) return Promise.reject('all_models_failed');
+        var mod = modelos[idx];
+        var bodyJson = JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: promptCompleto }] }],
+          generationConfig: { temperature: 0.65, topP: 0.92, maxOutputTokens: 280 }
+        });
+
+        var urlVertex = 'https://aiplatform.googleapis.com/v1beta1/publishers/google/models/' + mod + ':generateContent?key=' + encodeURIComponent(k);
+        return fetch(urlVertex, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: bodyJson
+        })
+        .then(function(r) { return r && r.ok ? r.json() : null; })
+        .then(function(d) {
+          var parts = d && d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts;
+          if (parts && parts.length) {
+            var txt = parts.map(function(p) { return p.thought ? '' : (p.text || ''); }).join(' ').trim();
+            if (txt.length > 10) return { texto: txt, modelo: mod };
+          }
+          return probarSiguiente(idx + 1);
+        })
+        .catch(function() {
+          return probarSiguiente(idx + 1);
+        });
+      }
+      return probarSiguiente(0);
+    });
+  }
+
+  function pedirRespuestaGeminiFlashLiteV168(preguntaUsuario) {
+    var respaldoContextual = generarRespuestaContextualAntiBucle(preguntaUsuario);
+    var histStr = _v168Historial.slice(-8).join('\n');
+
+    var prompt =
+      (window.SP_CONTEXTO_MAESTRO_IA_RESUMEN ||
+        'Eres el Consultor Tecnológico Experto de Sistemas Pyme (sistemaspyme.es), fundado por Francisco M. Gallardo (Tel/WhatsApp 711 54 75 61). ' +
+        'Datos clave: Plan Base 1 servicio (S1 Reseñas IA o S2 Cortafuegos WhatsApp) = 59 €/mes + 150 € Setup. ' +
+        'Pack Escudo Dúo (S1 + S2) = 99 €/mes + 225 € Setup (desbloquea las Super-Auditorías a 195 € c/u en vez de 350 €). ' +
+        'Atril NFC/QR = 39 € pago único (abre Google Maps en 1 segundo). ' +
+        'Super-Auditoría 1: SEO Local + GEO IA (Grafo Schema.org + Wikidata + /llms.txt). ' +
+        'Super-Auditoría 2: Neuromarketing CRO con Sonda Térmica de 10 días (Modo Ágil o Modo Corporativo).') + '\n\n' +
+      'HISTORIAL DE LA CONVERSACIÓN:\n' + (histStr || 'Recién iniciada') + '\n\n' +
+      'INTERVENCIÓN ACTUAL DEL USUARIO: "' + preguntaUsuario + '"\n\n' +
+      'INSTRUCCIÓN OBLIGATORIA: Responde directamente y de forma inteligente a lo que acaba de decir el usuario en español de España, en 2 a 3 frases naturales para ser habladas en voz alta (40 a 70 palabras), sin usar asteriscos ni listas y sin repetir respuestas anteriores.';
+
+    var promesas = [];
+
+    // 1. Vía Directa Vertex AI con autodescubrimiento de modelos Flash-Lite
+    promesas.push(consultarGeminiDirectoMultiEndpointV170(prompt));
+
+    // 2. Vía Servidor Render (/api/consultor-ia)
     promesas.push(
       fetch('https://servicio-resenas.onrender.com/api/consultor-ia', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           pregunta: preguntaUsuario,
-          apoyo: respaldoExperto,
+          apoyo: respaldoContextual,
           prompt: prompt,
           modelo_preferido: 'gemini-2.5-flash-lite'
         })
       })
-      .then(function(r) { if (!r.ok) throw new Error('render'); return r.json(); })
+      .then(function(r) { if (!r.ok) throw new Error('render_ia'); return r.json(); })
       .then(function(d) {
         if (d && d.ok && d.respuesta && d.respuesta.trim().length > 12) {
           return { texto: d.respuesta.trim(), modelo: d.modelo || 'gemini-2.5-flash-lite' };
         }
-        throw new Error('no_resp');
+        throw new Error('empty_render_ia');
       })
     );
 
+    // 3. Vía Servidor Local si está en el mismo origen
+    if (window.location.protocol.indexOf('http') === 0) {
+      promesas.push(
+        fetch('/api/consultor-ia', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            pregunta: preguntaUsuario,
+            apoyo: respaldoContextual,
+            prompt: prompt
+          })
+        })
+        .then(function(r) { if (!r.ok) throw new Error('local_ia'); return r.json(); })
+        .then(function(d) {
+          if (d && d.ok && d.respuesta && d.respuesta.trim().length > 12) {
+            return { texto: d.respuesta.trim(), modelo: d.modelo || 'gemini-flash-lite-local' };
+          }
+          throw new Error('empty_local_ia');
+        })
+      );
+    }
+
     return new Promise(function(resolve) {
       var resuelto = false;
+      // Damos hasta 5.5 segundos para que Gemini Flash-Lite responda con inteligencia real antes de usar el respaldo
       var timerMax = setTimeout(function() {
         if (!resuelto) {
           resuelto = true;
-          actualizarPuntoLedApi('local', '⚡ Respuesta Instantánea del Motor Experto Sistemas Pyme');
-          resolve(respaldoExperto);
+          actualizarPuntoLedApi('local', '⚡ Respuesta Contextual Sistemas Pyme');
+          resolve(respaldoContextual);
         }
-      }, 2200);
+      }, 5500);
 
       var fallos = 0;
       for (var i = 0; i < promesas.length; i++) {
@@ -19415,29 +19594,47 @@ window.spToggleVozConsultorMute = function(ev) {
             resuelto = true;
             clearTimeout(timerMax);
             actualizarPuntoLedApi('online', '🟢 Conectado en vivo a ' + ganador.modelo);
-            resolve(ganador.texto.replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim());
+            var limpio = ganador.texto.replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
+            resolve(limpio);
           }
         }).catch(function() {
           fallos++;
           if (fallos >= promesas.length && !resuelto) {
             resuelto = true;
             clearTimeout(timerMax);
-            actualizarPuntoLedApi('local', '⚡ Motor Experto Sistemas Pyme');
-            resolve(respaldoExperto);
+            actualizarPuntoLedApi('local', '⚡ Respuesta Contextual Sistemas Pyme');
+            resolve(respaldoContextual);
           }
         });
       }
     });
   }
 
+  /* =========================================================================
+     FUNCIONES PÚBLICAS GLOBALES
+     ========================================================================= */
   window.spProcesarConsultaEnTeleprompterDirecto = function(textoPregunta) {
     var limpia = String(textoPregunta || '').trim();
     if (!limpia) return;
     _v168DespiertoPorUsuario = true;
     _v168PausadoPorSalir = false;
+    _v168PensandoIA = true;
+    _v168Escuchando = false;
+
+    actualizarUIEstado('thinking');
 
     var inp = document.getElementById('spTecnosalaInput');
     if (inp) inp.value = '';
+
+    // Mostrar inmediatamente en el Teleprompter lo que el usuario acaba de preguntar
+    var track = asegurarCabinaTeleprompterV168();
+    if (track) {
+      var divQ = document.createElement('div');
+      divQ.className = 'sp-led-line-item sp-led-line-user';
+      divQ.textContent = '▸ TÚ: «' + limpia + '»';
+      track.appendChild(divQ);
+      reclasificarLineasTrack(track);
+    }
 
     _v168Historial.push('Usuario: ' + limpia);
     if (typeof window.spExtraerYPreconfigurarCarritoDesdeCharla === 'function') {
@@ -19445,6 +19642,10 @@ window.spToggleVozConsultorMute = function(ev) {
     }
 
     pedirRespuestaGeminiFlashLiteV168(limpia).then(function(respuestaIA) {
+      _v168PensandoIA = false;
+      _v168UltimasRespuestasDadas.push(respuestaIA);
+      if (_v168UltimasRespuestasDadas.length > 6) _v168UltimasRespuestasDadas.shift();
+
       _v168Historial.push('Consultor: ' + respuestaIA);
       var ahora = new Date();
       _v168TranscripcionDescarga.push({
@@ -19452,7 +19653,8 @@ window.spToggleVozConsultorMute = function(ev) {
         pregunta: limpia,
         respuesta: respuestaIA
       });
-      window.spReproducirEnTeleprompter2027(respuestaIA, null, limpia);
+      // Pasamos null en preguntaPrevia porque ya la pintamos arriba al instante
+      window.spReproducirEnTeleprompter2027(respuestaIA, null, null);
     });
   };
 
@@ -19481,7 +19683,7 @@ window.spToggleVozConsultorMute = function(ev) {
 
     var saludo =
       'Hola, soy tu consultor tecnológico experto de Sistemas Pyme. ' +
-      'El micrófono ya está activado en manos libres: pregúntame directamente lo que quieras saber sobre reseñas con IA, WhatsApp oficial, auditorías o precios.';
+      'El micrófono está abierto en manos libres: háblame con tranquilidad, espero a que termines cada frase para responderte.';
 
     window.spReproducirEnTeleprompter2027(saludo, function() {
       _v168Hablando = false;
@@ -19496,6 +19698,7 @@ window.spToggleVozConsultorMute = function(ev) {
     _v168PausadoPorSalir = false;
     limpiarTimersV168();
     _v168Hablando = false;
+    _v168PensandoIA = false;
     if ('speechSynthesis' in window) {
       try { window.speechSynthesis.cancel(); } catch (e) {}
     }
@@ -19517,8 +19720,10 @@ window.spToggleVozConsultorMute = function(ev) {
     _v168DespiertoPorUsuario = false;
     _v168PausadoPorSalir = false;
     _v168Hablando = false;
+    _v168PensandoIA = false;
     _v168Escuchando = false;
-    _v168BufferTexto = '';
+    _v168FragmentosConfirmados = '';
+    _v168FragmentoInterino = '';
     limpiarTimersV168();
     if (_v168TimerSilencio) {
       clearTimeout(_v168TimerSilencio);
@@ -19538,8 +19743,10 @@ window.spToggleVozConsultorMute = function(ev) {
     if (!_v168DespiertoPorUsuario) return;
     _v168PausadoPorSalir = true;
     _v168Hablando = false;
+    _v168PensandoIA = false;
     _v168Escuchando = false;
-    _v168BufferTexto = '';
+    _v168FragmentosConfirmados = '';
+    _v168FragmentoInterino = '';
     limpiarTimersV168();
     if (_v168TimerSilencio) {
       clearTimeout(_v168TimerSilencio);
@@ -19560,6 +19767,7 @@ window.spToggleVozConsultorMute = function(ev) {
     if (!estaEnTecnosalaVisible()) return;
     _v168PausadoPorSalir = false;
     _v168Hablando = false;
+    _v168PensandoIA = false;
     asegurarCabinaTeleprompterV168();
     encenderMicrofonoAhoraSincrono();
   };
@@ -19569,6 +19777,12 @@ window.spToggleVozConsultorMute = function(ev) {
     var inp = document.getElementById('spTecnosalaInput');
     var texto = inp ? String(inp.value || '').trim() : '';
     if (!texto) return;
+    if (_v168TimerSilencio) {
+      clearTimeout(_v168TimerSilencio);
+      _v168TimerSilencio = null;
+    }
+    _v168FragmentosConfirmados = '';
+    _v168FragmentoInterino = '';
     window.spProcesarConsultaEnTeleprompterDirecto(texto);
   };
 
@@ -19599,7 +19813,7 @@ window.spToggleVozConsultorMute = function(ev) {
       window.spPausarConsultorPorCambioSeccion();
     } else if (visible && _v168PausadoPorSalir) {
       window.spReanudarConsultorAlVolverSeccion();
-    } else if (visible && !_v168PausadoPorSalir && !_v168Hablando && !_v168RecRunning) {
+    } else if (visible && !_v168PausadoPorSalir && !_v168Hablando && !_v168PensandoIA && !_v168RecRunning) {
       encenderMicrofonoAhoraSincrono();
     }
   }, 450);
