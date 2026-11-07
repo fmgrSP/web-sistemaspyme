@@ -6525,7 +6525,7 @@
     }
                     /* =========================================================================
        MODAL CARRITO CONFIGURADOR EN MODO CRISTAL LUMINOSO CRO (NEUROMARKETING)
-       PUNTO INTERMEDIO EXACTO: APTO PARA PRESBICIA + CERO SCROLL EN PANTALLA
+       TARJETAS COLOREADAS INDIVIDUALMENTE + APTO PARA PRESBICIA + CERO SCROLL
        ========================================================================= */
     #spModalCarritoCarta {
       padding: 0.5rem 1rem !important;
@@ -6547,7 +6547,7 @@
       margin-bottom: 0.55rem !important;
       border-bottom: 1.5px solid #cbd5e1 !important;
     }
-    /* Ocultar el banner superior "CONFIGURADOR A LA CARTA • IMPLANTACIÓN RÁPIDA 24-48H" */
+    /* Ocultar cualquier banner superior sobrante */
     #spModalCarritoCarta > div > div:first-child span.bg-amber-950\/90 {
       display: none !important;
     }
@@ -6594,17 +6594,17 @@
       letter-spacing: 0.02em !important;
       margin-bottom: 0.22rem !important;
     }
-    /* Botones de selección (Pasos 1, 2 y 3) con altura contenida y letra intermedia clara */
+    /* Botones de selección base (Pasos 1, 2 y 3) */
     #spModalCarritoCarta .sp-cart-item-btn {
       border: 2px solid #cbd5e1 !important;
       background: #ffffff !important;
       border-radius: 0.8rem !important;
       padding: 0.48rem 0.75rem !important;
       text-align: left;
-      transition: all 0.18s ease;
+      transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1) !important;
       cursor: pointer;
       color: #0f172a !important;
-      box-shadow: 0 2px 8px -2px rgba(11, 34, 57, 0.06) !important;
+      box-shadow: 0 3px 10px -2px rgba(11, 34, 57, 0.07), inset 0 1px 0 #ffffff !important;
     }
     /* Título principal dentro de cada tarjeta seleccionable (~14.5px) */
     #spModalCarritoCarta .sp-cart-item-btn > span:first-child {
@@ -6624,23 +6624,139 @@
       margin-top: 0.06rem !important;
     }
     #spModalCarritoCarta .sp-cart-item-btn:hover {
-      border-color: #0d9488 !important;
-      background: #f0fdfa !important;
+      transform: translateY(-1.5px) !important;
     }
-    /* Estado seleccionado: Verde Esmeralda Luminoso con texto ultra-nítido */
-    #spModalCarritoCarta .sp-cart-item-btn.sp-cart-selected {
-      border: 2px solid #059669 !important;
-      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
-      box-shadow: 0 6px 16px -4px rgba(5, 150, 105, 0.22), inset 0 1px 0 #ffffff !important;
-      color: #064e3b !important;
+
+    /* =====================================================================
+       PALETA CROMÁTICA DIFERENCIADA POR TARJETA EN EL CARRITO DE COMPRA
+       ===================================================================== */
+    /* 1A. Modalidad Mensual Flexible -> Azul Cielo / Cian */
+    #spModalCarritoCarta #spCartMod_mensual {
+      background: linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+      border-color: #7dd3fc !important;
+      border-left: 4px solid #0284c7 !important;
     }
-    #spModalCarritoCarta .sp-cart-item-btn.sp-cart-selected > span:first-child {
-      color: #064e3b !important;
+    #spModalCarritoCarta #spCartMod_mensual > span:first-child { color: #075985 !important; }
+    #spModalCarritoCarta #spCartMod_mensual.sp-cart-selected {
+      background: linear-gradient(135deg, #bae6fd 0%, #7dd3fc 100%) !important;
+      border: 2.5px solid #0284c7 !important;
+      box-shadow: 0 8px 18px -4px rgba(2, 132, 199, 0.32), inset 0 1px 0 #ffffff !important;
     }
-    #spModalCarritoCarta .sp-cart-item-btn.sp-cart-selected > span:not(:first-child) {
-      color: #065f46 !important;
-      font-weight: 700 !important;
+    #spModalCarritoCarta #spCartMod_mensual.sp-cart-selected > span:first-child { color: #082f49 !important; }
+    #spModalCarritoCarta #spCartMod_mensual.sp-cart-selected > span:not(:first-child) { color: #0c4a6e !important; font-weight: 700 !important; }
+
+    /* 1B. Modalidad Plan Anual (-2 Meses) -> Ámbar / Dorado Cálido */
+    #spModalCarritoCarta #spCartMod_anual {
+      background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%) !important;
+      border-color: #fcd34d !important;
+      border-left: 4px solid #d97706 !important;
     }
+    #spModalCarritoCarta #spCartMod_anual > span:first-child { color: #92400e !important; }
+    #spModalCarritoCarta #spCartMod_anual.sp-cart-selected {
+      background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%) !important;
+      border: 2.5px solid #b45309 !important;
+      box-shadow: 0 8px 18px -4px rgba(217, 119, 6, 0.34), inset 0 1px 0 #ffffff !important;
+    }
+    #spModalCarritoCarta #spCartMod_anual.sp-cart-selected > span:first-child { color: #451a03 !important; }
+    #spModalCarritoCarta #spCartMod_anual.sp-cart-selected > span:not(:first-child) { color: #78350f !important; font-weight: 700 !important; }
+
+    /* 2A. Solo Auditoría / Atril -> Pizarra Perla Elegante */
+    #spModalCarritoCarta #spCartPlan_ninguno {
+      background: linear-gradient(145deg, #f8fafc 0%, #e2e8f0 100%) !important;
+      border-color: #94a3b8 !important;
+      border-left: 4px solid #475569 !important;
+    }
+    #spModalCarritoCarta #spCartPlan_ninguno > span:first-child { color: #1e293b !important; }
+    #spModalCarritoCarta #spCartPlan_ninguno.sp-cart-selected {
+      background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%) !important;
+      border: 2.5px solid #1e293b !important;
+      box-shadow: 0 8px 18px -4px rgba(30, 41, 59, 0.28), inset 0 1px 0 #ffffff !important;
+    }
+    #spModalCarritoCarta #spCartPlan_ninguno.sp-cart-selected > span:first-child { color: #0f172a !important; }
+    #spModalCarritoCarta #spCartPlan_ninguno.sp-cart-selected > span:not(:first-child) { color: #1e293b !important; font-weight: 700 !important; }
+
+    /* 2B. 1 Servicio (Plan Base) -> Azul Real / Cobalto Suave */
+    #spModalCarritoCarta #spCartPlan_base {
+      background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 100%) !important;
+      border-color: #93c5fd !important;
+      border-left: 4px solid #2563eb !important;
+    }
+    #spModalCarritoCarta #spCartPlan_base > span:first-child { color: #1e3a8a !important; }
+    #spModalCarritoCarta #spCartPlan_base.sp-cart-selected {
+      background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%) !important;
+      border: 2.5px solid #1d4ed8 !important;
+      box-shadow: 0 8px 18px -4px rgba(37, 99, 235, 0.32), inset 0 1px 0 #ffffff !important;
+    }
+    #spModalCarritoCarta #spCartPlan_base.sp-cart-selected > span:first-child { color: #172554 !important; }
+    #spModalCarritoCarta #spCartPlan_base.sp-cart-selected > span:not(:first-child) { color: #1e3a8a !important; font-weight: 700 !important; }
+
+    /* 2C. Pack Escudo Básico (Dúo) -> Verde Esmeralda / Turquesa */
+    #spModalCarritoCarta #spCartPlan_duo {
+      background: linear-gradient(145deg, #ecfdf5 0%, #d1fae5 100%) !important;
+      border-color: #6ee7b7 !important;
+      border-left: 4px solid #059669 !important;
+    }
+    #spModalCarritoCarta #spCartPlan_duo > span:first-child { color: #065f46 !important; }
+    #spModalCarritoCarta #spCartPlan_duo.sp-cart-selected {
+      background: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%) !important;
+      border: 2.5px solid #047857 !important;
+      box-shadow: 0 8px 18px -4px rgba(5, 150, 105, 0.34), inset 0 1px 0 #ffffff !important;
+    }
+    #spModalCarritoCarta #spCartPlan_duo.sp-cart-selected > span:first-child { color: #022c22 !important; }
+    #spModalCarritoCarta #spCartPlan_duo.sp-cart-selected > span:not(:first-child) { color: #064e3b !important; font-weight: 700 !important; }
+
+    /* 3A. Sin Auditoría por ahora -> Malva / Neutro Suave */
+    #spModalCarritoCarta #spCartAud_0 {
+      background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%) !important;
+      border-color: #cbd5e1 !important;
+      border-left: 4px solid #64748b !important;
+    }
+    #spModalCarritoCarta #spCartAud_0.sp-cart-selected {
+      background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%) !important;
+      border: 2.5px solid #334155 !important;
+      box-shadow: 0 6px 14px -4px rgba(51, 65, 85, 0.25), inset 0 1px 0 #ffffff !important;
+    }
+
+    /* 3B. +1 Super-Auditoría -> Índigo / Violeta Tecnológico */
+    #spModalCarritoCarta #spCartAud_1 {
+      background: linear-gradient(145deg, #eef2ff 0%, #e0e7ff 100%) !important;
+      border-color: #a5b4fc !important;
+      border-left: 4px solid #4f46e5 !important;
+    }
+    #spModalCarritoCarta #spCartAud_1 > span:first-child { color: #312e81 !important; }
+    #spModalCarritoCarta #spCartAud_1.sp-cart-selected {
+      background: linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 100%) !important;
+      border: 2.5px solid #4338ca !important;
+      box-shadow: 0 8px 18px -4px rgba(79, 70, 229, 0.32), inset 0 1px 0 #ffffff !important;
+    }
+    #spModalCarritoCarta #spCartAud_1.sp-cart-selected > span:first-child { color: #1e1b4b !important; }
+    #spModalCarritoCarta #spCartAud_1.sp-cart-selected > span:not(:first-child) { color: #312e81 !important; font-weight: 700 !important; }
+
+    /* 3C. +2 Super-Auditorías -> Oro / Coral Cálido de Máximo Ahorro */
+    #spModalCarritoCarta #spCartAud_2 {
+      background: linear-gradient(145deg, #fff7ed 0%, #ffedd5 100%) !important;
+      border-color: #fdba74 !important;
+      border-left: 4px solid #ea580c !important;
+    }
+    #spModalCarritoCarta #spCartAud_2 > span:first-child { color: #9a3412 !important; }
+    #spModalCarritoCarta #spCartAud_2.sp-cart-selected {
+      background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%) !important;
+      border: 2.5px solid #c2410c !important;
+      box-shadow: 0 8px 18px -4px rgba(234, 88, 12, 0.34), inset 0 1px 0 #ffffff !important;
+    }
+    #spModalCarritoCarta #spCartAud_2.sp-cart-selected > span:first-child { color: #431407 !important; }
+    #spModalCarritoCarta #spCartAud_2.sp-cart-selected > span:not(:first-child) { color: #7c2d12 !important; font-weight: 700 !important; }
+
+    /* 4 y 5. Cajas de Atriles NFC (Ámbar suave) y Reserva Fase 2 (Azul Cielo suave) */
+    #spModalCarritoCarta .sm\:col-span-5 {
+      background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%) !important;
+      border: 1.5px solid #f59e0b !important;
+    }
+    #spModalCarritoCarta .sm\:col-span-7 {
+      background: linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+      border: 1.5px solid #0284c7 !important;
+    }
+
     /* Campos de formulario y desplegables compactos de alto contraste (13.8px) */
     #spModalCarritoCarta select,
     #spModalCarritoCarta input[type="text"],
@@ -16560,9 +16676,7 @@
         _spWatchdogMicroInterval = setInterval(function() {
           var vistaTec = document.getElementById('vista-tecnosala');
           if (!vistaTec || vistaTec.classList.contains('hidden')) return;
-          if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spHablandoSintesis && !_spMicroSesionActiva && !_spRearmandoOido) {
-            window.spActivarModoEscuchaPersistente(false);
-          }
+          /* Bucle de 950ms desactivado en V148 para no apilar ventanas de permiso de micrófono en file:// */
         }, 950);
       }
 
@@ -17961,9 +18075,139 @@
 })();
 </script>
 <!-- === [FIN_SP_MEJORAS_V120_FIN_DE_SEMANA_Y_CARRITO_S1_S2] === -->
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V147_START] -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V148_START] -->
 <script>
 (function() {
+  /* =========================================================================
+     1. FIN DEL BUCLE INFINITO DE PERMISO DE MICRÓFONO EN TECNOSALA
+        (Cuando se abre index.html como archivo local file://, Chrome no guarda
+         el permiso; eliminamos la doble llamada a getUserMedia y los reintentos
+         automáticos cada 950ms para que la ventana de permiso se cierre al instante)
+     ========================================================================= */
+  window._spUltimoIntentoStartMicro = 0;
+  window._spSesionMicroUnicaActiva = false;
+
+  window.spActivarModoEscuchaPersistente = function(forzarManual) {
+    var vistaTec = document.getElementById('vista-tecnosala');
+    if (!vistaTec || vistaTec.classList.contains('hidden')) return;
+    var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) return;
+
+    if (window.speechSynthesis && window.speechSynthesis.speaking) return;
+
+    var ahora = Date.now();
+    if (!forzarManual && (ahora - window._spUltimoIntentoStartMicro < 2500)) return;
+    if (window._spSesionMicroUnicaActiva) return;
+
+    window._spUltimoIntentoStartMicro = ahora;
+
+    try {
+      if (!window._spReconocedorLimpioV148) {
+        var rec = new SpeechRec();
+        rec.lang = 'es-ES';
+        rec.continuous = (window.location.protocol !== 'file:');
+        rec.interimResults = true;
+        var textoFrase = '';
+        var timerSilencio = null;
+
+        rec.onstart = function() {
+          window._spSesionMicroUnicaActiva = true;
+          var inp = document.getElementById('spTecnosalaInput');
+          if (inp) inp.setAttribute('placeholder', '🟢 Escuchando tu voz ahora... habla con naturalidad');
+          var btnV = document.getElementById('spBtnVoiceTecnosala');
+          var txtV = document.getElementById('spVoiceBtnText');
+          if (btnV) btnV.classList.add('sp-voice-listening');
+          if (txtV) txtV.textContent = 'Escuchando...';
+        };
+
+        rec.onresult = function(ev) {
+          if (window.speechSynthesis && window.speechSynthesis.speaking) {
+            textoFrase = '';
+            return;
+          }
+          var acumulado = '';
+          var esFinal = false;
+          for (var i = ev.resultIndex; i < ev.results.length; i++) {
+            acumulado += ev.results[i][0].transcript;
+            if (ev.results[i].isFinal) esFinal = true;
+          }
+          textoFrase = acumulado.trim();
+          var inp = document.getElementById('spTecnosalaInput');
+          if (inp && textoFrase) inp.value = textoFrase;
+
+          if (timerSilencio) clearTimeout(timerSilencio);
+          timerSilencio = setTimeout(function() {
+            var enviar = textoFrase.trim();
+            textoFrase = '';
+            if (enviar.length >= 2) {
+              try { rec.stop(); } catch (e) {}
+              window._spSesionMicroUnicaActiva = false;
+              if (typeof window.spProcesarConsultaEnTeleprompterDirecto === 'function') {
+                window.spProcesarConsultaEnTeleprompterDirecto(enviar);
+              }
+            }
+          }, esFinal ? 500 : 1000);
+        };
+
+        rec.onerror = function() {
+          window._spSesionMicroUnicaActiva = false;
+          var btnV = document.getElementById('spBtnVoiceTecnosala');
+          var txtV = document.getElementById('spVoiceBtnText');
+          if (btnV) btnV.classList.remove('sp-voice-listening');
+          if (txtV) txtV.textContent = 'Hablar';
+        };
+
+        rec.onend = function() {
+          window._spSesionMicroUnicaActiva = false;
+          var btnV = document.getElementById('spBtnVoiceTecnosala');
+          var txtV = document.getElementById('spVoiceBtnText');
+          if (btnV) btnV.classList.remove('sp-voice-listening');
+          if (txtV) txtV.textContent = 'Hablar';
+          var inp = document.getElementById('spTecnosalaInput');
+          if (inp) inp.setAttribute('placeholder', 'Escribe tu duda o pulsa 🎙️ Hablar o el Orbe para preguntar por voz...');
+          if (textoFrase && textoFrase.trim().length >= 2) {
+            var enviar = textoFrase.trim();
+            textoFrase = '';
+            if (typeof window.spProcesarConsultaEnTeleprompterDirecto === 'function') {
+              window.spProcesarConsultaEnTeleprompterDirecto(enviar);
+            }
+          }
+        };
+
+        window._spReconocedorLimpioV148 = rec;
+      }
+
+      window._spReconocedorLimpioV148.start();
+    } catch (e) {
+      window._spSesionMicroUnicaActiva = false;
+    }
+  };
+
+  window.spIniciarEscuchaDirectaConsultor = function() {
+    window.spActivarModoEscuchaPersistente(true);
+  };
+
+  window.spToggleDictadoVozTecnosala = function() {
+    if (window._spSesionMicroUnicaActiva && window._spReconocedorLimpioV148) {
+      try { window._spReconocedorLimpioV148.stop(); } catch (e) {}
+      window._spSesionMicroUnicaActiva = false;
+      return;
+    }
+    window.spActivarModoEscuchaPersistente(true);
+  };
+
+  /* =========================================================================
+     2. PRESELECCIÓN AUTOMÁTICA DEL DIAGNÓSTICO AL ABRIR EL CARRITO DESDE EL TEST
+     ========================================================================= */
+  window.spAbrirCarritoConDiagnosticoPreseleccionado = function() {
+    if (typeof window.spAbrirCarritoConfigurador === 'function') {
+      window.spAbrirCarritoConfigurador('duo', 1);
+    }
+  };
+
+  /* =========================================================================
+     3. COORDINACIÓN DE CITAS ENTRE CARRITO WEB Y AGENDA CRM / BITÁCORA
+     ========================================================================= */
   window.SP_SLOTS_OCUPADOS_CRM_EXTRA = window.SP_SLOTS_OCUPADOS_CRM_EXTRA || new Set();
 
   function normalizarSlotEspacio(slotRaw) {
@@ -18017,7 +18261,7 @@
 
   window.spSincronizarCitasCrmLocal = function() {
     try {
-      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v147') || '[]');
+      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v148') || '[]');
       if (Array.isArray(guardados)) {
         guardados.forEach(function(sl) {
           var norm = normalizarSlotEspacio(sl);
@@ -18042,7 +18286,7 @@
               if (norm) window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(norm);
             });
             try {
-              localStorage.setItem('sp_citas_ocupadas_crm_v147', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
+              localStorage.setItem('sp_citas_ocupadas_crm_v148', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
             } catch (e) {}
           }
         })
@@ -18052,21 +18296,21 @@
     });
   };
 
-  function engancharEventosAgendaCarritoV147() {
+  function engancharEventosAgendaCarritoV148() {
     window.spSincronizarCitasCrmLocal();
 
-    if (typeof window.spActualizarHorasDisponiblesCarritoV125 === 'function' && !window.spActualizarHorasDisponiblesCarritoV125._hookV147) {
+    if (typeof window.spActualizarHorasDisponiblesCarritoV125 === 'function' && !window.spActualizarHorasDisponiblesCarritoV125._hookV148) {
       var origActHoras = window.spActualizarHorasDisponiblesCarritoV125;
       var nuevaActHoras = function() {
         var r = origActHoras.apply(this, arguments);
         window.spAplicarBloqueoHorasCrmEnSelect();
         return r;
       };
-      nuevaActHoras._hookV147 = true;
+      nuevaActHoras._hookV148 = true;
       window.spActualizarHorasDisponiblesCarritoV125 = nuevaActHoras;
     }
 
-    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window.spAbrirCarritoConfigurador._hookV147) {
+    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window.spAbrirCarritoConfigurador._hookV148) {
       var origOpen = window.spAbrirCarritoConfigurador;
       var nuevoOpen = function() {
         var r = origOpen.apply(this, arguments);
@@ -18074,11 +18318,11 @@
         setTimeout(window.spAplicarBloqueoHorasCrmEnSelect, 120);
         return r;
       };
-      nuevoOpen._hookV147 = true;
+      nuevoOpen._hookV148 = true;
       window.spAbrirCarritoConfigurador = nuevoOpen;
     }
 
-    if (typeof window.spConfirmarPedidoYAgendarCita === 'function' && !window.spConfirmarPedidoYAgendarCita._hookV147) {
+    if (typeof window.spConfirmarPedidoYAgendarCita === 'function' && !window.spConfirmarPedidoYAgendarCita._hookV148) {
       var origConfirm = window.spConfirmarPedidoYAgendarCita;
       var nuevoConfirm = function() {
         try {
@@ -18092,7 +18336,7 @@
           if (ymd && hhmm) {
             window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(ymd + ' ' + hhmm);
             try {
-              localStorage.setItem('sp_citas_ocupadas_crm_v147', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
+              localStorage.setItem('sp_citas_ocupadas_crm_v148', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
             } catch (e) {}
             var nombreCompleto = ((inpNom ? inpNom.value : '') + (inpNeg && inpNeg.value ? (' — ' + inpNeg.value) : '')).trim();
             fetch('http://127.0.0.1:5000/api/crm/registrar-pedido-web', {
@@ -18110,20 +18354,20 @@
         } catch (err) {}
         return origConfirm.apply(this, arguments);
       };
-      nuevoConfirm._hookV147 = true;
+      nuevoConfirm._hookV148 = true;
       window.spConfirmarPedidoYAgendarCita = nuevoConfirm;
     }
   }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(engancharEventosAgendaCarritoV147, 250);
+      setTimeout(engancharEventosAgendaCarritoV148, 250);
     });
   } else {
-    setTimeout(engancharEventosAgendaCarritoV147, 250);
+    setTimeout(engancharEventosAgendaCarritoV148, 250);
   }
 })();
 </script>
-<!-- [SP_AGENDA_CRM_WEB_SYNC_V147_END] -->
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V148_END] -->
 </body>
 </html>
