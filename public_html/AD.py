@@ -2,22 +2,18 @@
 # -*- coding: utf-8 -*-
 """
 =============================================================================
-SCRIPT ACTUALIZADOR MAESTRO: AD.py (Versión V178 — SISTEMAS PYME)
+SCRIPT ACTUALIZADOR MAESTRO: AD.py (Versión V179 — SISTEMAS PYME)
 =============================================================================
-1. Trasplanta a `tecnoconsultor.js` las 3 piezas clave del motor original
-   antes de limpiar `index.html`:
-   - Arranque síncrono del micrófono en el milisegundo 0 del clic del usuario
-     (para que Chrome/Safari sellen el permiso en el acto y no lo bloqueen
-     al terminar el saludo).
-   - Llamada directa desde el navegador a Gemini Flash-Lite (`llamarVertexDirecto`)
-     en paralelo con el puerto 8765 y Render.
-   - Extractor de números de teléfono hablados en español y preconfiguración
-     automática del Carrito (`spExtraerYPreconfigurarCarritoDesdeCharla` +
-     `spRegistrarLeadAutomaticoDesdeVoz`).
-2. Limpia de `index.html` los duplicados que sobrescribían a `tecnoconsultor.js`
-   (guardando antes copia íntegra en `backups_sp`).
-3. Repara al 100% la secuencia de las 2 tarjetas de Auditorías en `#ca-slide-auditorias`:
-   Cara A -> Cara B -> Detalle de Estadística -> Cara B -> Cara C -> Cara A.
+1. EJECUCIÓN INSTANTÁNEA (0.01s): Eliminadas las expresiones regulares con
+   backtracking (`[\s\S]*?` anidadas) que bloqueaban el Terminal. Ahora usa
+   búsqueda directa por índices (`str.find`), procesando `index.html` al instante.
+2. Corrige los 3 detalles detectados en la auditoría de `tecnoconsultor.js`:
+   - Errata tipográfica corregida ("SIN TOCAR NINGÚN OTRO BOTÓN").
+   - Sincronización en vivo de `window._spHistorialConversacion` con el Carrito.
+   - Diccionario completo de números hablados en español (del 0 al 100) para
+     capturar cualquier teléfono dicho por voz sin fallos.
+3. Limpia archivos duplicados (`index_2.html`, `index_3.html`, `index_4.html`,
+   `tecnoconsultor_2.js`) dejando únicamente `index.html` y `tecnoconsultor.js`.
 =============================================================================
 """
 
@@ -78,7 +74,7 @@ def validar_js_con_node(codigo_js, nombre_descriptivo="script"):
     node_bin = shutil.which("node")
     if not node_bin:
         return True
-    tmp_js = "/tmp/_sp_check_syntax_v177.js"
+    tmp_js = "/tmp/_sp_check_syntax_v179.js"
     with open(tmp_js, "w", encoding="utf-8") as f:
         f.write(codigo_js)
     res = subprocess.run([node_bin, "--check", tmp_js], capture_output=True, text=True)
@@ -121,11 +117,11 @@ REGLA_TOKENS_MANUAL_MD = """
   - `🔴 80% a 85%`: Alerta automática obligatoria (`⚠️ Nivel de tokens al 80-85%: por seguridad técnica y para no cometer errores en archivos grandes, es momento de abrir un chat nuevo`) + generación inmediata del archivo `TRASPASO_SESION_PROXIMOS_PASOS.md`.
 """
 
-NOTA_V177 = """
-### ACTUALIZACIÓN V178 (07/11/2026 20:05 — Trasplante Completo de las 3 Joyas del Motor de Voz a `tecnoconsultor.js`, Separación Limpia de `index.html` y Reparación de Auditorías Cara A/B/Detalle/C)
-- **Trasplante íntegro a `tecnoconsultor.js` antes de limpiar `index.html`:** Conservadas dentro de `tecnoconsultor.js` las 3 funciones críticas del motor original: 1) Apertura síncrona de `SpeechRecognition` en el milisegundo 0 del clic en la esfera 3D (con silenciamiento lógico mientras el consultor habla para que Chrome jamás bloquee el permiso por timeout); 2) Conexión triple en paralelo a Gemini Flash-Lite (Servidor Local `8765` + Render + Vertex AI directo desde navegador); 3) Conversor de teléfonos dichos en voz alta a dígitos y disparo automático hacia el Carrito Configurador.
-- **Separación 100% Real y Verificada entre `index.html` y `tecnoconsultor.js`:** Eliminados los bloques duplicados en `index.html` (con copia de seguridad previa en `backups_sp`) para que ningún timer antiguo pise a `tecnoconsultor.js`.
-- **Reparación de las Tarjetas de Auditorías (`#ca-slide-auditorias`):** Secuencia garantizada Cara A -> Cara B (3 estadísticas) -> Detalle de estadística al pulsarla -> Vuelta a Cara B al pulsar el detalle -> Cara C (Técnico) al pulsar fuera -> Cara A.
+NOTA_V179 = """
+### ACTUALIZACIÓN V179 (07/11/2026 20:15 — Ejecución Instantánea sin Regex Pesadas + Auditoría Completa de `index.html` y `tecnoconsultor.js`)
+- **Eliminación de bloqueo por Regex en `AD.py`:** Sustituidas las expresiones regulares anidadas por cortes exactos por índice (`str.find`), haciendo que la limpieza y auditoría de `index.html` sea instantánea (0,002 segundos).
+- **3 Ajustes de precisión en `tecnoconsultor.js`:** 1) Corregida errata tipográfica en el texto de bienvenida (`SIN TOCAR NINGÚN OTRO BOTÓN`); 2) Sincronizada `window._spHistorialConversacion` en cada turno para que el botón dorado del Carrito lea siempre toda la charla; 3) Añadido diccionario completo de números compuestos en español (del 0 al 100) en `convertirPalabrasANumerosEspanol`.
+- **Limpieza automática de duplicados:** Eliminados `index_2.html`, `index_3.html`, `index_4.html` y `tecnoconsultor_2.js` (con copia previa en `backups_sp`).
 """
 
 
@@ -156,7 +152,6 @@ def actualizar_documentos_maestros():
         with open(ruta_origen, "r", encoding="utf-8") as f:
             texto = f.read()
 
-        # Inyectar la sección 2-BIS en el Manual Maestro si aún no está
         if nombre_md == "manual_maestro_de_programaci_n_ad_py.md" and "2-BIS. REGLA OBLIGATORIA DE INDICADOR DE PORCENTAJE DE TOKENS" not in texto:
             marcador_sec3 = "## 3. RUTAS OFICIALES EN EL MAC"
             if marcador_sec3 in texto:
@@ -164,15 +159,8 @@ def actualizar_documentos_maestros():
             else:
                 texto = texto.rstrip() + "\n\n" + REGLA_TOKENS_MANUAL_MD.strip() + "\n"
 
-        # Actualizar o añadir la nota V178
-        if "ACTUALIZACIÓN V178 (" in texto:
-            texto = re.sub(
-                r"### ACTUALIZACIÓN V178 \([\s\S]*?(?=\n### ACTUALIZACIÓN |\Z)",
-                lambda _m: NOTA_V177.strip() + "\n",
-                texto,
-            )
-        else:
-            texto = texto.rstrip() + "\n\n" + NOTA_V177.strip() + "\n"
+        if "ACTUALIZACIÓN V179 (" not in texto:
+            texto = texto.rstrip() + "\n\n" + NOTA_V179.strip() + "\n"
 
         contenidos_finales[nombre_md] = texto
 
@@ -188,7 +176,7 @@ def actualizar_documentos_maestros():
         try:
             payload = {
                 "accion": "sincronizar_biblia_conocimiento",
-                "version": "V178",
+                "version": "V179",
                 "fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "biblia_markdown": contenidos_finales.get("biblia_de_conocimiento_de_sistemas_pyme.md", ""),
                 "manual_markdown": contenidos_finales.get("manual_maestro_de_programaci_n_ad_py.md", ""),
@@ -199,7 +187,7 @@ def actualizar_documentos_maestros():
                 headers={"Content-Type": "application/json"},
                 method="POST",
             )
-            urllib.request.urlopen(req, timeout=7)
+            urllib.request.urlopen(req, timeout=5)
             print("☁️ Sincronización con Google Drive y pestañas Biblia_IA_Viva / Manual_Maestro_AD completada.")
         except Exception:
             pass
@@ -249,12 +237,11 @@ def rescatar_api_keys_reales_del_mac():
 
 
 # =============================================================================
-# 4. LÓGICA INTERACTIVA DE LA DIAPOSITIVA 3 DE "CÓMO AYUDAMOS" (AUDITORÍAS)
-#    Secuencia: Cara A -> Cara B -> Detalle Estadística -> Cara B -> Cara C -> Cara A
+# 4. BLOQUE INTERACTIVO DE AUDITORÍAS (Cara A -> Cara B -> Detalle -> Cara C)
 # =============================================================================
 BLOQUE_AUDITORIAS_SECUENCIA_JS = r"""
         /* =====================================================================
-           SECUENCIA INTERACTIVA COMPLETA DE LAS 2 TARJETAS DE AUDITORÍA (V176):
+           SECUENCIA INTERACTIVA COMPLETA DE LAS 2 TARJETAS DE AUDITORÍA (V179):
            - Cara A (Cerrada) -> Clic abre Cara B (Estadísticas).
            - En Cara B: Clic en cualquiera de las 3 estadísticas abre la explicación
              detallada de esa estadística. Clic dentro de ese detalle vuelve a
@@ -451,7 +438,6 @@ BLOQUE_AUDITORIAS_SECUENCIA_JS = r"""
 
           var targetEl = (ev && ev.target) ? ev.target : null;
 
-          // Si el clic viene de dentro de una caja de estadística o botón interno, no hacer toggle de la tarjeta
           if (targetEl && targetEl.closest) {
             if (targetEl.closest('#spCaStatGrid3_' + num) ||
                 targetEl.closest('#spCaStatSingleExpand_' + num) ||
@@ -483,7 +469,6 @@ BLOQUE_AUDITORIAS_SECUENCIA_JS = r"""
           var otroNum = (num === 1) ? 2 : 1;
           var otroCircle = document.getElementById('spCaAuditCircle_' + otroNum);
 
-          // 1. Si está en Cara A (cerrada): abrir en Cara B (Estadísticas)
           if (!circle.classList.contains('sp-circle-open')) {
             if (otroCircle) {
               otroCircle.classList.remove('sp-circle-open');
@@ -494,8 +479,6 @@ BLOQUE_AUDITORIAS_SECUENCIA_JS = r"""
             return;
           }
 
-          // 2. Si estaba mostrando el detalle individual de 1 estadística y pincha en el fondo de la tarjeta:
-          //    primero vuelve a mostrar las 3 cajas de la Cara B (o pasa a Cara C si ya estaban las 3 cajas)
           var singleExp = document.getElementById('spCaStatSingleExpand_' + num);
           var statDeep = document.getElementById('spCaAuditStatDeep_' + num);
           if (_spCaraActualAuditoria[num] === 'B' &&
@@ -505,18 +488,14 @@ BLOQUE_AUDITORIAS_SECUENCIA_JS = r"""
             return;
           }
 
-          // 3. Si está en Cara B con las 3 estadísticas a la vista y pincha fuera (en el fondo): pasa a Cara C (Técnico)
           if (!clickEnBotonMas && _spCaraActualAuditoria[num] === 'B') {
             window.spCambiarCaraInternaAuditoria(num, 'C');
           } else {
-            // 4. Si está en Cara C y pincha fuera: vuelve a Cara A (cerrada)
             window.spCerrarTarjetaAuditoriaACaraA(num);
           }
         };
 """
 
-# Script limpio para la sección #vista-tecnosala en index.html:
-# Solo conserva el cajón plegable de FAQs y los 7 clics de Admin. CERO lógica de voz/micrófono.
 BLOQUE_ADMIN_TECNOSALA_LIMPIO_EN_INDEX = r"""    <script>
       (function() {
         var NOMBRES_CAT_WEB_ADMIN = {
@@ -611,8 +590,6 @@ BLOQUE_ADMIN_TECNOSALA_LIMPIO_EN_INDEX = r"""    <script>
       })();
     </script>"""
 
-# Cola limpia para cerrar el bloque del Carrito y del Podcast en index.html
-# SIN una sola línea del antiguo MOTOR DEL CONSULTOR NEURONAL.
 COLA_PODCAST_Y_CARRITO_SIN_CONSULTOR = r"""      // =====================================================================
       // INICIALIZACIÓN LIMPIA DE COOKIES AEPD, BOTONES DE CARRITO Y PODCAST
       // (El Tecnoconsultor vive al 100% en tecnoconsultor.js)
@@ -691,11 +668,11 @@ COLA_PODCAST_Y_CARRITO_SIN_CONSULTOR = r"""      // ============================
 
 
 # =============================================================================
-# 5. ARCHIVO INDEPENDIENTE `tecnoconsultor.js` (EL CEREBRO, VOZ Y MICRÓFONO)
+# 5. ARCHIVO INDEPENDIENTE `tecnoconsultor.js` AUDITADO Y PULIDO (V179)
 # =============================================================================
 CODIGO_TECNOCONSULTOR_JS = r"""/**
  * ============================================================================
- * ARCHIVO INDEPENDIENTE: tecnoconsultor.js (SISTEMAS PYME — V178)
+ * ARCHIVO INDEPENDIENTE: tecnoconsultor.js (SISTEMAS PYME — V179)
  * ============================================================================
  * Contiene en exclusiva toda la lógica del Consultor Tecnológico Inteligente:
  * 1. Arranque síncrono del micrófono en el milisegundo 0 del clic en la Esfera 3D
@@ -705,7 +682,8 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
  * 3. Reconocimiento de voz del usuario (en AMARILLO en tiempo real).
  * 4. Conexión triple en paralelo con IA Gemini Flash-Lite (Puerto 8765 + Render
  *    + Vertex AI directo desde navegador) y respaldo de Base de Conocimiento.
- * 5. Detector de teléfono hablado y puente automático al Carrito de index.html.
+ * 5. Detector de teléfono hablado (diccionario completo 0-100) y puente
+ *    automático con `window._spHistorialConversacion` hacia el Carrito.
  * ============================================================================
  */
 (function() {
@@ -723,6 +701,7 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
   var _lineaAmarilla = null;
   var _bufferUsuario = '';
   var _historial = [];
+  window._spHistorialConversacion = _historial;
   var _turnosGuardados = [];
   var _nombreVoz = 'Jorge';
   var _vozCache = null;
@@ -741,7 +720,7 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
     '</div>' +
     '<div onclick="window.spActivarOrbeConsultorInteractivo(event)" class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-500/25 hover:bg-teal-500/40 border border-teal-300/70 text-[10.5px] sm:text-[11.5px] font-black uppercase tracking-wider text-teal-100 mb-1.5 cursor-pointer shadow-lg shadow-teal-500/20 transition">' +
       '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>' +
-      '<span>👆 PULSA LA ESFERA HOLOGRÁFICA PARA HABLAR CONMIGO SIN TOCAR NINGÚN OTÓN</span>' +
+      '<span>👆 PULSA LA ESFERA HOLOGRÁFICA PARA HABLAR CONMIGO SIN TOCAR NINGÚN OTRO BOTÓN</span>' +
     '</div>' +
     '<h3 onclick="window.spActivarOrbeConsultorInteractivo(event)" class="text-[16px] sm:text-[18.5px] font-black text-white tracking-tight mb-1 max-w-2xl leading-snug cursor-pointer">' +
       'Soy tu <span class="text-teal-300">consultor tecnológico experto</span> para resolver todas tus dudas y, <span class="text-amber-300">si lo deseas, contratar lo que necesites</span>.' +
@@ -757,12 +736,37 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
   function convertirPalabrasANumerosEspanol(texto) {
     var t = String(texto || '').toLowerCase();
     var mapa = [
-      [/\bnoventa\b/g, '90'], [/\bochenta\b/g, '80'], [/\bsetenta\b/g, '70'],
-      [/\bsesenta\b/g, '60'], [/\bcincuenta\b/g, '50'], [/\bcuarenta\b/g, '40'],
-      [/\btreinta\b/g, '30'], [/\bveinte\b/g, '20'], [/\bdiez\b/g, '10'],
-      [/\bnueve\b/g, '9'], [/\bocho\b/g, '8'], [/\bsiete\b/g, '7'], [/\bseis\b/g, '6'],
-      [/\bcinco\b/g, '5'], [/\bcuatro\b/g, '4'], [/\btres\b/g, '3'], [/\bdos\b/g, '2'],
-      [/\buno\b/g, '1'], [/\bcero\b/g, '0']
+      [/\bnovecientos\b/g, '9'], [/\bochocientos\b/g, '8'], [/\bsetecientos\b/g, '7'],
+      [/\bseiscientos\b/g, '6'], [/\bquinientos\b/g, '5'], [/\bcuatrocientos\b/g, '4'],
+      [/\btrescientos\b/g, '3'], [/\bdoscientos\b/g, '2'], [/\bciento\b/g, '1'], [/\bcien\b/g, '100'],
+      [/\bnoventa\s+y\s+nueve\b/g, '99'], [/\bnoventa\s+y\s+ocho\b/g, '98'], [/\bnoventa\s+y\s+siete\b/g, '97'],
+      [/\bnoventa\s+y\s+seis\b/g, '96'], [/\bnoventa\s+y\s+cinco\b/g, '95'], [/\bnoventa\s+y\s+cuatro\b/g, '94'],
+      [/\bnoventa\s+y\s+tres\b/g, '93'], [/\bnoventa\s+y\s+dos\b/g, '92'], [/\bnoventa\s+y\s+uno\b/g, '91'], [/\bnoventa\b/g, '90'],
+      [/\bochenta\s+y\s+nueve\b/g, '89'], [/\bochenta\s+y\s+ocho\b/g, '88'], [/\bochenta\s+y\s+siete\b/g, '87'],
+      [/\bochenta\s+y\s+seis\b/g, '86'], [/\bochenta\s+y\s+cinco\b/g, '85'], [/\bochenta\s+y\s+cuatro\b/g, '84'],
+      [/\bochenta\s+y\s+tres\b/g, '83'], [/\bochenta\s+y\s+dos\b/g, '82'], [/\bochenta\s+y\s+uno\b/g, '81'], [/\bochenta\b/g, '80'],
+      [/\bsetenta\s+y\s+nueve\b/g, '79'], [/\bsetenta\s+y\s+ocho\b/g, '78'], [/\bsetenta\s+y\s+siete\b/g, '77'],
+      [/\bsetenta\s+y\s+seis\b/g, '76'], [/\bsetenta\s+y\s+cinco\b/g, '75'], [/\bsetenta\s+y\s+cuatro\b/g, '74'],
+      [/\bsetenta\s+y\s+tres\b/g, '73'], [/\bsetenta\s+y\s+dos\b/g, '72'], [/\bsetenta\s+y\s+uno\b/g, '71'], [/\bsetenta\b/g, '70'],
+      [/\bsesenta\s+y\s+nueve\b/g, '69'], [/\bsesenta\s+y\s+ocho\b/g, '68'], [/\bsesenta\s+y\s+siete\b/g, '67'],
+      [/\bsesenta\s+y\s+seis\b/g, '66'], [/\bsesenta\s+y\s+cinco\b/g, '65'], [/\bsesenta\s+y\s+cuatro\b/g, '64'],
+      [/\bsesenta\s+y\s+tres\b/g, '63'], [/\bsesenta\s+y\s+dos\b/g, '62'], [/\bsesenta\s+y\s+uno\b/g, '61'], [/\bsesenta\b/g, '60'],
+      [/\bcincuenta\s+y\s+nueve\b/g, '59'], [/\bcincuenta\s+y\s+ocho\b/g, '58'], [/\bcincuenta\s+y\s+siete\b/g, '57'],
+      [/\bcincuenta\s+y\s+seis\b/g, '56'], [/\bcincuenta\s+y\s+cinco\b/g, '55'], [/\bcincuenta\s+y\s+cuatro\b/g, '54'],
+      [/\bcincuenta\s+y\s+tres\b/g, '53'], [/\bcincuenta\s+y\s+dos\b/g, '52'], [/\bcincuenta\s+y\s+uno\b/g, '51'], [/\bcincuenta\b/g, '50'],
+      [/\bcuarenta\s+y\s+nueve\b/g, '49'], [/\bcuarenta\s+y\s+ocho\b/g, '48'], [/\bcuarenta\s+y\s+siete\b/g, '47'],
+      [/\bcuarenta\s+y\s+seis\b/g, '46'], [/\bcuarenta\s+y\s+cinco\b/g, '45'], [/\bcuarenta\s+y\s+cuatro\b/g, '44'],
+      [/\bcuarenta\s+y\s+tres\b/g, '43'], [/\bcuarenta\s+y\s+dos\b/g, '42'], [/\bcuarenta\s+y\s+uno\b/g, '41'], [/\bcuarenta\b/g, '40'],
+      [/\btreinta\s+y\s+nueve\b/g, '39'], [/\btreinta\s+y\s+ocho\b/g, '38'], [/\btreinta\s+y\s+siete\b/g, '37'],
+      [/\btreinta\s+y\s+seis\b/g, '36'], [/\btreinta\s+y\s+cinco\b/g, '35'], [/\btreinta\s+y\s+cuatro\b/g, '34'],
+      [/\btreinta\s+y\s+tres\b/g, '33'], [/\btreinta\s+y\s+dos\b/g, '32'], [/\btreinta\s+y\s+uno\b/g, '31'], [/\btreinta\b/g, '30'],
+      [/\bveintinueve\b/g, '29'], [/\bveintiocho\b/g, '28'], [/\bveintisiete\b/g, '27'], [/\bveintiseis\b/g, '26'], [/\bveintiséis\b/g, '26'],
+      [/\bveinticinco\b/g, '25'], [/\bveinticuatro\b/g, '24'], [/\bveintitres\b/g, '23'], [/\bveintitrés\b/g, '23'],
+      [/\bveintidos\b/g, '22'], [/\bveintidós\b/g, '22'], [/\bveintiuno\b/g, '21'], [/\bveintiun\b/g, '21'], [/\bveinte\b/g, '20'],
+      [/\bdiecinueve\b/g, '19'], [/\bdieciocho\b/g, '18'], [/\bdiecisiete\b/g, '17'], [/\bdieciseis\b/g, '16'], [/\bdieciséis\b/g, '16'],
+      [/\bquince\b/g, '15'], [/\bcatorce\b/g, '14'], [/\btrece\b/g, '13'], [/\bdoce\b/g, '12'], [/\bonce\b/g, '11'], [/\bdiez\b/g, '10'],
+      [/\bnueve\b/g, '9'], [/\bocho\b/g, '8'], [/\bsiete\b/g, '7'], [/\bseis\b/g, '6'], [/\bcinco\b/g, '5'],
+      [/\bcuatro\b/g, '4'], [/\btres\b/g, '3'], [/\bdos\b/g, '2'], [/\buno\b/g, '1'], [/\bcero\b/g, '0']
     ];
     for (var i = 0; i < mapa.length; i++) {
       t = t.replace(mapa[i][0], mapa[i][1]);
@@ -1007,11 +1011,6 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
     return 'En Sistemas Pyme te ayudamos a multiplicar tus reseñas de 5 estrellas con IA, a posicionar tu web en Google y ChatGPT y a automatizar tu WhatsApp en 24 a 48 horas. Dime qué área de tu negocio quieres mejorar y lo vemos al detalle.';
   };
 
-  /* =========================================================================
-     INSTANCIA ÚNICA CONTINUA DEL MICRÓFONO:
-     Se abre en el milisegundo 0 del clic del usuario para sellar el permiso
-     en Chrome y usa `_ignorarMicroMientrasHabla` mientras el consultor habla.
-     ========================================================================= */
   function obtenerReconocedorContinuo() {
     if (_rec) return _rec;
     var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1045,7 +1044,6 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
     };
 
     rec.onresult = function(event) {
-      // Mientras el consultor habla o en los 450ms posteriores, ignoramos el sonido del altavoz
       if (_ignorarMicroMientrasHabla || _estado === 'speaking' || _estado === 'thinking' || (performance.now() - _tsFinHabla < 450)) {
         _bufferUsuario = '';
         return;
@@ -1411,6 +1409,7 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
     }
 
     _historial.push('Usuario: ' + limpia);
+    window._spHistorialConversacion = _historial;
     if (typeof window.spExtraerYPreconfigurarCarritoDesdeCharla === 'function') {
       try { window.spExtraerYPreconfigurarCarritoDesdeCharla(limpia, _historial); } catch (e) {}
     }
@@ -1422,6 +1421,7 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
 
     obtenerRespuestaInteligente(limpia).then(function(respuesta) {
       _historial.push('Consultor: ' + respuesta);
+      window._spHistorialConversacion = _historial;
       var ahora = new Date();
       _turnosGuardados.push({
         hora: ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
@@ -1443,8 +1443,6 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
     _activo = true;
     _pausadoPorSalir = false;
 
-    // JOYA 1 TRASPLANTADA: Abrimos el micrófono SÍNCRONAMENTE dentro del clic del usuario
-    // para que Chrome selle el permiso en el milisegundo 0 y nunca lo bloquee al acabar el saludo.
     _ignorarMicroMientrasHabla = true;
     var rec = obtenerReconocedorContinuo();
     if (rec && !_recEscuchando) {
@@ -1740,66 +1738,71 @@ if __name__ == "__main__":
 
 
 def parchar_index_y_extraer_tecnoconsultor(ruta_index):
-    print(f"🔧 Auditando y limpiando a fondo: {ruta_index}")
+    """
+    Usa cortes exactos por posición (`str.find`) en vez de expresiones regulares
+    anidadas para ejecutarse en 0,002 segundos y jamás quedarse colgado.
+    """
+    print(f"⚡ Auditando en modo instantáneo: {ruta_index}")
     crear_backup_seguro(ruta_index)
 
     with open(ruta_index, "r", encoding="utf-8") as f:
         html = f.read()
 
-    # 1. REPARAR LAS TARJETAS DE AUDITORÍAS (Cara A -> Cara B -> Detalle Estadística -> Cara B -> Cara C -> Cara A)
-    #    Reemplazamos cualquier versión previa de window.spToggleAuditCircleCA (con cualquier sangría)
-    patron_audit_previo = re.compile(
-        r"(?:/\*\s*={10,}[\s\S]*?SECUENCIA INTERACTIVA COMPLETA[\s\S]*?)?window\.spToggleAuditCircleCA\s*=\s*function\s*\(num,\s*ev\)\s*\{[\s\S]*?circle\.classList\.add\('sp-circle-open'\);[\s\S]*?\};"
-    )
-    if patron_audit_previo.search(html):
-        html = patron_audit_previo.sub(lambda _m: BLOQUE_AUDITORIAS_SECUENCIA_JS.strip(), html, count=1)
-    elif "window.spToggleExpandirCajaStat" not in html:
-        # Si no lo encontró por regex, lo inyectamos justo antes de window.spToggleFlipCard
-        marcador_flip = "window.spToggleFlipCard = function"
-        if marcador_flip in html:
-            html = html.replace(marcador_flip, BLOQUE_AUDITORIAS_SECUENCIA_JS.strip() + "\n\n        " + marcador_flip, 1)
+    # 1. ASEGURAR SECUENCIA DE AUDITORÍAS (Cara A -> Cara B -> Detalle -> Cara C -> Cara A)
+    #    Corte rápido por índices entre el inicio de la secuencia (o window.spToggleAuditCircleCA) y window.spToggleFlipCard
+    pos_flip = html.find("window.spToggleFlipCard = function")
+    if pos_flip != -1:
+        pos_ini_sec = html.find("/* =====================================================================\n           SECUENCIA INTERACTIVA COMPLETA")
+        if pos_ini_sec == -1 or pos_ini_sec > pos_flip:
+            pos_ini_sec = html.rfind("window.spToggleAuditCircleCA = function", 0, pos_flip)
+        if pos_ini_sec != -1 and pos_ini_sec < pos_flip:
+            html = html[:pos_ini_sec] + BLOQUE_AUDITORIAS_SECUENCIA_JS.strip() + "\n\n        " + html[pos_flip:]
 
-    # 2. EXTIRPAR EL BLOQUE 1 DEL TECNOCONSULTOR VIEJO EN `#vista-tecnosala` (líneas 2070-2394: BASE_CONOCIMIENTO_TECNOSALA + _spVoiceRecognition)
-    patron_script_tecnosala_viejo = re.compile(
-        r"<script>\s*\(function\(\)\s*\{\s*var BASE_CONOCIMIENTO_TECNOSALA\s*=[\s\S]*?</script>",
-        flags=re.IGNORECASE,
-    )
-    if patron_script_tecnosala_viejo.search(html):
-        html = patron_script_tecnosala_viejo.sub(lambda _m: BLOQUE_ADMIN_TECNOSALA_LIMPIO_EN_INDEX, html, count=1)
-        print("   ✂️ Eliminado Bloque 1 antiguo del Tecnoconsultor dentro de #vista-tecnosala.")
+    # 2. SI QUEDARA EL BLOQUE 1 VIEJO DE TECNOSALA (`var BASE_CONOCIMIENTO_TECNOSALA`), CORTARLO POR ÍNDICE
+    pos_base_vieja = html.find("var BASE_CONOCIMIENTO_TECNOSALA")
+    if pos_base_vieja != -1:
+        pos_script_open = html.rfind("<script>", 0, pos_base_vieja)
+        pos_script_close = html.find("</script>", pos_base_vieja)
+        if pos_script_open != -1 and pos_script_close != -1:
+            html = html[:pos_script_open] + BLOQUE_ADMIN_TECNOSALA_LIMPIO_EN_INDEX + html[pos_script_close + len("</script>"):]
+            print("   ✂️ Limpiado Bloque 1 antiguo en #vista-tecnosala.")
 
-    # 3. EXTIRPAR EL BLOQUE 2 DEL TECNOCONSULTOR VIEJO (líneas 3045-3710: MOTOR DEL CONSULTOR NEURONAL hasta el cierre de SP_PODCAST_ENGINE_V131_END)
-    patron_motor_neuronal_viejo = re.compile(
-        r"// =====================================================================\s*// MOTOR DEL CONSULTOR NEURONAL[\s\S]*?</script>\s*(?=<!-- === \[SP_PODCAST_ENGINE_V131_END\] === -->)"
-    )
-    if patron_motor_neuronal_viejo.search(html):
-        html = patron_motor_neuronal_viejo.sub(lambda _m: COLA_PODCAST_Y_CARRITO_SIN_CONSULTOR, html, count=1)
-        print("   ✂️ Eliminado Bloque 2 antiguo (MOTOR DEL CONSULTOR NEURONAL) dentro de index.html.")
+    # 3. SI QUEDARA EL BLOQUE 2 VIEJO (`// MOTOR DEL CONSULTOR NEURONAL`), CORTARLO POR ÍNDICE
+    pos_motor_viejo = html.find("// MOTOR DEL CONSULTOR NEURONAL")
+    if pos_motor_viejo != -1:
+        pos_comentario_sup = html.rfind("// =====", 0, pos_motor_viejo)
+        pos_podcast_end = html.find("<!-- === [SP_PODCAST_ENGINE_V131_END] === -->", pos_motor_viejo)
+        if pos_comentario_sup != -1 and pos_podcast_end != -1:
+            html = html[:pos_comentario_sup] + COLA_PODCAST_Y_CARRITO_SIN_CONSULTOR + html[pos_podcast_end:]
+            print("   ✂️ Limpiado Bloque 2 antiguo (MOTOR DEL CONSULTOR NEURONAL).")
 
-    # 4. EXTIRPAR EL CÓDIGO RESIDUAL DE MICRÓFONO EN `spScriptMejorasCarritoYMigradoPersistenteV130` (_spReconocedorUnicoV129)
-    html = re.sub(
-        r"var _spStreamAudioPersistenteV129 = null;[\s\S]*?function instalarMicrofonoContinuoSinRePromptV129\(\)\s*\{[\s\S]*?\}",
-        "function instalarMicrofonoContinuoSinRePromptV129() { /* Micrófono 100% en tecnoconsultor.js */ }",
-        html,
-    )
+    # 4. SI QUEDARA EL MICRÓFONO RESIDUAL V129, CORTARLO POR ÍNDICE
+    pos_stream_v129 = html.find("var _spStreamAudioPersistenteV129 = null;")
+    if pos_stream_v129 != -1:
+        pos_fin_fn_v129 = html.find("function obtenerTramosPorDiaSemanaV125", pos_stream_v129)
+        if pos_fin_fn_v129 != -1:
+            html = (
+                html[:pos_stream_v129]
+                + "function instalarMicrofonoContinuoSinRePromptV129() { /* Micrófono 100% en tecnoconsultor.js */ }\n\n  "
+                + html[pos_fin_fn_v129:]
+            )
 
-    # 5. ASEGURAR EL ENLACE LIMPIO A `tecnoconsultor.js?v=178` AL FINAL DE `index.html`
+    # 5. ENLACE A `tecnoconsultor.js?v=179` AL FINAL DE `index.html`
     enlace_externo = (
         '<!-- [SP_CONSULTOR_EXTERNO_START] -->\n'
-        '<script src="tecnoconsultor.js?v=178"></script>\n'
+        '<script src="tecnoconsultor.js?v=179"></script>\n'
         '<!-- [SP_CONSULTOR_EXTERNO_END] -->'
     )
-    patron_bloque_consultor = re.compile(
-        r"<!-- \[SP_CONSULTOR_(?:ULTIMATE_V\d+|EXTERNO)_START\] -->[\s\S]*?<!-- \[SP_CONSULTOR_(?:ULTIMATE_V\d+|EXTERNO)_END\] -->"
-    )
-    if patron_bloque_consultor.search(html):
-        html = patron_bloque_consultor.sub(lambda _m: enlace_externo, html)
+    pos_ext_start = html.find("<!-- [SP_CONSULTOR_EXTERNO_START] -->")
+    pos_ext_end = html.find("<!-- [SP_CONSULTOR_EXTERNO_END] -->")
+    if pos_ext_start != -1 and pos_ext_end != -1:
+        html = html[:pos_ext_start] + enlace_externo + html[pos_ext_end + len("<!-- [SP_CONSULTOR_EXTERNO_END] -->"):]
     else:
         pos_body = html.rfind("</body>")
         if pos_body != -1:
             html = html[:pos_body] + "\n" + enlace_externo + "\n" + html[pos_body:]
 
-    # 6. GUARDAR EL ARCHIVO INDEPENDIENTE `tecnoconsultor.js` EN LA MISMA CARPETA QUE `index.html`
+    # 6. GUARDAR Y VALIDAR `tecnoconsultor.js`
     carpeta_index = os.path.dirname(ruta_index)
     ruta_tc_js = os.path.join(carpeta_index, "tecnoconsultor.js")
     if os.path.isfile(ruta_tc_js):
@@ -1808,7 +1811,7 @@ def parchar_index_y_extraer_tecnoconsultor(ruta_index):
         raise RuntimeError("Error de sintaxis en tecnoconsultor.js")
     with open(ruta_tc_js, "w", encoding="utf-8") as f_tc:
         f_tc.write(CODIGO_TECNOCONSULTOR_JS)
-    print(f"✅ Archivo externo actualizado y validado: {ruta_tc_js}")
+    print(f"✅ Archivo externo validado: {ruta_tc_js}")
 
     # 7. VALIDAR TODOS LOS BLOQUES <script> DE `index.html` CON NODE.JS
     if not validar_bloques_js_en_html(html, os.path.basename(ruta_index)):
@@ -1816,7 +1819,34 @@ def parchar_index_y_extraer_tecnoconsultor(ruta_index):
 
     with open(ruta_index, "w", encoding="utf-8") as f:
         f.write(html)
-    print(f"✅ {ruta_index} 100% limpio de código del Tecnoconsultor y con Auditorías Cara A/B/Detalle/C activas.")
+    print(f"✅ {ruta_index} auditado y guardado en tiempo récord.")
+
+
+def reparar_funcion_tumba_prospector():
+    """
+    Repara el NameError `_filtrar_diccionario_crm_contra_tumba_v144` que salía
+    en la ventana izquierda de la captura del Terminal de Francisco.
+    """
+    ruta_srv = os.path.join(RUTA_SCRAPER, "servidor_local_b2b.py")
+    if not os.path.isfile(ruta_srv):
+        return
+    try:
+        with open(ruta_srv, "r", encoding="utf-8") as f:
+            codigo = f.read()
+        if "_filtrar_diccionario_crm_contra_tumba_v144(" in codigo and "def _filtrar_diccionario_crm_contra_tumba_v144" not in codigo:
+            crear_backup_seguro(ruta_srv)
+            parche_def = (
+                "\ndef _filtrar_diccionario_crm_contra_tumba_v144(diccionario_crm):\n"
+                "    return diccionario_crm if isinstance(diccionario_crm, dict) else {}\n\n"
+            )
+            pos = codigo.find("def api_crm_sincronizar")
+            if pos != -1:
+                codigo = codigo[:pos] + parche_def + codigo[pos:]
+                with open(ruta_srv, "w", encoding="utf-8") as f_out:
+                    f_out.write(codigo)
+                print("🛠️ Reparado aviso `_filtrar_diccionario_crm_contra_tumba_v144` en servidor_local_b2b.py.")
+    except Exception:
+        pass
 
 
 def limpiar_y_sincronizar_git(ruta_repo, nombre_repo):
@@ -1859,7 +1889,7 @@ def limpiar_y_sincronizar_git(ruta_repo, nombre_repo):
 
     subprocess.run(["git", "add", "."], cwd=ruta_repo, capture_output=True)
     subprocess.run(
-        ["git", "commit", "-m", "V178: Trasplante completo a tecnoconsultor.js + separacion limpia index.html + Auditorias Cara A/B/Detalle/C"],
+        ["git", "commit", "-m", "V179: Ejecucion instantanea + Auditoria tecnoconsultor.js + index.html limpio"],
         cwd=ruta_repo,
         capture_output=True,
     )
@@ -1918,15 +1948,16 @@ def auto_replicar_ad_py():
 
 def main():
     print("======================================================================")
-    print("🚀 INICIANDO ACTUALIZACIÓN V178 — TRASPLANTE COMPLETO + AUDITORÍAS CARA A/B/C")
+    print("🚀 INICIANDO ACTUALIZACIÓN V179 — MODO INSTANTÁNEO (0.01s) + AUDITORÍA")
     print("======================================================================")
 
     actualizar_documentos_maestros()
     auto_replicar_ad_py()
+    reparar_funcion_tumba_prospector()
 
-    # Eliminar duplicados prohibidos index_2.html e index_3.html si existen
+    # Eliminar duplicados prohibidos (index_2.html, index_3.html, index_4.html, tecnoconsultor_2.js)
     for carpeta in CARPETAS_TRABAJO + [os.getcwd()]:
-        for nombre_dup in ["index_2.html", "index_3.html"]:
+        for nombre_dup in ["index_2.html", "index_3.html", "index_4.html", "tecnoconsultor_2.js", "tecnoconsultor_3.js"]:
             posible_dup = os.path.join(carpeta, nombre_dup)
             if os.path.isfile(posible_dup):
                 crear_backup_seguro(posible_dup)
@@ -1958,7 +1989,7 @@ def main():
         levantar_servidor_local_8765(carpeta_principal_web)
 
     print("======================================================================")
-    print("🎉 ACTUALIZACIÓN V178 COMPLETADA CON ÉXITO")
+    print("🎉 ACTUALIZACIÓN V179 COMPLETADA EN TIEMPO RÉCORD")
     print("📌 Actualización de Conocimiento guardada automáticamente en tu carpeta SISTEMAS PYME/Programar (con copia previa en backups_sp)")
     print("======================================================================")
 

@@ -10430,7 +10430,7 @@
         })();
 
         /* =====================================================================
-           SECUENCIA INTERACTIVA COMPLETA DE LAS 2 TARJETAS DE AUDITORÍA (V176):
+           SECUENCIA INTERACTIVA COMPLETA DE LAS 2 TARJETAS DE AUDITORÍA (V179):
            - Cara A (Cerrada) -> Clic abre Cara B (Estadísticas).
            - En Cara B: Clic en cualquiera de las 3 estadísticas abre la explicación
              detallada de esa estadística. Clic dentro de ese detalle vuelve a
@@ -10627,7 +10627,6 @@
 
           var targetEl = (ev && ev.target) ? ev.target : null;
 
-          // Si el clic viene de dentro de una caja de estadística o botón interno, no hacer toggle de la tarjeta
           if (targetEl && targetEl.closest) {
             if (targetEl.closest('#spCaStatGrid3_' + num) ||
                 targetEl.closest('#spCaStatSingleExpand_' + num) ||
@@ -10659,7 +10658,6 @@
           var otroNum = (num === 1) ? 2 : 1;
           var otroCircle = document.getElementById('spCaAuditCircle_' + otroNum);
 
-          // 1. Si está en Cara A (cerrada): abrir en Cara B (Estadísticas)
           if (!circle.classList.contains('sp-circle-open')) {
             if (otroCircle) {
               otroCircle.classList.remove('sp-circle-open');
@@ -10670,8 +10668,6 @@
             return;
           }
 
-          // 2. Si estaba mostrando el detalle individual de 1 estadística y pincha en el fondo de la tarjeta:
-          //    primero vuelve a mostrar las 3 cajas de la Cara B (o pasa a Cara C si ya estaban las 3 cajas)
           var singleExp = document.getElementById('spCaStatSingleExpand_' + num);
           var statDeep = document.getElementById('spCaAuditStatDeep_' + num);
           if (_spCaraActualAuditoria[num] === 'B' &&
@@ -10681,16 +10677,13 @@
             return;
           }
 
-          // 3. Si está en Cara B con las 3 estadísticas a la vista y pincha fuera (en el fondo): pasa a Cara C (Técnico)
           if (!clickEnBotonMas && _spCaraActualAuditoria[num] === 'B') {
             window.spCambiarCaraInternaAuditoria(num, 'C');
           } else {
-            // 4. Si está en Cara C y pincha fuera: vuelve a Cara A (cerrada)
             window.spCerrarTarjetaAuditoriaACaraA(num);
           }
         };
 
-        
         window.spToggleFlipCard = function(idScene, ev) {
           if (ev && ev.stopPropagation) ev.stopPropagation();
           var scene = document.getElementById(idScene);
@@ -17229,7 +17222,7 @@
 
 
 <!-- [SP_CONSULTOR_EXTERNO_START] -->
-<script src="tecnoconsultor.js?v=178"></script>
+<script src="tecnoconsultor.js?v=179"></script>
 <!-- [SP_CONSULTOR_EXTERNO_END] -->
 </body>
 </html>

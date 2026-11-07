@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * ARCHIVO INDEPENDIENTE: tecnoconsultor.js (SISTEMAS PYME — V178)
+ * ARCHIVO INDEPENDIENTE: tecnoconsultor.js (SISTEMAS PYME — V179)
  * ============================================================================
  * Contiene en exclusiva toda la lógica del Consultor Tecnológico Inteligente:
  * 1. Arranque síncrono del micrófono en el milisegundo 0 del clic en la Esfera 3D
@@ -10,7 +10,8 @@
  * 3. Reconocimiento de voz del usuario (en AMARILLO en tiempo real).
  * 4. Conexión triple en paralelo con IA Gemini Flash-Lite (Puerto 8765 + Render
  *    + Vertex AI directo desde navegador) y respaldo de Base de Conocimiento.
- * 5. Detector de teléfono hablado y puente automático al Carrito de index.html.
+ * 5. Detector de teléfono hablado (diccionario completo 0-100) y puente
+ *    automático con `window._spHistorialConversacion` hacia el Carrito.
  * ============================================================================
  */
 (function() {
@@ -28,6 +29,7 @@
   var _lineaAmarilla = null;
   var _bufferUsuario = '';
   var _historial = [];
+  window._spHistorialConversacion = _historial;
   var _turnosGuardados = [];
   var _nombreVoz = 'Jorge';
   var _vozCache = null;
@@ -46,7 +48,7 @@
     '</div>' +
     '<div onclick="window.spActivarOrbeConsultorInteractivo(event)" class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-500/25 hover:bg-teal-500/40 border border-teal-300/70 text-[10.5px] sm:text-[11.5px] font-black uppercase tracking-wider text-teal-100 mb-1.5 cursor-pointer shadow-lg shadow-teal-500/20 transition">' +
       '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>' +
-      '<span>👆 PULSA LA ESFERA HOLOGRÁFICA PARA HABLAR CONMIGO SIN TOCAR NINGÚN OTÓN</span>' +
+      '<span>👆 PULSA LA ESFERA HOLOGRÁFICA PARA HABLAR CONMIGO SIN TOCAR NINGÚN OTRO BOTÓN</span>' +
     '</div>' +
     '<h3 onclick="window.spActivarOrbeConsultorInteractivo(event)" class="text-[16px] sm:text-[18.5px] font-black text-white tracking-tight mb-1 max-w-2xl leading-snug cursor-pointer">' +
       'Soy tu <span class="text-teal-300">consultor tecnológico experto</span> para resolver todas tus dudas y, <span class="text-amber-300">si lo deseas, contratar lo que necesites</span>.' +
@@ -62,12 +64,37 @@
   function convertirPalabrasANumerosEspanol(texto) {
     var t = String(texto || '').toLowerCase();
     var mapa = [
-      [/\bnoventa\b/g, '90'], [/\bochenta\b/g, '80'], [/\bsetenta\b/g, '70'],
-      [/\bsesenta\b/g, '60'], [/\bcincuenta\b/g, '50'], [/\bcuarenta\b/g, '40'],
-      [/\btreinta\b/g, '30'], [/\bveinte\b/g, '20'], [/\bdiez\b/g, '10'],
-      [/\bnueve\b/g, '9'], [/\bocho\b/g, '8'], [/\bsiete\b/g, '7'], [/\bseis\b/g, '6'],
-      [/\bcinco\b/g, '5'], [/\bcuatro\b/g, '4'], [/\btres\b/g, '3'], [/\bdos\b/g, '2'],
-      [/\buno\b/g, '1'], [/\bcero\b/g, '0']
+      [/\bnovecientos\b/g, '9'], [/\bochocientos\b/g, '8'], [/\bsetecientos\b/g, '7'],
+      [/\bseiscientos\b/g, '6'], [/\bquinientos\b/g, '5'], [/\bcuatrocientos\b/g, '4'],
+      [/\btrescientos\b/g, '3'], [/\bdoscientos\b/g, '2'], [/\bciento\b/g, '1'], [/\bcien\b/g, '100'],
+      [/\bnoventa\s+y\s+nueve\b/g, '99'], [/\bnoventa\s+y\s+ocho\b/g, '98'], [/\bnoventa\s+y\s+siete\b/g, '97'],
+      [/\bnoventa\s+y\s+seis\b/g, '96'], [/\bnoventa\s+y\s+cinco\b/g, '95'], [/\bnoventa\s+y\s+cuatro\b/g, '94'],
+      [/\bnoventa\s+y\s+tres\b/g, '93'], [/\bnoventa\s+y\s+dos\b/g, '92'], [/\bnoventa\s+y\s+uno\b/g, '91'], [/\bnoventa\b/g, '90'],
+      [/\bochenta\s+y\s+nueve\b/g, '89'], [/\bochenta\s+y\s+ocho\b/g, '88'], [/\bochenta\s+y\s+siete\b/g, '87'],
+      [/\bochenta\s+y\s+seis\b/g, '86'], [/\bochenta\s+y\s+cinco\b/g, '85'], [/\bochenta\s+y\s+cuatro\b/g, '84'],
+      [/\bochenta\s+y\s+tres\b/g, '83'], [/\bochenta\s+y\s+dos\b/g, '82'], [/\bochenta\s+y\s+uno\b/g, '81'], [/\bochenta\b/g, '80'],
+      [/\bsetenta\s+y\s+nueve\b/g, '79'], [/\bsetenta\s+y\s+ocho\b/g, '78'], [/\bsetenta\s+y\s+siete\b/g, '77'],
+      [/\bsetenta\s+y\s+seis\b/g, '76'], [/\bsetenta\s+y\s+cinco\b/g, '75'], [/\bsetenta\s+y\s+cuatro\b/g, '74'],
+      [/\bsetenta\s+y\s+tres\b/g, '73'], [/\bsetenta\s+y\s+dos\b/g, '72'], [/\bsetenta\s+y\s+uno\b/g, '71'], [/\bsetenta\b/g, '70'],
+      [/\bsesenta\s+y\s+nueve\b/g, '69'], [/\bsesenta\s+y\s+ocho\b/g, '68'], [/\bsesenta\s+y\s+siete\b/g, '67'],
+      [/\bsesenta\s+y\s+seis\b/g, '66'], [/\bsesenta\s+y\s+cinco\b/g, '65'], [/\bsesenta\s+y\s+cuatro\b/g, '64'],
+      [/\bsesenta\s+y\s+tres\b/g, '63'], [/\bsesenta\s+y\s+dos\b/g, '62'], [/\bsesenta\s+y\s+uno\b/g, '61'], [/\bsesenta\b/g, '60'],
+      [/\bcincuenta\s+y\s+nueve\b/g, '59'], [/\bcincuenta\s+y\s+ocho\b/g, '58'], [/\bcincuenta\s+y\s+siete\b/g, '57'],
+      [/\bcincuenta\s+y\s+seis\b/g, '56'], [/\bcincuenta\s+y\s+cinco\b/g, '55'], [/\bcincuenta\s+y\s+cuatro\b/g, '54'],
+      [/\bcincuenta\s+y\s+tres\b/g, '53'], [/\bcincuenta\s+y\s+dos\b/g, '52'], [/\bcincuenta\s+y\s+uno\b/g, '51'], [/\bcincuenta\b/g, '50'],
+      [/\bcuarenta\s+y\s+nueve\b/g, '49'], [/\bcuarenta\s+y\s+ocho\b/g, '48'], [/\bcuarenta\s+y\s+siete\b/g, '47'],
+      [/\bcuarenta\s+y\s+seis\b/g, '46'], [/\bcuarenta\s+y\s+cinco\b/g, '45'], [/\bcuarenta\s+y\s+cuatro\b/g, '44'],
+      [/\bcuarenta\s+y\s+tres\b/g, '43'], [/\bcuarenta\s+y\s+dos\b/g, '42'], [/\bcuarenta\s+y\s+uno\b/g, '41'], [/\bcuarenta\b/g, '40'],
+      [/\btreinta\s+y\s+nueve\b/g, '39'], [/\btreinta\s+y\s+ocho\b/g, '38'], [/\btreinta\s+y\s+siete\b/g, '37'],
+      [/\btreinta\s+y\s+seis\b/g, '36'], [/\btreinta\s+y\s+cinco\b/g, '35'], [/\btreinta\s+y\s+cuatro\b/g, '34'],
+      [/\btreinta\s+y\s+tres\b/g, '33'], [/\btreinta\s+y\s+dos\b/g, '32'], [/\btreinta\s+y\s+uno\b/g, '31'], [/\btreinta\b/g, '30'],
+      [/\bveintinueve\b/g, '29'], [/\bveintiocho\b/g, '28'], [/\bveintisiete\b/g, '27'], [/\bveintiseis\b/g, '26'], [/\bveintiséis\b/g, '26'],
+      [/\bveinticinco\b/g, '25'], [/\bveinticuatro\b/g, '24'], [/\bveintitres\b/g, '23'], [/\bveintitrés\b/g, '23'],
+      [/\bveintidos\b/g, '22'], [/\bveintidós\b/g, '22'], [/\bveintiuno\b/g, '21'], [/\bveintiun\b/g, '21'], [/\bveinte\b/g, '20'],
+      [/\bdiecinueve\b/g, '19'], [/\bdieciocho\b/g, '18'], [/\bdiecisiete\b/g, '17'], [/\bdieciseis\b/g, '16'], [/\bdieciséis\b/g, '16'],
+      [/\bquince\b/g, '15'], [/\bcatorce\b/g, '14'], [/\btrece\b/g, '13'], [/\bdoce\b/g, '12'], [/\bonce\b/g, '11'], [/\bdiez\b/g, '10'],
+      [/\bnueve\b/g, '9'], [/\bocho\b/g, '8'], [/\bsiete\b/g, '7'], [/\bseis\b/g, '6'], [/\bcinco\b/g, '5'],
+      [/\bcuatro\b/g, '4'], [/\btres\b/g, '3'], [/\bdos\b/g, '2'], [/\buno\b/g, '1'], [/\bcero\b/g, '0']
     ];
     for (var i = 0; i < mapa.length; i++) {
       t = t.replace(mapa[i][0], mapa[i][1]);
@@ -312,11 +339,6 @@
     return 'En Sistemas Pyme te ayudamos a multiplicar tus reseñas de 5 estrellas con IA, a posicionar tu web en Google y ChatGPT y a automatizar tu WhatsApp en 24 a 48 horas. Dime qué área de tu negocio quieres mejorar y lo vemos al detalle.';
   };
 
-  /* =========================================================================
-     INSTANCIA ÚNICA CONTINUA DEL MICRÓFONO:
-     Se abre en el milisegundo 0 del clic del usuario para sellar el permiso
-     en Chrome y usa `_ignorarMicroMientrasHabla` mientras el consultor habla.
-     ========================================================================= */
   function obtenerReconocedorContinuo() {
     if (_rec) return _rec;
     var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -350,7 +372,6 @@
     };
 
     rec.onresult = function(event) {
-      // Mientras el consultor habla o en los 450ms posteriores, ignoramos el sonido del altavoz
       if (_ignorarMicroMientrasHabla || _estado === 'speaking' || _estado === 'thinking' || (performance.now() - _tsFinHabla < 450)) {
         _bufferUsuario = '';
         return;
@@ -716,6 +737,7 @@
     }
 
     _historial.push('Usuario: ' + limpia);
+    window._spHistorialConversacion = _historial;
     if (typeof window.spExtraerYPreconfigurarCarritoDesdeCharla === 'function') {
       try { window.spExtraerYPreconfigurarCarritoDesdeCharla(limpia, _historial); } catch (e) {}
     }
@@ -727,6 +749,7 @@
 
     obtenerRespuestaInteligente(limpia).then(function(respuesta) {
       _historial.push('Consultor: ' + respuesta);
+      window._spHistorialConversacion = _historial;
       var ahora = new Date();
       _turnosGuardados.push({
         hora: ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
@@ -748,8 +771,6 @@
     _activo = true;
     _pausadoPorSalir = false;
 
-    // JOYA 1 TRASPLANTADA: Abrimos el micrófono SÍNCRONAMENTE dentro del clic del usuario
-    // para que Chrome selle el permiso en el milisegundo 0 y nunca lo bloquee al acabar el saludo.
     _ignorarMicroMientrasHabla = true;
     var rec = obtenerReconocedorContinuo();
     if (rec && !_recEscuchando) {
