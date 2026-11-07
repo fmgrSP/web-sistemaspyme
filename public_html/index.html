@@ -16666,7 +16666,7 @@
         return document.getElementById('spTeleprompterRollTrack');
       }
 
-      window.spRepetirUltimaRespuestaConsultor = function(ev) {
+            window.spRepetirUltimaRespuestaConsultor = function(ev) {
         if (ev && ev.stopPropagation) ev.stopPropagation();
         if (_spRegistroDescargaCharla.length > 0) {
           var ult = _spRegistroDescargaCharla[_spRegistroDescargaCharla.length - 1];
@@ -16676,8 +16676,80 @@
         }
       };
 
+      var _spPausadoPorCambioDeSeccion = false;
+
+      function asegurarStreamMicroUnico() {
+        if (_spMicStream && _spMicStream.active) {
+          return Promise.resolve(_spMicStream);
+        }
+        try {
+          if (navigator.permissions && navigator.permissions.query) {
+            return navigator.permissions.query({ name: 'microphone' }).then(function(status) {
+              if (status.state === 'granted' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                return navigator.mediaDevices.getUserMedia({
+                  audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+                }).then(function(st) {
+                  _spMicStream = st;
+                  return st;
+                }).catch(function() { return null; });
+              }
+              return null;
+            }).catch(function() { return null; });
+          }
+        } catch (e) {}
+        return Promise.resolve(null);
+      }
+
+      window.spPausarConsultorPorNavegacion = function() {
+        if (!_spOrbeDespierto) return;
+        _spPausadoPorCambioDeSeccion = true;
+        _spHablandoSintesis = false;
+        _spEscuchandoVoz = false;
+        _spIgnorarMicroMientrasHabla = true;
+        _spOrbEnergyTarget = 0;
+        limpiarTimersTeleprompter();
+        if (_spSilenceTimer) {
+          clearTimeout(_spSilenceTimer);
+          _spSilenceTimer = null;
+        }
+        if ('speechSynthesis' in window) {
+          try { window.speechSynthesis.cancel(); } catch (e) {}
+        }
+        if (_spRecogInstance) {
+          try {
+            _spRecogInstance.onend = null;
+            _spRecogInstance.onerror = null;
+            _spRecogInstance.onresult = null;
+            _spRecogInstance.stop();
+          } catch (e) {}
+          _spRecogInstance = null;
+          _spMicroSesionActiva = false;
+        }
+        var btnVoice = document.getElementById('spBtnVoiceTecnosala');
+        var txtVoice = document.getElementById('spVoiceBtnText');
+        var icoVoice = document.getElementById('spVoiceMicIcon');
+        if (btnVoice) btnVoice.classList.remove('sp-voice-listening');
+        if (txtVoice) txtVoice.textContent = 'Hablar';
+        if (icoVoice) icoVoice.textContent = '🎙️';
+        actualizarAparienciaOrbeYEstado('idle');
+      };
+
+      window.spReanudarConsultorAlVolverATecnosala = function() {
+        if (!_spOrbeDespierto) return;
+        var vTec = document.getElementById('vista-tecnosala');
+        if (!vTec || vTec.classList.contains('hidden') || document.hidden) return;
+        _spPausadoPorCambioDeSeccion = false;
+        _spAutoEscuchaContinua = true;
+        _spHablandoSintesis = false;
+        _spIgnorarMicroMientrasHabla = false;
+        iniciarVigilanteMicrofonoContinuo();
+        window.spActivarModoEscuchaPersistente(false);
+      };
+
       window.spPararConsultorTotalmente = function(ev) {
         if (ev && ev.stopPropagation) ev.stopPropagation();
+        _spOrbeDespierto = false;
+        _spPausadoPorCambioDeSeccion = false;
         _spAutoEscuchaContinua = false;
         _spHablandoSintesis = false;
         _spEscuchandoVoz = false;
@@ -16705,28 +16777,218 @@
           _spRecogInstance = null;
           _spMicroSesionActiva = false;
         }
+        var btnVoice = document.getElementById('spBtnVoiceTecnosala');
+        var txtVoice = document.getElementById('spVoiceBtnText');
+        var icoVoice = document.getElementById('spVoiceMicIcon');
+        if (btnVoice) btnVoice.classList.remove('sp-voice-listening');
+        if (txtVoice) txtVoice.textContent = 'Hablar';
+        if (icoVoice) icoVoice.textContent = '🎙️';
+        actualizarAparienciaOrbeYEstado('idle');
+      };
 
-        setTimeout(function() {
-          _spRearmandoOido = false;
-          if (!_spAutoEscuchaContinua || _spHablandoSintesis) return;
+      function iniciarVigilanteMicrofonoContinuo() {
+        if (_spWatchdogMicroInterval) clearInterval(_spWatchdogMicroInterval);
+        _spWatchdogMicroInterval = setInterval(function() {
+          var vTec = document.getElementById('vista-tecnosala');
+          var enTecnosala = vTec && !vTec.classList.contains('hidden') && !document.hidden;
+          if (!enTecnosala) {
+            if (_spHablandoSintesis || _spEscuchandoVoz || _spMicroSesionActiva) {
+              window.spPausarConsultorPorNavegacion();
+            }
+            return;
+          }
+          if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spHablandoSintesis && !_spMicroSesionActiva && !_spRearmandoOido) {
+            window.spActivarModoEscuchaPersistente(false);
+          }
+        }, 1200);
+      }
+
+      window.spIniciarEscuchaDirectaConsultor = function() {
+        _spOrbeDespierto = true;
+        _spPausadoPorCambioDeSeccion = false;
+        _spAutoEscuchaContinua = true;
+        _spHablandoSintesis = false;
+        _spIgnorarMicroMientrasHabla = false;
+        if ('speechSynthesis' in window) {
+          try { window.speechSynthesis.cancel(); } catch (e) {}
+        }
+        asegurarCabinaTeleprompter2027();
+        iniciarVigilanteMicrofonoContinuo();
+        window.spActivarModoEscuchaPersistente(true);
+      };
+
+      window.spActivarModoEscuchaPersistente = function(forzarReinicio) {
+        var vTec = document.getElementById('vista-tecnosala');
+        if (!vTec || vTec.classList.contains('hidden') || document.hidden) return;
+        if (!_spAutoEscuchaContinua || _spHablandoSintesis) return;
+
+        var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRec) {
+          actualizarAparienciaOrbeYEstado('idle');
+          var inpFallback = document.getElementById('spTecnosalaInput');
+          if (inpFallback) inpFallback.focus();
+          return;
+        }
+
+        if (_spMicroSesionActiva && _spRecogInstance && !forzarReinicio) {
+          _spEscuchandoVoz = true;
+          _spIgnorarMicroMientrasHabla = false;
+          actualizarAparienciaOrbeYEstado('listening');
+          return;
+        }
+
+        if (_spRearmandoOido) return;
+        _spRearmandoOido = true;
+
+        if (_spRecogInstance) {
           try {
-            var rec = new SpeechRec();
-            _spRecogInstance = rec;
-            rec.lang = 'es-ES';
-            rec.continuous = true;
-            rec.interimResults = true;
-            var acumuladoTurno = '';
-            var lineaDictadoVivo = null;
+            _spRecogInstance.onend = null;
+            _spRecogInstance.onerror = null;
+            _spRecogInstance.onresult = null;
+            _spRecogInstance.stop();
+          } catch (e) {}
+          _spRecogInstance = null;
+          _spMicroSesionActiva = false;
+        }
 
-            function enviarTurnoDetectado() {
-              if (_spSilenceTimer) { clearTimeout(_spSilenceTimer); _spSilenceTimer = null; }
-              var preguntaLista = acumuladoTurno.trim();
-              acumuladoTurno = '';
-              if (!preguntaLista || preguntaLista.length < 2 || _spIgnorarMicroMientrasHabla || _spHablandoSintesis) return;
-              _spIgnorarMicroMientrasHabla = true;
-              _spEscuchandoVoz = false;
-              if (lineaDictadoVivo) { try { lineaDictadoVivo.remove(); } catch (e) {} lineaDictadoVivo = null; }
-              if (_spRecogInstance) {
+        asegurarStreamMicroUnico().then(function() {
+          setTimeout(function() {
+            _spRearmandoOido = false;
+            var vTecNow = document.getElementById('vista-tecnosala');
+            if (!_spAutoEscuchaContinua || _spHablandoSintesis || !vTecNow || vTecNow.classList.contains('hidden') || document.hidden) return;
+
+            try {
+              var rec = new SpeechRec();
+              _spRecogInstance = rec;
+              rec.lang = 'es-ES';
+              rec.continuous = true;
+              rec.interimResults = true;
+              var acumuladoTurno = '';
+              var lineaDictadoVivo = null;
+
+              function enviarTurnoDetectado() {
+                if (_spSilenceTimer) { clearTimeout(_spSilenceTimer); _spSilenceTimer = null; }
+                var preguntaLista = acumuladoTurno.trim();
+                acumuladoTurno = '';
+                if (!preguntaLista || preguntaLista.length < 2 || _spIgnorarMicroMientrasHabla || _spHablandoSintesis) return;
+                _spIgnorarMicroMientrasHabla = true;
+                _spEscuchandoVoz = false;
+                if (lineaDictadoVivo) {
+                  try { lineaDictadoVivo.remove(); } catch (e) {}
+                  lineaDictadoVivo = null;
+                }
+                if (_spRecogInstance) {
+                  try {
+                    _spRecogInstance.onend = null;
+                    _spRecogInstance.onerror = null;
+                    _spRecogInstance.onresult = null;
+                    _spRecogInstance.stop();
+                  } catch (e) {}
+                  _spRecogInstance = null;
+                  _spMicroSesionActiva = false;
+                }
+                var btnVoice = document.getElementById('spBtnVoiceTecnosala');
+                var txtVoice = document.getElementById('spVoiceBtnText');
+                var icoVoice = document.getElementById('spVoiceMicIcon');
+                if (btnVoice) btnVoice.classList.remove('sp-voice-listening');
+                if (txtVoice) txtVoice.textContent = 'Hablar';
+                if (icoVoice) icoVoice.textContent = '🎙️';
+                window.spProcesarConsultaEnTeleprompterDirecto(preguntaLista);
+              }
+
+              rec.onstart = function() {
+                _spMicroSesionActiva = true;
+                _spEscuchandoVoz = true;
+                _spIgnorarMicroMientrasHabla = false;
+                var btnVoice = document.getElementById('spBtnVoiceTecnosala');
+                var txtVoice = document.getElementById('spVoiceBtnText');
+                var icoVoice = document.getElementById('spVoiceMicIcon');
+                var inp = document.getElementById('spTecnosalaInput');
+                if (btnVoice) btnVoice.classList.add('sp-voice-listening');
+                if (txtVoice) txtVoice.textContent = 'Escuchando...';
+                if (icoVoice) icoVoice.textContent = '🔴';
+                if (inp) inp.placeholder = '🟢 Manos libres activo: habla directamente con naturalidad...';
+                actualizarAparienciaOrbeYEstado('listening');
+              };
+
+              rec.onresult = function(event) {
+                if (_spIgnorarMicroMientrasHabla || _spHablandoSintesis) return;
+                var parcial = '';
+                var finalNuevo = '';
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                  var tr = event.results[i][0].transcript;
+                  if (event.results[i].isFinal) finalNuevo += tr + ' ';
+                  else parcial += tr;
+                }
+                if (finalNuevo) acumuladoTurno = (acumuladoTurno + ' ' + finalNuevo).trim();
+                var textoEnCurso = (acumuladoTurno + ' ' + parcial).trim();
+                if (!textoEnCurso) return;
+
+                _spUltimoPulsoVozUsuarioTs = performance.now();
+                _spNivelVozUsuarioVivo = Math.min(0.95, 0.35 + (textoEnCurso.length % 7) * 0.08);
+
+                var inp = document.getElementById('spTecnosalaInput');
+                if (inp) inp.value = textoEnCurso;
+
+                var track = asegurarCabinaTeleprompter2027();
+                if (track) {
+                  if (!lineaDictadoVivo || !lineaDictadoVivo.parentNode) {
+                    lineaDictadoVivo = document.createElement('div');
+                    lineaDictadoVivo.className = 'sp-led-line-item sp-led-line-user';
+                    track.appendChild(lineaDictadoVivo);
+                  }
+                  lineaDictadoVivo.textContent = '🎙️ TÚ: «' + textoEnCurso + '...»';
+                  reclasificarJerarquiaLineas(track);
+                }
+
+                if (_spSilenceTimer) clearTimeout(_spSilenceTimer);
+                acumuladoTurno = textoEnCurso;
+                _spSilenceTimer = setTimeout(enviarTurnoDetectado, finalNuevo ? 680 : 1250);
+              };
+
+              rec.onerror = function(ev) {
+                _spMicroSesionActiva = false;
+                if (ev && (ev.error === 'not-allowed' || ev.error === 'service-not-allowed')) {
+                  _spAutoEscuchaContinua = false;
+                  _spEscuchandoVoz = false;
+                  actualizarAparienciaOrbeYEstado('idle');
+                }
+              };
+
+              rec.onend = function() {
+                _spMicroSesionActiva = false;
+                if (acumuladoTurno && acumuladoTurno.trim().length >= 2 && !_spHablandoSintesis && !_spIgnorarMicroMientrasHabla) {
+                  enviarTurnoDetectado();
+                  return;
+                }
+                var vTecEnd = document.getElementById('vista-tecnosala');
+                var sigueEnTec = vTecEnd && !vTecEnd.classList.contains('hidden') && !document.hidden;
+                if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spHablandoSintesis && sigueEnTec) {
+                  setTimeout(function() {
+                    if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spHablandoSintesis && !_spMicroSesionActiva) {
+                      window.spActivarModoEscuchaPersistente(false);
+                    }
+                  }, 160);
+                }
+              };
+
+              rec.start();
+            } catch (err) {
+              _spMicroSesionActiva = false;
+            }
+          }, 60);
+        });
+      };
+
+      window.spReproducirEnTeleprompter2027 = function(textoCompleto, alTerminarCallback, etiquetaUsuarioPrevio) {
+        limpiarTimersTeleprompter();
+        _spIgnorarMicroMientrasHabla = true;
+        _spEscuchandoVoz = false;
+        if (_spSilenceTimer) {
+          clearTimeout(_spSilenceTimer);
+          _spSilenceTimer = null;
+        }
+        if (_spRecogInstance) {
           try {
             _spRecogInstance.onend = null;
             _spRecogInstance.onerror = null;
@@ -16900,11 +17162,16 @@
         }
       };
 
-      // Doble pasarela IA: 1º Servidor Local 8765 -> 2º Llamada directa desde el navegador a Vertex AI con los modelos activos -> 3º Base Local
       var _spColaModelosFlashLiteCache = null;
       function _descubrirModelosFlashLiteGoogle(k) {
         if (_spColaModelosFlashLiteCache) return Promise.resolve(_spColaModelosFlashLiteCache);
-        var porDefecto = ['gemini-3.8-flash-lite', 'gemini-3.8-flash-lite-preview', 'gemini-flash-lite-latest', 'gemini-3.0-flash-lite', 'gemini-2.5-flash-lite', 'gemini-2.0-flash-lite-001'];
+        var porDefecto = [
+          'gemini-2.5-flash-lite',
+          'gemini-2.5-flash-lite-preview-06-17',
+          'gemini-2.0-flash-lite',
+          'gemini-2.0-flash-lite-001',
+          'gemini-2.5-flash'
+        ];
         return fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=100&key=' + encodeURIComponent(k))
           .then(function(r) { return r && r.ok ? r.json() : null; })
           .then(function(d) {
@@ -16918,9 +17185,8 @@
               var id = rawName.indexOf('models/') === 0 ? rawName.substring(7) : rawName;
               var low = id.toLowerCase();
               if (low.indexOf('gemini-') !== 0 || low.indexOf('flash-lite') === -1) continue;
-              var restoVer = low.substring(7);
-              var verNum = parseFloat(restoVer);
-              var ver = isNaN(verNum) ? 99.0 : verNum;
+              var mVer = low.match(/^gemini-(\d+(?:\.\d+)?)/);
+              var ver = mVer ? parseFloat(mVer[1]) : 1.0;
               lite.push({ id: id, ver: ver });
             }
             lite.sort(function(a, b) { return b.ver - a.ver; });
@@ -16944,31 +17210,36 @@
           function intentar(idx) {
             if (idx >= modelosProbar.length) return Promise.resolve(null);
             var m = modelosProbar[idx];
-            var url = 'https://aiplatform.googleapis.com/v1beta1/publishers/google/models/' + m + ':generateContent?key=' + encodeURIComponent(k);
-            return fetch(url, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                contents: [{ role: 'user', parts: [{ text: promptCompleto }] }],
-                generationConfig: { temperature: 0.65, topP: 0.92, maxOutputTokens: 350 }
+            var urls = [
+              'https://generativelanguage.googleapis.com/v1beta/models/' + m + ':generateContent?key=' + encodeURIComponent(k),
+              'https://aiplatform.googleapis.com/v1beta1/publishers/google/models/' + m + ':generateContent?key=' + encodeURIComponent(k)
+            ];
+            function probarEndpoint(uIdx) {
+              if (uIdx >= urls.length) return intentar(idx + 1);
+              return fetch(urls[uIdx], {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  contents: [{ role: 'user', parts: [{ text: promptCompleto }] }],
+                  generationConfig: { temperature: 0.65, topP: 0.92, maxOutputTokens: 320 }
+                })
               })
-            })
-            .then(function(r) { return r && r.ok ? r.json() : null; })
-            .then(function(d) {
-              var parts = d && d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts;
-              if (parts && parts.length) {
-                var txt = parts.map(function(p) { return p.thought ? '' : (p.text || ''); }).join(' ').trim();
-                if (txt.length > 10) return { texto: txt, modelo: m };
-              }
-              return intentar(idx + 1);
-            })
-            .catch(function() { return intentar(idx + 1); });
+              .then(function(r) { return r && r.ok ? r.json() : null; })
+              .then(function(d) {
+                var parts = d && d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts;
+                if (parts && parts.length) {
+                  var txt = parts.map(function(p) { return p.thought ? '' : (p.text || ''); }).join(' ').trim();
+                  if (txt.length > 10) return { texto: txt, modelo: m };
+                }
+                return probarEndpoint(uIdx + 1);
+              })
+              .catch(function() { return probarEndpoint(uIdx + 1); });
+            }
+            return probarEndpoint(0);
           }
           return intentar(0);
         });
       }
-
-
 
       function consultarCerebroGenerativoIA(preguntaUsuario) {
         var respuestaRespaldoLocal = window.spObtenerRespuestaOmniscienteCompleta(preguntaUsuario);
@@ -16977,8 +17248,8 @@
         var quiereContratarExplicito = /(quiero contratar|quiero comprar|quiero activar|contratar|comprarlo|activarlo|darme de alta|empezar ya|estoy convencido|agendar cita|pedir cita|mi telefono es|mi numero es|llamame)/.test(qNorm) || !!extraerTelefonoEspanolDeTexto(preguntaUsuario);
 
         var instruccionModo = quiereContratarExplicito
-          ? 'INSTRUCCIÓN DE CIERRE COMERCIAL: El usuario acaba de expresar interés directo en contratar o dar sus datos. Responde en 2 a 3 frases cercanas: si su negocio sí recoge teléfonos de clientes (citas, encargos o tienda online) y eligió un servicio suelto, coméntale que por +40 €/mes más el Pack Escudo Dúo suma el Cortafuegos de WhatsApp y rebaja las auditorías a 250 € (pero si es una tienda de mostrador puro sin datos de clientes, recomiéndale solo el Servicio 1 de Reseñas IA a 59 €/mes + el Atril NFC de 39 € sin insistir en la encuesta); y pídele su nombre, el NOMBRE EXACTO DE SU NEGOCIO Y CIUDAD (imprescindible para llevarle preparada su auditoría a la cita), su teléfono móvil y qué día/hora prefiere (de lunes a viernes por la mañana o en el horario especial de sábados y domingos mañana y tarde).'
-          : 'INSTRUCCIÓN DE CONSULTOR PURO Y VERACIDAD TÉCNICA (PROHIBIDO VENDER O INVENTAR): El usuario está haciendo una consulta informativa o planteando una duda lógica sobre su negocio. Responde como un consultor experto, honesto y cercano en 2 a 4 frases completas (45 a 80 palabras). RECUERDA SIEMPRE: 1) El Atril NFC/QR abre SIEMPRE directamente Google Maps en 1 segundo (JAMÁS abre una encuesta ni pide datos). 2) La Encuesta Cortafuegos (Servicio 2) va por WhatsApp y SOLO se usa en negocios que recogen el nombre y móvil del cliente (por citas en Google Calendar, software de gestión, formulario rápido de encargos en recepción o pedidos de tienda online), NUNCA para quien compra un artículo suelto en mostrador de forma anónima. 3) En tiendas de menaje, ferreterías o comercios de mostrador sin ficha de cliente, recomienda el Atril NFC (39 €) + el Servicio 1 (Gestor de Reseñas IA, 59 €/mes, que automatiza las respuestas con SEO local) + Super-Auditoría SEO/GEO, y menciona que la encuesta solo aplicaría si hacen envíos online o encargos especiales. TIENES PROHIBIDO pedirle su nombre, su teléfono o preguntarle si quiere contratar.';
+          ? 'INSTRUCCIÓN DE CIERRE COMERCIAL: El usuario acaba de expresar interés directo en contratar o dar sus datos. Responde en 2 a 3 frases cercanas: si su negocio sí recoge teléfonos de clientes (citas, encargos o tienda online) y eligió un servicio suelto, coméntale que por +40 €/mes más el Pack Escudo Dúo suma el Cortafuegos de WhatsApp y rebaja las auditorías a 195 € (pero si es una tienda de mostrador puro sin datos de clientes, recomiéndale solo el Servicio 1 de Reseñas IA a 59 €/mes + el Atril NFC de 39 € sin insistir en la encuesta); y pídele su nombre, el NOMBRE EXACTO DE SU NEGOCIO Y CIUDAD, su teléfono móvil y qué día/hora prefiere.'
+          : 'INSTRUCCIÓN DE CONSULTOR PURO Y VERACIDAD TÉCNICA: Responde como un consultor experto, honesto y cercano en 2 a 4 frases completas (45 a 80 palabras). Recuerda: 1) El Atril NFC/QR abre directamente Google Maps en 1 segundo. 2) La Encuesta Cortafuegos (Servicio 2) va por WhatsApp y solo se usa en negocios que recogen nombre y móvil del cliente. 3) En comercios de mostrador sin ficha de cliente, recomienda el Atril NFC (39 €) + el Servicio 1 (Gestor de Reseñas IA, 59 €/mes) + Super-Auditoría SEO/GEO.';
 
         var promptCompleto =
           (window.SP_CONTEXTO_MAESTRO_IA_RESUMEN || '') + '\n\n' +
@@ -16986,40 +17257,33 @@
           'NUEVA PREGUNTA O COMENTARIO DEL USUARIO: "' + preguntaUsuario + '"\n\n' +
           instruccionModo;
 
-        var ctrlLocal = (typeof AbortController !== 'undefined') ? new AbortController() : null;
-        var timerLocal = ctrlLocal ? setTimeout(function() { try { ctrlLocal.abort(); } catch (e) {} }, 4500) : null;
-
-        return (window.location.protocol === 'file:' ? Promise.reject('file_mode') : fetch('/api/consultor-ia', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pregunta: preguntaUsuario, apoyo: respuestaRespaldoLocal, prompt: promptCompleto }),
-          signal: ctrlLocal ? ctrlLocal.signal : undefined
-        }))
-        .then(function(r) {
-          if (timerLocal) clearTimeout(timerLocal);
-          return r && r.ok ? r.json() : null;
-        })
-        .then(function(d) {
-          if (d && d.ok && d.respuesta && d.respuesta.trim().length > 10) {
-            pintarPuntitoSecretoEstadoApi('online', '🟢 Conectado en vivo a ' + (d.modelo || 'Gemini Flash'));
-            return d.respuesta.replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
+        return llamarVertexDirectoNavegador(promptCompleto).then(function(resDir) {
+          if (resDir && resDir.texto) {
+            pintarPuntitoSecretoEstadoApi('online', '🟢 Conectado en vivo a ' + resDir.modelo);
+            return resDir.texto.replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
           }
-          return llamarVertexDirectoNavegador(promptCompleto).then(function(resDir) {
-            if (resDir && resDir.texto) {
-              pintarPuntitoSecretoEstadoApi('online', '🟢 Conectado en vivo a ' + resDir.modelo);
-              return resDir.texto.replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
+          var ctrlLocal = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+          var timerLocal = ctrlLocal ? setTimeout(function() { try { ctrlLocal.abort(); } catch (e) {} }, 4000) : null;
+          return (window.location.protocol === 'file:' ? Promise.reject('file_mode') : fetch('https://servicio-resenas.onrender.com/api/consultor-ia', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pregunta: preguntaUsuario, apoyo: respuestaRespaldoLocal, prompt: promptCompleto }),
+            signal: ctrlLocal ? ctrlLocal.signal : undefined
+          }))
+          .then(function(r) {
+            if (timerLocal) clearTimeout(timerLocal);
+            return r && r.ok ? r.json() : null;
+          })
+          .then(function(d) {
+            if (d && d.ok && d.respuesta && d.respuesta.trim().length > 10) {
+              pintarPuntitoSecretoEstadoApi('online', '🟢 Conectado en vivo a ' + (d.modelo || 'Gemini Flash-Lite'));
+              return d.respuesta.replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
             }
             pintarPuntitoSecretoEstadoApi('local');
             return respuestaRespaldoLocal;
-          });
-        })
-        .catch(function() {
-          if (timerLocal) clearTimeout(timerLocal);
-          return llamarVertexDirectoNavegador(promptCompleto).then(function(resDir) {
-            if (resDir && resDir.texto) {
-              pintarPuntitoSecretoEstadoApi('online', '🟢 Conectado en vivo a ' + resDir.modelo);
-              return resDir.texto.replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
-            }
+          })
+          .catch(function() {
+            if (timerLocal) clearTimeout(timerLocal);
             pintarPuntitoSecretoEstadoApi('local');
             return respuestaRespaldoLocal;
           });
@@ -17034,10 +17298,8 @@
         if (inp) inp.value = '';
 
         _spHistorialConversacion.push('Usuario: ' + limpia);
-        // Preconfigurar en tiempo real el Carrito a la Carta leyendo SOLO lo que el usuario ha dicho
         window.spExtraerYPreconfigurarCarritoDesdeCharla(limpia, _spHistorialConversacion);
 
-        // Si el usuario acaba de dar su número de teléfono (con dígitos o con palabras), dispara el pedido real automáticamente
         var tlfDetectado = extraerTelefonoEspanolDeTexto(limpia);
         if (tlfDetectado && typeof window.spRegistrarLeadAutomaticoDesdeVoz === 'function') {
           window.spRegistrarLeadAutomaticoDesdeVoz(tlfDetectado, limpia, _spHistorialConversacion.join(' | '));
@@ -17056,7 +17318,7 @@
         });
       };
 
-      window.spToggleVozConsultorMute = function(ev) {
+window.spToggleVozConsultorMute = function(ev) {
         if (ev) ev.stopPropagation();
         _spVozConsultorActiva = !_spVozConsultorActiva;
         if (!_spVozConsultorActiva && 'speechSynthesis' in window) {
@@ -17337,18 +17599,23 @@
       setTimeout(conectarFuncionesRealesTecnosalaV159, 150);
       setTimeout(conectarFuncionesRealesTecnosalaV159, 600);
 
-      document.addEventListener('click', function(e) {
+                  document.addEventListener('click', function(e) {
         var tTec = e.target && e.target.closest ? e.target.closest('#navBtn_tecnosala, #mobTab_tecnosala') : null;
         if (tTec) {
-          setTimeout(conectarFuncionesRealesTecnosalaV159, 50);
+          setTimeout(function() {
+            conectarFuncionesRealesTecnosalaV159();
+            if (typeof window.spReanudarConsultorAlVolverATecnosala === 'function') {
+              window.spReanudarConsultorAlVolverATecnosala();
+            }
+          }, 80);
           return;
         }
         var btnOtraVista = e.target && e.target.closest ? e.target.closest('[onclick*="cambiarVista"]') : null;
         if (btnOtraVista) {
           var attrOnclick = btnOtraVista.getAttribute('onclick') || '';
           if (attrOnclick.indexOf("'tecnosala'") === -1 && attrOnclick.indexOf('"tecnosala"') === -1) {
-            if (_spHablandoSintesis || _spEscuchandoVoz || _spMicroSesionActiva || _spMicStream) {
-              window.spPararConsultorTotalmente();
+            if (typeof window.spPausarConsultorPorNavegacion === 'function') {
+              window.spPausarConsultorPorNavegacion();
             }
           }
         }
@@ -17359,14 +17626,21 @@
           var origCV = window.cambiarVista;
           var nuevaCV = function(vistaDestino) {
             if (vistaDestino !== 'tecnosala') {
-              if (_spHablandoSintesis || _spEscuchandoVoz || _spMicroSesionActiva || _spMicStream) {
-                window.spPararConsultorTotalmente();
+              if (typeof window.spPausarConsultorPorNavegacion === 'function') {
+                window.spPausarConsultorPorNavegacion();
               }
-            } else {
-              setTimeout(conectarFuncionesRealesTecnosalaV159, 50);
+            }
+            var res = origCV.apply(this, arguments);
+            if (vistaDestino === 'tecnosala') {
+              setTimeout(function() {
+                conectarFuncionesRealesTecnosalaV159();
+                if (typeof window.spReanudarConsultorAlVolverATecnosala === 'function') {
+                  window.spReanudarConsultorAlVolverATecnosala();
+                }
+              }, 90);
             }
             setTimeout(aplicarFondoAzulitoMagazineEnDOM, 30);
-            return origCV.apply(this, arguments);
+            return res;
           };
           nuevaCV._spMicGuard = true;
           window.cambiarVista = nuevaCV;
@@ -17376,8 +17650,19 @@
       setTimeout(envolverCambiarVistaParaApagarMicro, 500);
 
       document.addEventListener('visibilitychange', function() {
-        if (document.hidden && (_spHablandoSintesis || _spEscuchandoVoz || _spMicroSesionActiva || _spMicStream)) {
-          window.spPararConsultorTotalmente();
+        if (document.hidden) {
+          if (typeof window.spPausarConsultorPorNavegacion === 'function') {
+            window.spPausarConsultorPorNavegacion();
+          }
+        } else {
+          var vTec = document.getElementById('vista-tecnosala');
+          if (vTec && !vTec.classList.contains('hidden')) {
+            setTimeout(function() {
+              if (typeof window.spReanudarConsultorAlVolverATecnosala === 'function') {
+                window.spReanudarConsultorAlVolverATecnosala();
+              }
+            }, 180);
+          }
         }
       });
 
@@ -18237,83 +18522,17 @@
         - Usa el buscador dinámico del modelo más nuevo y rápido Flash-Lite de Google
           (gemini-3.8-flash-lite / auto-descubierto en /v1beta/models).
      ========================================================================= */
-  window._spConsultorEstabaActivoAntesDeSalir = false;
+      window._spConsultorEstabaActivoAntesDeSalir = false;
 
-  /* Reparación y respaldo autónomo si por cualquier motivo no se hubiera enlazado el Orbe */
   var _origActivarOrbeNativo = window.spActivarOrbeConsultorInteractivo;
-  var _origPararTotalNativo = window.spPararConsultorTotalmente;
-
-  if (typeof _origActivarOrbeNativo === 'function' && !_origActivarOrbeNativo._wrappedV163) {
+  if (typeof _origActivarOrbeNativo === 'function' && !_origActivarOrbeNativo._wrappedV165) {
     var nuevoActivarOrbe = function(ev) {
       window._spConsultorEstabaActivoAntesDeSalir = true;
       return _origActivarOrbeNativo.apply(this, arguments);
     };
-    nuevoActivarOrbe._wrappedV163 = true;
+    nuevoActivarOrbe._wrappedV165 = true;
     window.spActivarOrbeConsultorInteractivo = nuevoActivarOrbe;
   }
-
-  if (typeof _origPararTotalNativo === 'function' && !_origPararTotalNativo._wrappedV163) {
-    var nuevoPararTotal = function(ev) {
-      if (ev) {
-        window._spConsultorEstabaActivoAntesDeSalir = false;
-      }
-      return _origPararTotalNativo.apply(this, arguments);
-    };
-    nuevoPararTotal._wrappedV163 = true;
-    window.spPararConsultorTotalmente = nuevoPararTotal;
-  }
-
-  /* Al cambiar de sección en la web:
-     - Si sale de Tecnosala -> se calla y apaga el micro en el acto (pero recuerda que estaba activo)
-     - Si vuelve a entrar en Tecnosala y ya lo había activado -> vuelve a activar la escucha solo */
-  if (typeof window.cambiarVista === 'function' && !window.cambiarVista._hookAutoTecnosalaV163) {
-    var _origCambiarVistaV163 = window.cambiarVista;
-    var nuevaCambiarVistaV163 = function(vistaDestino) {
-      var estabaActivo = window._spConsultorEstabaActivoAntesDeSalir;
-      if (vistaDestino !== 'tecnosala') {
-        if (typeof _origPararTotalNativo === 'function') {
-          try { _origPararTotalNativo(); } catch (e) {}
-        }
-        if ('speechSynthesis' in window) {
-          try { window.speechSynthesis.cancel(); } catch (e) {}
-        }
-        window._spConsultorEstabaActivoAntesDeSalir = estabaActivo;
-      }
-      var res = _origCambiarVistaV163.apply(this, arguments);
-      if (vistaDestino === 'tecnosala' && window._spConsultorEstabaActivoAntesDeSalir) {
-        setTimeout(function() {
-          if (typeof window.spIniciarEscuchaDirectaConsultor === 'function') {
-            window.spIniciarEscuchaDirectaConsultor();
-          }
-        }, 250);
-      }
-      return res;
-    };
-    nuevaCambiarVistaV163._hookAutoTecnosalaV163 = true;
-    window.cambiarVista = nuevaCambiarVistaV163;
-  }
-
-  document.addEventListener('visibilitychange', function() {
-    var estabaActivo = window._spConsultorEstabaActivoAntesDeSalir;
-    if (document.hidden) {
-      if (typeof _origPararTotalNativo === 'function') {
-        try { _origPararTotalNativo(); } catch (e) {}
-      }
-      if ('speechSynthesis' in window) {
-        try { window.speechSynthesis.cancel(); } catch (e) {}
-      }
-      window._spConsultorEstabaActivoAntesDeSalir = estabaActivo;
-    } else {
-      var vTec = document.getElementById('vista-tecnosala');
-      if (vTec && !vTec.classList.contains('hidden') && window._spConsultorEstabaActivoAntesDeSalir) {
-        setTimeout(function() {
-          if (typeof window.spIniciarEscuchaDirectaConsultor === 'function') {
-            window.spIniciarEscuchaDirectaConsultor();
-          }
-        }, 250);
-      }
-    }
-  });
 
   /* =========================================================================
      2. MOTOR DE PRECIOS CLAROS (TARJETAS COMPLETAS CON SU ESTRUCTURA ORIGINAL
