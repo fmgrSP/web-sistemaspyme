@@ -108,8 +108,22 @@ def validar_bloques_js_en_html(contenido_html, etiqueta_archivo="index.html"):
 # =============================================================================
 # 3. ACTUALIZACIÓN DE LOS 2 DOCUMENTOS MAESTROS (.md) Y DRIVE/SHEETS
 # =============================================================================
+REGLA_TOKENS_MANUAL_MD = """
+---
+
+## 2-BIS. REGLA OBLIGATORIA DE INDICADOR DE PORCENTAJE DE TOKENS EN CADA ITERACIÓN (MODO 1 Y MODO 2)
+- **Aviso obligatorio en TODAS las respuestas del chat:** Al final de absolutamente cada respuesta (tanto charlando en Modo Consultor como entregando código en Modo Programador), debes incluir siempre una línea visible indicando el porcentaje estimado de tokens consumidos en la ventana de contexto actual:
+  - Formato obligatorio al cierre de cada mensaje:
+    `📊 Consumo de tokens de la sesión: ~XX% (Capacidad disponible: ~YY%)`
+- **Semáforo de seguridad:**
+  - `🟢 0% a 65%`: Zona segura de trabajo normal.
+  - `🟡 66% a 79%`: Zona de precaución (ir cerrando tareas en curso).
+  - `🔴 80% a 85%`: Alerta automática obligatoria (`⚠️ Nivel de tokens al 80-85%: por seguridad técnica y para no cometer errores en archivos grandes, es momento de abrir un chat nuevo`) + generación inmediata del archivo `TRASPASO_SESION_PROXIMOS_PASOS.md`.
+"""
+
 NOTA_V176 = """
-### ACTUALIZACIÓN V176 (07/11/2026 19:10 — Extracción Modular de `tecnoconsultor.js`, Reparación del Carrito y Secuencia Cara A -> B -> Detalle -> C en Auditorías)
+### ACTUALIZACIÓN V176 (07/11/2026 19:10 — Extracción Modular de `tecnoconsultor.js`, Reparación del Carrito, Secuencia Cara A -> B -> Detalle -> C en Auditorías y Medidor de % de Tokens por Iteración)
+- **Regla Obligatoria en el Manual Maestro (`manual_maestro_de_programaci_n_ad_py.md`):** Incorporada la sección `2-BIS` que obliga a mostrar en cada iteración del chat el porcentaje exacto de tokens consumidos (`📊 Consumo de tokens de la sesión: ~XX%`), con semáforo verde/ámbar/rojo y disparo automático del documento de traspaso al llegar al 80-85%.
 - **Reparación del SyntaxError en el bloque del Carrito (`index.html`):** Eliminadas las 6 líneas huérfanas tras `iniciarVigilanteMicrofonoContinuo` que rompían la ejecución del Carrito Configurador y del Reproductor Podcast.
 - **Restauración completa de la secuencia interactiva en la Diapositiva 3 de «Cómo ayudamos» (`#ca-slide-auditorias`):**
   1. Clic en Cara A abre la **Cara B (Estadísticas)**.
@@ -146,7 +160,22 @@ def actualizar_documentos_maestros():
         with open(ruta_origen, "r", encoding="utf-8") as f:
             texto = f.read()
 
-        if "ACTUALIZACIÓN V176 (" not in texto:
+        # Inyectar la sección 2-BIS en el Manual Maestro si aún no está
+        if nombre_md == "manual_maestro_de_programaci_n_ad_py.md" and "2-BIS. REGLA OBLIGATORIA DE INDICADOR DE PORCENTAJE DE TOKENS" not in texto:
+            marcador_sec3 = "## 3. RUTAS OFICIALES EN EL MAC"
+            if marcador_sec3 in texto:
+                texto = texto.replace(marcador_sec3, REGLA_TOKENS_MANUAL_MD.strip() + "\n\n---\n\n" + marcador_sec3, 1)
+            else:
+                texto = texto.rstrip() + "\n\n" + REGLA_TOKENS_MANUAL_MD.strip() + "\n"
+
+        # Actualizar o añadir la nota V176 con la regla de tokens
+        if "ACTUALIZACIÓN V176 (" in texto:
+            texto = re.sub(
+                r"### ACTUALIZACIÓN V176 \([\s\S]*?(?=\n### ACTUALIZACIÓN |\Z)",
+                lambda _m: NOTA_V176.strip() + "\n",
+                texto,
+            )
+        else:
             texto = texto.rstrip() + "\n\n" + NOTA_V176.strip() + "\n"
 
         contenidos_finales[nombre_md] = texto
