@@ -16666,7 +16666,7 @@
         return document.getElementById('spTeleprompterRollTrack');
       }
 
-                  window.spRepetirUltimaRespuestaConsultor = function(ev) {
+                        window.spRepetirUltimaRespuestaConsultor = function(ev) {
         if (ev && ev.stopPropagation) ev.stopPropagation();
         if (_spRegistroDescargaCharla.length > 0) {
           var ult = _spRegistroDescargaCharla[_spRegistroDescargaCharla.length - 1];
@@ -16676,63 +16676,187 @@
         }
       };
 
-      var _spPausadoPorCambioDeSeccion = false;
-      var _spAcumuladoTurnoVoz = '';
-      var _spLineaDictadoVivoEl = null;
-      var _spCooldownPostHablaTs = 0;
+      var _spPausadoPorNavegacion = false;
+      var _spBufferFraseUsuario = '';
+      var _spElDictadoEnVivo = null;
+      var _spFinHablaTimestamp = 0;
 
-      // Pide y mantiene vivo un canal de audio real para que el navegador selle el permiso 1 sola vez
-      function asegurarStreamMicroUnico() {
-        if (_spMicStream && _spMicStream.active) {
-          return Promise.resolve(_spMicStream);
-        }
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          return navigator.mediaDevices.getUserMedia({
-            audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
-          }).then(function(st) {
-            _spMicStream = st;
-            // Mantener las pistas habilitadas mientras estemos en Tecnosala
-            return st;
-          }).catch(function() { return null; });
-        }
-        return Promise.resolve(null);
-      }
-
-      function habilitarTracksMicro(activo) {
-        if (_spMicStream && _spMicStream.getAudioTracks) {
-          var tracks = _spMicStream.getAudioTracks();
-          for (var i = 0; i < tracks.length; i++) {
-            tracks[i].enabled = !!activo;
-          }
-        }
-      }
-
-      function pintarBotonHablarUI(escuchando) {
-        var btnVoice = document.getElementById('spBtnVoiceTecnosala');
-        var txtVoice = document.getElementById('spVoiceBtnText');
-        var icoVoice = document.getElementById('spVoiceMicIcon');
+      function pintarEstadoBotonHablar(activo) {
+        var btnV = document.getElementById('spBtnVoiceTecnosala');
+        var txtV = document.getElementById('spVoiceBtnText');
+        var icoV = document.getElementById('spVoiceMicIcon');
         var inp = document.getElementById('spTecnosalaInput');
-        if (escuchando) {
-          if (btnVoice) btnVoice.classList.add('sp-voice-listening');
-          if (txtVoice) txtVoice.textContent = 'Escuchando...';
-          if (icoVoice) icoVoice.textContent = '🔴';
-          if (inp) inp.placeholder = '🟢 Manos libres continuo activo: habla directamente sin tocar nada...';
+        if (activo) {
+          if (btnV) btnV.classList.add('sp-voice-listening');
+          if (txtV) txtV.textContent = 'Escuchando...';
+          if (icoV) icoV.textContent = '🔴';
+          if (inp) inp.placeholder = '🟢 Micrófono abierto en manos libres: habla directamente sin tocar nada...';
         } else {
-          if (btnVoice) btnVoice.classList.remove('sp-voice-listening');
-          if (txtVoice) txtVoice.textContent = 'Hablar';
-          if (icoVoice) icoVoice.textContent = '🎙️';
+          if (btnV) btnV.classList.remove('sp-voice-listening');
+          if (txtV) txtV.textContent = 'Hablar';
+          if (icoV) icoV.textContent = '🎙️';
           if (inp) inp.placeholder = 'Escribe tu duda o pulsa 🎙️ Hablar para preguntar por voz...';
         }
       }
 
-      // Pausa al cambiar a otro apartado de la web o pestaña del navegador
+      // Crea UNA SOLA instancia de reconocimiento para toda la vida de la página
+      function obtenerReconocedorUnicoContinua() {
+        if (_spRecogInstance) return _spRecogInstance;
+        var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRec) return null;
+
+        var rec = new SpeechRec();
+        rec.lang = 'es-ES';
+        rec.continuous = true;
+        rec.interimResults = true;
+        rec.maxAlternatives = 1;
+
+        function dispararPreguntaCapturada() {
+          if (_spSilenceTimer) {
+            clearTimeout(_spSilenceTimer);
+            _spSilenceTimer = null;
+          }
+          var textoFinal = _spBufferFraseUsuario.trim();
+          _spBufferFraseUsuario = '';
+          if (!textoFinal || textoFinal.length < 2) return;
+          if (_spIgnorarMicroMientrasHabla || _spHablandoSintesis) return;
+
+          // Mute lógico mientras el consultor piensa y habla (JAMÁS llamamos a rec.stop() aquí)
+          _spIgnorarMicroMientrasHabla = true;
+          _spEscuchandoVoz = false;
+          if (_spElDictadoEnVivo) {
+            try { _spElDictadoEnVivo.remove(); } catch (e) {}
+            _spElDictadoEnVivo = null;
+          }
+          window.spProcesarConsultaEnTeleprompterDirecto(textoFinal);
+        }
+
+        rec.onstart = function() {
+          _spMicroSesionActiva = true;
+          if (!_spHablandoSintesis && !_spPausadoPorNavegacion) {
+            _spEscuchandoVoz = true;
+            _spIgnorarMicroMientrasHabla = false;
+            pintarEstadoBotonHablar(true);
+            actualizarAparienciaOrbeYEstado('listening');
+          }
+        };
+
+        rec.onresult = function(event) {
+          // Si el consultor está hablando o terminó hace menos de 400ms, descartamos cualquier eco del altavoz
+          if (_spIgnorarMicroMientrasHabla || _spHablandoSintesis || _spPausadoPorNavegacion || (performance.now() - _spFinHablaTimestamp < 400)) {
+            _spBufferFraseUsuario = '';
+            return;
+          }
+
+          var interino = '';
+          var nuevoFinal = '';
+          for (var i = event.resultIndex; i < event.results.length; i++) {
+            var pieza = event.results[i][0].transcript;
+            if (event.results[i].isFinal) nuevoFinal += pieza + ' ';
+            else interino += pieza;
+          }
+
+          if (nuevoFinal) {
+            _spBufferFraseUsuario = (_spBufferFraseUsuario + ' ' + nuevoFinal).trim();
+          }
+          var fraseVisible = (_spBufferFraseUsuario + ' ' + interino).trim();
+          if (!fraseVisible) return;
+
+          _spUltimoPulsoVozUsuarioTs = performance.now();
+          _spNivelVozUsuarioVivo = Math.min(0.96, 0.38 + (fraseVisible.length % 8) * 0.07);
+
+          var inp = document.getElementById('spTecnosalaInput');
+          if (inp) inp.value = fraseVisible;
+
+          var track = asegurarCabinaTeleprompter2027();
+          if (track) {
+            if (!_spElDictadoEnVivo || !_spElDictadoEnVivo.parentNode) {
+              _spElDictadoEnVivo = document.createElement('div');
+              _spElDictadoEnVivo.className = 'sp-led-line-item sp-led-line-user';
+              track.appendChild(_spElDictadoEnVivo);
+            }
+            _spElDictadoEnVivo.textContent = '🎙️ TÚ: «' + fraseVisible + '...»';
+            reclasificarJerarquiaLineas(track);
+          }
+
+          if (_spSilenceTimer) clearTimeout(_spSilenceTimer);
+          if (nuevoFinal) {
+            _spSilenceTimer = setTimeout(dispararPreguntaCapturada, 600);
+          } else {
+            _spSilenceTimer = setTimeout(function() {
+              _spBufferFraseUsuario = fraseVisible;
+              dispararPreguntaCapturada();
+            }, 1200);
+          }
+        };
+
+        rec.onerror = function(ev) {
+          if (ev && (ev.error === 'not-allowed' || ev.error === 'service-not-allowed')) {
+            _spMicroSesionActiva = false;
+            _spAutoEscuchaContinua = false;
+            _spEscuchandoVoz = false;
+            pintarEstadoBotonHablar(false);
+            actualizarAparienciaOrbeYEstado('idle');
+          }
+        };
+
+        rec.onend = function() {
+          _spMicroSesionActiva = false;
+          var vTec = document.getElementById('vista-tecnosala');
+          var sigueEnTecnosala = vTec && !vTec.classList.contains('hidden') && !document.hidden;
+          // Si Chrome corta el stream tras una pausa larga pero seguimos en Tecnosala, lo reabre al instante
+          if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spPausadoPorNavegacion && sigueEnTecnosala) {
+            try {
+              rec.start();
+            } catch (e) {}
+          } else {
+            pintarEstadoBotonHablar(false);
+          }
+        };
+
+        _spRecogInstance = rec;
+        return rec;
+      }
+
+      // Arranque 100% SÍNCRONO (sin promesas antes de rec.start()) para aprovechar el clic del usuario
+      window.spActivarModoEscuchaPersistente = function() {
+        var vTec = document.getElementById('vista-tecnosala');
+        if (!vTec || vTec.classList.contains('hidden') || document.hidden) return;
+        if (!_spAutoEscuchaContinua || _spPausadoPorNavegacion) return;
+
+        var rec = obtenerReconocedorUnicoContinua();
+        if (!rec) {
+          actualizarAparienciaOrbeYEstado('idle');
+          var inp = document.getElementById('spTecnosalaInput');
+          if (inp) inp.focus();
+          return;
+        }
+
+        if (!_spHablandoSintesis) {
+          _spIgnorarMicroMientrasHabla = false;
+          _spEscuchandoVoz = true;
+          pintarEstadoBotonHablar(true);
+          actualizarAparienciaOrbeYEstado('listening');
+        }
+
+        if (!_spMicroSesionActiva) {
+          try {
+            rec.start();
+          } catch (e) {
+            // Si ya estaba arrancado internamente en Chrome, marcamos sesión activa
+            _spMicroSesionActiva = true;
+          }
+        }
+      };
+
+      // Pausa inmediata cuando el usuario se va a otra pestaña o apartado de la web
       window.spPausarConsultorPorNavegacion = function() {
         if (!_spOrbeDespierto) return;
-        _spPausadoPorCambioDeSeccion = true;
+        _spPausadoPorNavegacion = true;
         _spHablandoSintesis = false;
         _spEscuchandoVoz = false;
         _spIgnorarMicroMientrasHabla = true;
-        _spAcumuladoTurnoVoz = '';
+        _spBufferFraseUsuario = '';
         _spOrbEnergyTarget = 0;
         limpiarTimersTeleprompter();
         if (_spSilenceTimer) {
@@ -16742,43 +16866,38 @@
         if ('speechSynthesis' in window) {
           try { window.speechSynthesis.cancel(); } catch (e) {}
         }
-        // Silenciamos las pistas físicas del micro mientras navega por otras secciones
-        habilitarTracksMicro(false);
         if (_spRecogInstance && _spMicroSesionActiva) {
-          try {
-            _spRecogInstance.abort();
-          } catch (e) {}
+          try { _spRecogInstance.stop(); } catch (e) {}
           _spMicroSesionActiva = false;
         }
-        pintarBotonHablarUI(false);
+        pintarEstadoBotonHablar(false);
         actualizarAparienciaOrbeYEstado('idle');
       };
 
-      // Al regresar a Tecnosala, reactiva el micro automáticamente sin volver a pedir permiso
+      // Reanudación automática cuando el usuario vuelve a entrar en Tecnosala
       window.spReanudarConsultorAlVolverATecnosala = function() {
         if (!_spOrbeDespierto) return;
         var vTec = document.getElementById('vista-tecnosala');
         if (!vTec || vTec.classList.contains('hidden') || document.hidden) return;
-        _spPausadoPorCambioDeSeccion = false;
+        _spPausadoPorNavegacion = false;
         _spAutoEscuchaContinua = true;
         _spHablandoSintesis = false;
         _spIgnorarMicroMientrasHabla = false;
-        _spAcumuladoTurnoVoz = '';
-        habilitarTracksMicro(true);
+        _spBufferFraseUsuario = '';
         iniciarVigilanteMicrofonoContinuo();
-        window.spActivarModoEscuchaPersistente(false);
+        window.spActivarModoEscuchaPersistente();
       };
 
-      // Parada manual total cuando el usuario pulsa el botón rojo PARAR
+      // Parada total manual cuando el usuario pulsa el botón rojo PARAR
       window.spPararConsultorTotalmente = function(ev) {
         if (ev && ev.stopPropagation) ev.stopPropagation();
         _spOrbeDespierto = false;
-        _spPausadoPorCambioDeSeccion = false;
+        _spPausadoPorNavegacion = false;
         _spAutoEscuchaContinua = false;
         _spHablandoSintesis = false;
         _spEscuchandoVoz = false;
         _spIgnorarMicroMientrasHabla = true;
-        _spAcumuladoTurnoVoz = '';
+        _spBufferFraseUsuario = '';
         _spOrbEnergyTarget = 0;
         limpiarTimersTeleprompter();
         if (_spWatchdogMicroInterval) {
@@ -16792,18 +16911,11 @@
         if ('speechSynthesis' in window) {
           try { window.speechSynthesis.cancel(); } catch (e) {}
         }
-        habilitarTracksMicro(false);
         if (_spRecogInstance) {
-          try {
-            _spRecogInstance.onend = null;
-            _spRecogInstance.onerror = null;
-            _spRecogInstance.onresult = null;
-            _spRecogInstance.abort();
-          } catch (e) {}
-          _spRecogInstance = null;
+          try { _spRecogInstance.stop(); } catch (e) {}
           _spMicroSesionActiva = false;
         }
-        pintarBotonHablarUI(false);
+        pintarEstadoBotonHablar(false);
         actualizarAparienciaOrbeYEstado('idle');
       };
 
@@ -16813,196 +16925,38 @@
           var vTec = document.getElementById('vista-tecnosala');
           var enTecnosala = vTec && !vTec.classList.contains('hidden') && !document.hidden;
           if (!enTecnosala) {
-            if (_spHablandoSintesis || _spEscuchandoVoz) {
+            if (_spHablandoSintesis || _spEscuchandoVoz || _spMicroSesionActiva) {
               window.spPausarConsultorPorNavegacion();
             }
             return;
           }
-          if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spPausadoPorCambioDeSeccion && !_spHablandoSintesis && !_spMicroSesionActiva && !_spRearmandoOido) {
-            window.spActivarModoEscuchaPersistente(false);
+          if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spPausadoPorNavegacion && !_spHablandoSintesis && !_spMicroSesionActiva) {
+            window.spActivarModoEscuchaPersistente();
           }
-        }, 1000);
+        }, 900);
       }
 
       window.spIniciarEscuchaDirectaConsultor = function() {
         _spOrbeDespierto = true;
-        _spPausadoPorCambioDeSeccion = false;
+        _spPausadoPorNavegacion = false;
         _spAutoEscuchaContinua = true;
         _spHablandoSintesis = false;
         _spIgnorarMicroMientrasHabla = false;
-        _spAcumuladoTurnoVoz = '';
+        _spBufferFraseUsuario = '';
         if ('speechSynthesis' in window) {
           try { window.speechSynthesis.cancel(); } catch (e) {}
         }
         asegurarCabinaTeleprompter2027();
-        habilitarTracksMicro(true);
+        window.spActivarModoEscuchaPersistente();
         iniciarVigilanteMicrofonoContinuo();
-        window.spActivarModoEscuchaPersistente(false);
-      };
-
-      // CLAVE V166: El reconocedor de voz NUNCA se destruye con .stop() entre frase y frase.
-      // Permanece abierto en continuo y solo conmuta la bandera _spIgnorarMicroMientrasHabla.
-      window.spActivarModoEscuchaPersistente = function(forzarReinicio) {
-        var vTec = document.getElementById('vista-tecnosala');
-        if (!vTec || vTec.classList.contains('hidden') || document.hidden) return;
-        if (!_spAutoEscuchaContinua || _spPausadoPorCambioDeSeccion) return;
-
-        var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRec) {
-          actualizarAparienciaOrbeYEstado('idle');
-          var inpFallback = document.getElementById('spTecnosalaInput');
-          if (inpFallback) inpFallback.focus();
-          return;
-        }
-
-        habilitarTracksMicro(true);
-
-        // Si la sesión de reconocimiento YA está abierta, NO la paramos ni reiniciamos:
-        // simplemente abrimos la compuerta lógica para escuchar al usuario sin pedir permiso jamás.
-        if (_spMicroSesionActiva && _spRecogInstance && !forzarReinicio) {
-          _spAcumuladoTurnoVoz = '';
-          if (!_spHablandoSintesis) {
-            _spEscuchandoVoz = true;
-            _spIgnorarMicroMientrasHabla = false;
-            pintarBotonHablarUI(true);
-            actualizarAparienciaOrbeYEstado('listening');
-          }
-          return;
-        }
-
-        if (_spRearmandoOido) return;
-        _spRearmandoOido = true;
-
-        asegurarStreamMicroUnico().then(function() {
-          _spRearmandoOido = false;
-          var vTecNow = document.getElementById('vista-tecnosala');
-          if (!_spAutoEscuchaContinua || _spPausadoPorCambioDeSeccion || !vTecNow || vTecNow.classList.contains('hidden') || document.hidden) return;
-
-          if (_spMicroSesionActiva && _spRecogInstance) {
-            if (!_spHablandoSintesis) {
-              _spEscuchandoVoz = true;
-              _spIgnorarMicroMientrasHabla = false;
-              pintarBotonHablarUI(true);
-              actualizarAparienciaOrbeYEstado('listening');
-            }
-            return;
-          }
-
-          try {
-            if (!_spRecogInstance) {
-              var rec = new SpeechRec();
-              rec.lang = 'es-ES';
-              rec.continuous = true;
-              rec.interimResults = true;
-              _spRecogInstance = rec;
-
-              function enviarTurnoDetectado() {
-                if (_spSilenceTimer) { clearTimeout(_spSilenceTimer); _spSilenceTimer = null; }
-                var preguntaLista = _spAcumuladoTurnoVoz.trim();
-                _spAcumuladoTurnoVoz = '';
-                if (!preguntaLista || preguntaLista.length < 2 || _spIgnorarMicroMientrasHabla || _spHablandoSintesis) return;
-
-                // COMPUERTA DE MUTE LÓGICO: NO cerramos el micrófono (.stop()), solo silenciamos la escucha
-                // mientras el consultor procesa y responde, para que el navegador NUNCA vuelva a pedir permiso.
-                _spIgnorarMicroMientrasHabla = true;
-                _spEscuchandoVoz = false;
-                if (_spLineaDictadoVivoEl) {
-                  try { _spLineaDictadoVivoEl.remove(); } catch (e) {}
-                  _spLineaDictadoVivoEl = null;
-                }
-                window.spProcesarConsultaEnTeleprompterDirecto(preguntaLista);
-              }
-
-              rec.onstart = function() {
-                _spMicroSesionActiva = true;
-                if (!_spHablandoSintesis) {
-                  _spEscuchandoVoz = true;
-                  _spIgnorarMicroMientrasHabla = false;
-                  pintarBotonHablarUI(true);
-                  actualizarAparienciaOrbeYEstado('listening');
-                }
-              };
-
-              rec.onresult = function(event) {
-                // Si el consultor está hablando o acaba de terminar hace menos de 350ms, ignoramos el eco
-                if (_spIgnorarMicroMientrasHabla || _spHablandoSintesis || (performance.now() - _spCooldownPostHablaTs < 350)) {
-                  _spAcumuladoTurnoVoz = '';
-                  return;
-                }
-                var parcial = '';
-                var finalNuevo = '';
-                for (var i = event.resultIndex; i < event.results.length; i++) {
-                  var tr = event.results[i][0].transcript;
-                  if (event.results[i].isFinal) finalNuevo += tr + ' ';
-                  else parcial += tr;
-                }
-                if (finalNuevo) _spAcumuladoTurnoVoz = (_spAcumuladoTurnoVoz + ' ' + finalNuevo).trim();
-                var textoEnCurso = (_spAcumuladoTurnoVoz + ' ' + parcial).trim();
-                if (!textoEnCurso) return;
-
-                _spUltimoPulsoVozUsuarioTs = performance.now();
-                _spNivelVozUsuarioVivo = Math.min(0.95, 0.35 + (textoEnCurso.length % 7) * 0.08);
-
-                var inp = document.getElementById('spTecnosalaInput');
-                if (inp) inp.value = textoEnCurso;
-
-                var track = asegurarCabinaTeleprompter2027();
-                if (track) {
-                  if (!_spLineaDictadoVivoEl || !_spLineaDictadoVivoEl.parentNode) {
-                    _spLineaDictadoVivoEl = document.createElement('div');
-                    _spLineaDictadoVivoEl.className = 'sp-led-line-item sp-led-line-user';
-                    track.appendChild(_spLineaDictadoVivoEl);
-                  }
-                  _spLineaDictadoVivoEl.textContent = '🎙️ TÚ: «' + textoEnCurso + '...»';
-                  reclasificarJerarquiaLineas(track);
-                }
-
-                if (_spSilenceTimer) clearTimeout(_spSilenceTimer);
-                if (finalNuevo) {
-                  _spSilenceTimer = setTimeout(enviarTurnoDetectado, 650);
-                } else {
-                  _spSilenceTimer = setTimeout(function() {
-                    _spAcumuladoTurnoVoz = textoEnCurso;
-                    enviarTurnoDetectado();
-                  }, 1250);
-                }
-              };
-
-              rec.onerror = function(ev) {
-                if (ev && (ev.error === 'not-allowed' || ev.error === 'service-not-allowed')) {
-                  _spMicroSesionActiva = false;
-                  _spAutoEscuchaContinua = false;
-                  _spEscuchandoVoz = false;
-                  pintarBotonHablarUI(false);
-                  actualizarAparienciaOrbeYEstado('idle');
-                }
-              };
-
-              rec.onend = function() {
-                _spMicroSesionActiva = false;
-                var vTecEnd = document.getElementById('vista-tecnosala');
-                var sigueEnTec = vTecEnd && !vTecEnd.classList.contains('hidden') && !document.hidden;
-                if (_spOrbeDespierto && _spAutoEscuchaContinua && !_spPausadoPorCambioDeSeccion && sigueEnTec) {
-                  try {
-                    _spRecogInstance.start();
-                  } catch (e) {}
-                }
-              };
-            }
-
-            _spRecogInstance.start();
-          } catch (err) {
-            _spMicroSesionActiva = false;
-          }
-        });
       };
 
       window.spReproducirEnTeleprompter2027 = function(textoCompleto, alTerminarCallback, etiquetaUsuarioPrevio) {
         limpiarTimersTeleprompter();
-        // MUTE LÓGICO SIN APAGAR EL MICRÓFONO: Así el navegador jamás vuelve a pedir permiso al terminar de hablar
+        // Silenciamos lógicamente la entrada del micro mientras habla (SIN cerrar el micrófono)
         _spIgnorarMicroMientrasHabla = true;
         _spEscuchandoVoz = false;
-        _spAcumuladoTurnoVoz = '';
+        _spBufferFraseUsuario = '';
         if (_spSilenceTimer) {
           clearTimeout(_spSilenceTimer);
           _spSilenceTimer = null;
@@ -17088,19 +17042,19 @@
           pintarHastaCharGlobal(totalChars);
           limpiarTimersTeleprompter();
           _spHablandoSintesis = false;
-          _spCooldownPostHablaTs = performance.now();
-          _spAcumuladoTurnoVoz = '';
+          _spFinHablaTimestamp = performance.now();
+          _spBufferFraseUsuario = '';
           _spOrbEnergyTarget = 0;
-          if (_spAutoEscuchaContinua && !_spPausadoPorCambioDeSeccion) {
+          if (_spAutoEscuchaContinua && !_spPausadoPorNavegacion) {
             _spIgnorarMicroMientrasHabla = false;
             _spEscuchandoVoz = true;
-            pintarBotonHablarUI(true);
+            pintarEstadoBotonHablar(true);
             actualizarAparienciaOrbeYEstado('listening');
             if (!_spMicroSesionActiva) {
-              window.spActivarModoEscuchaPersistente(false);
+              window.spActivarModoEscuchaPersistente();
             }
           } else {
-            pintarBotonHablarUI(false);
+            pintarEstadoBotonHablar(false);
             actualizarAparienciaOrbeYEstado('idle');
           }
           if (typeof alTerminarCallback === 'function') {
@@ -17111,13 +17065,13 @@
         _spHablandoSintesis = true;
         actualizarAparienciaOrbeYEstado('speaking');
 
-        var duracionMaxMs = Math.max(4000, totalChars * 82 + 2000);
+        var duracionMaxMs = Math.max(3800, totalChars * 75 + 1800);
         _spTyperTimerIds.push(setTimeout(forzarCierreYPasarAEscucha, duracionMaxMs));
 
         function pasoMarcapasos() {
           if (!_spHablandoSintesis || finalDisparado) return;
           if (charObjetivoPorVoz > charActualMostrado) {
-            charActualMostrado = Math.min(totalChars, charActualMostrado + Math.max(1, Math.ceil((charObjetivoPorVoz - charActualMostrado) * 0.45)));
+            charActualMostrado = Math.min(totalChars, charActualMostrado + Math.max(1, Math.ceil((charObjetivoPorVoz - charActualMostrado) * 0.50)));
           } else {
             charActualMostrado = Math.min(totalChars, charActualMostrado + 1);
           }
@@ -17127,26 +17081,30 @@
               forzarCierreYPasarAEscucha();
               return;
             }
-            _spTyperTimerIds.push(setTimeout(forzarCierreYPasarAEscucha, 850));
+            _spTyperTimerIds.push(setTimeout(forzarCierreYPasarAEscucha, 700));
             return;
           }
           var ch = textoGlobalUnido.charAt(charActualMostrado - 1) || '';
-          var d = (ch === '.' || ch === '?' || ch === '!') ? 450 : ((ch === ',' || ch === ';') ? 250 : 62);
+          var d = (ch === '.' || ch === '?' || ch === '!') ? 360 : ((ch === ',' || ch === ';') ? 190 : 54);
           _spTyperTimerIds.push(setTimeout(pasoMarcapasos, d));
         }
-        _spTyperTimerIds.push(setTimeout(pasoMarcapasos, 45));
+        _spTyperTimerIds.push(setTimeout(pasoMarcapasos, 30));
 
         if (_spVozConsultorActiva && ('speechSynthesis' in window)) {
+          try {
+            if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+              window.speechSynthesis.cancel();
+            }
+          } catch (e) {}
           setTimeout(function() {
             if (!_spHablandoSintesis || finalDisparado) return;
             try {
-              if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
               window.speechSynthesis.resume();
               var vozFija = obtenerVozEspanaFija();
               var u = new SpeechSynthesisUtterance(textoGlobalUnido);
               _spUtteranceEnCurso = u;
               u.lang = 'es-ES';
-              u.rate = 0.89;
+              u.rate = 0.94;
               if (vozFija) u.voice = vozFija;
               u.onboundary = function(ev) {
                 tsUltimoEventoVoz = performance.now();
@@ -17162,144 +17120,123 @@
                   return;
                 }
                 var ahora = performance.now();
-                if ((ahora - tsInicioLocucion > 900 && !window.speechSynthesis.speaking && !window.speechSynthesis.pending) ||
-                    (charActualMostrado >= totalChars * 0.90 && (ahora - tsUltimoEventoVoz > 1300))) {
+                if ((ahora - tsInicioLocucion > 950 && !window.speechSynthesis.speaking && !window.speechSynthesis.pending) ||
+                    (charActualMostrado >= totalChars * 0.92 && (ahora - tsUltimoEventoVoz > 1200))) {
                   clearInterval(_spWatchdogHablaTimer);
                   forzarCierreYPasarAEscucha();
                 }
-              }, 350);
+              }, 300);
               u.onend = forzarCierreYPasarAEscucha;
               u.onerror = forzarCierreYPasarAEscucha;
               window.speechSynthesis.speak(u);
             } catch (e) {
               forzarCierreYPasarAEscucha();
             }
-          }, 35);
+          }, 60);
         }
       };
 
-      var _spColaModelosFlashLiteCache = null;
-      function _descubrirModelosFlashLiteGoogle(k) {
-        if (_spColaModelosFlashLiteCache) return Promise.resolve(_spColaModelosFlashLiteCache);
-        var porDefecto = [
-          'gemini-2.5-flash-lite',
-          'gemini-2.5-flash-lite-preview-06-17',
-          'gemini-2.0-flash-lite',
-          'gemini-2.0-flash-lite-001',
-          'gemini-2.5-flash'
-        ];
-        return fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=100&key=' + encodeURIComponent(k))
-          .then(function(r) { return r && r.ok ? r.json() : null; })
-          .then(function(d) {
-            var mods = (d && Array.isArray(d.models)) ? d.models : [];
-            var lite = [];
-            for (var i = 0; i < mods.length; i++) {
-              var m = mods[i];
-              var met = m.supportedGenerationMethods || [];
-              if (met.indexOf('generateContent') === -1) continue;
-              var rawName = String(m.name || '');
-              var id = rawName.indexOf('models/') === 0 ? rawName.substring(7) : rawName;
-              var low = id.toLowerCase();
-              if (low.indexOf('gemini-') !== 0 || low.indexOf('flash-lite') === -1) continue;
-              var mVer = low.match(/^gemini-(\d+(?:\.\d+)?)/);
-              var ver = mVer ? parseFloat(mVer[1]) : 1.0;
-              lite.push({ id: id, ver: ver });
-            }
-            lite.sort(function(a, b) { return b.ver - a.ver; });
-            var lista = lite.map(function(x) { return x.id; });
-            for (var j = 0; j < porDefecto.length; j++) {
-              if (lista.indexOf(porDefecto[j]) === -1) lista.push(porDefecto[j]);
-            }
-            _spColaModelosFlashLiteCache = lista;
-            return lista;
-          })
-          .catch(function() {
-            _spColaModelosFlashLiteCache = porDefecto;
-            return porDefecto;
-          });
-      }
-
+      // Conexión ultrarrápida a Gemini Flash-Lite (Vertex AI + Servidor Render + Servidor Local + Cerebro Local)
       function llamarVertexDirectoNavegador(promptCompleto) {
         var k = _obtenerKBrowser();
         if (!k) return Promise.resolve(null);
-        return _descubrirModelosFlashLiteGoogle(k).then(function(modelosProbar) {
-          function intentar(idx) {
-            if (idx >= modelosProbar.length) return Promise.resolve(null);
-            var m = modelosProbar[idx];
-            var urls = [
-              'https://generativelanguage.googleapis.com/v1beta/models/' + m + ':generateContent?key=' + encodeURIComponent(k),
-              'https://aiplatform.googleapis.com/v1beta1/publishers/google/models/' + m + ':generateContent?key=' + encodeURIComponent(k)
-            ];
-            function probarEndpoint(uIdx) {
-              if (uIdx >= urls.length) return intentar(idx + 1);
-              return fetch(urls[uIdx], {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  contents: [{ role: 'user', parts: [{ text: promptCompleto }] }],
-                  generationConfig: { temperature: 0.65, topP: 0.92, maxOutputTokens: 320 }
-                })
-              })
-              .then(function(r) { return r && r.ok ? r.json() : null; })
-              .then(function(d) {
-                var parts = d && d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts;
-                if (parts && parts.length) {
-                  var txt = parts.map(function(p) { return p.thought ? '' : (p.text || ''); }).join(' ').trim();
-                  if (txt.length > 10) return { texto: txt, modelo: m };
-                }
-                return probarEndpoint(uIdx + 1);
-              })
-              .catch(function() { return probarEndpoint(uIdx + 1); });
+        var modelosFlashLite = [
+          'gemini-2.5-flash-lite',
+          'gemini-2.0-flash-lite-001',
+          'gemini-2.0-flash-lite',
+          'gemini-2.5-flash'
+        ];
+        function intentarModelo(idx) {
+          if (idx >= modelosFlashLite.length) return Promise.resolve(null);
+          var m = modelosFlashLite[idx];
+          var url = 'https://aiplatform.googleapis.com/v1beta1/publishers/google/models/' + m + ':generateContent?key=' + encodeURIComponent(k);
+          var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+          var tId = ctrl ? setTimeout(function() { try { ctrl.abort(); } catch (e) {} }, 2600) : null;
+          return fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ role: 'user', parts: [{ text: promptCompleto }] }],
+              generationConfig: { temperature: 0.60, topP: 0.90, maxOutputTokens: 280 }
+            }),
+            signal: ctrl ? ctrl.signal : undefined
+          })
+          .then(function(r) {
+            if (tId) clearTimeout(tId);
+            return r && r.ok ? r.json() : null;
+          })
+          .then(function(d) {
+            var parts = d && d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts;
+            if (parts && parts.length) {
+              var txt = parts.map(function(p) { return p.thought ? '' : (p.text || ''); }).join(' ').trim();
+              if (txt.length > 10) return { texto: txt, modelo: m };
             }
-            return probarEndpoint(0);
-          }
-          return intentar(0);
-        });
+            return intentarModelo(idx + 1);
+          })
+          .catch(function() {
+            if (tId) clearTimeout(tId);
+            return intentarModelo(idx + 1);
+          });
+        }
+        return intentarModelo(0);
       }
 
       function consultarCerebroGenerativoIA(preguntaUsuario) {
         var respuestaRespaldoLocal = window.spObtenerRespuestaOmniscienteCompleta(preguntaUsuario);
-        var histReciente = _spHistorialConversacion.slice(-10).join('\n');
+        var histReciente = _spHistorialConversacion.slice(-8).join('\n');
         var qNorm = normalizarSinTildes(preguntaUsuario);
         var quiereContratarExplicito = /(quiero contratar|quiero comprar|quiero activar|contratar|comprarlo|activarlo|darme de alta|empezar ya|estoy convencido|agendar cita|pedir cita|mi telefono es|mi numero es|llamame)/.test(qNorm) || !!extraerTelefonoEspanolDeTexto(preguntaUsuario);
 
         var instruccionModo = quiereContratarExplicito
-          ? 'INSTRUCCIÓN DE CIERRE COMERCIAL: El usuario acaba de expresar interés directo en contratar o dar sus datos. Responde en 2 a 3 frases cercanas: si su negocio sí recoge teléfonos de clientes (citas, encargos o tienda online) y eligió un servicio suelto, coméntale que por +40 €/mes más el Pack Escudo Dúo suma el Cortafuegos de WhatsApp y rebaja las auditorías a 195 € (pero si es una tienda de mostrador puro sin datos de clientes, recomiéndale solo el Servicio 1 de Reseñas IA a 59 €/mes + el Atril NFC de 39 € sin insistir en la encuesta); y pídele su nombre, el NOMBRE EXACTO DE SU NEGOCIO Y CIUDAD, su teléfono móvil y qué día/hora prefiere.'
-          : 'INSTRUCCIÓN DE CONSULTOR PURO Y VERACIDAD TÉCNICA: Responde como un consultor experto, honesto y cercano en 2 a 4 frases completas (45 a 80 palabras). Recuerda: 1) El Atril NFC/QR abre directamente Google Maps en 1 segundo. 2) La Encuesta Cortafuegos (Servicio 2) va por WhatsApp y solo se usa en negocios que recogen nombre y móvil del cliente. 3) En comercios de mostrador sin ficha de cliente, recomienda el Atril NFC (39 €) + el Servicio 1 (Gestor de Reseñas IA, 59 €/mes) + Super-Auditoría SEO/GEO.';
+          ? 'INSTRUCCIÓN DE CIERRE COMERCIAL: El usuario quiere contratar o agendar. Responde en 2 frases cercanas: si su negocio recoge teléfonos de clientes coméntale que por +40 €/mes el Pack Escudo Dúo suma el Cortafuegos de WhatsApp y rebaja las auditorías a 195 €, y pídele su nombre, nombre de su negocio y ciudad, y su teléfono móvil.'
+          : 'INSTRUCCIÓN DE CONSULTOR EXPERTO: Responde en 2 a 3 frases fluidas, claras y directas (40 a 70 palabras). Recuerda: 1) El Atril NFC/QR (39 €) abre directamente Google Maps en 1 segundo. 2) El Servicio 1 (59 €/mes) contesta reseñas con IA y frena las de 1-3★ avisando al móvil. 3) El Servicio 2 (Encuesta Cortafuegos WhatsApp) suma +40 €/mes en el Pack Dúo (99 €/mes) y desbloquea las Super-Auditorías SEO/GEO IA y Neuro-CRO a 195 € c/u.';
 
         var promptCompleto =
           (window.SP_CONTEXTO_MAESTRO_IA_RESUMEN || '') + '\n\n' +
-          'HISTORIAL DE LA CONVERSACIÓN ACTUAL:\n' + (histReciente || 'Recién iniciada') + '\n\n' +
-          'NUEVA PREGUNTA O COMENTARIO DEL USUARIO: "' + preguntaUsuario + '"\n\n' +
+          'HISTORIAL RECIENTE:\n' + (histReciente || 'Inicio de conversación') + '\n\n' +
+          'PREGUNTA DEL USUARIO: "' + preguntaUsuario + '"\n\n' +
           instruccionModo;
 
-        return llamarVertexDirectoNavegador(promptCompleto).then(function(resDir) {
-          if (resDir && resDir.texto) {
-            pintarPuntitoSecretoEstadoApi('online', '🟢 Conectado en vivo a ' + resDir.modelo);
-            return resDir.texto.replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
+        // 1º Probamos en paralelo el motor de Render (/api/consultor-ia con Gemini Flash-Lite) y Vertex AI directo
+        var ctrlRender = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+        var timerRender = ctrlRender ? setTimeout(function() { try { ctrlRender.abort(); } catch (e) {} }, 3200) : null;
+
+        return fetch('https://servicio-resenas.onrender.com/api/consultor-ia', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            pregunta: preguntaUsuario,
+            apoyo: respuestaRespaldoLocal,
+            prompt: promptCompleto,
+            modelo_preferido: 'gemini-2.5-flash-lite'
+          }),
+          signal: ctrlRender ? ctrlRender.signal : undefined
+        })
+        .then(function(r) {
+          if (timerRender) clearTimeout(timerRender);
+          return r && r.ok ? r.json() : null;
+        })
+        .then(function(d) {
+          if (d && d.ok && d.respuesta && d.respuesta.trim().length > 10) {
+            pintarPuntitoSecretoEstadoApi('online', '🟢 Conectado en vivo a ' + (d.modelo || 'Gemini Flash-Lite'));
+            return d.respuesta.replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
           }
-          var ctrlLocal = (typeof AbortController !== 'undefined') ? new AbortController() : null;
-          var timerLocal = ctrlLocal ? setTimeout(function() { try { ctrlLocal.abort(); } catch (e) {} }, 4000) : null;
-          return (window.location.protocol === 'file:' ? Promise.reject('file_mode') : fetch('https://servicio-resenas.onrender.com/api/consultor-ia', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pregunta: preguntaUsuario, apoyo: respuestaRespaldoLocal, prompt: promptCompleto }),
-            signal: ctrlLocal ? ctrlLocal.signal : undefined
-          }))
-          .then(function(r) {
-            if (timerLocal) clearTimeout(timerLocal);
-            return r && r.ok ? r.json() : null;
-          })
-          .then(function(d) {
-            if (d && d.ok && d.respuesta && d.respuesta.trim().length > 10) {
-              pintarPuntitoSecretoEstadoApi('online', '🟢 Conectado en vivo a ' + (d.modelo || 'Gemini Flash-Lite'));
-              return d.respuesta.replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
+          return llamarVertexDirectoNavegador(promptCompleto).then(function(resV) {
+            if (resV && resV.texto) {
+              pintarPuntitoSecretoEstadoApi('online', '🟢 Conectado en vivo a ' + resV.modelo);
+              return resV.texto.replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
             }
             pintarPuntitoSecretoEstadoApi('local');
             return respuestaRespaldoLocal;
-          })
-          .catch(function() {
-            if (timerLocal) clearTimeout(timerLocal);
+          });
+        })
+        .catch(function() {
+          if (timerRender) clearTimeout(timerRender);
+          return llamarVertexDirectoNavegador(promptCompleto).then(function(resV) {
+            if (resV && resV.texto) {
+              pintarPuntitoSecretoEstadoApi('online', '🟢 Conectado en vivo a ' + resV.modelo);
+              return resV.texto.replace(/[*#_`]/g, '').replace(/\s+/g, ' ').trim();
+            }
             pintarPuntitoSecretoEstadoApi('local');
             return respuestaRespaldoLocal;
           });
@@ -17349,22 +17286,27 @@ window.spToggleVozConsultorMute = function(ev) {
       };
 
       window.spActivarOrbeConsultorInteractivo = function(ev) {
-        if (ev) ev.stopPropagation();
+        if (ev && ev.stopPropagation) ev.stopPropagation();
 
-        if (_spOrbeDespierto && (_spHablandoSintesis || _spEscuchandoVoz) && !_spPausadoPorCambioDeSeccion) {
+        if (_spOrbeDespierto && (_spHablandoSintesis || _spEscuchandoVoz) && !_spPausadoPorNavegacion) {
           window.spPararConsultorTotalmente(ev);
           return;
         }
 
         _spOrbeDespierto = true;
-        _spPausadoPorCambioDeSeccion = false;
+        _spPausadoPorNavegacion = false;
         _spAutoEscuchaContinua = true;
+
+        // 1º ARRANQUE SÍNCRONO INMEDIATO DEL MICRÓFONO DENTRO DEL CLIC DEL USUARIO:
+        // Así Chrome sella el permiso del usuario en la primera pulsación y no lo vuelve a pedir entre frases.
+        _spIgnorarMicroMientrasHabla = true;
+        var rec = obtenerReconocedorUnicoContinua();
+        if (rec && !_spMicroSesionActiva) {
+          try { rec.start(); } catch (e) {}
+        }
+
         asegurarCabinaTeleprompter2027();
         mostrarBotonesParadaActivos();
-
-        // Abrimos el canal de micrófono AHORA MISMO aprovechando el clic directo del usuario (con mute lógico mientras saluda)
-        _spIgnorarMicroMientrasHabla = true;
-        window.spActivarModoEscuchaPersistente(false);
         iniciarVigilanteMicrofonoContinuo();
 
         var track = document.getElementById('spTeleprompterRollTrack');
@@ -17372,20 +17314,20 @@ window.spToggleVozConsultorMute = function(ev) {
           _spHablandoSintesis = false;
           _spIgnorarMicroMientrasHabla = false;
           _spEscuchandoVoz = true;
-          pintarBotonHablarUI(true);
+          pintarEstadoBotonHablar(true);
           actualizarAparienciaOrbeYEstado('listening');
           return;
         }
 
         var saludo2027 =
           'Hola, soy tu consultor tecnológico experto de Sistemas Pyme. ' +
-          'Hablamos en modo manos libres sin que tengas que tocar ningún botón: pregúntame con total libertad cualquier duda sobre nuestro ecosistema, descubre qué combinación te ahorra más dinero y, si lo deseas, también puedes dejar tu servicio contratado o agendado desde aquí mismo.';
+          'Hablamos en modo manos libres continuo: pregúntame cualquier duda sobre nuestro ecosistema, descubre qué combinación te ahorra más dinero y, si lo deseas, deja tu servicio contratado o agendado desde aquí mismo.';
 
         window.spReproducirEnTeleprompter2027(saludo2027, function() {
           _spHablandoSintesis = false;
           _spIgnorarMicroMientrasHabla = false;
           _spEscuchandoVoz = true;
-          pintarBotonHablarUI(true);
+          pintarEstadoBotonHablar(true);
           actualizarAparienciaOrbeYEstado('listening');
         });
       };
@@ -18547,17 +18489,7 @@ window.spToggleVozConsultorMute = function(ev) {
         - Usa el buscador dinámico del modelo más nuevo y rápido Flash-Lite de Google
           (gemini-3.8-flash-lite / auto-descubierto en /v1beta/models).
      ========================================================================= */
-        window._spConsultorEstabaActivoAntesDeSalir = false;
-
-  var _origActivarOrbeNativo = window.spActivarOrbeConsultorInteractivo;
-  if (typeof _origActivarOrbeNativo === 'function' && !_origActivarOrbeNativo._wrappedV165) {
-    var nuevoActivarOrbe = function(ev) {
-      window._spConsultorEstabaActivoAntesDeSalir = true;
-      return _origActivarOrbeNativo.apply(this, arguments);
-    };
-    nuevoActivarOrbe._wrappedV165 = true;
-    window.spActivarOrbeConsultorInteractivo = nuevoActivarOrbe;
-  }
+        /* [V167: Gestión de micrófono centralizada en el motor principal] */
 
   /* =========================================================================
      2. MOTOR DE PRECIOS CLAROS (TARJETAS COMPLETAS CON SU ESTRUCTURA ORIGINAL
