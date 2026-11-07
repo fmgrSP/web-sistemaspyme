@@ -44,7 +44,7 @@ RUTA_SCRAPER = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Scrape
 RUTA_PROGRAMAR = "/Users/franciscom.gallardorodriguez/Desktop/SISTEMAS PYME/Programar"
 
 STAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
-VERSION_ACTUAL = "V144"
+VERSION_ACTUAL = "V146"
 
 # =============================================================================
 # 2. UTILIDADES DE BACKUP, VALIDACIÓN Y AUTO-REPLICACIÓN DE AD.py
@@ -141,6 +141,55 @@ def validar_bloques_js_en_html(ruta_html):
     peso_kb = os.path.getsize(ruta_html) / 1024.0
     print(f"  🟢 Verificado OK: {os.path.basename(ruta_html)} ({peso_kb:.1f} KB, {len(bloques)} bloques <script> limpios)")
     return True
+
+def restaurar_ultimo_backup_sano_si_hace_falta(ruta_html):
+    """
+    Revisa si index.html perdió las funciones del Carrito o del Tecnoconsultor o tiene algún bloque roto,
+    y en ese caso restaura automáticamente el backup sano de backups_sp antes de aplicar el parche limpio.
+    """
+    if not os.path.isfile(ruta_html):
+        return
+    carpeta_backups = os.path.join(os.path.dirname(os.path.abspath(ruta_html)), "backups_sp")
+    if not os.path.isdir(carpeta_backups):
+        return
+
+    with open(ruta_html, "r", encoding="utf-8") as f:
+        actual = f.read()
+
+    # Comprobar si el archivo actual tiene las funciones esenciales intactas y pasa node --check
+    tiene_carrito = ("window.spAbrirCarritoConfigurador" in actual and 'id="spModalCarritoCarta"' in actual)
+    tiene_tecnosala = ("spEnviarConsultaTecnosala" in actual or "vista-tecnosala" in actual)
+    js_valido = validar_bloques_js_en_html(ruta_html)
+
+    if tiene_carrito and tiene_tecnosala and js_valido and "parentForm.insertBefore(filaNomTel, inpNom)" not in actual:
+        return
+
+    # Buscar en backups_sp el backup más reciente que tenga Carrito + Tecnosala intactos y previos al fallo de DOM
+    nombre_base = os.path.basename(ruta_html)
+    candidatos = sorted(
+        [
+            os.path.join(carpeta_backups, fn)
+            for fn in os.listdir(carpeta_backups)
+            if fn.startswith(nombre_base + ".") and fn.endswith(".bak")
+        ],
+        key=lambda p: os.path.getmtime(p),
+        reverse=True
+    )
+    for cand in candidatos:
+        try:
+            with open(cand, "r", encoding="utf-8") as fc:
+                txt_b = fc.read()
+            if (
+                "window.spAbrirCarritoConfigurador" in txt_b
+                and 'id="spModalCarritoCarta"' in txt_b
+                and "parentForm.insertBefore(filaNomTel, inpNom)" not in txt_b
+                and "<!-- [SP_AGENDA_CRM_WEB_SYNC_V145_START] -->" not in txt_b
+            ):
+                shutil.copy2(cand, ruta_html)
+                print(f"  🔄 Base sana restaurada automáticamente desde: {os.path.basename(cand)}")
+                return
+        except Exception:
+            continue
 
 def renumerar_servicios_en_html_documentos(html):
     """Actualiza la numeración en catálogos y tarjetones para que Grupo 1 = S1..S5, Grupo 2 = S6..S8 y Grupo 4 Telefonía = S9..S10."""
@@ -1202,6 +1251,313 @@ ESTILOS_CARRITO_LUMINOSO_CRO = r"""    /* ======================================
       padding: 0.62rem 1rem !important;
     }"""
 
+BLOQUE_AGENDA_CRM_PY_V146 = r'''
+# === [SP_AGENDA_CRM_COORDINATOR_V145_START] ===
+def _extraer_slots_ocupados_universal_sp_v145():
+    """
+    Lee todas las citas agendadas en:
+    1) crm_b2b_db.json (campos fecha_cita, hora_cita, fecha_proximo_contacto,
+       hora_proximo_contacto, proximo_contacto, bitacora_seguimiento, tareas_checklist, notas_seguimiento, etc.)
+    2) leads_contrataciones_web.json (en Scraper y en public_html)
+    Devuelve slots_ocupados en formato "YYYY-MM-DD|HH:MM".
+    """
+    ocupados_set = set()
+    detalle_citas = []
+    hoy_dt = datetime.now()
+    anio_actual = hoy_dt.year
+
+    meses_es = {
+        "enero": 1, "ene": 1, "febrero": 2, "feb": 2, "marzo": 3, "mar": 3,
+        "abril": 4, "abr": 4, "mayo": 5, "may": 5, "junio": 6, "jun": 6,
+        "julio": 7, "jul": 7, "agosto": 8, "ago": 8, "septiembre": 9, "sep": 9, "set": 9,
+        "octubre": 10, "oct": 10, "noviembre": 11, "nov": 11, "diciembre": 12, "dic": 12
+    }
+    dias_sem_es = {
+        "lunes": 0, "martes": 1, "miercoles": 2, "miércoles": 2,
+        "jueves": 3, "viernes": 4, "sabado": 5, "sábado": 5, "domingo": 6
+    }
+
+    def _normalizar_hora_a_slots(h_str):
+        if not h_str:
+            return []
+        s = str(h_str).strip().lower()
+        m = re.search(r'\b([01]?\d|2[0-3])[:\.]([0-5]\d)\b', s)
+        if m:
+            hh = int(m.group(1))
+            mm = int(m.group(2))
+        else:
+            m2 = re.search(r'(?:a\s+las\s+|hora\s*[:=]?\s*|\b)([01]?\d|2[0-3])\s*(?:h|horas|am|pm)?\b', s)
+            if not m2:
+                return []
+            hh = int(m2.group(1))
+            mm = 0
+            if "tarde" in s and 1 <= hh <= 8:
+                hh += 12
+        slot_principal = f"{hh:02d}:{'30' if mm >= 30 else '00'}"
+        slots_out = [slot_principal]
+        if mm == 0:
+            slots_out.append(f"{hh:02d}:30")
+        return slots_out
+
+    def _normalizar_fecha_str(f_str):
+        if not f_str:
+            return None
+        s = str(f_str).strip().lower()
+        m_iso = re.search(r'\b(202\d)-([01]\d)-([0-3]\d)\b', s)
+        if m_iso:
+            return f"{m_iso.group(1)}-{m_iso.group(2)}-{m_iso.group(3)}"
+        m_dmy = re.search(r'\b([0-3]?\d)[/\-]([01]?\d)(?:[/\-](202\d|\d{2}))?\b', s)
+        if m_dmy:
+            dd = int(m_dmy.group(1))
+            mm = int(m_dmy.group(2))
+            yy_raw = m_dmy.group(3)
+            yy = int(yy_raw) if yy_raw else anio_actual
+            if yy < 100:
+                yy += 2000
+            if 1 <= mm <= 12 and 1 <= dd <= 31:
+                return f"{yy:04d}-{mm:02d}-{dd:02d}"
+        m_txt = re.search(r'\b([0-3]?\d)\s+de\s+([a-záéíóú]+)', s)
+        if m_txt:
+            dd = int(m_txt.group(1))
+            mes_nom = texto_sin_tildes(m_txt.group(2))
+            mm = meses_es.get(mes_nom) or meses_es.get(mes_nom[:3])
+            if mm:
+                return f"{anio_actual:04d}-{mm:02d}-{dd:02d}"
+        for d_nom, d_idx in dias_sem_es.items():
+            if re.search(rf'\b{d_nom}\b', s):
+                dias_dif = (d_idx - hoy_dt.weekday()) % 7
+                f_calc = hoy_dt + pd.Timedelta(days=dias_dif)
+                return f_calc.strftime("%Y-%m-%d")
+        return None
+
+    def _registrar_ocupado(fecha_iso, hora_raw, origen_txt=""):
+        if not fecha_iso:
+            return
+        for sl in _normalizar_hora_a_slots(hora_raw):
+            clave = f"{fecha_iso}|{sl}"
+            if clave not in ocupados_set:
+                ocupados_set.add(clave)
+                detalle_citas.append({
+                    "slot": clave,
+                    "fecha": fecha_iso,
+                    "hora": sl,
+                    "origen": origen_txt or "CRM"
+                })
+
+    def _escanear_texto_libre_en_busca_de_cita(texto_libre, nombre_neg=""):
+        if not texto_libre or not isinstance(texto_libre, str):
+            return
+        t_low = texto_libre.lower()
+        for m_dt in re.finditer(r'(202\d-[01]\d-[0-3]\d)[t\s_]+([012]?\d:[0-5]\d)', t_low):
+            _registrar_ocupado(m_dt.group(1), m_dt.group(2), nombre_neg)
+        for m_dmy in re.finditer(r'([0-3]?\d[/\-][01]?\d(?:[/\-]202\d)?)\s*(?:a\s+las\s+|[-·•]\s*|\s+)([012]?\d(?::[0-5]\d|\s*h\b))', t_low):
+            f_iso = _normalizar_fecha_str(m_dmy.group(1))
+            if f_iso:
+                _registrar_ocupado(f_iso, m_dmy.group(2), nombre_neg)
+        for m_sem in re.finditer(r'\b(lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo)\b[^\n.;]{0,40}?\b(?:a\s+las\s+|hora\s+)?([012]?\d(?::[0-5]\d|\s*h\b|:00)?)', t_low):
+            if re.search(r'(:[0-5]\d|\bh\b|a\s+las)', m_sem.group(0)):
+                f_iso = _normalizar_fecha_str(m_sem.group(1))
+                if f_iso:
+                    _registrar_ocupado(f_iso, m_sem.group(2), nombre_neg)
+
+    try:
+        crm_data = load_crm()
+        for k_pid, rec in (crm_data or {}).items():
+            if not isinstance(rec, dict):
+                continue
+            nom = str(rec.get("nombre") or k_pid).strip()
+            for k_f in ("fecha_cita", "fecha_proximo_contacto", "proxima_accion_fecha", "proximo_contacto", "cita_fecha", "fecha_reunion", "cita"):
+                val_f = rec.get(k_f)
+                if val_f:
+                    f_iso = _normalizar_fecha_str(val_f)
+                    h_asociada = (
+                        rec.get("hora_cita")
+                        or rec.get("hora_proximo_contacto")
+                        or rec.get("proxima_accion_hora")
+                        or rec.get("cita_hora")
+                        or val_f
+                    )
+                    if f_iso:
+                        _registrar_ocupado(f_iso, h_asociada, f"CRM: {nom}")
+                    _escanear_texto_libre_en_busca_de_cita(str(val_f), f"CRM: {nom}")
+
+            for k_txt in ("notas_seguimiento", "notas", "objetivo", "proxima_accion", "fase_embudo"):
+                if rec.get(k_txt):
+                    _escanear_texto_libre_en_busca_de_cita(str(rec.get(k_txt)), f"CRM: {nom}")
+
+            for k_list in ("bitacora_seguimiento", "bitacora", "tareas_checklist", "tareas", "checklist", "citas"):
+                lista_items = rec.get(k_list)
+                if isinstance(lista_items, list):
+                    for item_b in lista_items:
+                        if isinstance(item_b, dict):
+                            if item_b.get("hecha") is True or item_b.get("completada") is True:
+                                continue
+                            f_b = _normalizar_fecha_str(item_b.get("fecha_cita") or item_b.get("fecha_objetivo") or item_b.get("fecha"))
+                            h_b = item_b.get("hora_cita") or item_b.get("hora")
+                            if f_b and h_b:
+                                _registrar_ocupado(f_b, h_b, f"Bitácora: {nom}")
+                            txt_b = " ".join(str(item_b.get(c) or "") for c in ("texto", "nota", "titulo", "descripcion", "detalle", "fecha"))
+                            _escanear_texto_libre_en_busca_de_cita(txt_b, f"Bitácora: {nom}")
+                        elif isinstance(item_b, str):
+                            _escanear_texto_libre_en_busca_de_cita(item_b, f"Bitácora: {nom}")
+    except Exception as e_crm:
+        print(f"⚠️ Aviso leyendo citas del CRM: {e_crm}")
+
+    return {
+        "status": "ok",
+        "slots_ocupados": sorted(list(ocupados_set)),
+        "detalle_citas": detalle_citas,
+        "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+
+
+@app.route("/api/horarios-ocupados-agenda", methods=["GET", "POST", "OPTIONS"])
+def api_horarios_ocupados_agenda_v145():
+    if request.method == "OPTIONS":
+        resp = make_response("", 200)
+        resp.headers["Access-Control-Allow-Origin"] = "*"
+        resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+        resp.headers["Access-Control-Allow-Headers"] = "Content-Type"
+        return resp
+    res = _extraer_slots_ocupados_universal_sp_v145()
+    resp = jsonify(res)
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+    return resp
+# === [SP_AGENDA_CRM_COORDINATOR_V145_END] ===
+'''
+
+BLOQUE_JS_COORDINADOR_AGENDA_WEB_V146 = r'''
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V146_START] -->
+<script>
+(function() {
+  window.SP_SLOTS_OCUPADOS_CRM_EXTRA = window.SP_SLOTS_OCUPADOS_CRM_EXTRA || new Set();
+
+  function mezclarSlotsEnMapaOcupados(listaSlots) {
+    if (!Array.isArray(listaSlots)) return;
+    window._spOcupadosPorDiaMap = window._spOcupadosPorDiaMap || {};
+    listaSlots.forEach(function(item) {
+      var s = String(item || '').trim();
+      if (!s || s.indexOf('|') === -1) return;
+      var partes = s.split('|');
+      var ymd = partes[0].trim();
+      var hhmm = partes[1].trim().substring(0, 5);
+      if (!ymd || !hhmm) return;
+      window.SP_SLOTS_OCUPADOS_CRM_EXTRA.add(ymd + '|' + hhmm);
+      if (!window._spOcupadosPorDiaMap[ymd]) {
+        window._spOcupadosPorDiaMap[ymd] = [];
+      }
+      if (window._spOcupadosPorDiaMap[ymd].indexOf(hhmm) === -1) {
+        window._spOcupadosPorDiaMap[ymd].push(hhmm);
+      }
+    });
+  }
+
+  window.spAplicarBloqueoHorasCrmEnSelect = function() {
+    var selDia = document.getElementById('spCartSelectDiaLV');
+    var selHora = document.getElementById('spCartSelectHoraManana');
+    if (!selDia || !selHora) return;
+
+    var ymd = selDia.value;
+    if (!ymd) return;
+
+    var mapDia = (window._spOcupadosPorDiaMap && window._spOcupadosPorDiaMap[ymd]) ? window._spOcupadosPorDiaMap[ymd] : [];
+    var cambioSeleccion = false;
+
+    for (var i = 0; i < selHora.options.length; i++) {
+      var opt = selHora.options[i];
+      var hhmm = String(opt.value || '').trim().substring(0, 5);
+      if (!hhmm) continue;
+      var clave = ymd + '|' + hhmm;
+      var ocupado = (mapDia.indexOf(hhmm) !== -1) || window.SP_SLOTS_OCUPADOS_CRM_EXTRA.has(clave);
+      if (ocupado) {
+        opt.disabled = true;
+        if (!opt.getAttribute('data-orig-txt')) {
+          opt.setAttribute('data-orig-txt', opt.textContent.replace(/^🔴\s*/, '').replace(/\s*\(Ocupado.*\)$/i, '').trim());
+        }
+        opt.textContent = '🔴 ' + opt.getAttribute('data-orig-txt').replace(/^🟢\s*/, '') + ' (Ocupado en agenda)';
+        if (selHora.selectedIndex === i) {
+          cambioSeleccion = true;
+        }
+      }
+    }
+
+    if (cambioSeleccion || (selHora.options[selHora.selectedIndex] && selHora.options[selHora.selectedIndex].disabled)) {
+      for (var j = 0; j < selHora.options.length; j++) {
+        if (!selHora.options[j].disabled) {
+          selHora.selectedIndex = j;
+          break;
+        }
+      }
+    }
+  };
+
+  window.spSincronizarCitasCrmLocal = function() {
+    try {
+      var guardados = JSON.parse(localStorage.getItem('sp_citas_ocupadas_crm_v146') || '[]');
+      mezclarSlotsEnMapaOcupados(guardados);
+    } catch (e) {}
+
+    var ahora = Date.now();
+    var urls = [
+      'http://127.0.0.1:5000/api/horarios-ocupados-agenda?t=' + ahora,
+      'http://localhost:5000/api/horarios-ocupados-agenda?t=' + ahora
+    ];
+
+    Promise.all(urls.map(function(u) {
+      return fetch(u, { method: 'GET', mode: 'cors' })
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(d) {
+          if (d && Array.isArray(d.slots_ocupados)) {
+            mezclarSlotsEnMapaOcupados(d.slots_ocupados);
+            try {
+              localStorage.setItem('sp_citas_ocupadas_crm_v146', JSON.stringify(Array.from(window.SP_SLOTS_OCUPADOS_CRM_EXTRA)));
+            } catch (e) {}
+          }
+        })
+        .catch(function() {});
+    })).then(function() {
+      if (typeof window.spActualizarHorasSegunDiaCarrito === 'function') {
+        try { window.spActualizarHorasSegunDiaCarrito(); } catch (e) {}
+      }
+      window.spAplicarBloqueoHorasCrmEnSelect();
+    });
+  };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(window.spSincronizarCitasCrmLocal, 150);
+
+    var selDia = document.getElementById('spCartSelectDiaLV');
+    if (selDia) {
+      selDia.addEventListener('change', function() {
+        setTimeout(window.spAplicarBloqueoHorasCrmEnSelect, 30);
+      });
+    }
+
+    if (typeof window.spActualizarHorasSegunDiaCarrito === 'function' && !window._spHookHorasV146) {
+      var origHoras = window.spActualizarHorasSegunDiaCarrito;
+      window.spActualizarHorasSegunDiaCarrito = function() {
+        var r = origHoras.apply(this, arguments);
+        window.spAplicarBloqueoHorasCrmEnSelect();
+        return r;
+      };
+      window._spHookHorasV146 = true;
+    }
+
+    if (typeof window.spAbrirCarritoConfigurador === 'function' && !window._spHookAbrirCarritoV146) {
+      var origAbrir = window.spAbrirCarritoConfigurador;
+      window.spAbrirCarritoConfigurador = function() {
+        var res = origAbrir.apply(this, arguments);
+        window.spSincronizarCitasCrmLocal();
+        return res;
+      };
+      window._spHookAbrirCarritoV146 = true;
+    }
+  });
+})();
+</script>
+<!-- [SP_AGENDA_CRM_WEB_SYNC_V146_END] -->
+'''
+
 JS_PUENTE_TEST_A_CARRITO = r"""window.spAbrirCarritoConDiagnosticoPreseleccionado = function() {
           var recs = (typeof recsIntegralGlobal !== 'undefined' && Array.isArray(recsIntegralGlobal)) ? recsIntegralGlobal : [];
           var tieneS1 = recs.indexOf('s1_resenas') !== -1;
@@ -1270,8 +1626,18 @@ def actualizar_index_html_completo(ruta_index):
         print(f"  ⚠️ No se encontró {ruta_index}")
         return
 
+    # Paso 0 de seguridad: si el archivo actual tenía algún bloque roto por la inyección anterior, restaurar el último backup sano
+    restaurar_ultimo_backup_sano_si_hace_falta(ruta_index)
+
     with open(ruta_index, "r", encoding="utf-8") as f:
         html = f.read()
+
+    # Limpiar restos de marcadores antiguos si existían
+    html = re.sub(
+        r"<!-- \[SP_AGENDA_CRM_WEB_SYNC_V14[56]_START\] -->[\s\S]*?<!-- \[SP_AGENDA_CRM_WEB_SYNC_V14[56]_END\] -->",
+        "",
+        html
+    )
 
     # 1. Reemplazar el bloque completo de #vista-tarifas con el botón dorado integrado y alineado dentro del contenedor sin salirse por la derecha
     patron_vista_tarifas = re.compile(
@@ -1384,45 +1750,49 @@ def actualizar_index_html_completo(ruta_index):
         '',
         html
     )
-    html = html.replace(
-        "Configura tu Plan a Medida y Agenda tu Videollamada de Alta",
-        'Configura tu Plan a Medida y Agenda tu Videollamada de Alta <span class="text-teal-700 font-extrabold text-base sm:text-lg">(listo en 24-48h)</span>'
-    )
+    if "(listo en 24-48h)" not in html:
+        html = html.replace(
+            "Configura tu Plan a Medida y Agenda tu Videollamada de Alta",
+            'Configura tu Plan a Medida y Agenda tu Videollamada de Alta <span class="text-teal-700 font-extrabold text-base sm:text-lg">(listo en 24-48h)</span>'
+        )
 
-    # 13. Compactar los campos de Nombre + Teléfono en una misma fila (2 columnas) para ahorrar altura y evitar cualquier scroll
-    patron_inputs_carrito = re.compile(
-        r'var inpNom = document\.getElementById\(\'spCartInputNombre\'\);\s*if \(inpNom && inpNom\.parentNode && !document\.getElementById\(\'spCartInputNegocioCiudad\'\)\) \{.*?inpNom\.parentNode\.insertBefore\(inpNeg, inpNom\.nextSibling\);\s*\}',
-        re.DOTALL
-    )
-    nuevo_js_inputs_compactos = r"""var inpNom = document.getElementById('spCartInputNombre');
-    var inpTel = document.getElementById('spCartInputTelefono');
-    if (inpNom && inpTel && inpNom.parentNode && !document.getElementById('spCartInputNegocioCiudad')) {
-      var parentForm = inpNom.parentNode;
-      parentForm.className = 'space-y-1.5 text-xs';
-      inpNom.placeholder = '1. Tu Nombre (Ej: Carlos) *';
-      inpTel.placeholder = '2. Tu Móvil (Ej: 600 123 456) *';
-      var filaNomTel = document.createElement('div');
-      filaNomTel.className = 'grid grid-cols-1 sm:grid-cols-2 gap-1.5';
-      parentForm.insertBefore(filaNomTel, inpNom);
-      filaNomTel.appendChild(inpNom);
-      filaNomTel.appendChild(inpTel);
-      var inpNeg = document.createElement('input');
-      inpNeg.id = 'spCartInputNegocioCiudad';
-      inpNeg.type = 'text';
-      inpNeg.required = true;
-      inpNeg.placeholder = '3. Nombre de tu Negocio y Ciudad (Ej: Clínica Sol - Vigo) *';
-      inpNeg.className = 'w-full bg-white border-2 border-teal-600/60 focus:border-teal-600 rounded-xl px-3 py-1.5 text-slate-900 placeholder-slate-500 outline-none font-bold';
-      parentForm.insertBefore(inpNeg, filaNomTel.nextSibling);
-    }"""
-    html = patron_inputs_carrito.sub(lambda _: nuevo_js_inputs_compactos, html)
-
-    # 14. Compactar el bloque de Cita de Alta en 1 sola línea informativa sin el párrafo largo inferior que provocaba scroll
+    # 13. Compactar el bloque de Cita de Alta en 1 sola línea informativa sin tocar el árbol DOM de los inputs para no romper el JS del Carrito
     html = html.replace(
         '<p class="text-[10px] text-amber-200/95 leading-snug">🔥 <strong>Horario Especial Gerentes:</strong> Habilitamos Sábados y Domingos (mañana y tarde) para ver juntos tu diagnóstico sin interrumpir tu horario de atención al público.</p>',
         '<p class="text-[11px] text-amber-900 font-bold leading-tight">🔥 Incluye Sábados y Domingos (mañana y tarde) para no interrumpir tu horario de apertura.</p>'
     )
 
+    # 14. Inyectar el coordinador limpio de citas CRM <-> Carrito (#spCartSelectDiaLV y #spCartSelectHoraManana) antes de </body>
+    html = html.replace("</body>", BLOQUE_JS_COORDINADOR_AGENDA_WEB_V146.strip() + "\n</body>")
+
     escribir_archivo_con_backup(ruta_index, html)
+
+def actualizar_servidor_local_b2b_agenda():
+    rutas_srv = [
+        os.path.join(RUTA_SCRAPER, "servidor_local_b2b.py"),
+        os.path.join(RUTA_WEB_RENDER, "servidor_local_b2b.py"),
+    ]
+    for ruta in rutas_srv:
+        if not os.path.isfile(ruta):
+            continue
+        with open(ruta, "r", encoding="utf-8") as f:
+            codigo = f.read()
+        if "# === [SP_AGENDA_CRM_COORDINATOR_V145_START] ===" in codigo:
+            codigo = re.sub(
+                r"# === \[SP_AGENDA_CRM_COORDINATOR_V145_START\] ===[\s\S]*?# === \[SP_AGENDA_CRM_COORDINATOR_V145_END\] ===",
+                lambda _: BLOQUE_AGENDA_CRM_PY_V146.strip(),
+                codigo
+            )
+        else:
+            m_main = re.search(r"if\s+__name__\s*==\s*['\"]__main__['\"]\s*:", codigo)
+            if m_main:
+                pos = m_main.start()
+                codigo = codigo[:pos] + "\n\n" + BLOQUE_AGENDA_CRM_PY_V146.strip() + "\n\n" + codigo[pos:]
+            else:
+                codigo = codigo.rstrip() + "\n\n" + BLOQUE_AGENDA_CRM_PY_V146.strip() + "\n"
+        escribir_archivo_con_backup(ruta, codigo)
+        ast.parse(codigo)
+        print(f"  🟢 Sintaxis Python (ast.parse) verificada en: {os.path.basename(ruta)}")
 
 # =============================================================================
 # 6. ACTUALIZAR BASE DE CONOCIMIENTO DEL CONSULTOR DE VOZ (SI EXISTE)
@@ -1735,6 +2105,7 @@ def ejecutar_actualizacion():
             actualizar_index_html_completo(r_idx)
             archivos_a_validar.append(r_idx)
 
+    actualizar_servidor_local_b2b_agenda()
     actualizar_base_conocimiento_js_tecnosala()
 
     # 3. Validación Gateway Anti-Errores y Resumen de Archivos Actualizados
