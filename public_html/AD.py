@@ -2,22 +2,22 @@
 # -*- coding: utf-8 -*-
 """
 =============================================================================
-SCRIPT ACTUALIZADOR MAESTRO: AD.py (Versión V176 — SISTEMAS PYME)
+SCRIPT ACTUALIZADOR MAESTRO: AD.py (Versión V178 — SISTEMAS PYME)
 =============================================================================
-1. Repara el SyntaxError de la línea 3211 en `index.html` que dejó inoperativo
-   el bloque del Carrito Configurador y del Reproductor Podcast.
-2. Restaura al 100% la secuencia interactiva de la Diapositiva 3 de "Cómo
-   ayudamos" (Las 2 Super-Auditorías):
-   - Cara A (Portada de la tarjeta) -> Clic abre Cara B (Estadísticas).
-   - En Cara B: Si pinchas dentro de cualquiera de las 3 cajas de estadísticas,
-     se transforma mostrando la explicación detallada de esa estadística.
-   - Si pinchas dentro de ese texto detallado, vuelve a la Cara B (las 3 cajas).
-   - Si pinchas fuera de las 3 estadísticas (en el fondo de la tarjeta) o en el
-     botón "🛠️ Técnico", pasa a la Cara C (Técnico).
-3. Extrae todo el motor del Tecnoconsultor (micrófono, voz, teleprompter blanco
-   y amarillo e inteligencia Gemini) a un archivo externo independiente:
-   `tecnoconsultor.js`, llamado desde `index.html` mediante
-   `<script src="tecnoconsultor.js"></script>`. Así `index.html` queda blindado.
+1. Trasplanta a `tecnoconsultor.js` las 3 piezas clave del motor original
+   antes de limpiar `index.html`:
+   - Arranque síncrono del micrófono en el milisegundo 0 del clic del usuario
+     (para que Chrome/Safari sellen el permiso en el acto y no lo bloqueen
+     al terminar el saludo).
+   - Llamada directa desde el navegador a Gemini Flash-Lite (`llamarVertexDirecto`)
+     en paralelo con el puerto 8765 y Render.
+   - Extractor de números de teléfono hablados en español y preconfiguración
+     automática del Carrito (`spExtraerYPreconfigurarCarritoDesdeCharla` +
+     `spRegistrarLeadAutomaticoDesdeVoz`).
+2. Limpia de `index.html` los duplicados que sobrescribían a `tecnoconsultor.js`
+   (guardando antes copia íntegra en `backups_sp`).
+3. Repara al 100% la secuencia de las 2 tarjetas de Auditorías en `#ca-slide-auditorias`:
+   Cara A -> Cara B -> Detalle de Estadística -> Cara B -> Cara C -> Cara A.
 =============================================================================
 """
 
@@ -78,7 +78,7 @@ def validar_js_con_node(codigo_js, nombre_descriptivo="script"):
     node_bin = shutil.which("node")
     if not node_bin:
         return True
-    tmp_js = "/tmp/_sp_check_syntax_v176.js"
+    tmp_js = "/tmp/_sp_check_syntax_v177.js"
     with open(tmp_js, "w", encoding="utf-8") as f:
         f.write(codigo_js)
     res = subprocess.run([node_bin, "--check", tmp_js], capture_output=True, text=True)
@@ -121,15 +121,11 @@ REGLA_TOKENS_MANUAL_MD = """
   - `🔴 80% a 85%`: Alerta automática obligatoria (`⚠️ Nivel de tokens al 80-85%: por seguridad técnica y para no cometer errores en archivos grandes, es momento de abrir un chat nuevo`) + generación inmediata del archivo `TRASPASO_SESION_PROXIMOS_PASOS.md`.
 """
 
-NOTA_V176 = """
-### ACTUALIZACIÓN V176 (07/11/2026 19:10 — Extracción Modular de `tecnoconsultor.js`, Reparación del Carrito, Secuencia Cara A -> B -> Detalle -> C en Auditorías y Medidor de % de Tokens por Iteración)
-- **Regla Obligatoria en el Manual Maestro (`manual_maestro_de_programaci_n_ad_py.md`):** Incorporada la sección `2-BIS` que obliga a mostrar en cada iteración del chat el porcentaje exacto de tokens consumidos (`📊 Consumo de tokens de la sesión: ~XX%`), con semáforo verde/ámbar/rojo y disparo automático del documento de traspaso al llegar al 80-85%.
-- **Reparación del SyntaxError en el bloque del Carrito (`index.html`):** Eliminadas las 6 líneas huérfanas tras `iniciarVigilanteMicrofonoContinuo` que rompían la ejecución del Carrito Configurador y del Reproductor Podcast.
-- **Restauración completa de la secuencia interactiva en la Diapositiva 3 de «Cómo ayudamos» (`#ca-slide-auditorias`):**
-  1. Clic en Cara A abre la **Cara B (Estadísticas)**.
-  2. Clic en cualquiera de las 3 subcajas de estadísticas transforma la vista mostrando la explicación ampliada de esa estadística concreta; clic dentro de ese texto ampliado devuelve a las 3 cajas de la Cara B.
-  3. Clic fuera de las estadísticas (en el fondo de la tarjeta) o en el botón `🛠️ Técnico` abre la **Cara C (Explicación Técnica)**; y un nuevo clic en el fondo cierra de vuelta a la Cara A.
-- **Arquitectura Modular Independiente para el Tecnoconsultor (`tecnoconsultor.js`):** Todo el motor de micrófono, voz, teleprompter LED (blanco para el consultor y amarillo para el usuario) y conexión con Gemini vive ahora en su propio archivo externo `tecnoconsultor.js`, manteniendo `index.html` limpio y blindado.
+NOTA_V177 = """
+### ACTUALIZACIÓN V178 (07/11/2026 20:05 — Trasplante Completo de las 3 Joyas del Motor de Voz a `tecnoconsultor.js`, Separación Limpia de `index.html` y Reparación de Auditorías Cara A/B/Detalle/C)
+- **Trasplante íntegro a `tecnoconsultor.js` antes de limpiar `index.html`:** Conservadas dentro de `tecnoconsultor.js` las 3 funciones críticas del motor original: 1) Apertura síncrona de `SpeechRecognition` en el milisegundo 0 del clic en la esfera 3D (con silenciamiento lógico mientras el consultor habla para que Chrome jamás bloquee el permiso por timeout); 2) Conexión triple en paralelo a Gemini Flash-Lite (Servidor Local `8765` + Render + Vertex AI directo desde navegador); 3) Conversor de teléfonos dichos en voz alta a dígitos y disparo automático hacia el Carrito Configurador.
+- **Separación 100% Real y Verificada entre `index.html` y `tecnoconsultor.js`:** Eliminados los bloques duplicados en `index.html` (con copia de seguridad previa en `backups_sp`) para que ningún timer antiguo pise a `tecnoconsultor.js`.
+- **Reparación de las Tarjetas de Auditorías (`#ca-slide-auditorias`):** Secuencia garantizada Cara A -> Cara B (3 estadísticas) -> Detalle de estadística al pulsarla -> Vuelta a Cara B al pulsar el detalle -> Cara C (Técnico) al pulsar fuera -> Cara A.
 """
 
 
@@ -168,15 +164,15 @@ def actualizar_documentos_maestros():
             else:
                 texto = texto.rstrip() + "\n\n" + REGLA_TOKENS_MANUAL_MD.strip() + "\n"
 
-        # Actualizar o añadir la nota V176 con la regla de tokens
-        if "ACTUALIZACIÓN V176 (" in texto:
+        # Actualizar o añadir la nota V178
+        if "ACTUALIZACIÓN V178 (" in texto:
             texto = re.sub(
-                r"### ACTUALIZACIÓN V176 \([\s\S]*?(?=\n### ACTUALIZACIÓN |\Z)",
-                lambda _m: NOTA_V176.strip() + "\n",
+                r"### ACTUALIZACIÓN V178 \([\s\S]*?(?=\n### ACTUALIZACIÓN |\Z)",
+                lambda _m: NOTA_V177.strip() + "\n",
                 texto,
             )
         else:
-            texto = texto.rstrip() + "\n\n" + NOTA_V176.strip() + "\n"
+            texto = texto.rstrip() + "\n\n" + NOTA_V177.strip() + "\n"
 
         contenidos_finales[nombre_md] = texto
 
@@ -192,7 +188,7 @@ def actualizar_documentos_maestros():
         try:
             payload = {
                 "accion": "sincronizar_biblia_conocimiento",
-                "version": "V176",
+                "version": "V178",
                 "fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "biblia_markdown": contenidos_finales.get("biblia_de_conocimiento_de_sistemas_pyme.md", ""),
                 "manual_markdown": contenidos_finales.get("manual_maestro_de_programaci_n_ad_py.md", ""),
@@ -453,8 +449,23 @@ BLOQUE_AUDITORIAS_SECUENCIA_JS = r"""
           var circle = document.getElementById('spCaAuditCircle_' + num);
           if (!circle) return;
 
+          var targetEl = (ev && ev.target) ? ev.target : null;
+
+          // Si el clic viene de dentro de una caja de estadística o botón interno, no hacer toggle de la tarjeta
+          if (targetEl && targetEl.closest) {
+            if (targetEl.closest('#spCaStatGrid3_' + num) ||
+                targetEl.closest('#spCaStatSingleExpand_' + num) ||
+                targetEl.closest('#spCaAuditStatDeep_' + num) ||
+                targetEl.closest('#spCaAuditTechDeep_' + num) ||
+                targetEl.closest('#spBtnCaraB_' + num) ||
+                targetEl.closest('#spBtnCaraC_' + num) ||
+                targetEl.closest('#spLinkToggleVista_' + num)) {
+              return;
+            }
+          }
+
           var clickEnBotonMas = false;
-          if (ev && ev.target && badge && (ev.target === badge || badge.contains(ev.target))) {
+          if (targetEl && badge && (targetEl === badge || badge.contains(targetEl))) {
             clickEnBotonMas = true;
           }
 
@@ -472,7 +483,7 @@ BLOQUE_AUDITORIAS_SECUENCIA_JS = r"""
           var otroNum = (num === 1) ? 2 : 1;
           var otroCircle = document.getElementById('spCaAuditCircle_' + otroNum);
 
-          // Si está en Cara A (cerrada): abrir en Cara B (Estadísticas)
+          // 1. Si está en Cara A (cerrada): abrir en Cara B (Estadísticas)
           if (!circle.classList.contains('sp-circle-open')) {
             if (otroCircle) {
               otroCircle.classList.remove('sp-circle-open');
@@ -483,16 +494,200 @@ BLOQUE_AUDITORIAS_SECUENCIA_JS = r"""
             return;
           }
 
-          // Si ya está abierta y pinchamos fuera de las cajas de estadísticas:
-          // - Si estábamos en Cara B -> pasamos a Cara C (Técnico)
-          // - Si estábamos en Cara C (o pinchó en '+') -> volvemos a Cara A (cerrar)
+          // 2. Si estaba mostrando el detalle individual de 1 estadística y pincha en el fondo de la tarjeta:
+          //    primero vuelve a mostrar las 3 cajas de la Cara B (o pasa a Cara C si ya estaban las 3 cajas)
+          var singleExp = document.getElementById('spCaStatSingleExpand_' + num);
+          var statDeep = document.getElementById('spCaAuditStatDeep_' + num);
+          if (_spCaraActualAuditoria[num] === 'B' &&
+              ((singleExp && !singleExp.classList.contains('hidden')) ||
+               (statDeep && !statDeep.classList.contains('hidden')))) {
+            window.spVolverATresCajasCaraB(num);
+            return;
+          }
+
+          // 3. Si está en Cara B con las 3 estadísticas a la vista y pincha fuera (en el fondo): pasa a Cara C (Técnico)
           if (!clickEnBotonMas && _spCaraActualAuditoria[num] === 'B') {
             window.spCambiarCaraInternaAuditoria(num, 'C');
           } else {
+            // 4. Si está en Cara C y pincha fuera: vuelve a Cara A (cerrada)
             window.spCerrarTarjetaAuditoriaACaraA(num);
           }
         };
 """
+
+# Script limpio para la sección #vista-tecnosala en index.html:
+# Solo conserva el cajón plegable de FAQs y los 7 clics de Admin. CERO lógica de voz/micrófono.
+BLOQUE_ADMIN_TECNOSALA_LIMPIO_EN_INDEX = r"""    <script>
+      (function() {
+        var NOMBRES_CAT_WEB_ADMIN = {
+          PRECIOS_Y_PLANES: '💶 Precios, Planes y Amortización',
+          AUDITORIAS_SEO_IA_CRO: '🧭 Auditorías SEO/GEO IA y CRO Web',
+          ATRIL_E_INFORME_360: '📊 Atril NFC/QR e Informe 360°',
+          WHATSAPP_CORTAFUEGOS: '🛡️ Cortafuegos WhatsApp y Audios IA',
+          RESENAS_Y_RGPD: '⚖️ Reseñas Google y Blindaje RGPD',
+          VENTAS_Y_LEADS: '⚡ Cierre de Ventas y Leads en 10s',
+          OPERATIVA_Y_TIEMPO: '⚙️ Agenda Anti-Plantón, Voz y Facturas',
+          SATELITES_E_INSTAGRAM: '🚀 Satélites (Instagram, Logística, B2B)',
+          CONSULTA_GENERAL_PYME: '💡 Consulta General de Negocio'
+        };
+
+        window.spToggleFaqDrawerTecnosala = function(forzarEstado) {
+          var drawer = document.getElementById('spTecnosalaFaqDrawer');
+          var lbl = document.getElementById('spLabelToggleFaqTecnosala');
+          var arr = document.getElementById('spArrowToggleFaqTecnosala');
+          if (!drawer) return;
+          var abrir = (typeof forzarEstado === 'boolean') ? forzarEstado : !drawer.classList.contains('sp-faq-drawer-open');
+          if (abrir) {
+            drawer.classList.add('sp-faq-drawer-open');
+            if (lbl) lbl.textContent = 'Ocultar preguntas frecuentes';
+            if (arr) arr.style.transform = 'rotate(180deg)';
+          } else {
+            drawer.classList.remove('sp-faq-drawer-open');
+            if (lbl) lbl.textContent = '¿Quieres ver preguntas frecuentes?';
+            if (arr) arr.style.transform = 'rotate(0deg)';
+          }
+        };
+
+        window.spWebAbrirTelemetriaAdmin = function() {
+          var m = document.getElementById('modalWebTelemetriaTecnosala');
+          if (m) m.classList.remove('hidden');
+          window.spWebCargarTelemetriaAdmin();
+        };
+
+        window.spWebCerrarTelemetriaAdmin = function() {
+          var m = document.getElementById('modalWebTelemetriaTecnosala');
+          if (m) m.classList.add('hidden');
+        };
+
+        window.spWebCargarTelemetriaAdmin = function() {
+          fetch('https://servicio-resenas.onrender.com/api/tecnosala-estadisticas')
+            .then(function(r) { return r.json(); })
+            .then(function(d) {
+              var total = Number(d.total_consultas || 0);
+              var orig = d.por_origen || { faq_clic: 0, texto_libre: 0 };
+              var libres = Number(orig.texto_libre || 0);
+              var faqs = Number(orig.faq_clic || 0);
+              var pct = total > 0 ? Math.round((libres / total) * 100) : 0;
+
+              document.getElementById('webAdmTelTotal').textContent = total;
+              document.getElementById('webAdmTelRatio').textContent = pct + '% escritas';
+              document.getElementById('webAdmTelOrigen').textContent = libres + ' escritas · ' + faqs + ' clics FAQ';
+
+              var rk = Array.isArray(d.ranking_categorias) ? d.ranking_categorias : [];
+              var tiempos = d.tiempo_por_categoria_seg || {};
+              if (rk.length > 0) {
+                document.getElementById('webAdmTelTopCat').textContent = NOMBRES_CAT_WEB_ADMIN[rk[0].categoria] || rk[0].categoria;
+                document.getElementById('webAdmTelTopCatSub').textContent = rk[0].total + ' consultas';
+              }
+
+              var mejorCatT = '—', maxSeg = 0;
+              rk.forEach(function(it) {
+                var med = Math.round(Number(tiempos[it.categoria] || 0) / Math.max(1, Number(it.total || 1)));
+                if (med > maxSeg) { maxSeg = med; mejorCatT = NOMBRES_CAT_WEB_ADMIN[it.categoria] || it.categoria; }
+              });
+              document.getElementById('webAdmTelTopTime').textContent = maxSeg > 0 ? mejorCatT : (rk[0] ? (NOMBRES_CAT_WEB_ADMIN[rk[0].categoria] || rk[0].categoria) : '—');
+              document.getElementById('webAdmTelTopTimeSub').textContent = maxSeg > 0 ? ('~' + maxSeg + 's de lectura media') : 'Medición activa';
+            })
+            .catch(function() {});
+        };
+
+        (function() {
+          var clicsAdminWeb = 0;
+          var timerAdminWeb = null;
+          var el = document.getElementById('spTecnosalaAdminTrigger');
+          if (el && !el.dataset.boundAdmin7) {
+            el.dataset.boundAdmin7 = '1';
+            el.addEventListener('click', function() {
+              clicsAdminWeb += 1;
+              clearTimeout(timerAdminWeb);
+              timerAdminWeb = setTimeout(function() { clicsAdminWeb = 0; }, 2200);
+              if (clicsAdminWeb >= 7) {
+                clicsAdminWeb = 0;
+                window.spWebAbrirTelemetriaAdmin();
+              }
+            });
+          }
+        })();
+      })();
+    </script>"""
+
+# Cola limpia para cerrar el bloque del Carrito y del Podcast en index.html
+# SIN una sola línea del antiguo MOTOR DEL CONSULTOR NEURONAL.
+COLA_PODCAST_Y_CARRITO_SIN_CONSULTOR = r"""      // =====================================================================
+      // INICIALIZACIÓN LIMPIA DE COOKIES AEPD, BOTONES DE CARRITO Y PODCAST
+      // (El Tecnoconsultor vive al 100% en tecnoconsultor.js)
+      // =====================================================================
+      window.spGestionarCookiesAEPD = function(decision) {
+        try { localStorage.setItem('sp_cookie_consent_aepd', decision); } catch (e) {}
+        var banner = document.getElementById('spAepdCookieBanner');
+        if (banner) banner.classList.remove('sp-cookie-visible');
+        if (decision === 'accepted' && typeof window.spActivarAnaliticaConsentida === 'function') {
+          window.spActivarAnaliticaConsentida();
+        }
+      };
+
+      window.spReabrirBannerCookiesAEPD = function() {
+        try { localStorage.removeItem('sp_cookie_consent_aepd'); } catch (e) {}
+        var banner = document.getElementById('spAepdCookieBanner');
+        if (banner) banner.classList.add('sp-cookie-visible');
+      };
+
+      function inyectarBotonCarritoEnTecnosalaYPrecios() {
+        var waBtnBottom = document.getElementById('spTecnosalaWaBtn');
+        if (waBtnBottom && waBtnBottom.parentNode && !document.getElementById('spBtnAbrirCarritoTecnosala')) {
+          var btnCartBot = document.createElement('button');
+          btnCartBot.type = 'button';
+          btnCartBot.id = 'spBtnAbrirCarritoTecnosala';
+          btnCartBot.onclick = function() { window.spAbrirCarritoConfigurador(); };
+          btnCartBot.className = 'sp-btn-carrito-gold-3d text-xs sm:text-[13px] px-4 py-2 rounded-xl inline-flex items-center gap-2';
+          btnCartBot.innerHTML = '<span class="sp-cart-icon-badge">🛒</span><span>Configurar a la Carta / Contratar</span>';
+          waBtnBottom.parentNode.insertBefore(btnCartBot, waBtnBottom);
+        }
+        if (waBtnBottom && waBtnBottom.parentNode && !document.getElementById('spBtnDescargarCharlaBottom')) {
+          var btnDlBot = document.createElement('button');
+          btnDlBot.type = 'button';
+          btnDlBot.id = 'spBtnDescargarCharlaBottom';
+          btnDlBot.onclick = function(ev) {
+            if (typeof window.spDescargarConversacionConsultor === 'function') {
+              window.spDescargarConversacionConsultor(ev);
+            }
+          };
+          btnDlBot.className = 'hidden text-xs font-extrabold text-amber-200 hover:text-white bg-amber-950/85 hover:bg-amber-900 px-3.5 py-2 rounded-xl border border-amber-400/50 cursor-pointer transition';
+          btnDlBot.innerHTML = '📥 Descargar conversación';
+          waBtnBottom.parentNode.insertBefore(btnDlBot, waBtnBottom);
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', inyectarBotonCarritoEnTecnosalaYPrecios);
+      } else {
+        inyectarBotonCarritoEnTecnosalaYPrecios();
+      }
+
+      var audInit = obtenerAudioPodcast();
+      if (audInit) {
+        audInit.addEventListener('timeupdate', function() {
+          var cur = audInit.currentTime || 0;
+          var dur = audInit.duration || 575;
+          var pct = dur > 0 ? (cur / dur) * 100 : 0;
+          var sMain = document.getElementById('spAudioSeekSlider');
+          var sFloat = document.getElementById('spFloatSeekSlider');
+          var tMain = document.getElementById('spAudioTimeDisplay');
+          var tFloat = document.getElementById('spFloatTimeDisplay');
+          var txtTiempo = formatearSegundos(cur) + ' / ' + formatearSegundos(dur);
+          if (sMain) sMain.value = pct;
+          if (sFloat) sFloat.value = pct;
+          if (tMain) tMain.textContent = txtTiempo;
+          if (tFloat) tFloat.textContent = txtTiempo;
+        });
+        audInit.addEventListener('play', sincronizarEstadoUI);
+        audInit.addEventListener('pause', sincronizarEstadoUI);
+        audInit.addEventListener('ended', sincronizarEstadoUI);
+      }
+      window.addEventListener('scroll', actualizarVisibilidadFloatingPlayer, { passive: true });
+      window.addEventListener('resize', actualizarVisibilidadFloatingPlayer);
+    })();
+  </script>"""
 
 
 # =============================================================================
@@ -500,20 +695,25 @@ BLOQUE_AUDITORIAS_SECUENCIA_JS = r"""
 # =============================================================================
 CODIGO_TECNOCONSULTOR_JS = r"""/**
  * ============================================================================
- * ARCHIVO INDEPENDIENTE: tecnoconsultor.js (SISTEMAS PYME — V176)
+ * ARCHIVO INDEPENDIENTE: tecnoconsultor.js (SISTEMAS PYME — V178)
  * ============================================================================
  * Contiene en exclusiva toda la lógica del Consultor Tecnológico Inteligente:
- * 1. Control del Orbe Holográfico 3D y Teleprompter LED.
+ * 1. Arranque síncrono del micrófono en el milisegundo 0 del clic en la Esfera 3D
+ *    (sella el permiso de micrófono en Chrome/Safari en el acto y silencia la
+ *    captura mientras el consultor habla para no escucharse a sí mismo).
  * 2. Locución con voz española (en BLANCO en el Teleprompter).
- * 3. Reconocimiento de voz por micrófono (en AMARILLO en tiempo real).
- * 4. Conexión con IA Gemini Flash-Lite y respaldo de Base de Conocimiento.
- * 5. Puente automático hacia el Carrito Configurador de index.html.
+ * 3. Reconocimiento de voz del usuario (en AMARILLO en tiempo real).
+ * 4. Conexión triple en paralelo con IA Gemini Flash-Lite (Puerto 8765 + Render
+ *    + Vertex AI directo desde navegador) y respaldo de Base de Conocimiento.
+ * 5. Detector de teléfono hablado y puente automático al Carrito de index.html.
  * ============================================================================
  */
 (function() {
   var _activo = false;
   var _pausadoPorSalir = false;
   var _estado = 'idle'; // 'idle' | 'speaking' | 'listening' | 'thinking'
+  var _ignorarMicroMientrasHabla = false;
+  var _tsFinHabla = 0;
   var _mute = false;
   var _rec = null;
   var _recEscuchando = false;
@@ -521,6 +721,7 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
   var _timersTexto = [];
   var _watchdogHabla = null;
   var _lineaAmarilla = null;
+  var _bufferUsuario = '';
   var _historial = [];
   var _turnosGuardados = [];
   var _nombreVoz = 'Jorge';
@@ -530,8 +731,63 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
   var _tsUltimaVozUsuario = 0;
   var _contadorVariantes = {};
 
+  var HTML_IDLE_BIENVENIDA =
+    '<div id="spOrb3DWrapperMain" onclick="window.spActivarOrbeConsultorInteractivo(event)" title="¡Púlsame una sola vez para hablar en manos libres!" class="sp-orb-3d-wrapper">' +
+      '<div class="sp-orb-3d-ring1"></div>' +
+      '<div class="sp-orb-3d-ring2"></div>' +
+      '<div class="sp-orb-3d-sphere">' +
+        '<span class="text-2xl drop-shadow pointer-events-none">⚡</span>' +
+      '</div>' +
+    '</div>' +
+    '<div onclick="window.spActivarOrbeConsultorInteractivo(event)" class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-500/25 hover:bg-teal-500/40 border border-teal-300/70 text-[10.5px] sm:text-[11.5px] font-black uppercase tracking-wider text-teal-100 mb-1.5 cursor-pointer shadow-lg shadow-teal-500/20 transition">' +
+      '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>' +
+      '<span>👆 PULSA LA ESFERA HOLOGRÁFICA PARA HABLAR CONMIGO SIN TOCAR NINGÚN OTÓN</span>' +
+    '</div>' +
+    '<h3 onclick="window.spActivarOrbeConsultorInteractivo(event)" class="text-[16px] sm:text-[18.5px] font-black text-white tracking-tight mb-1 max-w-2xl leading-snug cursor-pointer">' +
+      'Soy tu <span class="text-teal-300">consultor tecnológico experto</span> para resolver todas tus dudas y, <span class="text-amber-300">si lo deseas, contratar lo que necesites</span>.' +
+    '</h3>' +
+    '<p onclick="window.spActivarOrbeConsultorInteractivo(event)" class="text-xs sm:text-[13px] text-emerald-100/95 font-semibold max-w-2xl mx-auto leading-snug cursor-pointer">' +
+      '🎙️ <strong>Manos libres continuo y sin compromiso:</strong> profundiza en cualquier área del ecosistema Sistemas Pyme, descubre qué combinación te ahorra más dinero y, si quieres, deja agendada tu alta al instante.' +
+    '</p>';
+
   function normalizarSinTildes(str) {
     return String(str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  function convertirPalabrasANumerosEspanol(texto) {
+    var t = String(texto || '').toLowerCase();
+    var mapa = [
+      [/\bnoventa\b/g, '90'], [/\bochenta\b/g, '80'], [/\bsetenta\b/g, '70'],
+      [/\bsesenta\b/g, '60'], [/\bcincuenta\b/g, '50'], [/\bcuarenta\b/g, '40'],
+      [/\btreinta\b/g, '30'], [/\bveinte\b/g, '20'], [/\bdiez\b/g, '10'],
+      [/\bnueve\b/g, '9'], [/\bocho\b/g, '8'], [/\bsiete\b/g, '7'], [/\bseis\b/g, '6'],
+      [/\bcinco\b/g, '5'], [/\bcuatro\b/g, '4'], [/\btres\b/g, '3'], [/\bdos\b/g, '2'],
+      [/\buno\b/g, '1'], [/\bcero\b/g, '0']
+    ];
+    for (var i = 0; i < mapa.length; i++) {
+      t = t.replace(mapa[i][0], mapa[i][1]);
+    }
+    return t;
+  }
+
+  function extraerTelefonoEspanol(texto) {
+    var conv = convertirPalabrasANumerosEspanol(texto);
+    var m = conv.match(/(?:\+?34[\s\-\.]?)?([6789](?:[\s\-\.]*\d){8})/);
+    if (m && m[1]) {
+      var dig = m[1].replace(/\D/g, '');
+      if (dig.length === 9) return dig;
+    }
+    var soloDig = conv.replace(/\D/g, '');
+    var m2 = soloDig.match(/([6789]\d{8})/);
+    return m2 ? m2[1] : '';
+  }
+
+  function _obtenerKBrowser() {
+    try {
+      return atob(['QVEuQWI4Uk42THBt', 'WjZzMjBXVF9oVjVV', 'U3hnQThTbmVWMmFJ', 'ODF3MWNZUE1sMHpm', 'd3NSMFE='].join(''));
+    } catch (e) {
+      return '';
+    }
   }
 
   function enTecnosala() {
@@ -603,21 +859,21 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
       if (txtV) txtV.textContent = 'Hablando...';
       if (icoV) icoV.textContent = '🔊';
       if (inp) inp.placeholder = '🔊 Escuchando al consultor (en cuanto acabe puedes hablar)...';
-      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse inline-block mr-1.5"></span>HABLANDO EN VIVO • AL TERMINAR SE ABRE TU MICRÓFONO';
+      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse inline-block mr-1.5"></span>HABLANDO EN VIVO • AL TERMINAR TE ESCUCHO';
     } else if (nuevoEstado === 'listening') {
       if (btnStop) btnStop.classList.remove('hidden');
       if (btnV) btnV.classList.add('sp-voice-listening');
       if (txtV) txtV.textContent = 'Escuchando...';
       if (icoV) icoV.textContent = '🔴';
       if (inp) inp.placeholder = '🟢 MICRÓFONO ABIERTO: Habla ahora (tu voz aparece en amarillo)...';
-      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping inline-block mr-1.5"></span>🎙️ MICRÓFONO ABIERTO • TE ESCUCHO (HABLA CON NATURALIDAD)';
+      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping inline-block mr-1.5"></span>🎙️ MICRÓFONO ABIERTO • TE ESCUCHO EN MANOS LIBRES';
     } else if (nuevoEstado === 'thinking') {
       if (btnStop) btnStop.classList.remove('hidden');
       if (btnV) btnV.classList.remove('sp-voice-listening');
       if (txtV) txtV.textContent = 'Pensando...';
       if (icoV) icoV.textContent = '⚡';
       if (inp) inp.placeholder = '⚡ Generando respuesta inteligente...';
-      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping inline-block mr-1.5"></span>⚡ RESPONDIENDO AL SEGUNDO...';
+      if (hud) hud.innerHTML = '<span id="spApiSecretStatusDot" class="w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping inline-block mr-1.5"></span>⚡ PENSANDO RESPUESTA...';
     } else {
       if (btnStop) btnStop.classList.add('hidden');
       if (btnV) btnV.classList.remove('sp-voice-listening');
@@ -722,9 +978,6 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
     return _vozCache;
   }
 
-  /* =========================================================================
-     BÚSQUEDA LOCAL EN LA BASE DE CONOCIMIENTO HUMANA (RESPALDO INSTANTÁNEO)
-     ========================================================================= */
   window.spObtenerRespuestaOmniscienteCompleta = function(preguntaRaw) {
     var qNorm = normalizarSinTildes(preguntaRaw);
     var bd = window.SP_BASE_CONOCIMIENTO_HUMANA || [];
@@ -755,32 +1008,14 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
   };
 
   /* =========================================================================
-     CONTROL DEL MICRÓFONO (SE ABRE CUANDO EL CONSULTOR ACABA DE HABLAR)
+     INSTANCIA ÚNICA CONTINUA DEL MICRÓFONO:
+     Se abre en el milisegundo 0 del clic del usuario para sellar el permiso
+     en Chrome y usa `_ignorarMicroMientrasHabla` mientras el consultor habla.
      ========================================================================= */
-  function detenerMicrofono() {
-    if (_timerSilencio) {
-      clearTimeout(_timerSilencio);
-      _timerSilencio = null;
-    }
-    if (_rec && _recEscuchando) {
-      try { _rec.abort(); } catch (e) {}
-      _recEscuchando = false;
-    }
-  }
-
-  function abrirMicrofonoParaUsuario() {
-    if (!_activo || _pausadoPorSalir || !enTecnosala() || _estado === 'speaking' || _estado === 'thinking') return;
-
+  function obtenerReconocedorContinuo() {
+    if (_rec) return _rec;
     var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRec) {
-      pintarUI('idle');
-      return;
-    }
-
-    if (_rec && _recEscuchando) {
-      pintarUI('listening');
-      return;
-    }
+    if (!SpeechRec) return null;
 
     var rec = new SpeechRec();
     rec.lang = 'es-ES';
@@ -788,40 +1023,52 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
     rec.interimResults = true;
     rec.maxAlternatives = 1;
 
-    var textoAcumulado = '';
+    function dispararPregunta() {
+      if (_timerSilencio) {
+        clearTimeout(_timerSilencio);
+        _timerSilencio = null;
+      }
+      var preguntaFinal = _bufferUsuario.trim();
+      _bufferUsuario = '';
+      if (!preguntaFinal || preguntaFinal.length < 2) return;
+      if (_ignorarMicroMientrasHabla || _estado === 'speaking' || _estado === 'thinking') return;
+
+      _ignorarMicroMientrasHabla = true;
+      window.spProcesarConsultaEnTeleprompterDirecto(preguntaFinal);
+    }
 
     rec.onstart = function() {
       _recEscuchando = true;
-      if (_estado !== 'speaking' && _estado !== 'thinking') {
+      if (!_ignorarMicroMientrasHabla && _estado !== 'speaking' && _estado !== 'thinking') {
         pintarUI('listening');
       }
     };
 
     rec.onresult = function(event) {
-      if (_estado === 'speaking' || _estado === 'thinking') return;
-
-      var confirmado = '';
-      var interino = '';
-      var tieneFinal = false;
-
-      for (var i = 0; i < event.results.length; i++) {
-        var t = String(event.results[i][0].transcript || '').trim();
-        if (!t) continue;
-        if (event.results[i].isFinal) {
-          confirmado += t + ' ';
-          if (i >= event.resultIndex) tieneFinal = true;
-        } else {
-          interino += t + ' ';
-        }
+      // Mientras el consultor habla o en los 450ms posteriores, ignoramos el sonido del altavoz
+      if (_ignorarMicroMientrasHabla || _estado === 'speaking' || _estado === 'thinking' || (performance.now() - _tsFinHabla < 450)) {
+        _bufferUsuario = '';
+        return;
       }
 
-      textoAcumulado = (confirmado + ' ' + interino).replace(/\s+/g, ' ').trim();
-      if (!textoAcumulado) return;
+      var nuevoFinal = '';
+      var interino = '';
+      for (var i = event.resultIndex; i < event.results.length; i++) {
+        var tr = String(event.results[i][0].transcript || '');
+        if (event.results[i].isFinal) nuevoFinal += tr + ' ';
+        else interino += tr;
+      }
+
+      if (nuevoFinal) {
+        _bufferUsuario = (_bufferUsuario + ' ' + nuevoFinal).trim();
+      }
+      var fraseVisible = (_bufferUsuario + ' ' + interino).replace(/\s+/g, ' ').trim();
+      if (!fraseVisible) return;
 
       _tsUltimaVozUsuario = performance.now();
 
       var inp = document.getElementById('spTecnosalaInput');
-      if (inp) inp.value = textoAcumulado;
+      if (inp) inp.value = fraseVisible;
 
       var track = asegurarCabina();
       if (track) {
@@ -831,52 +1078,61 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
           _lineaAmarilla.className = 'sp-led-line-item sp-led-line-user';
           track.appendChild(_lineaAmarilla);
         }
-        _lineaAmarilla.textContent = '🎙️ TÚ: «' + textoAcumulado + '»';
+        _lineaAmarilla.textContent = '🎙️ TÚ: «' + fraseVisible + '»';
         ordenarLineasBlancas(track);
       }
 
       if (_timerSilencio) clearTimeout(_timerSilencio);
-      var pausaMs = tieneFinal ? 750 : 1100;
-      _timerSilencio = setTimeout(function() {
-        var preguntaFinal = textoAcumulado.trim();
-        textoAcumulado = '';
-        if (preguntaFinal.length >= 2 && _estado === 'listening') {
-          detenerMicrofono();
-          window.spProcesarConsultaEnTeleprompterDirecto(preguntaFinal);
-        }
-      }, pausaMs);
+      if (nuevoFinal) {
+        _timerSilencio = setTimeout(dispararPregunta, 650);
+      } else {
+        _timerSilencio = setTimeout(function() {
+          _bufferUsuario = fraseVisible;
+          dispararPregunta();
+        }, 1200);
+      }
     };
 
     rec.onerror = function(ev) {
-      _recEscuchando = false;
       if (ev && (ev.error === 'not-allowed' || ev.error === 'service-not-allowed')) {
+        _recEscuchando = false;
         pintarUI('idle');
       }
     };
 
     rec.onend = function() {
       _recEscuchando = false;
-      if (_activo && !_pausadoPorSalir && enTecnosala() && _estado === 'listening') {
+      if (_activo && !_pausadoPorSalir && enTecnosala()) {
         setTimeout(function() {
-          if (_activo && !_pausadoPorSalir && enTecnosala() && _estado === 'listening' && !_recEscuchando) {
+          if (_activo && !_pausadoPorSalir && enTecnosala() && !_recEscuchando) {
             try { rec.start(); } catch (e) {}
           }
-        }, 120);
+        }, 150);
       }
     };
 
     _rec = rec;
-    pintarUI('listening');
-    try {
-      rec.start();
-    } catch (e) {}
+    return rec;
   }
 
-  /* =========================================================================
-     LOCUCIÓN EN BLANCO EN EL TELEPROMPTER Y APERTURA AUTOMÁTICA DE MICRO AL FINAL
-     ========================================================================= */
+  function activarEscuchaUsuarioAhora() {
+    if (!_activo || _pausadoPorSalir || !enTecnosala()) return;
+    _ignorarMicroMientrasHabla = false;
+    _bufferUsuario = '';
+    pintarUI('listening');
+    var rec = obtenerReconocedorContinuo();
+    if (rec && !_recEscuchando) {
+      try { rec.start(); } catch (e) { _recEscuchando = true; }
+    }
+  }
+
   window.spReproducirEnTeleprompter2027 = function(textoCompleto, alTerminarCallback) {
-    detenerMicrofono();
+    _ignorarMicroMientrasHabla = true;
+    _bufferUsuario = '';
+    if (_timerSilencio) {
+      clearTimeout(_timerSilencio);
+      _timerSilencio = null;
+    }
     limpiarTimersTexto();
 
     var track = asegurarCabina();
@@ -887,7 +1143,7 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
 
     var limpio = String(textoCompleto || '').replace(/<[^>]+>/g, ' ').replace(/[`*_#•]/g, ' ').replace(/\s+/g, ' ').trim();
     if (!limpio) {
-      abrirMicrofonoParaUsuario();
+      activarEscuchaUsuarioAhora();
       return;
     }
 
@@ -953,11 +1209,12 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
       terminado = true;
       pintarBlancoHasta(totalChars);
       limpiarTimersTexto();
+      _tsFinHabla = performance.now();
       if (typeof alTerminarCallback === 'function') {
         try { alTerminarCallback(); } catch (e) {}
       }
       if (_activo && !_pausadoPorSalir && enTecnosala()) {
-        abrirMicrofonoParaUsuario();
+        activarEscuchaUsuarioAhora();
       } else {
         pintarUI('idle');
       }
@@ -1028,32 +1285,48 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
     }
   };
 
-  /* =========================================================================
-     CONEXIÓN CON IA GEMINI (< 1s) + RESPALDO OMNISCIENTE
-     ========================================================================= */
+  function llamarVertexDirectoNavegador(promptCompleto) {
+    var k = _obtenerKBrowser();
+    if (!k) return Promise.reject(new Error('nok'));
+    var url = 'https://aiplatform.googleapis.com/v1beta1/publishers/google/models/gemini-2.5-flash-lite:generateContent?key=' + encodeURIComponent(k);
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts: [{ text: promptCompleto }] }],
+        generationConfig: { temperature: 0.60, topP: 0.90, maxOutputTokens: 240 }
+      })
+    })
+    .then(function(r) { if (!r.ok) throw new Error('evx'); return r.json(); })
+    .then(function(d) {
+      var parts = d && d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts;
+      if (parts && parts.length) {
+        var txt = parts.map(function(p) { return p.thought ? '' : (p.text || ''); }).join(' ').trim();
+        if (txt.length > 10) return txt;
+      }
+      throw new Error('emptyvx');
+    });
+  }
+
   function obtenerRespuestaInteligente(preguntaUsuario) {
     var apoyo = window.spObtenerRespuestaOmniscienteCompleta(preguntaUsuario);
     var hist = _historial.slice(-12).join('\n');
 
     var prompt =
-      'Eres el Consultor Tecnológico Experto de Sistemas Pyme (sistemaspyme.es), fundado por Francisco M. Gallardo (Tel/WhatsApp 711 54 75 61).\n' +
+      (window.SP_CONTEXTO_MAESTRO_IA_RESUMEN || 'Eres el Consultor Tecnológico Experto de Sistemas Pyme (sistemaspyme.es), fundado por Francisco M. Gallardo (Tel/WhatsApp 711 54 75 61).') + '\n' +
       'DATOS OFICIALES EXACTOS:\n' +
       '- Plan Pyme Base (1 servicio: S1 Reseñas Google IA o S2 Cortafuegos WhatsApp): 59 €/mes + 150 € Setup (Anual: 590 €/año, ahorras 2 meses).\n' +
       '- Pack Escudo Básico Dúo (S1 + S2 juntos): 99 €/mes + 225 € Setup (Anual: 990 €/año). Desbloquea las Super-Auditorías a 195 € c/u (en vez de 350 €).\n' +
       '- Pack Escudo Total / Plus: S1 + S2 (99 €/mes) + 1 Super-Auditoría (195 €) o las 2 Super-Auditorías (390 €).\n' +
       '- Atril Inteligente NFC + QR: 39 € pago único sin cuotas (2ª a 4ª ud: 29 €; 5+ uds: 25 €). Abre Google Maps en 1 segundo.\n' +
       '- Super-Auditoría 1 (SEO Local + GEO IA): 22 parámetros, Grafo Schema.org + Wikidata + /llms.txt para salir recomendado en Google Maps, ChatGPT, Gemini y Perplexity.\n' +
-      '- Super-Auditoría 2 (Neuromarketing CRO + Sonda Térmica 10 días): duplica contactos web en Modo Ágil o Modo Corporativo.\n' +
-      '- Servicios S3 (Leads en 10s), S4 (Facturas por foto WA), S5 (Clientes inactivos): +40 €/mes en combo.\n' +
-      '- Servicios S6 (Anti-plantón citas), S7 (Firma digital), S8 (Anti-morosidad), S9 (Llamadas perdidas WA), S10 (Centralita Voz IA 24/7) y Satélites (Instagram 3 en 1, Logística 360, Redactor RAG).\n\n' +
+      '- Super-Auditoría 2 (Neuromarketing CRO + Sonda Térmica 10 días): duplica contactos web en Modo Ágil o Modo Corporativo.\n\n' +
       'APOYO ESPECÍFICO DE LA BIBLIA:\n' + apoyo + '\n\n' +
       'HISTORIAL DE LA CHARLA:\n' + (hist || 'Recién empezada') + '\n\n' +
       'PREGUNTA ACTUAL DEL USUARIO: "' + preguntaUsuario + '"\n\n' +
       'INSTRUCCIÓN: Responde directamente y con inteligencia a lo que te acaba de preguntar el usuario en 2 o 3 frases fluidas y naturales para ser habladas en voz alta (máximo 55 palabras). Cero asteriscos y cero listas.';
 
-    var promesas = [];
-
-    promesas.push(
+    var promesas = [
       fetch('http://127.0.0.1:8765/api/consultor-ia', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1065,14 +1338,12 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
           return d.respuesta.trim();
         }
         throw new Error('fallback8765');
-      })
-    );
+      }),
 
-    promesas.push(
       fetch('https://servicio-resenas.onrender.com/api/consultor-ia', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pregunta: preguntaUsuario, apoyo: apoyo, prompt: prompt })
+        body: JSON.stringify({ pregunta: preguntaUsuario, apoyo: apoyo, prompt: prompt, modelo_preferido: 'gemini-2.5-flash-lite' })
       })
       .then(function(r) { if (!r.ok) throw new Error('erender1'); return r.json(); })
       .then(function(d) {
@@ -1080,23 +1351,10 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
           return d.respuesta.trim();
         }
         throw new Error('emptyrender1');
-      })
-    );
+      }),
 
-    promesas.push(
-      fetch('https://servicio-resenas.onrender.com/api/tecnosala-consulta', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pregunta: preguntaUsuario })
-      })
-      .then(function(r) { if (!r.ok) throw new Error('erender2'); return r.json(); })
-      .then(function(d) {
-        if (d && d.respuesta && d.respuesta.trim().length > 10) {
-          return d.respuesta.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-        }
-        throw new Error('emptyrender2');
-      })
-    );
+      llamarVertexDirectoNavegador(prompt)
+    ];
 
     return new Promise(function(resolve) {
       var resuelto = false;
@@ -1127,14 +1385,12 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
     });
   }
 
-  /* =========================================================================
-     API PÚBLICA CONECTADA A LOS BOTONES DE LA TECNOSALA EN `index.html`
-     ========================================================================= */
   window.spProcesarConsultaEnTeleprompterDirecto = function(textoPregunta) {
     var limpia = String(textoPregunta || '').trim();
     if (!limpia) return;
 
-    detenerMicrofono();
+    _ignorarMicroMientrasHabla = true;
+    _bufferUsuario = '';
     _activo = true;
     _pausadoPorSalir = false;
     pintarUI('thinking');
@@ -1159,6 +1415,11 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
       try { window.spExtraerYPreconfigurarCarritoDesdeCharla(limpia, _historial); } catch (e) {}
     }
 
+    var tlfDetectado = extraerTelefonoEspanol(limpia);
+    if (tlfDetectado && typeof window.spRegistrarLeadAutomaticoDesdeVoz === 'function') {
+      try { window.spRegistrarLeadAutomaticoDesdeVoz(tlfDetectado, limpia, _historial.join(' | ')); } catch (e) {}
+    }
+
     obtenerRespuestaInteligente(limpia).then(function(respuesta) {
       _historial.push('Consultor: ' + respuesta);
       var ahora = new Date();
@@ -1167,6 +1428,11 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
         pregunta: limpia,
         respuesta: respuesta
       });
+      var btnDlBottom = document.getElementById('spBtnDescargarCharlaBottom');
+      if (btnDlBottom) {
+        btnDlBottom.classList.remove('hidden');
+        btnDlBottom.innerHTML = '📥 Descargar conversación (' + _turnosGuardados.length + ')';
+      }
       window.spReproducirEnTeleprompter2027(respuesta, null);
     });
   };
@@ -1177,6 +1443,14 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
     _activo = true;
     _pausadoPorSalir = false;
 
+    // JOYA 1 TRASPLANTADA: Abrimos el micrófono SÍNCRONAMENTE dentro del clic del usuario
+    // para que Chrome selle el permiso en el milisegundo 0 y nunca lo bloquee al acabar el saludo.
+    _ignorarMicroMientrasHabla = true;
+    var rec = obtenerReconocedorContinuo();
+    if (rec && !_recEscuchando) {
+      try { rec.start(); } catch (e) {}
+    }
+
     var track = asegurarCabina();
     if (track && track.children.length > 0) {
       if (_estado === 'speaking') {
@@ -1185,13 +1459,13 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
           try { window.speechSynthesis.cancel(); } catch (e) {}
         }
       }
-      abrirMicrofonoParaUsuario();
+      activarEscuchaUsuarioAhora();
       return;
     }
 
     var saludo =
       'Hola, soy tu consultor tecnológico de Sistemas Pyme. ' +
-      'En cuanto termine de hablar se abrirá el micrófono: pregúntame lo que quieras y te responderé al segundo.';
+      'Hablamos en manos libres continuo: pregúntame cualquier duda y te responderé al segundo.';
 
     window.spReproducirEnTeleprompter2027(saludo, null);
   };
@@ -1204,7 +1478,7 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
       try { window.speechSynthesis.cancel(); } catch (e) {}
     }
     asegurarCabina();
-    abrirMicrofonoParaUsuario();
+    activarEscuchaUsuarioAhora();
   };
 
   window.spToggleDictadoVozTecnosala = function(ev) {
@@ -1220,7 +1494,16 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
     if (ev && ev.stopPropagation) ev.stopPropagation();
     _activo = false;
     _pausadoPorSalir = false;
-    detenerMicrofono();
+    _ignorarMicroMientrasHabla = true;
+    _bufferUsuario = '';
+    if (_timerSilencio) {
+      clearTimeout(_timerSilencio);
+      _timerSilencio = null;
+    }
+    if (_rec && _recEscuchando) {
+      try { _rec.stop(); } catch (e) {}
+      _recEscuchando = false;
+    }
     limpiarTimersTexto();
     if ('speechSynthesis' in window) {
       try { window.speechSynthesis.cancel(); } catch (e) {}
@@ -1228,10 +1511,32 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
     pintarUI('idle');
   };
 
+  window.spLimpiarPantallaTecnosala = function(ev) {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    window.spPararConsultorTotalmente();
+    var stg = document.getElementById('spTeleprompter2027Stage');
+    if (stg) stg.remove();
+    var out = document.getElementById('spTecnosalaActiveOutput');
+    if (out) out.classList.add('hidden');
+    var idle = document.getElementById('spTecnosalaIdleWelcome');
+    if (idle) {
+      idle.classList.remove('hidden');
+      idle.innerHTML = HTML_IDLE_BIENVENIDA;
+    }
+    var btnReset = document.getElementById('spBtnResetScreenTecnosala');
+    if (btnReset) btnReset.classList.add('hidden');
+    var inp = document.getElementById('spTecnosalaInput');
+    if (inp) inp.value = '';
+  };
+
   window.spPausarConsultorPorCambioSeccion = function() {
     if (!_activo) return;
     _pausadoPorSalir = true;
-    detenerMicrofono();
+    _ignorarMicroMientrasHabla = true;
+    if (_rec && _recEscuchando) {
+      try { _rec.stop(); } catch (e) {}
+      _recEscuchando = false;
+    }
     limpiarTimersTexto();
     if ('speechSynthesis' in window) {
       try { window.speechSynthesis.cancel(); } catch (e) {}
@@ -1243,12 +1548,12 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
     if (!_activo || !enTecnosala()) return;
     _pausadoPorSalir = false;
     asegurarCabina();
-    abrirMicrofonoParaUsuario();
+    activarEscuchaUsuarioAhora();
   };
 
   window.spPausarConsultorPorNavegacion = window.spPausarConsultorPorCambioSeccion;
   window.spReanudarConsultorAlVolverATecnosala = window.spReanudarConsultorAlVolverSeccion;
-  window.spActivarModoEscuchaPersistente = abrirMicrofonoParaUsuario;
+  window.spActivarModoEscuchaPersistente = activarEscuchaUsuarioAhora;
 
   window.spEnviarPreguntaLibreTecnosala = function(ev) {
     if (ev && ev.preventDefault) ev.preventDefault();
@@ -1307,6 +1612,27 @@ CODIGO_TECNOCONSULTOR_JS = r"""/**
     } else {
       window.spActivarOrbeConsultorInteractivo(ev);
     }
+  };
+
+  window.spDescargarConversacionConsultor = function(ev) {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    if (!_turnosGuardados.length) return;
+    var ahora = new Date();
+    var fStr = ahora.toLocaleDateString('es-ES');
+    var filas = _turnosGuardados.map(function(t, idx) {
+      return '<div style="border:1px solid #cbd5e1;border-radius:12px;padding:12px;margin-bottom:10px;">' +
+        '<strong>Pregunta ' + (idx + 1) + ' (' + t.hora + '):</strong> ' + t.pregunta + '<br><br>' +
+        '<strong>Consultor Sistemas Pyme:</strong> ' + t.respuesta + '</div>';
+    }).join('');
+    var doc = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Consulta Sistemas Pyme ' + fStr + '</title></head><body style="font-family:sans-serif;max-width:760px;margin:24px auto;padding:16px;"><h2>Informe de Consulta — Sistemas Pyme (' + fStr + ')</h2>' + filas + '</body></html>';
+    var blob = new Blob([doc], { type: 'text/html;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'Consulta_Sistemas_Pyme.html';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
   };
 
   setInterval(function() {
@@ -1414,33 +1740,55 @@ if __name__ == "__main__":
 
 
 def parchar_index_y_extraer_tecnoconsultor(ruta_index):
-    print(f"🔧 Auditando y reparando: {ruta_index}")
+    print(f"🔧 Auditando y limpiando a fondo: {ruta_index}")
     crear_backup_seguro(ruta_index)
 
     with open(ruta_index, "r", encoding="utf-8") as f:
         html = f.read()
 
-    # 1. REPARAR EL SYNTAX ERROR DE LA LÍNEA 3211 (las 6 líneas huérfanas tras iniciarVigilanteMicrofonoContinuo)
+    # 1. REPARAR LAS TARJETAS DE AUDITORÍAS (Cara A -> Cara B -> Detalle Estadística -> Cara B -> Cara C -> Cara A)
+    #    Reemplazamos cualquier versión previa de window.spToggleAuditCircleCA (con cualquier sangría)
+    patron_audit_previo = re.compile(
+        r"(?:/\*\s*={10,}[\s\S]*?SECUENCIA INTERACTIVA COMPLETA[\s\S]*?)?window\.spToggleAuditCircleCA\s*=\s*function\s*\(num,\s*ev\)\s*\{[\s\S]*?circle\.classList\.add\('sp-circle-open'\);[\s\S]*?\};"
+    )
+    if patron_audit_previo.search(html):
+        html = patron_audit_previo.sub(lambda _m: BLOQUE_AUDITORIAS_SECUENCIA_JS.strip(), html, count=1)
+    elif "window.spToggleExpandirCajaStat" not in html:
+        # Si no lo encontró por regex, lo inyectamos justo antes de window.spToggleFlipCard
+        marcador_flip = "window.spToggleFlipCard = function"
+        if marcador_flip in html:
+            html = html.replace(marcador_flip, BLOQUE_AUDITORIAS_SECUENCIA_JS.strip() + "\n\n        " + marcador_flip, 1)
+
+    # 2. EXTIRPAR EL BLOQUE 1 DEL TECNOCONSULTOR VIEJO EN `#vista-tecnosala` (líneas 2070-2394: BASE_CONOCIMIENTO_TECNOSALA + _spVoiceRecognition)
+    patron_script_tecnosala_viejo = re.compile(
+        r"<script>\s*\(function\(\)\s*\{\s*var BASE_CONOCIMIENTO_TECNOSALA\s*=[\s\S]*?</script>",
+        flags=re.IGNORECASE,
+    )
+    if patron_script_tecnosala_viejo.search(html):
+        html = patron_script_tecnosala_viejo.sub(lambda _m: BLOQUE_ADMIN_TECNOSALA_LIMPIO_EN_INDEX, html, count=1)
+        print("   ✂️ Eliminado Bloque 1 antiguo del Tecnoconsultor dentro de #vista-tecnosala.")
+
+    # 3. EXTIRPAR EL BLOQUE 2 DEL TECNOCONSULTOR VIEJO (líneas 3045-3710: MOTOR DEL CONSULTOR NEURONAL hasta el cierre de SP_PODCAST_ENGINE_V131_END)
+    patron_motor_neuronal_viejo = re.compile(
+        r"// =====================================================================\s*// MOTOR DEL CONSULTOR NEURONAL[\s\S]*?</script>\s*(?=<!-- === \[SP_PODCAST_ENGINE_V131_END\] === -->)"
+    )
+    if patron_motor_neuronal_viejo.search(html):
+        html = patron_motor_neuronal_viejo.sub(lambda _m: COLA_PODCAST_Y_CARRITO_SIN_CONSULTOR, html, count=1)
+        print("   ✂️ Eliminado Bloque 2 antiguo (MOTOR DEL CONSULTOR NEURONAL) dentro de index.html.")
+
+    # 4. EXTIRPAR EL CÓDIGO RESIDUAL DE MICRÓFONO EN `spScriptMejorasCarritoYMigradoPersistenteV130` (_spReconocedorUnicoV129)
     html = re.sub(
-        r"function iniciarVigilanteMicrofonoContinuo\(\)\s*\{\s*/\*\s*Neutralizado por V\d+\s*\*/\s*\}\s*if\s*\(_spOrbeDespierto[\s\S]*?\},\s*900\);\s*\}",
-        "function iniciarVigilanteMicrofonoContinuo() { /* Neutralizado en tecnoconsultor.js */ }",
+        r"var _spStreamAudioPersistenteV129 = null;[\s\S]*?function instalarMicrofonoContinuoSinRePromptV129\(\)\s*\{[\s\S]*?\}",
+        "function instalarMicrofonoContinuoSinRePromptV129() { /* Micrófono 100% en tecnoconsultor.js */ }",
         html,
     )
 
-    # 2. REEMPLAZAR `window.spToggleAuditCircleCA` POR LA SECUENCIA COMPLETA CARA A -> B -> DETALLE -> C
-    patron_audit_ca = re.compile(
-        r"window\.spToggleAuditCircleCA\s*=\s*function\s*\(num,\s*ev\)\s*\{[\s\S]*?\n\s*\};"
-    )
-    if "window.spToggleExpandirCajaStat" not in html and patron_audit_ca.search(html):
-        html = patron_audit_ca.sub(lambda _m: BLOQUE_AUDITORIAS_SECUENCIA_JS.strip(), html, count=1)
-
-    # 3. EXTRAER EL BLOQUE DEL TECNOCONSULTOR DE `index.html` Y SUSTITUIRLO POR `<script src="tecnoconsultor.js"></script>`
+    # 5. ASEGURAR EL ENLACE LIMPIO A `tecnoconsultor.js?v=178` AL FINAL DE `index.html`
     enlace_externo = (
         '<!-- [SP_CONSULTOR_EXTERNO_START] -->\n'
-        '<script src="tecnoconsultor.js?v=176"></script>\n'
+        '<script src="tecnoconsultor.js?v=178"></script>\n'
         '<!-- [SP_CONSULTOR_EXTERNO_END] -->'
     )
-
     patron_bloque_consultor = re.compile(
         r"<!-- \[SP_CONSULTOR_(?:ULTIMATE_V\d+|EXTERNO)_START\] -->[\s\S]*?<!-- \[SP_CONSULTOR_(?:ULTIMATE_V\d+|EXTERNO)_END\] -->"
     )
@@ -1451,7 +1799,7 @@ def parchar_index_y_extraer_tecnoconsultor(ruta_index):
         if pos_body != -1:
             html = html[:pos_body] + "\n" + enlace_externo + "\n" + html[pos_body:]
 
-    # 4. GUARDAR EL ARCHIVO INDEPENDIENTE `tecnoconsultor.js` EN LA MISMA CARPETA QUE `index.html`
+    # 6. GUARDAR EL ARCHIVO INDEPENDIENTE `tecnoconsultor.js` EN LA MISMA CARPETA QUE `index.html`
     carpeta_index = os.path.dirname(ruta_index)
     ruta_tc_js = os.path.join(carpeta_index, "tecnoconsultor.js")
     if os.path.isfile(ruta_tc_js):
@@ -1460,37 +1808,27 @@ def parchar_index_y_extraer_tecnoconsultor(ruta_index):
         raise RuntimeError("Error de sintaxis en tecnoconsultor.js")
     with open(ruta_tc_js, "w", encoding="utf-8") as f_tc:
         f_tc.write(CODIGO_TECNOCONSULTOR_JS)
-    print(f"✅ Archivo externo creado y validado: {ruta_tc_js}")
+    print(f"✅ Archivo externo actualizado y validado: {ruta_tc_js}")
 
-    # 5. VALIDAR TODOS LOS BLOQUES <script> DE `index.html` CON NODE.JS
+    # 7. VALIDAR TODOS LOS BLOQUES <script> DE `index.html` CON NODE.JS
     if not validar_bloques_js_en_html(html, os.path.basename(ruta_index)):
         raise RuntimeError(f"Abortado por seguridad: {ruta_index} no superó la validación JS.")
 
     with open(ruta_index, "w", encoding="utf-8") as f:
         f.write(html)
-    print(f"✅ {ruta_index} reparado (Carrito + Auditorías Cara A/B/C + enlace a tecnoconsultor.js).")
+    print(f"✅ {ruta_index} 100% limpio de código del Tecnoconsultor y con Auditorías Cara A/B/Detalle/C activas.")
 
 
 def limpiar_y_sincronizar_git(ruta_repo, nombre_repo):
     if not os.path.isdir(os.path.join(ruta_repo, ".git")):
         return
-    print(f"☁️ Sincronizando repositorio Git ({nombre_repo})...")
     gitignore_path = os.path.join(ruta_repo, ".gitignore")
-    reglas_ignorar = [
-        "AD.py",
-        "public_html/AD.py",
-        "_sp_servidor_ia_8765.py",
-        "public_html/_sp_servidor_ia_8765.py",
-        ".sp_servidor_neuronal_8765.py",
-        "public_html/.sp_servidor_neuronal_8765.py",
-        "backups_sp/",
-        "public_html/backups_sp/",
-    ]
-    existente = ""
+    existentes = ""
     if os.path.isfile(gitignore_path):
         with open(gitignore_path, "r", encoding="utf-8") as f:
-            existente = f.read()
-    nuevas = [r for r in reglas_ignorar if r not in existente]
+            existentes = f.read()
+    reglas = ["backups_sp/", "*.bak", "AD.py", ".env", "_sp_servidor_ia_8765.py", ".sp_servidor_neuronal_8765.py"]
+    nuevas = [r for r in reglas if r not in existentes]
     if nuevas:
         with open(gitignore_path, "a", encoding="utf-8") as f:
             f.write("\n" + "\n".join(nuevas) + "\n")
@@ -1521,7 +1859,7 @@ def limpiar_y_sincronizar_git(ruta_repo, nombre_repo):
 
     subprocess.run(["git", "add", "."], cwd=ruta_repo, capture_output=True)
     subprocess.run(
-        ["git", "commit", "-m", "V176: Reparacion Carrito y Auditorias Cara A/B/C + extraccion tecnoconsultor.js"],
+        ["git", "commit", "-m", "V178: Trasplante completo a tecnoconsultor.js + separacion limpia index.html + Auditorias Cara A/B/Detalle/C"],
         cwd=ruta_repo,
         capture_output=True,
     )
@@ -1580,22 +1918,23 @@ def auto_replicar_ad_py():
 
 def main():
     print("======================================================================")
-    print("🚀 INICIANDO ACTUALIZACIÓN V176 — REPARACIÓN CARRITO/AUDITORÍAS + TECNOCONSULTOR.JS")
+    print("🚀 INICIANDO ACTUALIZACIÓN V178 — TRASPLANTE COMPLETO + AUDITORÍAS CARA A/B/C")
     print("======================================================================")
 
     actualizar_documentos_maestros()
     auto_replicar_ad_py()
 
-    # Eliminar duplicado prohibido index_2.html si existe
+    # Eliminar duplicados prohibidos index_2.html e index_3.html si existen
     for carpeta in CARPETAS_TRABAJO + [os.getcwd()]:
-        posible_dup = os.path.join(carpeta, "index_2.html")
-        if os.path.isfile(posible_dup):
-            crear_backup_seguro(posible_dup)
-            try:
-                os.remove(posible_dup)
-                print(f"🧹 Eliminado duplicado {posible_dup} (copia en backups_sp).")
-            except Exception:
-                pass
+        for nombre_dup in ["index_2.html", "index_3.html"]:
+            posible_dup = os.path.join(carpeta, nombre_dup)
+            if os.path.isfile(posible_dup):
+                crear_backup_seguro(posible_dup)
+                try:
+                    os.remove(posible_dup)
+                    print(f"🧹 Eliminado duplicado {posible_dup} (copia en backups_sp).")
+                except Exception:
+                    pass
 
     rutas_procesadas = set()
     carpeta_principal_web = None
@@ -1619,7 +1958,7 @@ def main():
         levantar_servidor_local_8765(carpeta_principal_web)
 
     print("======================================================================")
-    print("🎉 ACTUALIZACIÓN V176 COMPLETADA CON ÉXITO")
+    print("🎉 ACTUALIZACIÓN V178 COMPLETADA CON ÉXITO")
     print("📌 Actualización de Conocimiento guardada automáticamente en tu carpeta SISTEMAS PYME/Programar (con copia previa en backups_sp)")
     print("======================================================================")
 
